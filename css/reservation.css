@@ -1,0 +1,189 @@
+header{
+    background-image: url(../images/restaurant3.jpg);
+}
+
+.reservation{
+    background: linear-gradient(180deg, 
+    rgba(255, 228, 167, .8) 0%, 
+    rgba(241, 226, 218, .8) 50%, 
+    rgba(255, 228, 167, .8) 100%)
+}
+
+.reservation .container{
+    justify-content: center;
+}
+
+.form-box{
+    width: 1000px;
+    background-color: #fff;
+    box-shadow: 0 0 20px black;
+    border-radius: 10px;
+    padding: 40px 0;
+}
+
+.title{
+    font-size: 5.8rem;
+    font-weight: 700;
+    font-family: 'Dancing Script', cursive;
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+form{
+    display: grid;
+    justify-content: center;
+    grid-template-columns: auto auto;
+}
+
+.reservation-box {
+    width: 300px;
+    margin: 0 25px;
+}
+
+.reservation-box input,
+.reservation-box select {
+    width: 100%;
+    padding: 8px 0;
+    padding-left: 55px;
+    font-size: 2rem;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #B9B9B9;
+    background: #fff;
+    transition: all 0.35s ease-in-out;
+}
+
+.reservation-box select{
+    font-size: 1.8rem;
+    color: #605959;
+    transition: all 0.35s ease-in-out;
+}
+
+.reservation-box input:focus,
+.reservation-box textarea:focus {
+    outline: 0;
+    border-color: #f0a500;
+}
+
+.reservation-box select:focus{
+    border-color: #f0a500;
+    color: #605959;
+    outline: 0;
+}
+
+.reservation-box input:focus + .fa-solid::before,
+.reservation-box select:focus + .fa-solid::before {
+    color: #f0a500;
+}
+
+.reservation-box i{
+    position: relative;
+    top: -38px;
+    left: 15px;
+    color: #B9B9B9;
+}
+
+.reservation-box .fa-solid::before{
+    transition: all 0.35s ease-in-out;
+}
+
+.reservation-box .fa-solid::after {
+    position: relative;
+    height: 30px;
+    width: 1px;
+    top: -16px;
+    left: 29px;
+    display: block;
+    border-right: 1px solid #B9B9B9;
+    content: "";
+    transition: all 0.35s ease-in-out;
+}
+
+.warn{
+    color: red;
+    font-size: 1.3rem;
+    display: inline;
+    position: absolute;
+}
+
+.reservation-box input:focus + .fa-solid::after,
+.reservation-box select:focus + .fa-solid::after {
+    border-right-color: #f0a500;
+}
+
+.datetime .date{
+    width: 55%;
+    padding: 8px;
+    margin-right: 12px;
+}
+
+.datetime .time{
+    width: 40%;
+    padding: 8px;
+}
+
+.relative{
+    position: relative;
+    padding-top: 30px;
+}
+
+.relative h3{
+    font-size: 1.5rem;
+    color: #746969;
+    font-weight: 700;
+    margin-bottom: 7px;
+    transition: all 0.35s ease-in-out;
+    position: absolute;
+    top: 0;
+}
+
+.title-change:focus ~ h3{
+    color: #f0a500;
+}
+
+textarea{
+    border-color: #B9B9B9;
+    padding: 5px;
+    resize: none;
+    transition: all 0.35s ease-in-out;
+}
+
+.btn{
+    margin: 0 auto;
+    margin-top: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+button{
+    padding: 12px 20px;
+    font-size: 1.5rem;
+    color: #605959;
+    background-color: #fff;
+    border: 1px solid #B9B9B9;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.35s ease-in-out;
+}
+
+button:hover{
+    background-color: #f0a500;
+    color: #fff;
+    border: 1px solid #f0a500;
+}
+
+.reservation-info{
+    display: block;
+    font-size: 1.3rem;
+    margin-top: .5rem;
+}
+
+
+
+
+
+
+
+
+  

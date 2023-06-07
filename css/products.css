@@ -1,0 +1,76 @@
+header#izgaralarvekebaplar{
+    background-image: url(../images/kebap-background.jpg);
+}
+
+header#pideler{
+    background-image: url(../images/pide-background.jpg);
+}
+
+header#lahmacunlar{
+    background-image: url(../images/lahmacun-background.webp);
+}
+
+header#durumler{
+    background-image: url(../images/durum-background.jpg);
+}
+
+header#corbalar{
+    background-image: url(../images/corba-background.jpg);
+}
+
+header#baslangiclar{
+    background-image: url(../images/baslangic-background.jpg);
+}
+
+header#salatalar{
+    background-image: url(../images/salata-background.jpg);
+}
+
+header#kahvaltilar{
+    background-image: url(../images/kahvalti-background.jpg);
+}
+
+header#tatlilar{
+    background-image: url(../images/tatli-background.jpeg);
+}
+
+header#icecekler{
+    background-image: url(../images/icecek-background2.jpg);
+}
+
+#foods .products{
+    color: #000;
+    margin-top: 50px;
+    justify-content: space-around;
+    grid-template-rows: 310px;
+    grid-template-columns: 250px 250px 250px;
+    row-gap: 50px;
+}
+
+#foods .products .col img {
+    min-width: 230px;
+    height: 225px;
+    border-radius: 20px;
+    margin-right: 0px;
+    padding: 2px;
+    border: 3px solid #ffc515;
+}
+
+#foods .products .food-information{
+    align-items: center;
+    margin-top: 10px;
+    text-align: center;
+}
+
+#foods .product{
+    width: 100%;
+    height: 100%;
+}
+
+#foods .product .col{
+    flex-direction: column;
+    align-items: center;
+}
+
+
+
