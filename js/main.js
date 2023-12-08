@@ -19,7 +19,7 @@ $.get( "https://localhost:7189/api/branchs/getall", function( data) {
     for(let i=0; i < incomingData.length; i++){
 
         let branch = "";
-        if(incomingData[i].id == 1005){
+        if(incomingData[i].id == 1){
             
             branch = incomingData[i];
             $('#footer-address').append(branch.address)
@@ -87,31 +87,31 @@ $(document).ready(function($) {
 
 
 //scroll-up
-let calcScrollValue = () =>{
-    let scrollProgress = document.getElementById("progress");
-    let progressValue = document.getElementById("progress-value");
-    let pos = document.documentElement.scrollTop;
-    let calcHeight = 
-        document.documentElement.scrollHeight -
-        document.documentElement.clientHeight;
-    let scrollValue = Math.round((pos * 100) / calcHeight);
+// let calcScrollValue = () =>{
+//     let scrollProgress = document.getElementById("progress");
+//     let progressValue = document.getElementById("progress-value");
+//     let pos = document.documentElement.scrollTop;
+//     let calcHeight = 
+//         document.documentElement.scrollHeight -
+//         document.documentElement.clientHeight;
+//     let scrollValue = Math.round((pos * 100) / calcHeight);
 
-    if(pos > 100){
-        scrollProgress.style.display = "grid";
-    }
-    else{
-        scrollProgress.style.display = "none";
-    }
+//     if(pos > 100){
+//         scrollProgress.style.display = "grid";
+//     }
+//     else{
+//         scrollProgress.style.display = "none";
+//     }
 
-    scrollProgress.addEventListener("click", () => {
-        document.documentElement.scrollTop = 0;
-    });
+//     scrollProgress.addEventListener("click", () => {
+//         document.documentElement.scrollTop = 0;
+//     });
 
-    scrollProgress.style.background = 
-    `conic-gradient(#262323 ${scrollValue}%, #aaaaaa ${scrollValue}% )`;
-}
+//     scrollProgress.style.background = 
+//     `conic-gradient(#262323 ${scrollValue}%, #aaaaaa ${scrollValue}% )`;
+// }
 
-window.onscroll = calcScrollValue;
-window.onload = calcScrollValue;
+// window.onscroll = calcScrollValue;
+// window.onload = calcScrollValue;
 
 

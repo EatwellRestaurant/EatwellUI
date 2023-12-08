@@ -15,14 +15,13 @@ $.ajax({
 
 $.get( "https://localhost:7189/api/branchimages/getall", function( data ) {
 
-    let incomingData = "";
+    let incomingData = [];
 
     for (let i = 0; i < data.data.length; i++) {    
-        if(data.data[i].branchId == 1005){
-            incomingData = data.data;
+        if(data.data[i].branchId == 1){
+            incomingData.push(data.data[i]);
         }
     }
-
 
     var box="";
     for(let i=0; i < incomingData.length; i++){

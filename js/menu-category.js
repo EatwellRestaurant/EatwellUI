@@ -62,7 +62,7 @@ $.get( "https://localhost:7189/api/products/getproductsbymealcategoryid" + "?id=
               <img src= ${product_image} alt= ${product_name}>
               <div class="food-information flex">
                 <span class="food-name">${product_name}</span>
-                <span class="food-price">₺${product_price}</span>
+                <span class="food-price">${product_price}₺</span>
               </div>
             </div>
           </div>`;
@@ -73,5 +73,4 @@ $.get( "https://localhost:7189/api/products/getproductsbymealcategoryid" + "?id=
         } 
     }
     console.log( "Ürünler Getirildi" );
-
 });

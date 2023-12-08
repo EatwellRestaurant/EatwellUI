@@ -36,7 +36,7 @@ $.get( "https://localhost:7189/api/branchemployees/getall", function( data ) {
                     <img src="${branchEmployeeImage}" alt="${branchEmployeeFirstName} ${branchEmployeeLastName}">
 
                     <div class="chef-information">
-                        <h2>Chef ${branchEmployeeFirstName} ${branchEmployeeLastName}</h2>
+                        <h2>Şef ${branchEmployeeFirstName} ${branchEmployeeLastName}</h2>
                         <p>${branchEmployeeDescription}</p>
                     </div>
                 </div>`;
@@ -101,7 +101,6 @@ $.get( "https://localhost:7189/api/evaluations/getevaluationdetails", function( 
         } 
     }
     document.querySelector(".case").innerHTML = box;
-    console.log( "Menüler Getirildi" );
 });
 
 

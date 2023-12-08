@@ -31,8 +31,7 @@ header::before{
 
 .menu-image img{
     height: 250px;
-    max-width: 100%;
-    object-fit: cover; 
+    max-width: 250px; 
     border-radius: 25px;
     position: relative;
     display: block;
