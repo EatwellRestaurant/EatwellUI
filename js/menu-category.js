@@ -32,7 +32,7 @@ document.querySelector("#product-icon").src = "../icons/" + newName + ".png";
 
 
 $.ajax({
-    url: "https://localhost:7189/api/products/getproductsbymealcategoryid" + "?id=" + id,
+    url: "http://eatwellapi.somee.com/api/products/getproductsbymealcategoryid" + "?id=" + id,
     dataType: "json",
     error:  function (jqXHR, textStatus, errorThrown) {
         console.log(`'Ürünler' alınırken bir hata oluştu: ${textStatus} ${errorThrown}`);
@@ -46,13 +46,13 @@ $.ajax({
     
 });
 
-$.get( "https://localhost:7189/api/products/getproductsbymealcategoryid" + "?id=" + id, function( data ) {
+$.get( "http://eatwellapi.somee.com/api/products/getproductsbymealcategoryid" + "?id=" + id, function( data ) {
 
     let incomingData = data.data;
     var box="";
     for(let i=0; i < incomingData.length; i++){
         
-        let product_image = incomingData[i].imagePath.replace("wwwroot","https://localhost:7189");
+        let product_image = incomingData[i].imagePath.replace("wwwroot","http://eatwellapi.somee.com");
         let product_name = incomingData[i].name;
         let product_price = incomingData[i].price;
 

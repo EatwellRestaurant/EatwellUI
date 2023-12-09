@@ -101,7 +101,8 @@ form{
 
 .warn{
     color: red;
-    font-size: 1.3rem;
+    font-size: 1.2rem;
+    font-weight: bold;
     display: inline;
     position: absolute;
 }
@@ -179,7 +180,37 @@ button:hover{
     margin-top: .5rem;
 }
 
+.swal-title-class{
+    font-size: 2.2rem;
+}
 
+div:where(.swal2-container) .swal2-html-container{
+    font-size: 1.5rem;
+}
+
+.swal2-popup .swal2-content .swal2-text{
+    font-size: 1.5rem !important;
+}
+
+.swal-button-class{
+    letter-spacing: .1em !important;
+    font-size: 1.3rem !important;
+    background-color: #ddb742 !important;
+    transition: .3s;
+}
+
+.swal-button-class:focus{
+    box-shadow: 0 0 0 3px rgba(221,183,66,.5) !important;
+}
+
+.swal-button-class:hover{
+    background-image: none !important;
+    background-color: #ecba20 !important;
+}
+
+/* div:where(.swal2-container) button:where(.swal2-styled).swal2-confirm {
+
+} */
 
 
 
