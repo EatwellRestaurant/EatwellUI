@@ -1,13 +1,27 @@
-# RestaurantProjectFrontend
+<h1>Eatwell</h1>
 
-<p>This repo is not yet complete. Improvements and developments will be made on it.</p>
-<p>The backend part of this repo is made with .net and asp .net core.</p>
+💡Temel Özellikler:
+
+- Web sitesini, müşterilere kolay gezinme ve bilgiye hızlı erişim sağlayacak şekilde minimalist bir tasarım ile şekillendirdim.
+
+- Asp .Net Web Api ve MsSQL kullanarak geliştirdiğim rezervasyon sistemi, kullanıcıların sorunsuz bir şekilde rezervasyon yapmalarını sağlıyor.
+
+- AJAX kullanarak, sayfalar arasında anında geçişler ve içeriğin dinamik olarak yüklenmesini sağladım.
+<br>
+
+🛠 Kullanılan Teknolojiler:
+
+<b>Frontend:</b> Html, Css, JavaScript, Ajax
+
+<b>Backend:</b> Asp .Net
+
+<b>Database:</b> MsSql
   
-<p>If you want to examine: 
-  <a href ="https://github.com/burcutas96/RestaurantProjectBackend">
-    https://github.com/burcutas96/RestaurantProjectBackend</a>
-</p> 
+🚀 Projemi çalışırken görmek için: https://eatwell.somee.com
 
 
-https://github.com/burcutas96/RestaurantProjectFrontend/assets/99994420/b5eb19aa-b70e-46fb-818f-fa876af70703
+
+
+
+https://github.com/burcutas96/EatwellUI/assets/99994420/14520433-f8af-4b59-9012-d4416d22c636
 
