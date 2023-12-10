@@ -87,7 +87,6 @@ $.get( "http://eatwellapi.somee.com/api/branchimages/getall", function( data ) {
         let branch_image = incomingData[i].imagePath.replace("wwwroot","http://eatwellapi.somee.com/");
 
         let branch_title = incomingData[i].title;
-        let branch_description = incomingData[i].description;
 
         let element = `
         <div class="image">

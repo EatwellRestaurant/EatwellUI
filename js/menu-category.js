@@ -17,7 +17,6 @@ function karakterCevir(kelime){
    const oldValue =  ["ö", "Ö", "ü", "Ü", "ç", "Ç", "İ", "ı", "Ğ", "ğ", "Ş", "ş", " " ];
    const newValue =  [ 'o', 'O', 'u', 'U', 'c', 'C', 'I', 'i', 'G', 'g', 'S', 's', "" ];
 
-   console.log(oldValue.length)
    for (let i = 0; i < oldValue.length; i++)
    {
       mesaj = mesaj.replaceAll(oldValue[i], newValue[i]);

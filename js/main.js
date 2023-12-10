@@ -115,3 +115,8 @@ window.onscroll = calcScrollValue;
 window.onload = calcScrollValue;
 
 
+
+//remove the text added by somee api
+var centerElement = document.querySelector('center');
+var linkElement = centerElement.querySelector('a');
+linkElement.style.display="none";  
