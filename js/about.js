@@ -1,6 +1,6 @@
 /*Şube Çalışanları (Şef)*/
 $.ajax({
-    url: "http://eatwellapi.somee.com/api/branchemployees/getall",
+    url: "https://eatwellapi.somee.com/api/branchemployees/getall",
     dataType: "json",
     error:  function (jqXHR, textStatus, errorThrown) {
         console.log(`'Şube Çalışanları' alınırken bir hata oluştu: ${textStatus} ${errorThrown}`);
@@ -14,7 +14,7 @@ $.ajax({
 });
 
 
-$.get( "http://eatwellapi.somee.com/api/branchemployees/getall", function( data ) {
+$.get( "https://eatwellapi.somee.com/api/branchemployees/getall", function( data ) {
 
     let incomingData = data.data;
     var box="";
@@ -22,7 +22,7 @@ $.get( "http://eatwellapi.somee.com/api/branchemployees/getall", function( data 
 
     for(let i=0; i < incomingData.length; i++){
 
-        let branchEmployeeImage = incomingData[i].imagePath.replace("wwwroot","http://eatwellapi.somee.com/");
+        let branchEmployeeImage = incomingData[i].imagePath.replace("wwwroot","https://eatwellapi.somee.com/");
         let branchEmployeeFirstName = incomingData[i].firstName;
         let branchEmployeeLastName = incomingData[i].lastName;
         let branchEmployeeDescription = incomingData[i].description;
@@ -55,7 +55,7 @@ $.get( "http://eatwellapi.somee.com/api/branchemployees/getall", function( data 
 
 /*Görüşler*/
 $.ajax({
-    url: "http://eatwellapi.somee.com/api/evaluations/getevaluationdetails",
+    url: "https://eatwellapi.somee.com/api/evaluations/getevaluationdetails",
     dataType: "json",
     error:  function (jqXHR, textStatus, errorThrown) {
         console.log(`'Görüşler' alınırken bir hata oluştu: ${textStatus} ${errorThrown}`);
@@ -68,7 +68,7 @@ $.ajax({
     }
 });
 
-$.get( "http://eatwellapi.somee.com/api/evaluations/getevaluationdetails", function( data ) {
+$.get( "https://eatwellapi.somee.com/api/evaluations/getevaluationdetails", function( data ) {
     
     let incomingData = data.data;
     var box="";

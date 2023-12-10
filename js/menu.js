@@ -1,5 +1,5 @@
 $.ajax({
-    url: "http://eatwellapi.somee.com/api/mealcategories/getall",
+    url: "https://eatwellapi.somee.com/api/mealcategories/getall",
     dataType: "json",
     error:  function (jqXHR, textStatus, errorThrown) {
         console.log(`'Yemek kategorileri' alınırken bir hata oluştu: ${textStatus} ${errorThrown}`);
@@ -13,13 +13,13 @@ $.ajax({
 });
 
 
-$.get( "http://eatwellapi.somee.com/api/mealcategories/getall", function( data ) {
+$.get( "https://eatwellapi.somee.com/api/mealcategories/getall", function( data ) {
     
     let incomingData = data.data;
     var box="";
     for(let i=0; i < incomingData.length; i++){
         
-        let category_image = incomingData[i].imagePath.replace("wwwroot","http://eatwellapi.somee.com");
+        let category_image = incomingData[i].imagePath.replace("wwwroot","https://eatwellapi.somee.com");
         let category_name = incomingData[i].name;
         let menuCategoryId = incomingData[i].id;
 

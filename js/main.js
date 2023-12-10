@@ -1,5 +1,5 @@
 $.ajax({
-    url: "http://eatwellapi.somee.com/api/branchs/getall",
+    url: "https://eatwellapi.somee.com/api/branchs/getall",
     dataType: "json",
     error:  function (jqXHR, textStatus, errorThrown) {
         console.log(`Veri alınırken bir hata oluştu: ${textStatus} ${errorThrown}`);
@@ -12,7 +12,7 @@ $.ajax({
     }
 });
 
-$.get( "http://eatwellapi.somee.com/api/branchs/getall", function( data) {
+$.get( "https://eatwellapi.somee.com/api/branchs/getall", function( data) {
     
     let incomingData = data.data;
 
@@ -114,9 +114,3 @@ let calcScrollValue = () =>{
 window.onscroll = calcScrollValue;
 window.onload = calcScrollValue;
 
-
-
-//remove the text added by somee api
-var centerElement = document.querySelector('center');
-var linkElement = centerElement.querySelector('a');
-linkElement.style.display="none";  

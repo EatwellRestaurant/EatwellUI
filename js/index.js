@@ -1,6 +1,6 @@
 function getMealCategoryProducts(menuCategoryId) {
     return new Promise(function (resolve, reject) {
-        $.get("http://eatwellapi.somee.com/api/products/getproductsbymealcategoryid?id=" + menuCategoryId, function (data) {
+        $.get("https://eatwellapi.somee.com/api/products/getproductsbymealcategoryid?id=" + menuCategoryId, function (data) {
             let productIncomingData = data.data[1];
             resolve(productIncomingData);
             
@@ -12,7 +12,7 @@ function getMealCategoryProducts(menuCategoryId) {
 
 
 
-$.get( "http://eatwellapi.somee.com/api/mealcategories/getall", function( data ) {
+$.get( "https://eatwellapi.somee.com/api/mealcategories/getall", function( data ) {
     let mealCategoriesIncomingData = data.data;
     var box = "";
     let promises = mealCategoriesIncomingData.map(function (mealCategory) {
@@ -25,7 +25,7 @@ $.get( "http://eatwellapi.somee.com/api/mealcategories/getall", function( data )
         .then(function (productsData) {
             
             productsData.forEach(function (productIncomingData) {
-                let productImage = productIncomingData.imagePath.replace("wwwroot", "http://eatwellapi.somee.com");
+                let productImage = productIncomingData.imagePath.replace("wwwroot", "https://eatwellapi.somee.com");
                 let productName = productIncomingData.name;
                 let productPrice = productIncomingData.price;
 
@@ -57,7 +57,7 @@ $.get( "http://eatwellapi.somee.com/api/mealcategories/getall", function( data )
 
 //Şube resimlerini getiriyoruz.
 $.ajax({
-    url: "http://eatwellapi.somee.com/api/branchimages/getall",
+    url: "https://eatwellapi.somee.com/api/branchimages/getall",
     dataType: "json",
     error:  function (jqXHR, textStatus, errorThrown) {
         console.log(`Veri alınırken bir hata oluştu: ${textStatus} ${errorThrown}`);
@@ -71,7 +71,7 @@ $.ajax({
 });
 
 
-$.get( "http://eatwellapi.somee.com/api/branchimages/getall", function( data ) {
+$.get( "https://eatwellapi.somee.com/api/branchimages/getall", function( data ) {
 
     let incomingData = [];
 
@@ -84,7 +84,7 @@ $.get( "http://eatwellapi.somee.com/api/branchimages/getall", function( data ) {
     var box="";
     for(let i=0; i < incomingData.length && i < 6; i++){
         
-        let branch_image = incomingData[i].imagePath.replace("wwwroot","http://eatwellapi.somee.com/");
+        let branch_image = incomingData[i].imagePath.replace("wwwroot","https://eatwellapi.somee.com/");
 
         let branch_title = incomingData[i].title;
 

@@ -406,13 +406,9 @@ header .header-text{
 }
 
 
-
-
-  
-
-
-
-
-
+/* Somee */
+a[href="http://somee.com"] {
+    display: none !important;
+}
 
 

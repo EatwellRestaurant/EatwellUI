@@ -142,7 +142,7 @@ getReservation.addEventListener("submit", (e) => {
         var model = JSON.stringify(reservation);
         
         $.ajax({
-            url: "http://eatwellapi.somee.com/api/reservations/add",
+            url: "https://eatwellapi.somee.com/api/reservations/add",
             contentType: "application/json",
             type: "post",
             dataType: "json",

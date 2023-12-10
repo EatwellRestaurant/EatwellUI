@@ -1,5 +1,5 @@
 $.ajax({
-    url: "http://eatwellapi.somee.com/api/branchimages/getall",
+    url: "https://eatwellapi.somee.com/api/branchimages/getall",
     dataType: "json",
     error:  function (jqXHR, textStatus, errorThrown) {
         console.log(`Veri alınırken bir hata oluştu: ${textStatus} ${errorThrown}`);
@@ -13,7 +13,7 @@ $.ajax({
 });
 
 
-$.get( "http://eatwellapi.somee.com/api/branchimages/getall", function( data ) {
+$.get( "https://eatwellapi.somee.com/api/branchimages/getall", function( data ) {
 
     let incomingData = [];
 
@@ -26,7 +26,7 @@ $.get( "http://eatwellapi.somee.com/api/branchimages/getall", function( data ) {
     var box="";
     for(let i=0; i < incomingData.length; i++){
         
-        let branch_image = incomingData[i].imagePath.replace("wwwroot","http://eatwellapi.somee.com");
+        let branch_image = incomingData[i].imagePath.replace("wwwroot","https://eatwellapi.somee.com");
 
         let branch_title = incomingData[i].title;
         let branch_description = incomingData[i].description;
