@@ -4,12 +4,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FloatingInput } from "@/components/ui/floating-input";
 
-export default function AdminLoginPage() {
+export default function AdminRegisterPage() {
   const router = useRouter();
 
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
@@ -20,13 +21,18 @@ export default function AdminLoginPage() {
 
     try {
       const res = await fetch(
-        "http://eatwellrestaurantapi.somee.com/api/Auths/Login",
+        "http://eatwellrestaurantapi.somee.com/api/Auths/Register",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ email, password }),
+          body: JSON.stringify({
+            email,
+            password,
+            firstName,
+            lastName,
+          }),
         }
       );
 
@@ -35,25 +41,23 @@ export default function AdminLoginPage() {
 
         if (contentType?.includes("application/json")) {
           const errJson = await res.json();
-          setErrorMessage(errJson.message || "Giriş başarısız.");
+          setErrorMessage(errJson.message || "Kayıt başarısız.");
         } else {
           const errText = await res.text();
           console.error("API Text Hatası:", errText);
-          setErrorMessage(
-            "Giriş başarısız. E-posta veya şifre yanlış olabilir."
-          );
+          setErrorMessage("Kayıt başarısız. Sunucu cevabı okunamadı.");
         }
         return;
       }
 
       const data = await res.json();
-      console.log("Giriş başarılı:", data);
-      localStorage.setItem("admin-auth", "true"); // gris başarılı ise localStorage'a kaydediyorum
-      setSuccessMessage("Giriş başarılı! Yönlendiriliyorsunuz...");
+      console.log("Kayıt başarılı:", data);
 
-      // 2 saniye sonra yönlendiriyorum
+      setSuccessMessage(
+        "Kayıt başarılı! Giriş sayfasına yönlendiriliyorsunuz..."
+      );
       setTimeout(() => {
-        router.push("/admin/dashboard");
+        router.push("/admin/login");
       }, 2000);
     } catch (error) {
       console.error("Sunucu hatası:", error);
@@ -71,20 +75,36 @@ export default function AdminLoginPage() {
       }}
     >
       <div className="w-full max-w-md p-8 bg-[#d6af3a] rounded-2xl shadow-xl">
-        <div className="flex flex-col items-center mb-12">
+        <div className="flex flex-col items-center mb-10">
           <h1 className="text-5xl text-black mb-4">EATWELL</h1>
-          <h2 className="text-4xl font-bold text-white mb-2">ADMİN GİRİŞİ</h2>
+          <h2 className="text-3xl font-bold text-white">ADMİN KAYIT</h2>
+          <p className="text-white/90 text-sm mt-1">
+            Lütfen bilgilerinizi girin.
+          </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-8">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <FloatingInput
+            type="text"
+            label="Ad"
+            icon="user"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+          />
+          <FloatingInput
+            type="text"
+            label="Soyad"
+            icon="user"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+          />
           <FloatingInput
             type="email"
             label="E-posta"
-            icon="user"
+            icon="mail"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
-
           <FloatingInput
             type="password"
             label="Şifre"
@@ -93,40 +113,20 @@ export default function AdminLoginPage() {
             onChange={(e) => setPassword(e.target.value)}
           />
 
-          <div className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              id="remember"
-              checked={rememberMe}
-              onChange={(e) => setRememberMe(e.target.checked)}
-              className="w-4 h-4 rounded border-white/50 cursor-pointer"
-            />
-            <label
-              htmlFor="remember"
-              className="text-sm font-medium text-white cursor-pointer"
-            >
-              Beni Hatırla
-            </label>
-          </div>
-
-          <div className="flex space-x-4">
-            <button
-              type="submit"
-              className="w-full bg-white text-[#333] rounded-full py-3 font-medium hover:bg-black hover:text-white transition-colors cursor-pointer"
-            >
-              Giriş Yap
-            </button>
-          </div>
+          <button
+            type="submit"
+            className="w-full bg-white text-[#333] rounded-full py-3 font-medium hover:bg-black hover:text-white transition-colors cursor-pointer"
+          >
+            Kayıt Ol
+          </button>
           <div className="text-center">
             <a
-              href="/admin/register"
+              href="/admin/login"
               className="text-sm text-white hover:underline hover:text-black underline-none "
             >
               Zaten Bir Hesabın Var mı? Giriş Yap
             </a>
           </div>
-
-          {/* ✅ Inline mesajlar */}
           {errorMessage && (
             <p className="text-center text-red-600 text-sm">{errorMessage}</p>
           )}
