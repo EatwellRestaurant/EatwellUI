@@ -1,7 +1,7 @@
 body{
 	margin:0px;
 	padding: 0px;
-	background-color:#1b203d;
+	background-color:#fff;
 	overflow: hidden;
 	font-family: system-ui;
 }
@@ -11,12 +11,11 @@ body{
 .logo{
 	margin: 0px;
 	margin-left: 28px;
-    font-weight: bold;
-    color: white;
-    margin-bottom: 30px;
-}
-.logo span{
-	color: #f7403b;
+  font-weight: 500;
+  color: #000;
+  font-family: 'Raleway', sans-serif;
+  margin-bottom: 30px;
+  cursor: pointer;
 }
 .sidenav {
   height: 100%;
@@ -25,7 +24,7 @@ body{
   z-index: 1;
   top: 0;
   left: 0;
-  background-color: #272c4a;
+  background-color: #ffc515;
   overflow: hidden;
   transition: 0.5s;
   padding-top: 30px;
@@ -34,7 +33,7 @@ body{
   padding: 15px 8px 15px 32px;
   text-decoration: none;
   font-size: 20px;
-  color: #818181;
+  color: #000;
   display: block;
   transition: 0.3s;
 }
@@ -71,7 +70,7 @@ body{
 	margin-top: 5px;
 }
 .profile p{
-	color: white;
+	color: #000;
 	font-weight: 500;
 	margin-left: 55px;
 	margin-top: 10px;
@@ -93,6 +92,7 @@ body{
 	background-color: #272c4a;
 	margin-left: 10px;
 	padding:10px;
+  border-radius: 3%;
 }
 .box p{
 	 font-size: 35px;
@@ -106,13 +106,13 @@ body{
 .box p span{
 	font-size: 20px;
 	font-weight: 400;
-	color: #818181;
+	color: #a6a5a5;
 }
 .box-icon{
 	font-size: 40px!important;
     float: right;
     margin-top: 35px!important;
-    color: #818181;
+    color: #ebe3e3;
     padding-right: 10px;
 }
 .col-div-8{
@@ -129,19 +129,20 @@ body{
 .content-box p{
 	margin: 0px;
     font-size: 20px;
-    color: #f7403b;
+    color: #ffc515;
 }
 .content-box p span{
 	float: right;
-    background-color: #ddd;
-    padding: 3px 10px;
-    font-size: 15px;
+  color: #fff;
+  background-color: #d2a313;
+  font-size: 15px;
+  padding: 3px 10px;
 }
 .box-8, .box-4{
 	width: 95%;
 	background-color: #272c4a;
 	height: 330px;
-	
+  border-radius: 2%;
 }
 .nav2{
 	display: none;
@@ -182,7 +183,7 @@ td, th {
 
 .circle-wrap .circle .mask .fill {
   clip: rect(0px, 75px, 150px, 0px);
-  background-color: #f7403b;
+  background-color: #ffc515;
 }
 .circle-wrap .circle .mask.full,
 .circle-wrap .circle .fill {
