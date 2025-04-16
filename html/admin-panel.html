@@ -8,7 +8,7 @@
 	<link rel="stylesheet" href="../css/bootstrap.min.css">
 	<link rel="stylesheet" href="../css/style.css">
 	<link rel="stylesheet" href="../css/admin.css">
-	<link rel="stylesheet" href="../css/adminpanel.css" type="text/css"/>
+	<link rel="stylesheet" href="../css/admin-panel.css" type="text/css"/>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 	<link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500&display=swap" rel="stylesheet">
 </head>
@@ -31,11 +31,12 @@
 	<div id="main">
 		<div class="head">
 			<div class="col-div-6">
-				<span style="font-size:30px;cursor:pointer; color: #000;" class="nav"  >&#9776; Gösterge Paneli</span>
-				<span style="font-size:30px;cursor:pointer; color: #000;" class="nav2"  >&#9776; Gösterge Paneli</span>
+				<div id="menuToggle">
+					<span class="nav">&#9776; <span class="dashboard-text">Yönetim Paneli</span></span>
+				</div>
 			</div>
-			<div class="col-div-6">
-				<div class="profile" style="display: flex; align-items: center; gap: 10px; justify-content: space-between;">
+			<div class="col-div-6 adminInfo">
+				<div class="profile">
 					<img src="../images/user.png" class="pro-img">
 					<div style="display: flex; align-items: center; gap: 18px;">
 						<div>
@@ -49,30 +50,31 @@
 					</div>
 				</div>
 			</div>
+			<div class="clearfix"></div>
 		</div>
 
 
-		<div class="col-div-3">
+		<div class="col-div-3 users">
 			<div class="box">
-				<p>67<br/><span>Customers</span></p>
+				<p><br/><span>Kullanıcılar</span></p>
 				<i class="fa fa-users box-icon"></i>
 			</div>
 		</div>
-		<div class="col-div-3">
+		<div class="col-div-3 menu">
 			<div class="box">
-				<p>88<br/><span>Projects</span></p>
+				<p><br/><span>Menüler</span></p>
 				<i class="fa fa-list box-icon"></i>
 			</div>
 		</div>
-		<div class="col-div-3">
+		<div class="col-div-3 orders">
 			<div class="box">
-				<p>99<br/><span>Orders</span></p>
+				<p><br/><span>Siparişler</span></p>
 				<i class="fa fa-shopping-bag box-icon"></i>
 			</div>
 		</div>
-		<div class="col-div-3">
+		<div class="col-div-3 reservations">
 			<div class="box">
-				<p>78<br/><span>Tasks</span></p>
+				<p><br/><span>Rezervasyonlar</span></p>
 				<i class="fa fa-tasks box-icon"></i>
 			</div>
 		</div>
