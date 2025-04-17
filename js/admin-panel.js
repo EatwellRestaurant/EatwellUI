@@ -243,7 +243,7 @@ $(document).ready(function() {
                 'Authorization': `Bearer ${token}`
             },
             success: function(response) {
-                // Kullanıcılar listesini oluştur
+                // Kullanıcılar listesi modalının HTML yapısı
                 let usersHTML = `
                 <div class="users-modal">
                     <div class="users-modal-content">
@@ -262,33 +262,17 @@ $(document).ready(function() {
                                         <th>Kayıt Tarihi</th>
                                     </tr>
                                 </thead>
-                                <tbody>`;
-                
-                if (response.data && response.data.length > 0) {
-                    response.data.forEach(user => {
-                        // Tarihi formatla
-                        const date = new Date(user.createDate);
-                        const formattedDate = `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
-                        
-                        usersHTML += `
-                            <tr>
-                                <td>${user.id}</td>
-                                <td>${user.firstName}</td>
-                                <td>${user.lastName}</td>
-                                <td>${user.email}</td>
-                                <td>${formattedDate}</td>
-                            </tr>`;
-                    });
-                } else {
-                    usersHTML += `
-                        <tr>
-                            <td colspan="5" style="text-align: center;">Henüz kullanıcı bulunmamaktadır.</td>
-                        </tr>`;
-                }
-                
-                usersHTML += `
+                                <tbody id="usersTableBody">
                                 </tbody>
                             </table>
+                            <!-- Sayfalama kontrolleri -->
+                            <div class="pagination-container">
+                                <div class="pagination">
+                                    <button id="prevPage" class="pagination-btn" disabled><i class="fas fa-chevron-left"></i></button>
+                                    <span id="pageInfo">Sayfa 1</span>
+                                    <button id="nextPage" class="pagination-btn"><i class="fas fa-chevron-right"></i></button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>`;
@@ -298,6 +282,75 @@ $(document).ready(function() {
                 
                 // Modülü ekle
                 $('body').append(usersHTML);
+                
+                // Sayfalama için gerekli değişkenler
+                let currentPage = 1; // Mevcut sayfa numarası
+                const itemsPerPage = 10; // Her sayfada gösterilecek kullanıcı sayısı
+                const totalUsers = response.data.length; // Toplam kullanıcı sayısı
+                const totalPages = Math.ceil(totalUsers / itemsPerPage); // Toplam sayfa sayısı
+
+                // Kullanıcıları sayfalara böl ve göster
+                function displayUsers(page) {
+                    // Gösterilecek kullanıcıların başlangıç ve bitiş indekslerini hesapla
+                    const startIndex = (page - 1) * itemsPerPage;
+                    const endIndex = startIndex + itemsPerPage;
+                    // İlgili sayfadaki kullanıcıları seç
+                    const usersToShow = response.data.slice(startIndex, endIndex);
+                    
+                    let usersTableHTML = '';
+                    
+                    // Seçilen kullanıcıları tabloya ekle
+                    if (usersToShow.length > 0) {
+                        usersToShow.forEach(user => {
+                            // Tarihi formatla (gün.ay.yıl şeklinde)
+                            const date = new Date(user.createDate);
+                            const formattedDate = `${date.getDate()}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`;
+                            
+                            usersTableHTML += `
+                                <tr class="user-row" data-user-id="${user.id}">
+                                    <td>${user.id}</td>
+                                    <td>${user.firstName}</td>
+                                    <td>${user.lastName}</td>
+                                    <td>${user.email}</td>
+                                    <td>${formattedDate}</td>
+                                </tr>`;
+                        });
+                    } else {
+                        // Kullanıcı yoksa bilgi mesajı göster
+                        usersTableHTML = `
+                            <tr>
+                                <td colspan="5" style="text-align: center;">Henüz kullanıcı bulunmamaktadır.</td>
+                            </tr>`;
+                    }
+                    
+                    // Tabloyu güncelle
+                    $('#usersTableBody').html(usersTableHTML);
+                    // Sayfa bilgisini güncelle
+                    $('#pageInfo').text(`Sayfa ${page} / ${totalPages}`);
+                    
+                    // Sayfalama butonlarının durumunu güncelle
+                    $('#prevPage').prop('disabled', page === 1); // İlk sayfada geri butonu devre dışı
+                    $('#nextPage').prop('disabled', page === totalPages); // Son sayfada ileri butonu devre dışı
+                }
+                
+                // Mevcut sayfayı göster
+                displayUsers(currentPage);
+                
+                // Önceki sayfa butonuna tıklama olayı
+                $('#prevPage').click(function() {
+                    if (currentPage > 1) {
+                        currentPage--;
+                        displayUsers(currentPage);
+                    }
+                });
+                
+                // Sonraki sayfa butonuna tıklama olayı
+                $('#nextPage').click(function() {
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                        displayUsers(currentPage);
+                    }
+                });
                 
                 // Modülü göster
                 $('.users-modal').fadeIn(300);
@@ -326,10 +379,88 @@ $(document).ready(function() {
                         });
                     }
                 });
+
+                // Kullanıcı satırına tıklama olayı (dinamik olarak eklenen elementler için)
+                $(document).on('click', '.user-row', function() {
+                    const userId = $(this).data('user-id');
+                    getUserDetails(userId);
+                });
             },
             error: function(xhr, status, error) {
                 console.error('Kullanıcılar alınırken hata oluştu:', error);
                 showToast('error', 'Hata', 'Kullanıcılar alınırken bir hata oluştu!');
+            }
+        });
+    }
+
+    
+    // Kullanıcı detaylarını getiren fonksiyon
+    function getUserDetails(userId) {
+        const token = localStorage.getItem('token');
+        
+        $.ajax({
+            url: `https://eatwellrestaurantapi.somee.com/api/users/get?userId=${userId}`,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                if (response.success && response.data) {
+                    const user = response.data;
+                    const createDate = new Date(user.createDate);
+                    const formattedDate = `${createDate.getDate()}.${(createDate.getMonth() + 1).toString().padStart(2, '0')}.${createDate.getFullYear()}`;
+                    
+                    let userDetailsHTML = `
+                    <div class="user-details-modal">
+                        <div class="user-details-content">
+                            <div class="user-details-header">
+                                <h2>Kullanıcı Detayları</h2>
+                                <span class="close-user-details">&times;</span>
+                            </div>
+                            <div class="user-details-body">
+                                <div class="user-info">
+                                    <p><strong>Ad:</strong> ${user.firstName}</p>
+                                    <p><strong>Soyad:</strong> ${user.lastName}</p>
+                                    <p><strong>E-posta:</strong> ${user.email}</p>
+                                    <p><strong>Doğrulama Durumu:</strong> ${user.verification ? 'Doğrulanmış' : 'Doğrulanmamış'}</p>
+                                    <p><strong>Kayıt Tarihi:</strong> ${formattedDate}</p>
+                                    <p><strong>Durum:</strong> ${user.isDeleted ? 'Silinmiş' : 'Aktif'}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                    
+                    // Eğer detay modülü zaten varsa kaldır
+                    $('.user-details-modal').remove();
+                    
+                    // Detay modülünü ekle
+                    $('body').append(userDetailsHTML);
+                    
+                    // Detay modülünü göster
+                    $('.user-details-modal').fadeIn(300);
+                    
+                    // Kapatma butonuna tıklandığında
+                    $('.close-user-details').click(function() {
+                        $('.user-details-modal').fadeOut(300, function() {
+                            $(this).remove();
+                        });
+                    });
+                    
+                    // Modül dışına tıklandığında kapat
+                    $('.user-details-modal').click(function(e) {
+                        if ($(e.target).hasClass('user-details-modal')) {
+                            $('.user-details-modal').fadeOut(300, function() {
+                                $(this).remove();
+                            });
+                        }
+                    });
+                } else {
+                    showToast('error', 'Hata', 'Kullanıcı detayları alınırken bir hata oluştu!');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Kullanıcı detayları alınırken hata oluştu:', error);
+                showToast('error', 'Hata', 'Kullanıcı detayları alınırken bir hata oluştu!');
             }
         });
     }
@@ -344,4 +475,247 @@ $(document).ready(function() {
 
     // Her 30 saniyede bir istatistikleri güncelle
     setInterval(getStatistics, 30000);
+
+    // Menüleri getiren fonksiyon
+    function getMenus() {
+        const token = localStorage.getItem('token');
+        
+        $.ajax({
+            url: 'https://eatwellrestaurantapi.somee.com/api/mealCategories/getAllForAdmin',
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                // Menüler modalının HTML yapısı
+                let menusHTML = `
+                <div class="menus-modal">
+                    <div class="menus-modal-content">
+                        <div class="menus-modal-header">
+                            <h2>Menüler Listesi</h2>
+                            <span class="close-menus-modal">&times;</span>
+                        </div>
+                        <div class="menus-modal-body">
+                            <table class="menus-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Menü Adı</th>
+                                        <th>Durum</th>
+                                        <th>Kayıt Tarihi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="menusTableBody">
+                                </tbody>
+                            </table>
+                            <!-- Sayfalama kontrolleri -->
+                            <div class="pagination-container">
+                                <div class="pagination">
+                                    <button id="prevMenuPage" class="pagination-btn" disabled><i class="fas fa-chevron-left"></i></button>
+                                    <span id="menuPageInfo">Sayfa 1</span>
+                                    <button id="nextMenuPage" class="pagination-btn"><i class="fas fa-chevron-right"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+                
+                // Eğer modül zaten varsa kaldır
+                $('.menus-modal').remove();
+                
+                // Modülü ekle
+                $('body').append(menusHTML);
+                
+                // Sayfalama için gerekli değişkenler
+                let currentPage = 1; // Mevcut sayfa numarası
+                const itemsPerPage = 10; // Her sayfada gösterilecek menü sayısı
+                const totalMenus = response.data.length; // Toplam menü sayısı
+                const totalPages = Math.ceil(totalMenus / itemsPerPage); // Toplam sayfa sayısı
+
+                // Menüleri sayfalara böl ve göster
+                function displayMenus(page) {
+                    // Gösterilecek menülerin başlangıç ve bitiş indekslerini hesapla
+                    const startIndex = (page - 1) * itemsPerPage;
+                    const endIndex = startIndex + itemsPerPage;
+                    // İlgili sayfadaki menüleri seç
+                    const menusToShow = response.data.slice(startIndex, endIndex);
+                    
+                    let menusTableHTML = '';
+                    
+                    // Seçilen menüleri tabloya ekle
+                    if (menusToShow.length > 0) {
+                        menusToShow.forEach(menu => {
+                            // Tarihi formatla (gün.ay.yıl şeklinde)
+                            const date = new Date(menu.createDate);
+                            const formattedDate = `${date.getDate()}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`;
+                            
+                            menusTableHTML += `
+                                <tr class="menu-row" data-menu-id="${menu.id}">
+                                    <td>${menu.id}</td>
+                                    <td>${menu.name}</td>
+                                    <td>${menu.isDeleted ? 'Pasif' : 'Aktif'}</td>
+                                    <td>${formattedDate}</td>
+                                </tr>`;
+                        });
+                    } else {
+                        // Menü yoksa bilgi mesajı göster
+                        menusTableHTML = `
+                            <tr>
+                                <td colspan="5" style="text-align: center;">Henüz menü bulunmamaktadır.</td>
+                            </tr>`;
+                    }
+                    
+                    // Tabloyu güncelle
+                    $('#menusTableBody').html(menusTableHTML);
+                    // Sayfa bilgisini güncelle
+                    $('#menuPageInfo').text(`Sayfa ${page} / ${totalPages}`);
+                    
+                    // Sayfalama butonlarının durumunu güncelle
+                    $('#prevMenuPage').prop('disabled', page === 1); // İlk sayfada geri butonu devre dışı
+                    $('#nextMenuPage').prop('disabled', page === totalPages); // Son sayfada ileri butonu devre dışı
+                }
+                
+                // İlk sayfayı göster
+                displayMenus(currentPage);
+                
+                // Önceki sayfa butonuna tıklama olayı
+                $('#prevMenuPage').click(function() {
+                    if (currentPage > 1) {
+                        currentPage--;
+                        displayMenus(currentPage);
+                    }
+                });
+                
+                // Sonraki sayfa butonuna tıklama olayı
+                $('#nextMenuPage').click(function() {
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                        displayMenus(currentPage);
+                    }
+                });
+                
+                // Modülü göster
+                $('.menus-modal').fadeIn(300);
+                
+                // Kapatma butonuna tıklandığında
+                $('.close-menus-modal').click(function() {
+                    $('.menus-modal').fadeOut(300, function() {
+                        $(this).remove();
+                    });
+                });
+                
+                // Modül dışına tıklandığında kapat
+                $('.menus-modal').click(function(e) {
+                    if ($(e.target).hasClass('menus-modal')) {
+                        $('.menus-modal').fadeOut(300, function() {
+                            $(this).remove();
+                        });
+                    }
+                });
+
+                // ESC tuşu ile kapatma
+                $(document).on('keydown', function(e) {
+                    if (e.key === "Escape" && $('.menus-modal').is(':visible')) {
+                        $('.menus-modal').fadeOut(300, function() {
+                            $(this).remove();
+                        });
+                    }
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error('Menüler alınırken hata oluştu:', error);
+                showToast('error', 'Hata', 'Menüler alınırken bir hata oluştu!');
+            }
+        });
+    }
+
+    // Menüler kutusuna tıklandığında
+    $('.col-div-3:eq(1) .box').click(function() {
+        getMenus();
+    });
+
+    // Menü detaylarını getiren fonksiyon
+    function getMenuDetails(menuId) {
+        const token = localStorage.getItem('token');
+        
+        $.ajax({
+            url: `https://eatwellrestaurantapi.somee.com/api/mealCategories/getForAdmin?mealCategoryId=${menuId}`,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                if (response.success && response.data) {
+                    const menu = response.data;
+                    const createDate = new Date(menu.createDate);
+                    const updateDate = menu.updateDate ? new Date(menu.updateDate) : null;
+                    const deleteDate = menu.deleteDate ? new Date(menu.deleteDate) : null;
+                    
+                    // Tarihleri formatla
+                    const formattedCreateDate = `${createDate.getDate().toString().padStart(2, '0')}.${(createDate.getMonth() + 1).toString().padStart(2, '0')}.${createDate.getFullYear()}`;
+                    const formattedUpdateDate = updateDate ? `${updateDate.getDate().toString().padStart(2, '0')}.${(updateDate.getMonth() + 1).toString().padStart(2, '0')}.${updateDate.getFullYear()}` : '-';
+                    const formattedDeleteDate = deleteDate ? `${deleteDate.getDate().toString().padStart(2, '0')}.${(deleteDate.getMonth() + 1).toString().padStart(2, '0')}.${deleteDate.getFullYear()}` : '-';
+                    
+                    let menuDetailsHTML = `
+                    <div class="menu-details-modal">
+                        <div class="menu-details-content">
+                            <div class="menu-details-header">
+                                <h2>Menü Detayları</h2>
+                                <span class="close-menu-details">&times;</span>
+                            </div>
+                            <div class="menu-details-body">
+                                <div class="menu-image-container">
+                                    <img src="http://${menu.imagePath}" alt="${menu.name}" class="menu-detail-image">
+                                </div>
+                                <div class="menu-info">
+                                    <p><strong>Menü Adı:</strong> ${menu.name}</p>
+                                    <p><strong>Durum:</strong> ${menu.isDeleted ? 'Silinmiş' : 'Aktif'}</p>
+                                    <p><strong>Oluşturulma Tarihi:</strong> ${formattedCreateDate}</p>
+                                    <p><strong>Güncellenme Tarihi:</strong> ${formattedUpdateDate}</p>
+                                    <p><strong>Silinme Tarihi:</strong> ${formattedDeleteDate}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                    
+                    // Eğer detay modülü zaten varsa kaldır
+                    $('.menu-details-modal').remove();
+                    
+                    // Detay modülünü ekle
+                    $('body').append(menuDetailsHTML);
+                    
+                    // Detay modülünü göster
+                    $('.menu-details-modal').fadeIn(300);
+                    
+                    // Kapatma butonuna tıklandığında
+                    $('.close-menu-details').click(function() {
+                        $('.menu-details-modal').fadeOut(300, function() {
+                            $(this).remove();
+                        });
+                    });
+                    
+                    // Modül dışına tıklandığında kapat
+                    $('.menu-details-modal').click(function(e) {
+                        if ($(e.target).hasClass('menu-details-modal')) {
+                            $('.menu-details-modal').fadeOut(300, function() {
+                                $(this).remove();
+                            });
+                        }
+                    });
+                } else {
+                    showToast('error', 'Hata', 'Menü detayları alınırken bir hata oluştu!');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Menü detayları alınırken hata oluştu:', error);
+                showToast('error', 'Hata', 'Menü detayları alınırken bir hata oluştu!');
+            }
+        });
+    }
+
+    // Menü satırına tıklama olayı ekle
+    $(document).on('click', '.menu-row', function() {
+        const menuId = $(this).data('menu-id');
+        getMenuDetails(menuId);
+    });
 }); 
