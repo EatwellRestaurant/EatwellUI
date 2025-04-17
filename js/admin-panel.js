@@ -57,7 +57,7 @@ $(document).ready(function() {
     // Çıkış yap butonuna tıklandığında
     $('#logoutBtn').click(function(e) {
         e.preventDefault();
-        showToast('success', 'Başarılı', 'Çıkış işlemi başarıyla tamamlandı!');
+        showToast('success', 'Başarılı', 'Çıkış yapılıyor...');
         
         setTimeout(() => {
             localStorage.removeItem('token');
@@ -74,49 +74,16 @@ $(document).ready(function() {
         localStorage.removeItem('adminRemembered');
     };
 
-    // Sidebar toggle işlemleri
-    $(".nav").click(function(){
-        // Sidebar daraltılmış halde ise genişlet, genişse daralt
-        if ($("#mySidenav").width() == 70 || $("#mySidenav").width() == 0) {
-            $("#mySidenav").css('width','300px');
-            $("#main").css('margin-left','300px');
-            $(".logo").css('visibility', 'visible');
-            $(".icon-a").css('visibility', 'visible');
-            $(".icons").css('visibility', 'visible');
-            $(".nav").css('display','block');
-            $(".nav2").css('display','none');
-        } else {
-            $("#mySidenav").css('width','70px');
-            $("#main").css('margin-left','70px');
-            $(".logo").css('visibility', 'hidden');
-            $(".logo span").css('visibility', 'visible');
-            $(".logo span").css('margin-left', '-10px');
-            $(".icon-a").css('visibility', 'hidden');
-            $(".icons").css('visibility', 'visible');
-            $(".icons").css('margin-left', '-8px');
-            $(".nav").css('display','block');
-            $(".nav2").css('display','none');
-        }
-    });
-
-    $(".nav2").click(function(){
-        $("#mySidenav").css('width','300px');
-        $("#main").css('margin-left','300px');
-        $(".logo").css('visibility', 'visible');
-        $(".icon-a").css('visibility', 'visible');
-        $(".icons").css('visibility', 'visible');
-        $(".nav").css('display','block');
-        $(".nav2").css('display','none');
-    });
     
     // Responsive tasarım için mobil menü kontrolü
-    function checkScreenSize() {
+    function checkScreenSize(e) {
         if (window.innerWidth <= 992) {
             $("#mySidenav").css('width','0');
             $("#main").css('margin-left','0');
             $(".nav").css('display','block');
             $(".nav2").css('display','none');
-            
+            $(".head").css("padding-left", "17px");
+
             // Mobil menü açma/kapama
             $(".nav").off('click').on('click', function(){
                 let targetWidth = '200px'; // Varsayılan mobil genişlik
@@ -150,12 +117,14 @@ $(document).ready(function() {
                 $("#mySidenav").removeClass('active');
             });
         } else {
+            
             // Normal davranışı geri yükle
             $(".nav").off('click').on('click', function(){
                 // Sidebar daraltılmış halde ise genişlet, genişse daralt
                 if ($("#mySidenav").width() == 70 || $("#mySidenav").width() == 0) {
                     $("#mySidenav").css('width','300px');
                     $("#main").css('margin-left','300px');
+                    $("#main .head").css('padding-left', '320px');
                     $(".logo").css('visibility', 'visible');
                     $(".icon-a").css('visibility', 'visible');
                     $(".icons").css('visibility', 'visible');
@@ -164,6 +133,7 @@ $(document).ready(function() {
                 } else {
                     $("#mySidenav").css('width','70px');
                     $("#main").css('margin-left','70px');
+                    $("#main .head").css('padding-left', '95px');
                     $(".logo").css('visibility', 'hidden');
                     $(".logo span").css('visibility', 'visible');
                     $(".logo span").css('margin-left', '-10px');
@@ -178,6 +148,7 @@ $(document).ready(function() {
             $(".nav2").off('click').on('click', function(){
                 $("#mySidenav").css('width','300px');
                 $("#main").css('margin-left','300px');
+                $("#main .head").css('padding-left', '320px');
                 $(".logo").css('visibility', 'visible');
                 $(".icon-a").css('visibility', 'visible');
                 $(".icons").css('visibility', 'visible');
@@ -192,14 +163,20 @@ $(document).ready(function() {
     
     // Sayfa dışında herhangi bir yere tıklandığında mobil menüyü kapat
     $(document).on('click', function(e) {
+
         if (window.innerWidth <= 992 && 
             !$(e.target).closest('#mySidenav').length && 
             !$(e.target).closest('.nav').length &&
-            $("#mySidenav").hasClass('active')) {
+            $("#mySidenav").hasClass('active')) 
+        {
             $("#mySidenav").css('width','0');
             $("#mySidenav").removeClass('active');
+            $(".head").attr("style", "padding-left: 95px");
         }
     });
+
+
+
 
     // İstatistikleri API'den al
     function getStatistics() {
@@ -232,6 +209,15 @@ $(document).ready(function() {
         });
     }
 
+    // Sayfa yüklendiğinde istatistikleri al
+    getStatistics();
+
+    // Her 10 dakikada bir istatistikleri güncelle
+    setInterval(getStatistics, 600000);
+
+
+
+
     // Kullanıcılar listesini getir
     function getUsers() {
         const token = localStorage.getItem('token');
@@ -248,7 +234,7 @@ $(document).ready(function() {
                 <div class="users-modal">
                     <div class="users-modal-content">
                         <div class="users-modal-header">
-                            <h2>Kullanıcılar Listesi</h2>
+                            <h2>Kullanıcı Listesi</h2>
                             <span class="close-users-modal">&times;</span>
                         </div>
                         <div class="users-modal-body">
@@ -414,7 +400,7 @@ $(document).ready(function() {
                     <div class="user-details-modal">
                         <div class="user-details-content">
                             <div class="user-details-header">
-                                <h2>Kullanıcı Detayları</h2>
+                                <h2>Kullanıcı Detayı</h2>
                                 <span class="close-user-details">&times;</span>
                             </div>
                             <div class="user-details-body">
@@ -470,11 +456,9 @@ $(document).ready(function() {
         getUsers();
     });
 
-    // Sayfa yüklendiğinde istatistikleri al
-    getStatistics();
 
-    // Her 30 saniyede bir istatistikleri güncelle
-    setInterval(getStatistics, 30000);
+
+
 
     // Menüleri getiren fonksiyon
     function getMenus() {
@@ -492,17 +476,18 @@ $(document).ready(function() {
                 <div class="menus-modal">
                     <div class="menus-modal-content">
                         <div class="menus-modal-header">
-                            <h2>Menüler Listesi</h2>
+                            <h2>Menü Listesi</h2>
                             <span class="close-menus-modal">&times;</span>
                         </div>
                         <div class="menus-modal-body">
                             <table class="menus-table">
                                 <thead>
                                     <tr>
+                                        <th>Durum</th>
                                         <th>ID</th>
                                         <th>Menü Adı</th>
-                                        <th>Durum</th>
                                         <th>Kayıt Tarihi</th>
+                                        <th>İşlemler</th>
                                     </tr>
                                 </thead>
                                 <tbody id="menusTableBody">
@@ -551,10 +536,18 @@ $(document).ready(function() {
                             
                             menusTableHTML += `
                                 <tr class="menu-row" data-menu-id="${menu.id}">
+                                    <td>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" ${menu.isDeleted ? '' : 'checked'} data-menu-id="${menu.id}">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </td>
                                     <td>${menu.id}</td>
                                     <td>${menu.name}</td>
-                                    <td>${menu.isDeleted ? 'Pasif' : 'Aktif'}</td>
                                     <td>${formattedDate}</td>
+                                    <td>
+                                        <button class="btn-edit-menu" data-menu-id="${menu.id}">Düzenle</button>
+                                    </td>
                                 </tr>`;
                         });
                     } else {
@@ -634,6 +627,45 @@ $(document).ready(function() {
         getMenus();
     });
 
+
+    function deleteOrRestoreMenu(menuId) {
+        const token = localStorage.getItem('token');
+
+        $.ajax({
+            url: `https://eatwellrestaurantapi.somee.com/api/mealCategories/setDeleteOrRestore?mealCategoryId=${menuId}`,
+            type: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                if (response.success && response.data) {
+                    showToast('success', 'Başarılı', 'Menü başarıyla silindi!');
+                } else {
+                    showToast('error', 'Hata', 'Menü silinirken bir hata oluştu!');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Menü silinirken hata oluştu:', error);
+                showToast('error', 'Hata', 'Menü silinirken bir hata oluştu!');
+            }
+        });
+    }
+
+    // Menü durumunu değiştirme olayı
+    $(document).on('change', '.toggle-switch input', function(e) {
+        e.stopPropagation(); // Event'in yayılmasını durduruyoruz yani menü detayının gelmesini engelliyoruz.
+        const menuId = $(this).data('menu-id');
+        deleteOrRestoreMenu(menuId);
+    });
+
+    // Toggle switch'e tıklama olayını engelle
+    $(document).on('click', '.toggle-switch', function(e) {
+        e.stopPropagation();
+    });
+
+    
+
+
     // Menü detaylarını getiren fonksiyon
     function getMenuDetails(menuId) {
         const token = localStorage.getItem('token');
@@ -660,7 +692,7 @@ $(document).ready(function() {
                     <div class="menu-details-modal">
                         <div class="menu-details-content">
                             <div class="menu-details-header">
-                                <h2>Menü Detayları</h2>
+                                <h2>Menü Detayı</h2>
                                 <span class="close-menu-details">&times;</span>
                             </div>
                             <div class="menu-details-body">
@@ -669,7 +701,7 @@ $(document).ready(function() {
                                 </div>
                                 <div class="menu-info">
                                     <p><strong>Menü Adı:</strong> ${menu.name}</p>
-                                    <p><strong>Durum:</strong> ${menu.isDeleted ? 'Silinmiş' : 'Aktif'}</p>
+                                    <p><strong>Durum:</strong> ${menu.isDeleted ? 'Pasif' : 'Aktif'}</p>
                                     <p><strong>Oluşturulma Tarihi:</strong> ${formattedCreateDate}</p>
                                     <p><strong>Güncellenme Tarihi:</strong> ${formattedUpdateDate}</p>
                                     <p><strong>Silinme Tarihi:</strong> ${formattedDeleteDate}</p>
@@ -713,8 +745,12 @@ $(document).ready(function() {
         });
     }
 
-    // Menü satırına tıklama olayı ekle
-    $(document).on('click', '.menu-row', function() {
+    // Menü satırına tıklama olayı
+    $(document).on('click', '.menu-row', function(e) {
+        // Eğer toggle switch'e tıklandıysa işlemi durdur
+        if ($(e.target).closest('.toggle-switch').length) {
+            return;
+        }
         const menuId = $(this).data('menu-id');
         getMenuDetails(menuId);
     });
