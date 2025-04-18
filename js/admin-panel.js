@@ -75,108 +75,19 @@ $(document).ready(function() {
     };
 
     
-    // Responsive tasarım için mobil menü kontrolü
-    function checkScreenSize(e) {
-        if (window.innerWidth <= 992) {
-            $("#mySidenav").css('width','0');
-            $("#main").css('margin-left','0');
-            $(".nav").css('display','block');
-            $(".nav2").css('display','none');
-            $(".head").css("padding-left", "17px");
-
-            // Mobil menü açma/kapama
-            $(".nav").off('click').on('click', function(){
-                let targetWidth = '200px'; // Varsayılan mobil genişlik
-                if (window.innerWidth <= 480) {
-                    targetWidth = '200px'; // 480px altında da 250px olacak
-                }
-                
-                if ($("#mySidenav").width() == 0) {
-                    $("#mySidenav").css('width', targetWidth);
-                    $("#mySidenav").addClass('active');
-                    $(".logo").css('visibility', 'visible');
-                    $(".icon-a").css('visibility', 'visible');
-                    $(".icons").css('visibility', 'visible');
-                    $(".nav").css('display','block');
-                    $(".nav2").css('display','none');
-                } else {
-                    $("#mySidenav").css('width','0');
-                    $("#mySidenav").removeClass('active');
-                    $(".logo span").css('visibility', 'visible');
-                    $(".logo span").css('margin-left', '-10px');
-                    $(".icon-a").css('visibility', 'hidden');
-                    $(".icons").css('visibility', 'visible');
-                    $(".icons").css('margin-left', '-8px');
-                    $(".nav").css('display','block');
-                    $(".nav2").css('display','none');
-                }
-            });
-            
-            $(".nav2").off('click').on('click', function(){
-                $("#mySidenav").css('width','0');
-                $("#mySidenav").removeClass('active');
-            });
-        } else {
-            
-            // Normal davranışı geri yükle
-            $(".nav").off('click').on('click', function(){
-                // Sidebar daraltılmış halde ise genişlet, genişse daralt
-                if ($("#mySidenav").width() == 70 || $("#mySidenav").width() == 0) {
-                    $("#mySidenav").css('width','300px');
-                    $("#main").css('margin-left','300px');
-                    $("#main .head").css('padding-left', '320px');
-                    $(".logo").css('visibility', 'visible');
-                    $(".icon-a").css('visibility', 'visible');
-                    $(".icons").css('visibility', 'visible');
-                    $(".nav").css('display','block');
-                    $(".nav2").css('display','none');
-                } else {
-                    $("#mySidenav").css('width','70px');
-                    $("#main").css('margin-left','70px');
-                    $("#main .head").css('padding-left', '95px');
-                    $(".logo").css('visibility', 'hidden');
-                    $(".logo span").css('visibility', 'visible');
-                    $(".logo span").css('margin-left', '-10px');
-                    $(".icon-a").css('visibility', 'hidden');
-                    $(".icons").css('visibility', 'visible');
-                    $(".icons").css('margin-left', '-8px');
-                    $(".nav").css('display','block');
-                    $(".nav2").css('display','none');
-                }
-            });
-
-            $(".nav2").off('click').on('click', function(){
-                $("#mySidenav").css('width','300px');
-                $("#main").css('margin-left','300px');
-                $("#main .head").css('padding-left', '320px');
-                $(".logo").css('visibility', 'visible');
-                $(".icon-a").css('visibility', 'visible');
-                $(".icons").css('visibility', 'visible');
-                $(".nav").css('display','block');
-                $(".nav2").css('display','none');
-            });
-        }
-    }
     
-    // Sayfa yüklendiğinde ve ekran boyutu değiştiğinde kontrol et
-    $(window).on('load resize', checkScreenSize);
-    
-    // Sayfa dışında herhangi bir yere tıklandığında mobil menüyü kapat
-    $(document).on('click', function(e) {
+    $('.menu-header').on('click', function () {
+        $('#mySidenav').toggleClass('show');
 
-        if (window.innerWidth <= 992 && 
-            !$(e.target).closest('#mySidenav').length && 
-            !$(e.target).closest('.nav').length &&
-            $("#mySidenav").hasClass('active')) 
-        {
-            $("#mySidenav").css('width','0');
-            $("#mySidenav").removeClass('active');
-            $(".head").attr("style", "padding-left: 95px");
-        }
+        $('body').append('<div class="overlay"></div>');
+        $('.overlay').addClass('active');
     });
 
-
-
+    // .overlay'e tıklanınca menüyü kapat
+    $(document).on('click', '.overlay', function () {
+        $('#mySidenav').removeClass('show');
+        $(this).remove(); // overlay'i kaldır
+    });
 
     // İstatistikleri API'den al
     function getStatistics() {
@@ -638,10 +549,10 @@ $(document).ready(function() {
                 'Authorization': `Bearer ${token}`
             },
             success: function(response) {
-                if (response.success && response.data) {
-                    showToast('success', 'Başarılı', 'Menü başarıyla silindi!');
+                if (response.success) {
+                    showToast('success', 'Başarılı', response.message);
                 } else {
-                    showToast('error', 'Hata', 'Menü silinirken bir hata oluştu!');
+                    showToast('error', 'Hata', response.message);
                 }
             },
             error: function(xhr, status, error) {

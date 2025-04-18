@@ -7,7 +7,7 @@ body{
 }
 
 .dashboard-content{
-  margin-top: 50px;
+  margin-top: 45px;
   display: flex;
   flex-wrap: wrap;
 }
@@ -16,61 +16,71 @@ body{
 	clear: both;
 }
 
-.logo{
-	margin: 0px;
-	margin-left: 28px;
-  font-weight: 500;
-  color: #000;
-  font-family: 'Raleway', sans-serif;
-  margin-bottom: 30px;
-  cursor: pointer;
+/* Overlay styles */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #000;
+  z-index: 100;
+  opacity: 0;
+  transition: opacity .15s linear;
+}
+
+.overlay.active{
+  opacity: 0.5;
 }
 
 .sidenav {
   height: 100%;
-  width: 300px;
+  width: 250px;
   position: fixed;
-  z-index: 150;
+  z-index: 101;
   top: 0;
   left: 0;
   background-color: #ffc515;
-  overflow: hidden;
-  transition: 0.5s;
+  visibility: hidden;
+  transform: translateX(-100%); /* İlk durumda gizle */
+  transition: transform 0.5s ease-in-out, visibility 0.5s ease-in-out;
   padding-top: 30px;
+}
+
+.sidenav .sidenav-header .logo{
+  font-weight: 500;
+  color: rgb(0, 0, 0);
+  font-family: Raleway, sans-serif;
+  cursor: pointer;
+  margin: 0px 0px 30px 28px;
+  font-size: 36px;
+}
+
+.sidenav.show{
+  transform: translateX(0); /* Menü içeri gelsin diye */
+  visibility: visible;
 }
 
 .sidenav a {
   padding: 15px 8px 15px 32px;
   text-decoration: none;
-  font-size: 20px;
+  font-size: 22px;
   color: #000;
   display: block;
   transition: 0.3s;
 }
 
 .sidenav a:hover {
-  color: #f1f1f1;
-  background-color:#1b203d;
-}
-
-.sidenav{
-  top: 0;
-  right: 25px;
-  font-size: 36px;
+    color: #f1f1f1;
 }
 
 #main {
-  transition: margin-left .5s;
   padding: 16px;
-  margin-left: 300px;
   overflow-x: hidden;
 }
 
 .head{
-	padding-top: 10px;
-  padding-bottom: 10px;
-  padding-right: 35px;
-  padding-left: 325px;
+	padding: 10px 25px;
   transition: padding-left 0.5s;
   width: 100%;
   display: flex;
@@ -80,7 +90,7 @@ body{
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 149;
+  z-index: 99;
   background: white;
 }
 
@@ -226,14 +236,10 @@ body{
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-}
-
-.nav2{
-	display: none;
+  margin-right: 3px;
 }
 
 .dashboard-text {
-  margin-left: 5px;
   font-weight: 500;
 }
 
@@ -316,7 +322,7 @@ td, th {
 .box{
 	width: 95%;
 	background-color: #272c4a;
-	margin-left: 10px;
+	margin: 0 auto;
 	padding:10px;
   border-radius: 3%;
   cursor: pointer;
@@ -755,22 +761,13 @@ input:not(:checked) + .toggle-slider:after {
   #main {
     margin-left: 0;
     padding: 10px;
-  }
+  }  
   
-  #mySidenav {
-    width: 0;
+  .dashboard-content{
+    margin-top: 55px;
   }
 
-  .sidenav {
-    width: 0;
-  }
-  
-  .sidenav.active {
-    width: 250px;
-  }
-  
   .nav, .nav2 {
-    display: block!important;
     cursor: pointer;
   }
 
@@ -797,8 +794,12 @@ input:not(:checked) + .toggle-slider:after {
 
 
 @media screen and (max-width: 768px) {
+  .sidenav .sidenav-header .logo {
+    font-size: 33px;
+  }
+
   .sidenav a {
-    font-size: 18px;
+    font-size: 20px;
   }
 
   .users, .menu{
@@ -879,7 +880,7 @@ input:not(:checked) + .toggle-slider:after {
   }
   
   .dashboard-text {
-    font-size: 20px;
+    font-size: 23px;
   }
   
   .profile > div {
@@ -929,14 +930,20 @@ input:not(:checked) + .toggle-slider:after {
 
 
 @media screen and (max-width: 480px) {
-  .logo{
-    font-size: 32px;
-    margin-left: 22px;
+  .sidenav {
+    width: 215px;
+  }
+
+  .sidenav .sidenav-header .logo {
+    font-size: 30px;
   }
 
   .sidenav a {
-    font-size: 16px;
-    padding: 15px 6px 15px 32px;
+    font-size: 18px;
+  }
+
+  .dashboard-content{
+    margin-top: 50px;
   }
 
   .col-div-3 {
@@ -1012,13 +1019,17 @@ input:not(:checked) + .toggle-slider:after {
   }
   
   .head {
-    padding: 12px 2px;
+    padding: 12px 10px;
   }
   
   .col-div-6:first-child {
     flex: 1;
     min-width: 0;
     padding-left: 10px;
+  }
+
+  .profile > div > div {
+    display: none;
   }
   
   .adminInfo {
@@ -1064,10 +1075,19 @@ input:not(:checked) + .toggle-slider:after {
 
 /* Çok küçük ekranlarda sadece çıkış butonunu göster, profil bilgilerini gizle */
 @media screen and (max-width: 400px) {
-  .profile > div > div {
-    display: none;
+  .sidenav {
+    width: 205px;
+  }
+
+  .sidenav .sidenav-header .logo {
+    font-size: 27px;
+  }
+
+  .sidenav a {
+    font-size: 16px;
   }
 }
+
 
 
 

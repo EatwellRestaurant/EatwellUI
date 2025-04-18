@@ -170,7 +170,8 @@
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
     width: 100%;
     max-width: 470px;
-    min-height: 85vh;
+    max-height: 85vh;
+    min-height: 610px;
 }
 
 .auth-header {
