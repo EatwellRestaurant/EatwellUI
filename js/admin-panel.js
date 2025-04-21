@@ -77,17 +77,70 @@ $(document).ready(function() {
     
     
     $('.menu-header').on('click', function () {
+        console.log(".menu-header click çalıştım");
+
         $('#mySidenav').toggleClass('show');
 
-        $('body').append('<div class="overlay"></div>');
-        $('.overlay').addClass('active');
+        // Eğer #mySidenav elementinde 'show' sınıfı varsa
+        if ($('#mySidenav').hasClass('show')) {
+
+            if($(window).width() < 992){
+                $('body').append('<div class="overlay"></div>');
+                $('.overlay').addClass('active');
+            } else {
+                $('#main').css('margin-left', '245px');
+                $('.head').css('margin-left', '245px');
+                $('.head').css('width', 'calc(100% - 245px)');
+            }
+                
+        } else {
+            // Eğer 'show' sınıfı yoksa, overlay'i kaldırmak için
+            $('.overlay').remove();
+            $('#main').css('margin-left', '0px');
+            $('.head').css('margin-left', '0px');
+            $('.head').css('width', '100%');
+        }
     });
 
     // .overlay'e tıklanınca menüyü kapat
     $(document).on('click', '.overlay', function () {
+        console.log(".overlay click çalıştım");
+
         $('#mySidenav').removeClass('show');
         $(this).remove(); // overlay'i kaldır
     });
+
+
+    // Sayfa yüklendiğinde ve ekran boyutu 992px ve üzerindeyse sidenav'ı aç
+    function checkScreenSize() {
+        if ($(window).width() >= 992) {
+            $('#mySidenav').addClass('show');
+            $('#main').css('margin-left', '245px');
+            $('.head').css('margin-left', '245px');
+            $('.head').css('width', 'calc(100% - 245px)');
+        } else {
+            if ($('#mySidenav').hasClass('show')) {
+                $('#mySidenav').removeClass('show');
+                $('#main').css('margin-left', '0px');
+                $('.head').css('margin-left', '0px');
+                $('.head').css('width', '100%');
+
+                if($('.overlay').length > 0){
+                    $('.overlay').remove();
+                }
+            }
+        }
+    }
+    
+    // Sayfa yüklendiğinde çalıştır
+    checkScreenSize();
+    
+    // Ekran boyutu değiştiğinde tekrar kontrol et
+    $(window).resize(function() {
+        checkScreenSize();
+    });
+
+
 
     // İstatistikleri API'den al
     function getStatistics() {
