@@ -608,7 +608,7 @@ $(document).ready(function() {
                             </div>
                             <div class="menu-details-body">
                                 <div class="menu-image-container">
-                                    <img src="http://${menu.imagePath}" alt="${menu.name}" class="menu-detail-image">
+                                    <img src="${menu.imagePath}" alt="${menu.name}" class="menu-detail-image">
                                 </div>
                                 <div class="menu-info">
                                     <p><strong>Menü Adı:</strong> ${menu.name}</p>
