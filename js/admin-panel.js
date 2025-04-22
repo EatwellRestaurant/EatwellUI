@@ -67,13 +67,6 @@ $(document).ready(function() {
         }, 1500);
     });
 
-    // Geri tuşuna basıldığında veya sayfa kapatıldığında token'ı sil
-    window.onbeforeunload = function() {
-        localStorage.removeItem('token');
-        localStorage.removeItem('userName');
-        localStorage.removeItem('adminRemembered');
-    };
-
     
     
     $('.menu-header').on('click', function () {
@@ -93,7 +86,7 @@ $(document).ready(function() {
                 $('#main').css('margin-left', '245px');
                 $('.head').css('margin-left', '245px');
                 $('.head').css('width', 'calc(100% - 245px)');
-                $('.sidenav a span').css({'margin-left': '17px', 'opacity': '1'});
+                $('.sidenav a span').css({'margin-left': '8px', 'opacity': '1'});
                 $('.sidenav a i').css({'margin-left': '0'});
             }
 
@@ -105,7 +98,7 @@ $(document).ready(function() {
             $('.head').css('width', 'calc(100% - 70px)');
             $('#mySidenav').css({'transform': 'translateX(-70%)', 'visibility': 'visible'});
             $('.sidenav .sidenav-header .logo ').css({'opacity': '0', 'cursor': 'default'});
-            $('.sidenav a span').css({'margin-left': '-100px', 'opacity': '0'});
+            $('.sidenav a span').css({'margin-left': '-200px', 'opacity': '0'});
             $('.sidenav a i').css({'margin-left': '165px'});
         }
     });
@@ -131,7 +124,7 @@ $(document).ready(function() {
 
             $('#mySidenav').css({'transform': 'translateX(0)', 'visibility': 'visible'});
             $('.sidenav .sidenav-header .logo ').css({'opacity': '1', 'cursor': 'pointer'});
-            $('.sidenav a span').css({'margin-left': '17px', 'opacity': '1'});
+            $('.sidenav a span').css({'margin-left': '8px', 'opacity': '1'});
             $('.sidenav a i').css({'margin-left': '0'});
 
         } else {
@@ -457,45 +450,42 @@ $(document).ready(function() {
                 'Authorization': `Bearer ${token}`
             },
             success: function(response) {
-                // Menüler modalının HTML yapısı
+                // Dashboard içeriğini temizle
+                $('.dashboard-content').empty();
+                
+                // Menüler için HTML yapısı
                 let menusHTML = `
-                <div class="menus-modal">
-                    <div class="menus-modal-content">
-                        <div class="menus-modal-header">
-                            <h2>Menü Listesi</h2>
-                            <span class="close-menus-modal">&times;</span>
-                        </div>
-                        <div class="menus-modal-body">
-                            <table class="menus-table">
-                                <thead>
-                                    <tr>
-                                        <th>Durum</th>
-                                        <th>ID</th>
-                                        <th>Menü Adı</th>
-                                        <th>Kayıt Tarihi</th>
-                                        <th>İşlemler</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="menusTableBody">
-                                </tbody>
-                            </table>
-                            <!-- Sayfalama kontrolleri -->
-                            <div class="pagination-container">
-                                <div class="pagination">
-                                    <button id="prevMenuPage" class="pagination-btn" disabled><i class="fas fa-chevron-left"></i></button>
-                                    <span id="menuPageInfo">Sayfa 1</span>
-                                    <button id="nextMenuPage" class="pagination-btn"><i class="fas fa-chevron-right"></i></button>
-                                </div>
+                <div class="menus-container">
+                    <div class="menus-header">
+                        <h2>Menü Listesi</h2>
+                    </div>
+                    <div class="menus-body">
+                        <table class="menus-table">
+                            <thead>
+                                <tr>
+                                    <th>Durum</th>
+                                    <th>ID</th>
+                                    <th>Menü Adı</th>
+                                    <th>Kayıt Tarihi</th>
+                                    <th>İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody id="menusTableBody">
+                            </tbody>
+                        </table>
+                        <!-- Sayfalama kontrolleri -->
+                        <div class="pagination-container">
+                            <div class="pagination">
+                                <button id="prevMenuPage" class="pagination-btn" disabled><i class="fas fa-chevron-left"></i></button>
+                                <span id="menuPageInfo">Sayfa 1</span>
+                                <button id="nextMenuPage" class="pagination-btn"><i class="fas fa-chevron-right"></i></button>
                             </div>
                         </div>
                     </div>
                 </div>`;
                 
-                // Eğer modül zaten varsa kaldır
-                $('.menus-modal').remove();
-                
-                // Modülü ekle
-                $('body').append(menusHTML);
+                // Menüleri dashboard'a ekle
+                $('.dashboard-content').append(menusHTML);
                 
                 // Sayfalama için gerekli değişkenler
                 let currentPage = 1; // Mevcut sayfa numarası
@@ -572,34 +562,6 @@ $(document).ready(function() {
                         displayMenus(currentPage);
                     }
                 });
-                
-                // Modülü göster
-                $('.menus-modal').fadeIn(300);
-                
-                // Kapatma butonuna tıklandığında
-                $('.close-menus-modal').click(function() {
-                    $('.menus-modal').fadeOut(300, function() {
-                        $(this).remove();
-                    });
-                });
-                
-                // Modül dışına tıklandığında kapat
-                $('.menus-modal').click(function(e) {
-                    if ($(e.target).hasClass('menus-modal')) {
-                        $('.menus-modal').fadeOut(300, function() {
-                            $(this).remove();
-                        });
-                    }
-                });
-
-                // ESC tuşu ile kapatma
-                $(document).on('keydown', function(e) {
-                    if (e.key === "Escape" && $('.menus-modal').is(':visible')) {
-                        $('.menus-modal').fadeOut(300, function() {
-                            $(this).remove();
-                        });
-                    }
-                });
             },
             error: function(xhr, status, error) {
                 console.error('Menüler alınırken hata oluştu:', error);
@@ -608,11 +570,11 @@ $(document).ready(function() {
         });
     }
 
-    // Menüler kutusuna tıklandığında
-    $('.col-div-3:eq(1) .box').click(function() {
+    // Navbar'daki "Menüler" seçeneğine tıklandığında
+    $('.sidenav a:contains("Menüler")').click(function(e) {
+        e.preventDefault();
         getMenus();
     });
-
 
     function deleteOrRestoreMenu(menuId) {
         const token = localStorage.getItem('token');
@@ -740,4 +702,100 @@ $(document).ready(function() {
         const menuId = $(this).data('menu-id');
         getMenuDetails(menuId);
     });
+
+    // Dashboard'a tıklandığında
+    $('.sidenav a:contains("Dashboard")').click(function(e) {
+        e.preventDefault();
+        resetDashboard();
+        getStatistics();
+    });
+
+    // Dashboard'u ilk haline getiren fonksiyon
+    function resetDashboard() {
+        // Dashboard içeriğini temizle
+        $('.dashboard-content').empty();
+        
+        // İlk halindeki HTML yapısını oluştur
+        let dashboardHTML = `
+            <div class="col-div-3 users">
+                <div class="box">
+                    <p><br/><span>Kullanıcılar</span></p>
+                    <i class="fa fa-users box-icon"></i>
+                </div>
+            </div>
+            <div class="col-div-3 menu">
+                <div class="box">
+                    <p><br/><span>Menüler</span></p>
+                    <i class="fa fa-list box-icon"></i>
+                </div>
+            </div>
+            <div class="col-div-3 orders">
+                <div class="box">
+                    <p><br/><span>Siparişler</span></p>
+                    <i class="fa fa-shopping-bag box-icon"></i>
+                </div>
+            </div>
+            <div class="col-div-3 reservations">
+                <div class="box">
+                    <p><br/><span>Rezervasyonlar</span></p>
+                    <i class="fa fa-tasks box-icon"></i>
+                </div>
+            </div>
+            <div class="col-div-8">
+                <div class="box-8">
+                    <div class="content-box">
+                        <p>Top Selling Projects <span>Sell All</span></p>
+                        <br/>
+                        <table>
+                            <tr>
+                                <th>Company</th>
+                                <th>Contact</th>
+                                <th>Country</th>
+                            </tr>
+                            <tr>
+                                <td>Alfreds Futterkiste</td>
+                                <td>Maria Anders</td>
+                                <td>Germany</td>
+                            </tr>
+                            <tr>
+                                <td>Centro comercial Moctezuma</td>
+                                <td>Francisco Chang</td>
+                                <td>Mexico</td>
+                            </tr>
+                            <tr>
+                                <td>Ernst Handel</td>
+                                <td>Roland Mendel</td>
+                                <td>Austria</td>
+                            </tr>
+                            <tr>
+                                <td>Island Trading</td>
+                                <td>Helen Bennett</td>
+                                <td>UK</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-div-4">
+                <div class="box-4">
+                    <div class="content-box">
+                        <p>Total Sale <span>Sell All</span></p>
+                        <div class="circle-wrap">
+                            <div class="circle">
+                                <div class="mask full">
+                                    <div class="fill"></div>
+                                </div>
+                                <div class="mask half">
+                                    <div class="fill"></div>
+                                </div>
+                                <div class="inside-circle"> 70% </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        
+        // Dashboard içeriğini güncelle
+        $('.dashboard-content').append(dashboardHTML);
+    }
 }); 
