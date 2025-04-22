@@ -458,6 +458,10 @@ $(document).ready(function() {
                 <div class="menus-container">
                     <div class="menus-header">
                         <h2>Menü Listesi</h2>
+                        <button class="btn-create-menu">
+                            <i class="fa-solid fa-plus"></i>
+                            Yeni Menü Ekle
+                        </button>
                     </div>
                     <div class="menus-body">
                         <table class="menus-table">
@@ -522,7 +526,10 @@ $(document).ready(function() {
                                     <td>${menu.name}</td>
                                     <td>${formattedDate}</td>
                                     <td>
-                                        <button class="btn-edit-menu" data-menu-id="${menu.id}">Düzenle</button>
+                                        <button class="btn-edit-menu" data-menu-id="${menu.id}">
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                            Düzenle
+                                        </button>
                                     </td>
                                 </tr>`;
                         });

@@ -624,18 +624,36 @@ td, th {
 
 
 /* Menü İşlemleri İçin Buton Stili */
-.menu-row .btn-edit-menu {
+.btn-create-menu{
   background-color: #ffc515;
-  color: #1b203d;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 4px;
-  cursor: pointer;
+  padding: 10px;
 }
 
-.menu-row .btn-edit-menu:hover {
-  background-color: #b9962c;
+.btn-edit-menu{
+  background-color: #ffc515;
+  padding: 8px 10px;
+}
+
+.btn-edit-menu,
+.btn-create-menu {
+  color: #1b203d;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
   transition: background-color 0.3s;
+}
+
+.btn-edit-menu:hover {
+  background-color: #dba70c;
+}
+
+.btn-create-menu:hover {
+  background-color: #dba70c;
+}
+
+.btn-edit-menu i,
+.btn-create-menu i{
+  margin-right: 3px;
 }
 
 
@@ -655,6 +673,9 @@ td, th {
   margin-bottom: 20px;
   padding-bottom: 10px;
   border-bottom: 1px solid #81818140;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .menus-header h2 {
