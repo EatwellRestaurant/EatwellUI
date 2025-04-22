@@ -54,6 +54,7 @@ body{
   cursor: pointer;
   margin: 0px 0px 30px 28px;
   font-size: 36px;
+  transition: opacity 0.3s ease-in-out;
 }
 
 .sidenav.show{
@@ -67,11 +68,21 @@ body{
   font-size: 22px;
   color: #000;
   display: block;
-  transition: 0.3s;
+  transition: 0.4s ease-in-out;
 }
 
 .sidenav a:hover {
     color: #f1f1f1;
+}
+
+.sidenav a span{
+  margin-left: 10px;
+  display: inline-block;
+  transition: all 0.4s ease-in-out;
+}
+
+.sidenav a i{
+    transition: margin-left 0.5s ease-in-out;
 }
 
 #main {
@@ -234,8 +245,11 @@ body{
   margin-left: 10px;
 }
 
-.nav {
+.menu-header{
   cursor: pointer;
+}
+
+.nav {
   display: inline-flex;
   align-items: center;
   margin-right: 3px;

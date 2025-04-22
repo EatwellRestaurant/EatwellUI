@@ -77,57 +77,79 @@ $(document).ready(function() {
     
     
     $('.menu-header').on('click', function () {
-        console.log(".menu-header click çalıştım");
-
         $('#mySidenav').toggleClass('show');
 
         // Eğer #mySidenav elementinde 'show' sınıfı varsa
         if ($('#mySidenav').hasClass('show')) {
 
+            $('#mySidenav').css({'transform': 'translateX(0)', 'visibility': 'visible'});
+            $('.sidenav .sidenav-header .logo ').css({'opacity': '1', 'cursor': 'pointer'});
+
             if($(window).width() < 992){
                 $('body').append('<div class="overlay"></div>');
                 $('.overlay').addClass('active');
+                $('.sidenav a span').css({'margin-left': '13px', 'opacity': '1'});
             } else {
                 $('#main').css('margin-left', '245px');
                 $('.head').css('margin-left', '245px');
                 $('.head').css('width', 'calc(100% - 245px)');
+                $('.sidenav a span').css({'margin-left': '17px', 'opacity': '1'});
+                $('.sidenav a i').css({'margin-left': '0'});
             }
-                
+
         } else {
             // Eğer 'show' sınıfı yoksa, overlay'i kaldırmak için
             $('.overlay').remove();
-            $('#main').css('margin-left', '0px');
-            $('.head').css('margin-left', '0px');
-            $('.head').css('width', '100%');
+            $('#main').css('margin-left', '70px');
+            $('.head').css('margin-left', '70px');
+            $('.head').css('width', 'calc(100% - 70px)');
+            $('#mySidenav').css({'transform': 'translateX(-70%)', 'visibility': 'visible'});
+            $('.sidenav .sidenav-header .logo ').css({'opacity': '0', 'cursor': 'default'});
+            $('.sidenav a span').css({'margin-left': '-100px', 'opacity': '0'});
+            $('.sidenav a i').css({'margin-left': '165px'});
         }
     });
 
     // .overlay'e tıklanınca menüyü kapat
     $(document).on('click', '.overlay', function () {
-        console.log(".overlay click çalıştım");
-
         $('#mySidenav').removeClass('show');
         $(this).remove(); // overlay'i kaldır
+        $('#mySidenav').css({'transform': 'translateX(-100%)', 'visibility': 'hidden'});
+        $('.sidenav .sidenav-header .logo ').css({'opacity': '0', 'cursor': 'default'});
+        $('.sidenav a span').css({'margin-left': '0px', 'opacity': '0'});
+        $('.sidenav a i').css({'margin-left': '0'});
     });
 
 
-    // Sayfa yüklendiğinde ve ekran boyutu 992px ve üzerindeyse sidenav'ı aç
     function checkScreenSize() {
+        // Sayfa yüklendiğinde ve ekran boyutu 992px ve üzerindeyse sidenav'ı aç
         if ($(window).width() >= 992) {
             $('#mySidenav').addClass('show');
             $('#main').css('margin-left', '245px');
             $('.head').css('margin-left', '245px');
             $('.head').css('width', 'calc(100% - 245px)');
+
+            $('#mySidenav').css({'transform': 'translateX(0)', 'visibility': 'visible'});
+            $('.sidenav .sidenav-header .logo ').css({'opacity': '1', 'cursor': 'pointer'});
+            $('.sidenav a span').css({'margin-left': '17px', 'opacity': '1'});
+            $('.sidenav a i').css({'margin-left': '0'});
+
         } else {
             if ($('#mySidenav').hasClass('show')) {
                 $('#mySidenav').removeClass('show');
                 $('#main').css('margin-left', '0px');
                 $('.head').css('margin-left', '0px');
                 $('.head').css('width', '100%');
+                $('.sidenav').css({'margin-left': '0px'});
 
                 if($('.overlay').length > 0){
                     $('.overlay').remove();
                 }
+            } else {
+                $('#mySidenav').css({'transform': 'translateX(-100%)', 'visibility': 'hidden'});
+                $('.sidenav .sidenav-header .logo ').css({'opacity': '0', 'cursor': 'default'});
+                $('.sidenav a span').css({'margin-left': '0px', 'opacity': '0'});
+                $('.sidenav a i').css({'margin-left': '0'});
             }
         }
     }
