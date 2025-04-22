@@ -655,11 +655,41 @@ $(document).ready(function() {
                                     <img src="${menu.imagePath}" alt="${menu.name}" class="menu-detail-image">
                                 </div>
                                 <div class="menu-info">
-                                    <p><strong>Menü Adı:</strong> ${menu.name}</p>
-                                    <p><strong>Durum:</strong> ${menu.isDeleted ? 'Pasif' : 'Aktif'}</p>
-                                    <p><strong>Oluşturulma Tarihi:</strong> ${formattedCreateDate}</p>
-                                    <p><strong>Güncellenme Tarihi:</strong> ${formattedUpdateDate}</p>
-                                    <p><strong>Silinme Tarihi:</strong> ${formattedDeleteDate}</p>
+                                    <div class="menu-info-item">
+                                        <div class="menu-label">
+                                            <strong>Menü Adı</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <p class="menu-value">${menu.name}</p>
+                                    </div>
+                                    <div class="menu-info-item">
+                                        <div class="menu-label">
+                                            <strong>Durum</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <p class="menu-value">${menu.isDeleted ? 'Pasif' : 'Aktif'}</p>
+                                    </div>
+                                    <div class="menu-info-item">
+                                        <div class="menu-label">
+                                            <strong>Oluşturulma Tarihi</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <p class="menu-value">${formattedCreateDate}</p>
+                                    </div>
+                                    <div class="menu-info-item">
+                                        <div class="menu-label">
+                                            <strong>Güncellenme Tarihi</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <p class="menu-value">${formattedUpdateDate}</p>
+                                    </div>
+                                    <div class="menu-info-item">
+                                        <div class="menu-label">
+                                            <strong>Silinme Tarihi</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <p class="menu-value">${formattedDeleteDate}</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -464,7 +464,7 @@ td, th {
 
 .user-details-content,
 .menu-details-content {
-  background-color: #272c4a;
+  background-color: #edece1;
   margin: 5% auto;
   padding: 20px;
   border-radius: 5px;
@@ -486,14 +486,14 @@ td, th {
 
 .user-details-header h2,
 .menu-details-header h2 {
-  color: #ffc515;
+  color: #000;
   margin: 0;
   font-size: 24px;
 }
 
 .close-user-details,
 .close-menu-details {
-  color: #aaa;
+  color: #3a3a3a;
   font-size: 28px;
   font-weight: bold;
   cursor: pointer;
@@ -516,9 +516,12 @@ td, th {
 
 .user-info strong,
 .menu-info strong {
-  color: #ffc515;
+  color: #000;
   margin-right: 10px;
+  display: inline-block;
+  width: 150px;
 }
+
 
 
 /* Kullanıcı satırı hover efekti */
@@ -613,15 +616,47 @@ td, th {
 }
 
 .menu-info {
-  color: #fff;
+  color: #000;
+  border: 1px solid #81818140;
 }
 
-.menu-info p {
+.menu-info-item{
+  display: flex;
+  align-items: center;
+  margin: 0 15px;
+  border-bottom: 1px solid #81818140;
+}
+
+.menu-info-item:last-child{
+  border-bottom: none;
+} 
+
+.menu-label{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 16px;
+}
+
+.menu-label strong {
+  color: #000;
+  margin-right: 10px;
+  display: inline-block;
+  width: 145px;
+}
+
+.menu-label span{
+  font-weight: bold;
+}
+
+.menu-value {
   margin: 10px 0;
+  margin-left: 15px;
   font-size: 16px;
   line-height: 1.5;
+  padding: 5px 10px;
+  border-bottom: 1px solid #81818140;
 }
-
 
 /* Menü İşlemleri İçin Buton Stili */
 .btn-create-menu{
@@ -643,12 +678,9 @@ td, th {
   transition: background-color 0.3s;
 }
 
-.btn-edit-menu:hover {
-  background-color: #dba70c;
-}
-
+.btn-edit-menu:hover,
 .btn-create-menu:hover {
-  background-color: #dba70c;
+  background-color: #ffd760;
 }
 
 .btn-edit-menu i,
