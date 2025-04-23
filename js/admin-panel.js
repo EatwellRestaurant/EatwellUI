@@ -587,6 +587,7 @@ $(document).ready(function() {
 
     function deleteOrRestoreMenu(menuId) {
         const token = localStorage.getItem('token');
+        const toggleSwitch = $(`.toggle-switch input[data-menu-id="${menuId}"]`);
 
         $.ajax({
             url: `https://eatwellrestaurantapi.somee.com/api/mealCategories/setDeleteOrRestore?mealCategoryId=${menuId}`,
@@ -599,11 +600,15 @@ $(document).ready(function() {
                     showToast('success', 'Başarılı', response.message);
                 } else {
                     showToast('error', 'Hata', response.message);
+                     // Toggle switch'i eski haline getir
+                     toggleSwitch.prop('checked', !toggleSwitch.prop('checked'));
                 }
             },
-            error: function(xhr, status, error) {
-                console.error('Menü silinirken hata oluştu:', error);
-                showToast('error', 'Hata', 'Menü silinirken bir hata oluştu!');
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage);
+                 // Toggle switch'i eski haline getir
+                 toggleSwitch.prop('checked', !toggleSwitch.prop('checked'));
             }
         });
     }
@@ -835,6 +840,12 @@ $(document).ready(function() {
         
         const menuId = $(this).closest('.menu-update-modal').data('menu-id');
         const menuName = $(this).closest('.menu-update-modal').find('.menu-value').val();
+        
+        if (menuName.trim() === '') {
+            showToast('error', 'Hata', 'Lütfen menü adını giriniz!');
+            return;
+        }
+
         const menuImage = $('#menuImage')[0].files[0];
 
         const formData = new FormData();
