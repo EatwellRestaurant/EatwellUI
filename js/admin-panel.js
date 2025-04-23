@@ -284,7 +284,7 @@ $(document).ready(function() {
                         // Kullanıcı yoksa bilgi mesajı göster
                         usersTableHTML = `
                             <tr>
-                                <td colspan="5" style="text-align: center;">Henüz kullanıcı bulunmamaktadır.</td>
+                                <td colspan="5" class="empty-table-row">Henüz kullanıcı bulunmamaktadır.</td>
                             </tr>`;
                     }
                     
@@ -537,7 +537,7 @@ $(document).ready(function() {
                         // Menü yoksa bilgi mesajı göster
                         menusTableHTML = `
                             <tr>
-                                <td colspan="5" style="text-align: center;">Henüz menü bulunmamaktadır.</td>
+                                <td colspan="5" class="empty-table-row">Henüz menü bulunmamaktadır.</td>
                             </tr>`;
                     }
                     
@@ -582,6 +582,8 @@ $(document).ready(function() {
         e.preventDefault();
         getMenus();
     });
+
+
 
     function deleteOrRestoreMenu(menuId) {
         const token = localStorage.getItem('token');
@@ -732,13 +734,162 @@ $(document).ready(function() {
 
     // Menü satırına tıklama olayı
     $(document).on('click', '.menu-row', function(e) {
-        // Eğer toggle switch'e tıklandıysa işlemi durdur
-        if ($(e.target).closest('.toggle-switch').length) {
+        // Eğer tıklanan element düzenleme butonu veya toggle switch ise işlemi durdur
+        if ($(e.target).closest('.btn-edit-menu, .toggle-switch').length) {
             return;
         }
+
         const menuId = $(this).data('menu-id');
         getMenuDetails(menuId);
     });
+
+
+    function updateMenu(menuId) {
+        const token = localStorage.getItem('token');
+        
+        $.ajax({
+            url: `https://eatwellrestaurantapi.somee.com/api/mealCategories/getForAdmin?mealCategoryId=${menuId}`,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                if (response.success && response.data) {
+                    const menu = response.data;
+                              
+                    let menuUpdateHTML = `
+                    <div class="menu-update-modal" data-menu-id="${menu.id}">
+                        <div class="menu-update-content">
+                            <div class="menu-update-header">
+                                <h2>Menü Güncelleme</h2>
+                                <span class="close-menu-update">&times;</span>
+                            </div>
+                            <div class="menu-update-body">
+                                <div class="menu-image-container">
+                                    <img src="${menu.imagePath}" alt="${menu.name}" class="menu-update-image" id="previewImage">
+
+                                    <label for="menuImage" class="custom-upload-button">Resim Seç</label>
+                                    <input type="file" id="menuImage" accept="image/*" class="menu-image-input">
+                                </div>
+                                <div class="menu-info">
+                                    <div class="menu-info-item">
+                                        <div class="menu-label">
+                                            <strong>Menü Adı</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <input type="text" class="menu-value" value="${menu.name}">
+                                    </div>
+                                </div>
+                                <button class="btn-update-menu">Güncelle</button>
+                            </div>
+                        </div>
+                    </div>`;
+                    
+                    // Eğer detay modülü zaten varsa kaldır
+                    $('.menu-update-modal').remove();
+                    
+                    // Detay modülünü ekle
+                    $('body').append(menuUpdateHTML);
+                    
+                    // Detay modülünü göster
+                    $('.menu-update-modal').fadeIn(300);
+                    
+                    // Kapatma butonuna tıklandığında
+                    $('.close-menu-update').click(function() {
+                        $('.menu-update-modal').fadeOut(300, function() {
+                            $(this).remove();
+                        });
+                    });
+                    
+                    // Modül dışına tıklandığında kapat
+                    $('.menu-update-modal').click(function(e) {
+                        if ($(e.target).hasClass('menu-update-modal')) {
+                            $('.menu-update-modal').fadeOut(300, function() {
+                                $(this).remove();
+                            });
+                        }
+                    });
+                } else {
+                    showToast('error', 'Hata', 'Menü güncellenirken bir hata oluştu!');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Menü güncellenirken hata oluştu:', error);
+                showToast('error', 'Hata', 'Menü güncellenirken bir hata oluştu!');
+            }
+        });
+    }
+
+    // Menüde "Düzenle" butonuna tıklandığında
+    $(document).on('click', '.btn-edit-menu', function(e) {
+        e.stopPropagation();
+
+        const menuId = $(this).data('menu-id');
+        updateMenu(menuId);
+    });
+
+    // Menüde "Güncelle" butonuna tıklandığında
+    $(document).on('click', '.btn-update-menu', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const menuId = $(this).closest('.menu-update-modal').data('menu-id');
+        const menuName = $(this).closest('.menu-update-modal').find('.menu-value').val();
+        const menuImage = $('#menuImage')[0].files[0];
+
+        const formData = new FormData();
+        formData.append('name', menuName);
+        if (menuImage) {
+            formData.append('image', menuImage);
+        }
+        
+        const token = localStorage.getItem('token');
+        
+        $.ajax({
+            url: `https://eatwellrestaurantapi.somee.com/api/mealCategories/update?mealCategoryId=${menuId}`,
+            type: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                if (response.success) {
+                    showToast('success', 'Başarılı', 'Menü başarıyla güncellendi!');
+                    $('.menu-update-modal').fadeOut(300, function() {
+                        $(this).remove();
+                    });
+                    getMenus(); // Menü listesini yenile
+                } else {
+                    showToast('error', 'Hata', response.message);
+                }
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage);
+            }
+        });
+    });
+
+    // Resim seçildiğinde önizleme gösterme
+    $(document).on('change', '#menuImage', function(e) {
+        const file = e.target.files[0];
+        
+        if (file) {
+            // FileReader ile dosyayı oku
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                // Önizleme resmini güncelle
+                $('#previewImage').attr('src', e.target.result);
+            }
+            
+            // Dosyayı base64 formatında oku
+            reader.readAsDataURL(file);
+        }
+    });
+
 
     // Dashboard'a tıklandığında
     $('.sidenav a:contains("Dashboard")').click(function(e) {

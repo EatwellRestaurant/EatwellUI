@@ -450,7 +450,8 @@ td, th {
 
 /* Kullanıcı Detayları Modal Stili */
 .user-details-modal,
-.menu-details-modal {
+.menu-details-modal,
+.menu-update-modal {
   display: none;
   position: fixed;
   z-index: 1001;
@@ -463,7 +464,8 @@ td, th {
 }
 
 .user-details-content,
-.menu-details-content {
+.menu-details-content,
+.menu-update-content {
   background-color: #edece1;
   margin: 5% auto;
   padding: 20px;
@@ -475,7 +477,8 @@ td, th {
 }
 
 .user-details-header,
-.menu-details-header {
+.menu-details-header,
+.menu-update-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -485,18 +488,29 @@ td, th {
 }
 
 .user-details-header h2,
-.menu-details-header h2 {
+.menu-details-header h2,
+.menu-update-header h2 {
   color: #000;
   margin: 0;
   font-size: 24px;
 }
 
 .close-user-details,
-.close-menu-details {
+.close-menu-details,
+.close-menu-update {
   color: #3a3a3a;
   font-size: 28px;
   font-weight: bold;
   cursor: pointer;
+  transition: color 0.3s;
+}
+
+.close-users-modal:hover,
+.close-menus-modal:hover,
+.close-menu-details:hover,
+.close-user-details:hover,
+.close-menu-update:hover {
+  color: #ffc515;
 }
 
 .user-details-body {
@@ -583,18 +597,16 @@ td, th {
 
 
 
-/* Menüler Modal Stili */
 
-.close-users-modal:hover,
-.close-menus-modal:hover,
-.close-menu-details:hover,
-.close-user-details:hover {
-  color: #ffc515;
+/* Menü Detayları Modal Stili */
+
+.menu-update-body{
+  align-items: center;
 }
 
 
-/* Menü Detayları Modal Stili */
-.menu-details-body {
+.menu-details-body,
+.menu-update-body {
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -607,7 +619,48 @@ td, th {
   margin-bottom: 20px;
 }
 
-.menu-detail-image {
+.menu-update-body .menu-image-container{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.menu-image-input{
+  display: none;
+}
+
+.btn-update-menu{
+  margin-top: 15px;
+  border: none;
+  padding: 13px 16px;
+  width: 150px;
+  font-size: 17px;
+}
+
+.custom-upload-button{
+  margin-top: 25px;
+  padding: 8px 16px;
+  font-size: 14px;
+}
+
+.custom-upload-button,
+.btn-update-menu {
+  display: inline-block;
+  background-color: #ffc515;
+  color: #000;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.custom-upload-button:hover,
+.btn-update-menu:hover{
+  background-color: #ffd760;;
+}
+
+.menu-detail-image,
+.menu-update-image {
   max-width: 100%;
   max-height: 300px;
   object-fit: contain;
@@ -649,6 +702,18 @@ td, th {
   font-weight: bold;
 }
 
+.menu-update-body .menu-value{
+  border: 1px solid #ddd;
+  padding: 5px 8px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.menu-update-body .menu-value:focus-visible{
+  outline: none;
+  border: 1px solid #ffc515;
+}
+
 .menu-value {
   margin: 10px 0;
   margin-left: 15px;
@@ -656,6 +721,14 @@ td, th {
   line-height: 1.5;
   padding: 5px 10px;
   border-bottom: 1px solid #81818140;
+}
+
+.empty-table-row {
+  text-align: center;
+  padding: 20px 0;
+  color: #888; /* Hafif gri yazı */
+  font-style: italic;
+  padding: 20px !important;
 }
 
 /* Menü İşlemleri İçin Buton Stili */
@@ -924,7 +997,8 @@ input:not(:checked) + .toggle-slider:after {
   
   .users-modal-header h2,
   .menu-details-header h2,
-  .menus-modal-header h2 {
+  .menus-modal-header h2,
+  .menu-update-header h2 {
     font-size: 20px;
   }
   
@@ -946,7 +1020,8 @@ input:not(:checked) + .toggle-slider:after {
   }
 
   .user-details-content,
-  .menu-details-content {
+  .menu-details-content,
+  .menu-update-content {
     margin: 10% auto;
     width: 95%;
     padding: 15px;
@@ -956,7 +1031,8 @@ input:not(:checked) + .toggle-slider:after {
     font-size: 14px;
   }
 
-  .menu-detail-image {
+  .menu-detail-image,
+  .menu-update-image {
     max-height: 250px;
   }
 
@@ -1058,7 +1134,8 @@ input:not(:checked) + .toggle-slider:after {
   
   .users-modal-header h2,
   .menu-details-header h2,
-  .menus-modal-header h2 {
+  .menus-modal-header h2,
+  .menu-update-header h2 {
     font-size: 18px;
   }
   
@@ -1099,7 +1176,8 @@ input:not(:checked) + .toggle-slider:after {
     width: 30%;
   }
 
-  .menu-details-content {
+  .menu-details-content,
+  .menu-update-content {
     margin: 15% auto;
     padding: 10px;
   }
@@ -1108,7 +1186,8 @@ input:not(:checked) + .toggle-slider:after {
     font-size: 13px;
   }
 
-  .menu-detail-image {
+  .menu-detail-image,
+  .menu-update-image {
     max-height: 200px;
   }
 
