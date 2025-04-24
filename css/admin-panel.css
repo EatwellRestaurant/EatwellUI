@@ -152,7 +152,7 @@ body{
 }
 
 .profile a{
-  font-size: 23px;
+  font-size: 27px;
   color: #ffc515;
 }
 
@@ -451,7 +451,8 @@ td, th {
 /* Kullanıcı Detayları Modal Stili */
 .user-details-modal,
 .menu-details-modal,
-.menu-update-modal {
+.menu-update-modal,
+.menu-create-modal {
   display: none;
   position: fixed;
   z-index: 1001;
@@ -465,7 +466,8 @@ td, th {
 
 .user-details-content,
 .menu-details-content,
-.menu-update-content {
+.menu-update-content,
+.menu-create-content {
   background-color: #edece1;
   margin: 5% auto;
   padding: 20px;
@@ -478,7 +480,8 @@ td, th {
 
 .user-details-header,
 .menu-details-header,
-.menu-update-header {
+.menu-update-header,
+.menu-create-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -489,7 +492,8 @@ td, th {
 
 .user-details-header h2,
 .menu-details-header h2,
-.menu-update-header h2 {
+.menu-update-header h2,
+.menu-create-header h2 {
   color: #000;
   margin: 0;
   font-size: 24px;
@@ -497,7 +501,8 @@ td, th {
 
 .close-user-details,
 .close-menu-details,
-.close-menu-update {
+.close-menu-update,
+.close-menu-create {
   color: #3a3a3a;
   font-size: 28px;
   font-weight: bold;
@@ -509,7 +514,8 @@ td, th {
 .close-menus-modal:hover,
 .close-menu-details:hover,
 .close-user-details:hover,
-.close-menu-update:hover {
+.close-menu-update:hover,
+.close-menu-create:hover {
   color: #ffc515;
 }
 
@@ -600,13 +606,15 @@ td, th {
 
 /* Menü Detayları Modal Stili */
 
-.menu-update-body{
+.menu-update-body,
+.menu-create-body{
   align-items: center;
 }
 
 
 .menu-details-body,
-.menu-update-body {
+.menu-update-body,
+.menu-create-body {
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -619,7 +627,8 @@ td, th {
   margin-bottom: 20px;
 }
 
-.menu-update-body .menu-image-container{
+.menu-update-body .menu-image-container,
+.menu-create-body .menu-image-container{
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -629,7 +638,8 @@ td, th {
   display: none;
 }
 
-.btn-update-menu{
+.btn-update-menu,
+.btn-add-menu{
   margin-top: 15px;
   border: none;
   padding: 13px 16px;
@@ -644,7 +654,8 @@ td, th {
 }
 
 .custom-upload-button,
-.btn-update-menu {
+.btn-update-menu,
+.btn-add-menu {
   display: inline-block;
   background-color: #ffc515;
   color: #000;
@@ -655,12 +666,14 @@ td, th {
 }
 
 .custom-upload-button:hover,
-.btn-update-menu:hover{
+.btn-update-menu:hover,
+.btn-add-menu:hover{
   background-color: #ffd760;;
 }
 
 .menu-detail-image,
-.menu-update-image {
+.menu-update-image,
+.menu-create-image {
   max-width: 100%;
   max-height: 300px;
   object-fit: contain;
@@ -702,14 +715,16 @@ td, th {
   font-weight: bold;
 }
 
-.menu-update-body .menu-value{
+.menu-update-body .menu-value,
+.menu-create-body .menu-value{
   border: 1px solid #ddd;
   padding: 5px 8px;
   border-radius: 6px;
   transition: all 0.3s ease;
 }
 
-.menu-update-body .menu-value:focus-visible{
+.menu-update-body .menu-value:focus-visible,
+.menu-create-body .menu-value:focus-visible{
   outline: none;
   border: 1px solid #ffc515;
 }
@@ -720,7 +735,6 @@ td, th {
   font-size: 16px;
   line-height: 1.5;
   padding: 5px 10px;
-  border-bottom: 1px solid #81818140;
 }
 
 .empty-table-row {
@@ -734,7 +748,8 @@ td, th {
 /* Menü İşlemleri İçin Buton Stili */
 .btn-create-menu{
   background-color: #ffc515;
-  padding: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
 }
 
 .btn-edit-menu{
@@ -998,7 +1013,8 @@ input:not(:checked) + .toggle-slider:after {
   .users-modal-header h2,
   .menu-details-header h2,
   .menus-modal-header h2,
-  .menu-update-header h2 {
+  .menu-update-header h2,
+  .menu-create-header h2 {
     font-size: 20px;
   }
   
@@ -1021,7 +1037,8 @@ input:not(:checked) + .toggle-slider:after {
 
   .user-details-content,
   .menu-details-content,
-  .menu-update-content {
+  .menu-update-content,
+  .menu-create-content {
     margin: 10% auto;
     width: 95%;
     padding: 15px;
@@ -1032,7 +1049,8 @@ input:not(:checked) + .toggle-slider:after {
   }
 
   .menu-detail-image,
-  .menu-update-image {
+  .menu-update-image,
+  .menu-create-image {
     max-height: 250px;
   }
 
@@ -1044,7 +1062,8 @@ input:not(:checked) + .toggle-slider:after {
     padding: 7px 14px;
   }
   
-  .btn-update-menu{
+  .btn-update-menu,
+  .btn-add-menu{
     padding: 12px 14px;
     width: 140px;
     font-size: 15px;
@@ -1083,6 +1102,10 @@ input:not(:checked) + .toggle-slider:after {
 
   .sidenav a {
     font-size: 18px;
+  }
+
+  .pro-img{
+    margin-top: 0px;
   }
 
   .dashboard-content{
@@ -1158,7 +1181,8 @@ input:not(:checked) + .toggle-slider:after {
   .users-modal-header h2,
   .menu-details-header h2,
   .menus-modal-header h2,
-  .menu-update-header h2 {
+  .menu-update-header h2,
+  .menu-create-header h2 {
     font-size: 18px;
   }
   
@@ -1200,7 +1224,8 @@ input:not(:checked) + .toggle-slider:after {
   }
 
   .menu-details-content,
-  .menu-update-content {
+  .menu-update-content,
+  .menu-create-content {
     margin: 15% auto;
     padding: 10px;
   }
@@ -1210,7 +1235,8 @@ input:not(:checked) + .toggle-slider:after {
   }
 
   .menu-detail-image,
-  .menu-update-image {
+  .menu-update-image,
+  .menu-create-image {
     max-height: 200px;
   }
 
@@ -1218,11 +1244,21 @@ input:not(:checked) + .toggle-slider:after {
     padding: 6px 13px;
     font-size: 13px;
   }
+
+  .btn-create-menu {
+    padding: 8px 10px;
+  }
   
-  .btn-update-menu{
+  .btn-update-menu,
+  .btn-add-menu{
     padding: 11px 13px;
     width: 130px;
     font-size: 14px;
+  }
+
+  .btn-edit-menu {
+    padding: 6px 8px;
+    font-size: 13px;
   }
 
   .toggle-switch {
@@ -1240,14 +1276,9 @@ input:not(:checked) + .toggle-slider:after {
   input:checked + .toggle-slider:before {
     transform: translateX(17px);
   }
-
-  .menu-row .btn-edit-menu {
-    padding: 4px 8px;
-  }
 }
 
 
-/* Çok küçük ekranlarda sadece çıkış butonunu göster, profil bilgilerini gizle */
 @media screen and (max-width: 400px) {
   .sidenav {
     width: 205px;
@@ -1259,6 +1290,24 @@ input:not(:checked) + .toggle-slider:after {
 
   .sidenav a {
     font-size: 16px;
+  }
+
+  .pro-img {
+    width: 28px;
+  }
+
+  .profile a{
+    font-size: 25px;
+  }
+
+  .btn-create-menu {
+    padding: 8px 9px;
+    font-size: 13px;
+  }
+
+  .btn-edit-menu {
+    padding: 5px 8px;
+    font-size: 12px;
   }
 }
 

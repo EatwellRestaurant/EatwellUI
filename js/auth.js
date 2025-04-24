@@ -42,7 +42,7 @@ $(document).ready(function() {
 
         // API'ye kayıt isteği gönder
         $.ajax({
-            url: 'https://eatwellrestaurantapi.somee.com/api/auths/register',
+            url: 'https://eatwell-api.azurewebsites.net/api/auths/register',
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -78,7 +78,7 @@ $(document).ready(function() {
 
         // API'ye giriş isteği gönder
         $.ajax({
-            url: 'https://eatwellrestaurantapi.somee.com/api/auths/login',
+            url: 'https://eatwell-api.azurewebsites.net/api/auths/login',
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

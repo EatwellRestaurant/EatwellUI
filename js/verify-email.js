@@ -68,7 +68,7 @@ $(document).ready(function() {
 
         // API'ye doğrulama isteği gönder
         $.ajax({
-            url: 'https://eatwellrestaurantapi.somee.com/api/auths/verifyEmailOfUser?userId=' + localStorage.getItem('userId'),
+            url: 'https://eatwell-api.azurewebsites.net/api/auths/verifyEmailOfUser?userId=' + localStorage.getItem('userId'),
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -100,7 +100,7 @@ $(document).ready(function() {
         }
 
         $.ajax({
-            url: 'https://eatwellrestaurantapi.somee.com/api/auths/resend-verification',
+            url: 'https://eatwell-api.azurewebsites.net/api/auths/resend-verification',
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

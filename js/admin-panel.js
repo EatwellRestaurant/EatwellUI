@@ -460,7 +460,7 @@ $(document).ready(function() {
                         <h2>Menü Listesi</h2>
                         <button class="btn-create-menu">
                             <i class="fa-solid fa-plus"></i>
-                            Yeni Menü Ekle
+                            Menü Ekle
                         </button>
                     </div>
                     <div class="menus-body">
@@ -786,6 +786,9 @@ $(document).ready(function() {
         }
     });
 
+
+
+
     function updateMenu(menuId) {
         const token = localStorage.getItem('token');
         
@@ -939,6 +942,124 @@ $(document).ready(function() {
             reader.readAsDataURL(file);
         }
     });
+
+
+    function createMenu() {
+        let menuCreateHTML = `
+        <div class="menu-create-modal">
+            <div class="menu-create-content">
+                <div class="menu-create-header">
+                    <h2>Menü Ekleme</h2>
+                    <span class="close-menu-create">&times;</span>
+                </div>
+                <div class="menu-create-body">
+                    <div class="menu-image-container">
+                        <img src="../icons/default-menu-image-placeholder.png" alt="default-menu-image" class="menu-create-image" id="previewImage">
+                        <label for="menuImage" class="custom-upload-button">Resim Seç</label>
+                        <input type="file" id="menuImage" accept="image/*" class="menu-image-input">
+                    </div>
+                    <div class="menu-info">
+                        <div class="menu-info-item">
+                            <div class="menu-label">
+                                <strong>Menü Adı</strong> 
+                                <span>:</span>
+                            </div>
+                            <input type="text" class="menu-value">
+                        </div>
+                    </div>
+                    <button class="btn-add-menu">Ekle</button>
+                </div>
+            </div>
+        </div>`;
+        
+        
+        // Detay modülünü ekle
+        $('body').append(menuCreateHTML);
+        
+        // Detay modülünü göster
+        $('.menu-create-modal').fadeIn(300, function() {
+            checkIfItemsAreOnNewLine();
+        });
+        
+        // Kapatma butonuna tıklandığında
+        $('.close-menu-create').click(function() {
+            $('.menu-create-modal').fadeOut(300, function() {
+                $(this).remove();
+            });
+        });
+        
+        // Modül dışına tıklandığında kapat
+        $('.menu-create-modal').click(function(e) {
+            if ($(e.target).hasClass('menu-create-modal')) {
+                $('.menu-create-modal').fadeOut(300, function() {
+                    $(this).remove();
+                });
+            }
+        });
+    }
+
+
+    // Menüde "Menü Ekle" butonuna tıklandığında
+    $(document).on('click', '.btn-create-menu', function(e) {
+        e.stopPropagation();
+
+        createMenu();
+    });
+
+
+    $(document).on('click', '.btn-add-menu', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const menuName = $(this).closest('.menu-create-modal').find('.menu-value').val();
+        const menuImage = $('#menuImage')[0].files[0];
+
+        if (menuName.trim() === '') {
+            showToast('error', 'Hata', 'Lütfen menü adını giriniz!');
+            return;
+        }
+        
+        const formData = new FormData();
+        formData.append('name', menuName);
+        if (menuImage) {
+            formData.append('image', menuImage);
+        }
+        else{
+            showToast('error', 'Hata', 'Lütfen menü resmi seçiniz!');
+            return;
+        }
+
+        const token = localStorage.getItem('token');
+        
+        $.ajax({
+            url: `https://eatwell-api.azurewebsites.net/api/mealCategories/add`,
+            type: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                if (response.success) {
+                    showToast('success', 'Başarılı', 'Menü başarıyla eklendi!');
+                    $('.menu-create-modal').fadeOut(300, function() {
+                        $(this).remove();
+                    });
+                    getMenus(); // Menü listesini yenile
+                } else {
+                    showToast('error', 'Hata', response.message);
+                }
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage);
+            }
+        });
+    });
+
+
+
 
 
     // Dashboard'a tıklandığında

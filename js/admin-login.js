@@ -34,7 +34,7 @@ $(document).ready(function() {
 
         // API'ye giriş isteği gönder
         $.ajax({
-            url: 'https://eatwellrestaurantapi.somee.com/api/auths/login',
+            url: 'https://eatwell-api.azurewebsites.net/api/auths/login',
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
