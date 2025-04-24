@@ -112,8 +112,8 @@ $(document).ready(function() {
         $('.sidenav a span').css({'margin-left': '0px', 'opacity': '0'});
         $('.sidenav a i').css({'margin-left': '0'});
     });
-
-
+    
+    
     function checkScreenSize() {
         // Sayfa yüklendiğinde ve ekran boyutu 992px ve üzerindeyse sidenav'ı aç
         if ($(window).width() >= 992) {
@@ -162,7 +162,7 @@ $(document).ready(function() {
         const token = localStorage.getItem('token');
         
         $.ajax({
-            url: 'https://eatwellrestaurantapi.somee.com/api/dashboards',
+            url: 'https://eatwell-api.azurewebsites.net/api/dashboards',
             type: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -202,7 +202,7 @@ $(document).ready(function() {
         const token = localStorage.getItem('token');
         
         $.ajax({
-            url: 'https://eatwellrestaurantapi.somee.com/api/users/getall',
+            url: 'https://eatwell-api.azurewebsites.net/api/users/getall',
             type: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -364,7 +364,7 @@ $(document).ready(function() {
         const token = localStorage.getItem('token');
         
         $.ajax({
-            url: `https://eatwellrestaurantapi.somee.com/api/users/get?userId=${userId}`,
+            url: `https://eatwell-api.azurewebsites.net/api/users/get?userId=${userId}`,
             type: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -444,7 +444,7 @@ $(document).ready(function() {
         const token = localStorage.getItem('token');
         
         $.ajax({
-            url: 'https://eatwellrestaurantapi.somee.com/api/mealCategories/getAllForAdmin',
+            url: 'https://eatwell-api.azurewebsites.net/api/mealCategories/getAllForAdmin',
             type: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -590,7 +590,7 @@ $(document).ready(function() {
         const toggleSwitch = $(`.toggle-switch input[data-menu-id="${menuId}"]`);
 
         $.ajax({
-            url: `https://eatwellrestaurantapi.somee.com/api/mealCategories/setDeleteOrRestore?mealCategoryId=${menuId}`,
+            url: `https://eatwell-api.azurewebsites.net/api/mealCategories/setDeleteOrRestore?mealCategoryId=${menuId}`,
             type: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -633,7 +633,7 @@ $(document).ready(function() {
         const token = localStorage.getItem('token');
         
         $.ajax({
-            url: `https://eatwellrestaurantapi.somee.com/api/mealCategories/getForAdmin?mealCategoryId=${menuId}`,
+            url: `https://eatwell-api.azurewebsites.net/api/mealCategories/getForAdmin?mealCategoryId=${menuId}`,
             type: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -749,11 +749,48 @@ $(document).ready(function() {
     });
 
 
+    // Modal açıldığında, öğelerin alt alta gelip gelmediğini kontrol et
+    function checkIfItemsAreOnNewLine() {
+        var menuItem = $(".menu-update-modal .menu-info .menu-info-item");
+        var label = menuItem.find(".menu-label");
+        var value = menuItem.find(".menu-value");
+        
+        if (label.length === 0 || value.length === 0) return;
+
+        var labelOffset = label.offset().top;
+        var valueOffset = value.offset().top;
+        
+        // Eğer value, label'ın altındaysa margin-top uygula
+        if (valueOffset > labelOffset) {
+            menuItem.css("margin", "10px 15px");
+        } else {
+            menuItem.css("margin", "0 15px");
+        }
+    }
+
+    // Modal açıldığında fonksiyonu çağır
+    $(document).on('shown.bs.modal', '.menu-update-modal', function() {
+        setTimeout(function() {
+            checkIfItemsAreOnNewLine();
+        }, 1);
+    });
+
+    // Ekran boyutu değiştiğinde kontrol et (sadece modal açıkken)
+    var resizeTimer;
+    $(window).resize(function() {
+        if ($('.menu-update-modal').is(':visible')) {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(function() {
+                checkIfItemsAreOnNewLine();
+            }, 250);
+        }
+    });
+
     function updateMenu(menuId) {
         const token = localStorage.getItem('token');
         
         $.ajax({
-            url: `https://eatwellrestaurantapi.somee.com/api/mealCategories/getForAdmin?mealCategoryId=${menuId}`,
+            url: `https://eatwell-api.azurewebsites.net/api/mealCategories/getForAdmin?mealCategoryId=${menuId}`,
             type: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -797,7 +834,9 @@ $(document).ready(function() {
                     $('body').append(menuUpdateHTML);
                     
                     // Detay modülünü göster
-                    $('.menu-update-modal').fadeIn(300);
+                    $('.menu-update-modal').fadeIn(300, function() {
+                        checkIfItemsAreOnNewLine();
+                    });
                     
                     // Kapatma butonuna tıklandığında
                     $('.close-menu-update').click(function() {
@@ -857,7 +896,7 @@ $(document).ready(function() {
         const token = localStorage.getItem('token');
         
         $.ajax({
-            url: `https://eatwellrestaurantapi.somee.com/api/mealCategories/update?mealCategoryId=${menuId}`,
+            url: `https://eatwell-api.azurewebsites.net/api/mealCategories/update?mealCategoryId=${menuId}`,
             type: 'PUT',
             headers: {
                 'Authorization': `Bearer ${token}`

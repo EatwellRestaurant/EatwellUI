@@ -695,7 +695,7 @@ td, th {
   color: #000;
   margin-right: 10px;
   display: inline-block;
-  width: 145px;
+  width: 100%;
 }
 
 .menu-label span{
@@ -1040,6 +1040,16 @@ input:not(:checked) + .toggle-slider:after {
     width: 85px;
   }
 
+  .custom-upload-button {
+    padding: 7px 14px;
+  }
+  
+  .btn-update-menu{
+    padding: 12px 14px;
+    width: 140px;
+    font-size: 15px;
+  }
+
   .toggle-switch {
     width: 50px;
     height: 23px;
@@ -1081,6 +1091,19 @@ input:not(:checked) + .toggle-slider:after {
 
   .users, .menu{
     margin-top: 8px;
+  }
+
+  .menu-info{
+    width: 90%;
+  }
+
+  .menu-info-item {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .menu-value{
+    font-size: 14px;
   }
 
   .col-div-3 {
@@ -1189,6 +1212,17 @@ input:not(:checked) + .toggle-slider:after {
   .menu-detail-image,
   .menu-update-image {
     max-height: 200px;
+  }
+
+  .custom-upload-button {
+    padding: 6px 13px;
+    font-size: 13px;
+  }
+  
+  .btn-update-menu{
+    padding: 11px 13px;
+    width: 130px;
+    font-size: 14px;
   }
 
   .toggle-switch {
