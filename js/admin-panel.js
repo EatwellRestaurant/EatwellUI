@@ -188,12 +188,9 @@ $(document).ready(function() {
         });
     }
 
-    // Sayfa yüklendiğinde istatistikleri al
-    getStatistics();
-
+    
     // Her 10 dakikada bir istatistikleri güncelle
     setInterval(getStatistics, 600000);
-
 
 
 
@@ -468,7 +465,6 @@ $(document).ready(function() {
                             <thead>
                                 <tr>
                                     <th>Durum</th>
-                                    <th>ID</th>
                                     <th>Menü Adı</th>
                                     <th>Kayıt Tarihi</th>
                                     <th>İşlemler</th>
@@ -495,7 +491,7 @@ $(document).ready(function() {
                 let currentPage = 1; // Mevcut sayfa numarası
                 const itemsPerPage = 10; // Her sayfada gösterilecek menü sayısı
                 const totalMenus = response.data.length; // Toplam menü sayısı
-                const totalPages = Math.ceil(totalMenus / itemsPerPage); // Toplam sayfa sayısı
+                const totalPages = Math.ceil(totalMenus / itemsPerPage) ? Math.ceil(totalMenus / itemsPerPage) : 1 ; // Toplam sayfa sayısı
 
                 // Menüleri sayfalara böl ve göster
                 function displayMenus(page) {
@@ -522,13 +518,16 @@ $(document).ready(function() {
                                             <span class="toggle-slider"></span>
                                         </label>
                                     </td>
-                                    <td>${menu.id}</td>
                                     <td>${menu.name}</td>
                                     <td>${formattedDate}</td>
                                     <td>
                                         <button class="btn-edit-menu" data-menu-id="${menu.id}">
                                             <i class="fa-solid fa-pen-to-square"></i>
                                             Düzenle
+                                        </button>
+                                        <button class="btn-products-menu" data-menu-id="${menu.id}" data-menu-name="${menu.name}">
+                                            <i class="fa-solid fa-list"></i>
+                                            Ürünleri Gör
                                         </button>
                                     </td>
                                 </tr>`;
@@ -580,6 +579,10 @@ $(document).ready(function() {
     // Navbar'daki "Menüler" seçeneğine tıklandığında
     $('.sidenav a:contains("Menüler")').click(function(e) {
         e.preventDefault();
+
+        //URL'ye sahte bir adım ekliyoruz
+        history.pushState({ page: 'menus' }, 'Menüler', '?page=menus'); 
+
         getMenus();
     });
 
@@ -739,8 +742,8 @@ $(document).ready(function() {
 
     // Menü satırına tıklama olayı
     $(document).on('click', '.menu-row', function(e) {
-        // Eğer tıklanan element düzenleme butonu veya toggle switch ise işlemi durdur
-        if ($(e.target).closest('.btn-edit-menu, .toggle-switch').length) {
+        // Eğer tıklanan element düzenleme butonu, toggle switch veya ürünleri gör butonu ise işlemi durdur
+        if ($(e.target).closest('.btn-edit-menu, .toggle-switch, .btn-products-menu').length) {
             return;
         }
 
@@ -1007,6 +1010,7 @@ $(document).ready(function() {
     });
 
 
+    // Menüde "Ekle" butonuna tıklandığında
     $(document).on('click', '.btn-add-menu', function(e) {
         e.preventDefault();
         e.stopPropagation();
@@ -1059,7 +1063,237 @@ $(document).ready(function() {
     });
 
 
+    // Menüdeki ürünleri getiren fonksiyon
+    function getProducts(menuId, menuName) {
+        const token = localStorage.getItem('token');
+        
+        $.ajax({
+            url: `https://eatwell-api.azurewebsites.net/api/products/GetAllForAdminByMealCategoryId?mealCategoryId=${menuId}`,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                // Dashboard içeriğini temizle
+                $('.dashboard-content').empty();
+                
+                // Menüler için HTML yapısı
+                let productsHTML = `
+                <div class="products-container">
+                    <div class="products-header">
+                        <h2>${menuName}</h2>
+                        <button class="btn-create-product">
+                            <i class="fa-solid fa-plus"></i>
+                            Ürün Ekle
+                        </button>
+                    </div>
+                    <div class="products-body">
+                        <table class="products-table">
+                            <thead>
+                                <tr>
+                                    <th>Durum</th>
+                                    <th>Ürün Adı</th>
+                                    <th>Fiyatı</th>
+                                    <th>Kayıt Tarihi</th>
+                                    <th>İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productsTableBody">
+                            </tbody>
+                        </table>
+                        <!-- Sayfalama kontrolleri -->
+                        <div class="pagination-container">
+                            <div class="pagination">
+                                <button id="prevProductPage" class="pagination-btn" disabled><i class="fas fa-chevron-left"></i></button>
+                                <span id="productPageInfo">Sayfa 1</span>
+                                <button id="nextProductPage" class="pagination-btn"><i class="fas fa-chevron-right"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+                
+                // Menüleri dashboard'a ekle
+                $('.dashboard-content').append(productsHTML);
+                
+                // Sayfalama için gerekli değişkenler
+                let currentPage = 1; // Mevcut sayfa numarası
+                const itemsPerPage = 10; // Her sayfada gösterilecek ürün sayısı
+                const totalProducts = response.data.length; // Toplam ürün sayısı
+                const totalPages = Math.ceil(totalProducts / itemsPerPage) ? Math.ceil(totalProducts / itemsPerPage) : 1; // Toplam sayfa sayısı
 
+                // Ürünleri sayfalara böl ve göster
+                function displayProducts(page) {
+                    // Gösterilecek ürünlerin başlangıç ve bitiş indekslerini hesapla
+                    const startIndex = (page - 1) * itemsPerPage;
+                    const endIndex = startIndex + itemsPerPage;
+                    // İlgili sayfadaki ürünleri seç
+                    const productsToShow = response.data.slice(startIndex, endIndex);
+                    
+                    let productsTableHTML = '';
+                    
+                    // Seçilen ürünleri tabloya ekle
+                    if (productsToShow.length > 0) {
+                        productsToShow.forEach(product => {
+                            // Tarihi formatla (gün.ay.yıl şeklinde)
+                            const date = new Date(product.createDate);
+                            const formattedDate = `${date.getDate()}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`;
+                            
+                            productsTableHTML += `
+                                <tr class="product-row" data-product-id="${product.id}">
+                                    <td>
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" ${product.isDeleted ? '' : 'checked'} data-product-id="${product.id}">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    </td>
+                                    <td>${product.name}</td>
+                                    <td>${product.price.toFixed(2)}₺</td>
+                                    <td>${formattedDate}</td>
+                                    <td>
+                                        <button class="btn-edit-product" data-product-id="${product.id}">
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                            Düzenle
+                                        </button>
+                                    </td>
+                                </tr>`;
+                        });
+                    } else {
+                        // Ürün yoksa bilgi mesajı göster
+                        productsTableHTML = `
+                            <tr>
+                                <td colspan="6" class="empty-table-row">Henüz ürün bulunmamaktadır.</td>
+                            </tr>`;
+                    }
+                    
+                    // Tabloyu güncelle
+                    $('#productsTableBody').html(productsTableHTML);
+                    // Sayfa bilgisini güncelle
+                    $('#productPageInfo').text(`Sayfa ${page} / ${totalPages}`);
+                    
+                    // Sayfalama butonlarının durumunu güncelle
+                    $('#prevProductPage').prop('disabled', page === 1); // İlk sayfada geri butonu devre dışı
+                    $('#nextProductPage').prop('disabled', page === totalPages); // Son sayfada ileri butonu devre dışı
+                }
+                
+                // İlk sayfayı göster
+                displayProducts(currentPage);
+                
+                // Önceki sayfa butonuna tıklama olayı
+                $('#prevProductPage').click(function() {
+                    if (currentPage > 1) {
+                        currentPage--;
+                        displayProducts(currentPage);
+                    }
+                });
+                
+                // Sonraki sayfa butonuna tıklama olayı
+                $('#nextProductPage').click(function() {
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                        displayProducts(currentPage);
+                    }
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error('Ürünler alınırken hata oluştu:', error);
+                showToast('error', 'Hata', 'Ürünler alınırken bir hata oluştu!');
+            }
+        });
+    }
+    
+
+    // Menüde "Ürünleri Gör" butonuna tıklandığında
+    $(document).on('click', '.btn-products-menu', function(e) {
+        e.stopPropagation();
+
+        const menuId = $(this).data('menu-id');
+        const menuName = $(this).data('menu-name');
+
+        localStorage.setItem('selectedMenuId', menuId);
+        localStorage.setItem('selectedMenuName', menuName);
+
+        // URL'ye sahte bir adım ekliyoruz
+        history.pushState({ page: 'products' }, '', `?page=products`); 
+
+        getProducts(menuId, menuName);
+    });
+
+
+    // Sayfa ilk açıldığında yani admin-panel.html sayfası yüklendiğinde
+    window.addEventListener('load', function() {
+
+        //URL’deki parametreleri (?page=xxx) okuyoruz
+        const params = new URLSearchParams(window.location.search);
+
+        //Tarayıcının adres çubuğunda yazan URL'den, query string değerini (?page=menus, ?page=products gibi) alıyoruz.
+        const page = params.get('page');
+
+
+        //URL’de hangi "page" değeri varsa ona göre yönlendiriyoruz...
+        if (page === 'menus') {
+
+            //Tarayıcı geçmişinde sahte bir adım (menus) oluşturuyoruz.
+            //Tarayıcı sekmesinin başlığı 'Menüler' oluyor.
+            // Ve URL'de ?page=menus yazıyor.
+            history.replaceState({ page: 'menus' }, 'Menüler', '?page=menus');
+
+            getMenus();
+        } else if (page === 'products') {
+            history.replaceState({ page: 'products' }, 'Ürünler', `?page=products`);
+            
+            const menuId = localStorage.getItem('selectedMenuId');
+            const menuName = localStorage.getItem('selectedMenuName');
+
+            getProducts(menuId, menuName);
+        } else {
+            // Hiç page değeri yoksa dashboard'u yükle.
+
+            //Tarayıcı geçmişinde sahte bir adım (dashboard) oluşturuyoruz
+            //URL temiz oluyor (admin-panel.html gibi).
+            history.replaceState({ page: 'dashboard' }, '', window.location.pathname);
+
+            getStatistics();
+        }
+    });
+
+
+    //Kullanıcı tarayıcıda geri veya ileri tuşuna basınca çalışacak
+    window.addEventListener('popstate', function (e) {
+
+        //Eğer state varsa, yani geçmişte bir adım kaydedilmişse:
+        if (e.state) {
+
+            //Burada e.state.page diyerek kullanıcının hangi sayfada olduğunu belirliyoruz.
+            switch (e.state.page) {
+
+                case 'menus':
+                    getMenus();
+                    break;
+
+                case 'products':
+                    const menuId = localStorage.getItem('selectedMenuId');
+                    const menuName = localStorage.getItem('selectedMenuName');
+
+                    getProducts(menuId, menuName);
+                    break;
+                
+                case 'dashboard':
+                    resetDashboard();
+                    getStatistics();
+                    break;
+                
+                default:
+                    // Eğer hiç tanımlamadığımız bir page değeri gelirse token'ı silip ve login sayfasına yönlendiriyoruz.
+                    localStorage.removeItem('token');
+                    window.location.href = 'admin-login.html';
+                    break;
+            }
+        } else {
+            // e.state yoksa yani kullanıcı çok geriye gittiyse
+            console.warn('State boş, kullanıcı geçmişte başka bir yere döndü.');
+        }
+    });
+    
 
 
     // Dashboard'a tıklandığında

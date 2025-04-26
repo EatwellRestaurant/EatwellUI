@@ -72,8 +72,9 @@ body{
 }
 
 .sidenav a:hover {
-    color: #f1f1f1;
+  color: #f1f1f1;
 }
+
 
 .sidenav a span{
   margin-left: 10px;
@@ -133,9 +134,14 @@ body{
 
 .pro-img{
 	float: left;
-	width: 45px;
+	width: 38px;
 	margin-top: 5px;
   margin-right: 2px;
+}
+
+.menu-img{
+	width: 30px;
+  vertical-align: middle;
 }
 
 .profile p{
@@ -418,7 +424,8 @@ td, th {
 }
 
 .users-table,
-.menus-table {
+.menus-table,
+.products-table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 10px;
@@ -426,7 +433,8 @@ td, th {
 }
 
 .users-table th,
-.menus-table th {
+.menus-table th,
+.products-table th {
   background-color: #d8d9e1;
   color: #000;
   text-align: left;
@@ -435,16 +443,17 @@ td, th {
 }
 
 .users-table td,
-.menus-table td {
+.menus-table td,
+.products-table td {
   border-bottom: 1px solid #81818140;
   padding: 12px;
   color: #000;
 }
 
-.menus-table td:first-child{
+.menus-table td:first-child,
+.products-table td:first-child{
   padding: 0px;
   padding-left: 6px;
-  width: 130px;
 }
 
 
@@ -546,13 +555,15 @@ td, th {
 
 /* Kullanıcı satırı hover efekti */
 .user-row,
-.menu-row {
+.menu-row,
+.product-row {
   cursor: pointer;
   transition: background-color 0.3s;
 }
 
 .user-row:hover,
-.menu-row:hover {
+.menu-row:hover,
+.product-row:hover {
   background-color: #ebebeb;
 }
 
@@ -594,7 +605,9 @@ td, th {
   cursor: not-allowed;
 }
 
-#pageInfo, #menuPageInfo {
+#pageInfo, 
+#menuPageInfo, 
+#productPageInfo {
   color: #000;
   font-size: 14px;
   min-width: 100px;
@@ -746,19 +759,28 @@ td, th {
 }
 
 /* Menü İşlemleri İçin Buton Stili */
-.btn-create-menu{
-  background-color: #ffc515;
+.btn-create-menu,
+.btn-create-product{
   padding: 10px 12px;
   font-size: 14px;
 }
 
-.btn-edit-menu{
-  background-color: #ffc515;
+.btn-edit-menu,
+.btn-edit-product,
+.btn-products-menu{
   padding: 8px 10px;
 }
 
+.btn-products-menu{
+  margin-left: 8px;
+}
+
 .btn-edit-menu,
-.btn-create-menu {
+.btn-create-menu,
+.btn-create-product,
+.btn-edit-product,
+.btn-products-menu {
+  background-color: #ffc515;
   color: #1b203d;
   border: none;
   border-radius: 4px;
@@ -767,19 +789,26 @@ td, th {
 }
 
 .btn-edit-menu:hover,
-.btn-create-menu:hover {
+.btn-create-menu:hover,
+.btn-edit-product:hover,
+.btn-create-product:hover,
+.btn-products-menu:hover {
   background-color: #ffd760;
 }
 
 .btn-edit-menu i,
-.btn-create-menu i{
+.btn-create-menu i,
+.btn-edit-product i,
+.btn-create-product i,
+.btn-products-menu i{
   margin-right: 3px;
 }
 
 
 
 /* Menüler Container Stili */
-.menus-container {
+.menus-container,
+.products-container {
   width: 98.5%;
   background-color: transparent;
   border-radius: 5px;
@@ -789,7 +818,8 @@ td, th {
   margin-left: 8px;
 }
 
-.menus-header {
+.menus-header,
+.products-header {
   margin-bottom: 20px;
   padding-bottom: 10px;
   border-bottom: 1px solid #81818140;
@@ -798,18 +828,21 @@ td, th {
   align-items: center;
 }
 
-.menus-header h2 {
+.menus-header h2,
+.products-header h2 {
   color: #000;
   margin: 0;
   font-size: 24px;
 }
 
-.menus-body {
+.menus-body,
+.products-body {
   color: #000;
   overflow-x: auto;
 }
 
-.menus-table {
+.menus-table,
+.products-table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 20px;
@@ -1021,7 +1054,9 @@ input:not(:checked) + .toggle-slider:after {
   .users-table th, 
   .users-table td,
   .menus-table th,
-  .menus-table td {
+  .menus-table td,
+  .products-table th,
+  .products-table td {
     padding: 10px 8px;
     font-size: 14px;
   }
@@ -1054,9 +1089,6 @@ input:not(:checked) + .toggle-slider:after {
     max-height: 250px;
   }
 
-  .menus-table td:first-child {
-    width: 85px;
-  }
 
   .custom-upload-button {
     padding: 7px 14px;
@@ -1194,7 +1226,9 @@ input:not(:checked) + .toggle-slider:after {
   .users-table th, 
   .users-table td,
   .menus-table th,
-  .menus-table td {
+  .menus-table td,
+  .products-table th,
+  .products-table td {
     padding: 8px 5px;
     font-size: 13px;
   }
@@ -1245,7 +1279,8 @@ input:not(:checked) + .toggle-slider:after {
     font-size: 13px;
   }
 
-  .btn-create-menu {
+  .btn-create-menu,
+  .btn-create-product {
     padding: 8px 10px;
   }
   
@@ -1256,7 +1291,9 @@ input:not(:checked) + .toggle-slider:after {
     font-size: 14px;
   }
 
-  .btn-edit-menu {
+  .btn-edit-menu,
+  .btn-edit-product,
+  .btn-products-menu {
     padding: 6px 8px;
     font-size: 13px;
   }
@@ -1300,12 +1337,15 @@ input:not(:checked) + .toggle-slider:after {
     font-size: 25px;
   }
 
-  .btn-create-menu {
+  .btn-create-menu,
+  .btn-create-product {
     padding: 8px 9px;
     font-size: 13px;
   }
 
-  .btn-edit-menu {
+  .btn-edit-menu,
+  .btn-edit-product,
+  .btn-products-menu {
     padding: 5px 8px;
     font-size: 12px;
   }
