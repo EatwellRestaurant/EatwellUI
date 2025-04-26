@@ -180,10 +180,9 @@ $(document).ready(function() {
                 orderBox.html(`${response.data.orderCount}<br/><span>Siparişler</span>`);
                 reservationBox.html(`${response.data.reservationCount}<br/><span>Rezervasyonlar</span>`);
             },
-            error: function(xhr, status, error) {
-                console.error('İstatistikler alınırken hata oluştu:', error);
-                console.error('XHR Durumu:', xhr);
-                showToast('error', 'Hata', 'İstatistikler alınırken bir hata oluştu!');
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : 'İstatistikler alınırken hata oluştu!');
             }
         });
     }
@@ -348,9 +347,9 @@ $(document).ready(function() {
                     getUserDetails(userId);
                 });
             },
-            error: function(xhr, status, error) {
-                console.error('Kullanıcılar alınırken hata oluştu:', error);
-                showToast('error', 'Hata', 'Kullanıcılar alınırken bir hata oluştu!');
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : 'Kullanıcılar listesi alınırken hata oluştu!');
             }
         });
     }
@@ -417,12 +416,12 @@ $(document).ready(function() {
                         }
                     });
                 } else {
-                    showToast('error', 'Hata', 'Kullanıcı detayları alınırken bir hata oluştu!');
+                    showToast('error', 'Hata', 'Kullanıcı detayı alınırken hata oluştu!');
                 }
             },
-            error: function(xhr, status, error) {
-                console.error('Kullanıcı detayları alınırken hata oluştu:', error);
-                showToast('error', 'Hata', 'Kullanıcı detayları alınırken bir hata oluştu!');
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : 'Kullanıcı detayı alınırken hata oluştu!');
             }
         });
     }
@@ -569,9 +568,9 @@ $(document).ready(function() {
                     }
                 });
             },
-            error: function(xhr, status, error) {
-                console.error('Menüler alınırken hata oluştu:', error);
-                showToast('error', 'Hata', 'Menüler alınırken bir hata oluştu!');
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : 'Menüler alınırken hata oluştu!');
             }
         });
     }
@@ -609,7 +608,7 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
-                showToast('error', 'Hata', errorMessage);
+                showToast('error', 'Hata', errorMessage ? errorMessage : 'Menü durumunu değiştirirken hata oluştu!');
                  // Toggle switch'i eski haline getir
                  toggleSwitch.prop('checked', !toggleSwitch.prop('checked'));
             }
@@ -730,12 +729,12 @@ $(document).ready(function() {
                         }
                     });
                 } else {
-                    showToast('error', 'Hata', 'Menü detayları alınırken bir hata oluştu!');
+                    showToast('error', 'Hata', 'Menü detayı alınırken hata oluştu!');
                 }
             },
-            error: function(xhr, status, error) {
-                console.error('Menü detayları alınırken hata oluştu:', error);
-                showToast('error', 'Hata', 'Menü detayları alınırken bir hata oluştu!');
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : 'Menü detayı alınırken hata oluştu!');
             }
         });
     }
@@ -836,7 +835,7 @@ $(document).ready(function() {
                                     <img src="${menu.imagePath}" alt="${menu.name}" class="menu-update-image" id="previewImage">
 
                                     <label for="menuImage" class="custom-upload-button">Resim Seç</label>
-                                    <input type="file" id="menuImage" accept="image/*" class="menu-image-input">
+                                    <input type="file" id="menuImage" accept="image/*" class="image-input">
                                 </div>
                                 <div class="menu-info">
                                     <div class="menu-info-item">
@@ -879,12 +878,12 @@ $(document).ready(function() {
                         }
                     });
                 } else {
-                    showToast('error', 'Hata', 'Menü güncellenirken bir hata oluştu!');
+                    showToast('error', 'Hata', 'Menü güncellenirken hata oluştu!');
                 }
             },
-            error: function(xhr, status, error) {
-                console.error('Menü güncellenirken hata oluştu:', error);
-                showToast('error', 'Hata', 'Menü güncellenirken bir hata oluştu!');
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : 'Menü güncellenirken hata oluştu!');
             }
         });
     }
@@ -942,7 +941,7 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
-                showToast('error', 'Hata', errorMessage);
+                showToast('error', 'Hata', errorMessage ? errorMessage : 'Menü güncellenirken hata oluştu!');
             }
         });
     });
@@ -978,7 +977,7 @@ $(document).ready(function() {
                     <div class="menu-image-container">
                         <img src="../icons/default-menu-image-placeholder.png" alt="default-menu-image" class="menu-create-image" id="previewImage">
                         <label for="menuImage" class="custom-upload-button">Resim Seç</label>
-                        <input type="file" id="menuImage" accept="image/*" class="menu-image-input">
+                        <input type="file" id="menuImage" accept="image/*" class="image-input">
                     </div>
                     <div class="menu-info">
                         <div class="menu-info-item">
@@ -1076,7 +1075,7 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
-                showToast('error', 'Hata', errorMessage);
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Menü eklenirken hata oluştu!");
             }
         });
     });
@@ -1169,7 +1168,7 @@ $(document).ready(function() {
                                         </label>
                                     </td>
                                     <td>${product.name}</td>
-                                    <td>${product.price.toFixed(2)}₺</td>
+                                    <td>${product.price.toFixed(2).replace('.', ',')}₺</td>
                                     <td>${formattedDate}</td>
                                     <td>
                                         <button class="btn-edit-product" data-product-id="${product.id}">
@@ -1216,9 +1215,9 @@ $(document).ready(function() {
                     }
                 });
             },
-            error: function(xhr, status, error) {
-                console.error('Ürünler alınırken hata oluştu:', error);
-                showToast('error', 'Hata', 'Ürünler alınırken bir hata oluştu!');
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Ürünler getirilirken hata oluştu!");
             }
         });
     }
@@ -1285,6 +1284,13 @@ $(document).ready(function() {
                                     </div>
                                     <div class="product-info-item">
                                         <div class="product-label">
+                                            <strong>Fiyatı</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <p class="product-value">${product.price.toFixed(2).replace('.', ',')}₺</p>
+                                    </div>
+                                    <div class="product-info-item">
+                                        <div class="product-label">
                                             <strong>Durum</strong> 
                                             <span>:</span>
                                         </div>
@@ -1341,12 +1347,12 @@ $(document).ready(function() {
                         }
                     });
                 } else {
-                    showToast('error', 'Hata', 'Ürün detayları alınırken bir hata oluştu!');
+                    showToast('error', 'Hata', 'Ürün detayı alınırken hata oluştu!');
                 }
             },
-            error: function(xhr, status, error) {
-                console.error('Ürün detayları alınırken hata oluştu:', error);
-                showToast('error', 'Hata', 'Ürün detayları alınırken bir hata oluştu!');
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Ürün detayı alınırken hata oluştu!");
             }
         });
     }
@@ -1361,6 +1367,199 @@ $(document).ready(function() {
 
         const productId = $(this).data('product-id');
         getProductDetails(productId);
+    });
+
+
+
+
+    function updateProduct(productId) {
+        const token = localStorage.getItem('token');
+        
+        $.ajax({
+            url: `https://eatwell-api.azurewebsites.net/api/products/getForAdmin?productId=${productId}`,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                if (response.success && response.data) {
+                    const product = response.data;
+                              
+                    let productUpdateHTML = `
+                    <div class="product-update-modal" data-product-id="${product.id}">
+                        <div class="product-update-content">
+                            <div class="product-update-header">
+                                <h2>Ürün Güncelleme</h2>
+                                <span class="close-product-update">&times;</span>
+                            </div>
+                            <div class="product-update-body">
+                                <div class="product-image-container">
+                                    <img src="${product.imagePath}" alt="${product.name}" class="product-update-image" id="previewImage">
+
+                                    <label for="productImage" class="custom-upload-button">Resim Seç</label>
+                                    <input type="file" id="productImage" accept="image/*" class="image-input">
+                                </div>
+                                <div class="product-info">
+                                    <div class="product-info-item">
+                                        <div class="product-label">
+                                            <strong>Ürün Adı</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <input type="text" class="product-value" value="${product.name}">
+                                    </div>
+                                    <div class="product-info-item">
+                                        <div class="product-label">
+                                            <strong>Fiyatı (₺)</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <input type="text" class="product-value price-value" value="${product.price.toFixed(2).replace('.', ',')}">    
+                                    </div>
+                                </div>
+                                <button class="btn-update-product">Güncelle</button>
+                            </div>
+                        </div>
+                    </div>`;
+                    
+                    // Eğer detay modülü zaten varsa kaldır
+                    $('.product-update-modal').remove();
+                    
+                    // Detay modülünü ekle
+                    $('body').append(productUpdateHTML);
+                    
+                    // Detay modülünü göster
+                    $('.product-update-modal').fadeIn(300, function() {
+                        checkIfItemsAreOnNewLine(true);
+                    });
+                    
+                    // Kapatma butonuna tıklandığında
+                    $('.close-product-update').click(function() {
+                        $('.product-update-modal').fadeOut(300, function() {
+                            $(this).remove();
+                        });
+                    });
+                    
+                    // Modül dışına tıklandığında kapat
+                    $('.product-update-modal').click(function(e) {
+                        if ($(e.target).hasClass('product-update-modal')) {
+                            $('.product-update-modal').fadeOut(300, function() {
+                                $(this).remove();
+                            });
+                        }
+                    });
+                } else {
+                    showToast('error', 'Hata', 'Ürün güncellenirken hata oluştu!');
+                }
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Ürün güncellenirken hata oluştu!");
+            }
+        });
+    }
+
+    function formatPriceInputLive(value) {
+
+        // Eğer kullanıcı hiçbir şey yazmadıysa (null, undefined, veya boş string) direkt boş string dönüyoruz. 
+        if (!value) 
+            return '';
+    
+        // Tüm noktaları siliyoruz. 
+        value = value.replace(/\./g, '');
+
+        // Rakam ve virgül dışında kalan her şeyi siliyoruz.
+        value = value.replace(/[^\d,]/g, '');
+    
+        // Virgülün solundaki ve sağındaki kısımları ayırıyoruz.
+        const parts = value.split(',');
+    
+        let integerPart = parts[0]; //Ana para kısmı
+        let decimalPart = parts[1] || ''; //Kuruş kısmı
+    
+
+        //Sayıyı sağdan sola doğru 3'erli gruplar haline getirip her 3'lünün önüne bir nokta koyuyoruz.
+        integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    
+
+        // Eğer kullanıcı kuruş kısmını çok uzun yazdıysa, sadece ilk 2 karakterini alıyoruz.
+        if (decimalPart.length > 2) {
+            decimalPart = decimalPart.substring(0, 2);
+        }
+    
+        return decimalPart.length > 0 ? `${integerPart},${decimalPart}` : integerPart;
+    }
+    
+    // Kullanıcı yazarken CANLI formatlama
+    $(document).on('input', '.price-value', function () {
+        // İmlecin input içindeki tam pozisyonunu alıyoruz.
+        let cursorPosition = this.selectionStart; 
+
+        //Formatlanmadan önceki input'un karakter uzunluğunu kaydediyoruz.
+        let oldLength = $(this).val().length;
+
+        //Formatlama sonrası imleç doğru yere gelsin diye bu değerleri kaydediyoruz.
+    
+        // İlk, default yazılan değeri alıyoruz.
+        var value = $(this).val();
+
+        // Formatlama yapıyoruz.
+        var formattedValue = formatPriceInputLive(value);
+    
+        // İlk değeri silip, yerine formatlanmış yeni değeri yazıyoruz.
+        $(this).val(formattedValue);
+    
+        // Yeni formatlı değerin uzunluğunu buluyoruz.
+        let newLength = formattedValue.length;
+
+        // cursorPosition'u (yani imlecin pozisyonu), yeni uzunluk ile eski uzunluk arasındaki fark kadar kaydırıyoruz.
+        cursorPosition += (newLength - oldLength);
+
+        // İmleci kullanıcının yazmaya devam ettiği yere tekrar koyuyoruz.
+        this.setSelectionRange(cursorPosition, cursorPosition);
+    });
+    
+    // Kullanıcı input'tan çıkınca (blur) ondalıklı hale getiriyoruz.
+    $(document).on('blur', '.price-value', function () {
+        var value = $(this).val();
+    
+        // Eğer kullanıcı hiçbir şey yazmadıysa (null, undefined, veya boş string) direkt boş string dönüyoruz. 
+        if (!value) 
+            return;
+    
+        // Eğer kullanıcı virgül yazmadıysa, değerin sonuna virgül ve 00 ekliyoruz.
+        if (value.indexOf(',') === -1) {
+            value += ',00';
+        }
+    
+        // Virgülün solundaki ve sağındaki kısımları ayırıyoruz.
+        const parts = value.split(',');
+
+        let integerPart = parts[0]; //Ana para kısmı
+        let decimalPart = parts[1] || ''; //Kuruş kısmı
+    
+        // Eğer kuruş kısmı yoksa, 00 ekliyoruz.
+        if (decimalPart.length === 0) {
+            decimalPart = '00';
+        } 
+        // Eğer kuruş kısmı 1 karakterse, tek bir tane 0 ekliyoruz.
+        else if (decimalPart.length === 1) {
+            decimalPart += '0';
+        } 
+        // Eğer kuruş kısmı 2 karakterden uzunsa, sadece ilk 2 karakterini alıyoruz.
+        else if (decimalPart.length > 2) {
+            decimalPart = decimalPart.substring(0, 2);
+        }
+        
+        // İlk değeri silip, yerine formatlanmış yeni değeri yazıyoruz.
+        $(this).val(integerPart + ',' + decimalPart);
+    });
+    
+
+    // Üründe "Düzenle" butonuna tıklandığında
+    $(document).on('click', '.btn-edit-product', function(e) {
+        e.stopPropagation();
+
+        const productId = $(this).data('product-id');
+        updateProduct(productId);
     });
 
 
