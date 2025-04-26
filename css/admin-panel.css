@@ -460,6 +460,7 @@ td, th {
 /* Kullanıcı Detayları Modal Stili */
 .user-details-modal,
 .menu-details-modal,
+.product-details-modal,
 .menu-update-modal,
 .menu-create-modal {
   display: none;
@@ -475,6 +476,7 @@ td, th {
 
 .user-details-content,
 .menu-details-content,
+.product-details-content,
 .menu-update-content,
 .menu-create-content {
   background-color: #edece1;
@@ -489,6 +491,7 @@ td, th {
 
 .user-details-header,
 .menu-details-header,
+.product-details-header,
 .menu-update-header,
 .menu-create-header {
   display: flex;
@@ -501,6 +504,7 @@ td, th {
 
 .user-details-header h2,
 .menu-details-header h2,
+.product-details-header h2,
 .menu-update-header h2,
 .menu-create-header h2 {
   color: #000;
@@ -510,6 +514,7 @@ td, th {
 
 .close-user-details,
 .close-menu-details,
+.close-product-details,
 .close-menu-update,
 .close-menu-create {
   color: #3a3a3a;
@@ -522,6 +527,7 @@ td, th {
 .close-users-modal:hover,
 .close-menus-modal:hover,
 .close-menu-details:hover,
+.close-product-details:hover,
 .close-user-details:hover,
 .close-menu-update:hover,
 .close-menu-create:hover {
@@ -542,15 +548,6 @@ td, th {
   margin: 0;
   font-size: 16px;
 }
-
-.user-info strong,
-.menu-info strong {
-  color: #000;
-  margin-right: 10px;
-  display: inline-block;
-  width: 150px;
-}
-
 
 
 /* Kullanıcı satırı hover efekti */
@@ -626,6 +623,7 @@ td, th {
 
 
 .menu-details-body,
+.product-details-body,
 .menu-update-body,
 .menu-create-body {
   display: flex;
@@ -633,7 +631,8 @@ td, th {
   gap: 20px;
 }
 
-.menu-image-container {
+.menu-image-container,
+.product-image-container {
   width: 100%;
   display: flex;
   justify-content: center;
@@ -685,6 +684,7 @@ td, th {
 }
 
 .menu-detail-image,
+.product-detail-image,
 .menu-update-image,
 .menu-create-image {
   max-width: 100%;
@@ -694,37 +694,43 @@ td, th {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.menu-info {
+.menu-info,
+.product-info {
   color: #000;
   border: 1px solid #81818140;
 }
 
-.menu-info-item{
+.menu-info-item,
+.product-info-item{
   display: flex;
   align-items: center;
   margin: 0 15px;
   border-bottom: 1px solid #81818140;
 }
 
-.menu-info-item:last-child{
+.menu-info-item:last-child,
+.product-info-item:last-child{
   border-bottom: none;
 } 
 
-.menu-label{
+.menu-label,
+.product-label{
   display: flex;
   align-items: center;
   justify-content: space-between;
   font-size: 16px;
 }
 
-.menu-label strong {
+.menu-label strong,
+.product-label strong {
   color: #000;
   margin-right: 10px;
   display: inline-block;
   width: 100%;
 }
 
-.menu-label span{
+.menu-label span,
+.product-label span{
   font-weight: bold;
 }
 
@@ -742,7 +748,8 @@ td, th {
   border: 1px solid #ffc515;
 }
 
-.menu-value {
+.menu-value,
+.product-value {
   margin: 10px 0;
   margin-left: 15px;
   font-size: 16px;
@@ -1045,6 +1052,7 @@ input:not(:checked) + .toggle-slider:after {
   
   .users-modal-header h2,
   .menu-details-header h2,
+  .product-details-header h2,
   .menus-modal-header h2,
   .menu-update-header h2,
   .menu-create-header h2 {
@@ -1072,6 +1080,7 @@ input:not(:checked) + .toggle-slider:after {
 
   .user-details-content,
   .menu-details-content,
+  .product-details-content,
   .menu-update-content,
   .menu-create-content {
     margin: 10% auto;
@@ -1079,11 +1088,8 @@ input:not(:checked) + .toggle-slider:after {
     padding: 15px;
   }
 
-  .menu-info p {
-    font-size: 14px;
-  }
-
   .menu-detail-image,
+  .product-detail-image,
   .menu-update-image,
   .menu-create-image {
     max-height: 250px;
@@ -1148,17 +1154,17 @@ input:not(:checked) + .toggle-slider:after {
     margin-top: 8px;
   }
 
-  .menu-info{
+  .menu-create-body .menu-info,
+  .menu-update-body .menu-info,
+  .product-create-body .product-info{
     width: 90%;
   }
 
-  .menu-info-item {
+  .menu-create-body .menu-info-item,
+  .menu-update-body .menu-info-item,
+  .product-create-body .product-info-item{
     flex-wrap: wrap;
     justify-content: center;
-  }
-
-  .menu-value{
-    font-size: 14px;
   }
 
   .col-div-3 {
@@ -1212,6 +1218,7 @@ input:not(:checked) + .toggle-slider:after {
   
   .users-modal-header h2,
   .menu-details-header h2,
+  .product-details-header h2,
   .menus-modal-header h2,
   .menu-update-header h2,
   .menu-create-header h2 {
@@ -1258,17 +1265,15 @@ input:not(:checked) + .toggle-slider:after {
   }
 
   .menu-details-content,
+  .product-details-content,
   .menu-update-content,
   .menu-create-content {
     margin: 15% auto;
     padding: 10px;
   }
 
-  .menu-info p {
-    font-size: 13px;
-  }
-
   .menu-detail-image,
+  .product-detail-image,
   .menu-update-image,
   .menu-create-image {
     max-height: 200px;

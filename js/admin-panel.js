@@ -753,8 +753,13 @@ $(document).ready(function() {
 
 
     // Modal açıldığında, öğelerin alt alta gelip gelmediğini kontrol et
-    function checkIfItemsAreOnNewLine() {
-        var menuItem = $(".menu-update-modal .menu-info .menu-info-item");
+    function checkIfItemsAreOnNewLine(isUpdateModal) {
+        if (isUpdateModal) {
+            var menuItem = $(".menu-update-modal .menu-info .menu-info-item");
+        } else {
+            var menuItem = $(".menu-create-modal .menu-info .menu-info-item");
+        }
+
         var label = menuItem.find(".menu-label");
         var value = menuItem.find(".menu-value");
         
@@ -774,7 +779,14 @@ $(document).ready(function() {
     // Modal açıldığında fonksiyonu çağır
     $(document).on('shown.bs.modal', '.menu-update-modal', function() {
         setTimeout(function() {
-            checkIfItemsAreOnNewLine();
+            checkIfItemsAreOnNewLine(true);
+        }, 1);
+    });
+
+    // Modal açıldığında fonksiyonu çağır
+    $(document).on('shown.bs.modal', '.menu-create-modal', function() {
+        setTimeout(function() {
+            checkIfItemsAreOnNewLine(false);
         }, 1);
     });
 
@@ -784,8 +796,15 @@ $(document).ready(function() {
         if ($('.menu-update-modal').is(':visible')) {
             clearTimeout(resizeTimer);
             resizeTimer = setTimeout(function() {
-                checkIfItemsAreOnNewLine();
+                checkIfItemsAreOnNewLine(true);
             }, 250);
+        }else if($('.menu-create-modal').is(':visible')){
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(function() {
+                checkIfItemsAreOnNewLine(false);
+            }, 250);
+        }else{
+            clearTimeout(resizeTimer);
         }
     });
 
@@ -841,7 +860,7 @@ $(document).ready(function() {
                     
                     // Detay modülünü göster
                     $('.menu-update-modal').fadeIn(300, function() {
-                        checkIfItemsAreOnNewLine();
+                        checkIfItemsAreOnNewLine(true);
                     });
                     
                     // Kapatma butonuna tıklandığında
@@ -981,7 +1000,7 @@ $(document).ready(function() {
         
         // Detay modülünü göster
         $('.menu-create-modal').fadeIn(300, function() {
-            checkIfItemsAreOnNewLine();
+            checkIfItemsAreOnNewLine(false);
         });
         
         // Kapatma butonuna tıklandığında
@@ -1061,6 +1080,9 @@ $(document).ready(function() {
             }
         });
     });
+
+
+
 
 
     // Menüdeki ürünleri getiren fonksiyon
@@ -1219,6 +1241,130 @@ $(document).ready(function() {
     });
 
 
+
+    // Ürün detaylarını getiren fonksiyon
+    function getProductDetails(productId) {
+        const token = localStorage.getItem('token');
+        
+        $.ajax({
+            url: `https://eatwell-api.azurewebsites.net/api/products/getForAdmin?productId=${productId}`,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                if (response.success && response.data) {
+                    const product = response.data;
+                    const createDate = new Date(product.createDate);
+                    const updateDate = product.updateDate ? new Date(product.updateDate) : null;
+                    const deleteDate = product.deleteDate ? new Date(product.deleteDate) : null;
+                    
+                    // Tarihleri formatla
+                    const formattedCreateDate = `${createDate.getDate().toString().padStart(2, '0')}.${(createDate.getMonth() + 1).toString().padStart(2, '0')}.${createDate.getFullYear()}`;
+                    const formattedUpdateDate = updateDate ? `${updateDate.getDate().toString().padStart(2, '0')}.${(updateDate.getMonth() + 1).toString().padStart(2, '0')}.${updateDate.getFullYear()}` : '-';
+                    const formattedDeleteDate = deleteDate ? `${deleteDate.getDate().toString().padStart(2, '0')}.${(deleteDate.getMonth() + 1).toString().padStart(2, '0')}.${deleteDate.getFullYear()}` : '-';
+                    
+                    let productDetailsHTML = `
+                    <div class="product-details-modal">
+                        <div class="product-details-content">
+                            <div class="product-details-header">
+                                <h2>Ürün Detayı</h2>
+                                <span class="close-product-details">&times;</span>
+                            </div>
+                            <div class="product-details-body">
+                                <div class="product-image-container">
+                                    <img src="${product.imagePath}" alt="${product.name}" class="product-detail-image">
+                                </div>
+                                <div class="product-info">
+                                    <div class="product-info-item">
+                                        <div class="product-label">
+                                            <strong>Ürün Adı</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <p class="product-value">${product.name}</p>
+                                    </div>
+                                    <div class="product-info-item">
+                                        <div class="product-label">
+                                            <strong>Durum</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <p class="product-value">${product.isDeleted ? 'Pasif' : 'Aktif'}</p>
+                                    </div>
+                                    <div class="product-info-item">
+                                        <div class="product-label">
+                                            <strong>Oluşturulma Tarihi</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <p class="product-value">${formattedCreateDate}</p>
+                                    </div>
+                                    <div class="product-info-item">
+                                        <div class="product-label">
+                                            <strong>Güncellenme Tarihi</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <p class="product-value">${formattedUpdateDate}</p>
+                                    </div>
+                                    <div class="product-info-item">
+                                        <div class="product-label">
+                                            <strong>Silinme Tarihi</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <p class="product-value">${formattedDeleteDate}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                    
+                    // Eğer detay modülü zaten varsa kaldır
+                    $('.product-details-modal').remove();
+                    
+                    // Detay modülünü ekle
+                    $('body').append(productDetailsHTML);
+                    
+                    // Detay modülünü göster
+                    $('.product-details-modal').fadeIn(300);
+                    
+                    // Kapatma butonuna tıklandığında
+                    $('.close-product-details').click(function() {
+                        $('.product-details-modal').fadeOut(300, function() {
+                            $(this).remove();
+                        });
+                    });
+                    
+                    // Modül dışına tıklandığında kapat
+                    $('.product-details-modal').click(function(e) {
+                        if ($(e.target).hasClass('product-details-modal')) {
+                            $('.product-details-modal').fadeOut(300, function() {
+                                $(this).remove();
+                            });
+                        }
+                    });
+                } else {
+                    showToast('error', 'Hata', 'Ürün detayları alınırken bir hata oluştu!');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Ürün detayları alınırken hata oluştu:', error);
+                showToast('error', 'Hata', 'Ürün detayları alınırken bir hata oluştu!');
+            }
+        });
+    }
+
+
+    // Ürün satırına tıklama olayı
+    $(document).on('click', '.product-row', function(e) {
+        // Eğer tıklanan element düzenleme butonu, toggle switch veya ürünleri gör butonu ise işlemi durdur
+        if ($(e.target).closest('.btn-edit-product, .toggle-switch, .btn-products-menu').length) {
+            return;
+        }
+
+        const productId = $(this).data('product-id');
+        getProductDetails(productId);
+    });
+
+
+
     // Sayfa ilk açıldığında yani admin-panel.html sayfası yüklendiğinde
     window.addEventListener('load', function() {
 
@@ -1257,7 +1403,7 @@ $(document).ready(function() {
     });
 
 
-    //Kullanıcı tarayıcıda geri veya ileri tuşuna basınca çalışacak
+    //Kullanıcı tarayıcıda geri veya ileri tuşuna basınca
     window.addEventListener('popstate', function (e) {
 
         //Eğer state varsa, yani geçmişte bir adım kaydedilmişse:
