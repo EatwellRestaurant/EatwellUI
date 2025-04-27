@@ -1168,7 +1168,7 @@ $(document).ready(function() {
                                         </label>
                                     </td>
                                     <td>${product.name}</td>
-                                    <td>${product.price.toFixed(2).replace('.', ',')}₺</td>
+                                    <td>${formatPriceInputLive(product.price.toFixed(2).replace('.', ','))}₺</td>
                                     <td>${formattedDate}</td>
                                     <td>
                                         <button class="btn-edit-product" data-product-id="${product.id}">
@@ -1230,8 +1230,7 @@ $(document).ready(function() {
         const menuId = $(this).data('menu-id');
         const menuName = $(this).data('menu-name');
 
-        localStorage.setItem('selectedMenuId', menuId);
-        localStorage.setItem('selectedMenuName', menuName);
+        
 
         // URL'ye sahte bir adım ekliyoruz
         history.pushState({ page: 'products' }, '', `?page=products`); 
@@ -1287,7 +1286,7 @@ $(document).ready(function() {
                                             <strong>Fiyatı</strong> 
                                             <span>:</span>
                                         </div>
-                                        <p class="product-value">${product.price.toFixed(2).replace('.', ',')}₺</p>
+                                        <p class="product-value">${formatPriceInputLive(product.price.toFixed(2).replace('.', ','))}₺</p>
                                     </div>
                                     <div class="product-info-item">
                                         <div class="product-label">
@@ -1405,14 +1404,14 @@ $(document).ready(function() {
                                             <strong>Ürün Adı</strong> 
                                             <span>:</span>
                                         </div>
-                                        <input type="text" class="product-value" value="${product.name}">
+                                        <input type="text" class="product-value product-name" value="${product.name}">
                                     </div>
                                     <div class="product-info-item">
                                         <div class="product-label">
                                             <strong>Fiyatı (₺)</strong> 
                                             <span>:</span>
                                         </div>
-                                        <input type="text" class="product-value price-value" value="${product.price.toFixed(2).replace('.', ',')}">    
+                                        <input type="text" class="product-value product-price price-value" value="${formatPriceInputLive(product.price.toFixed(2).replace('.', ','))}">    
                                     </div>
                                 </div>
                                 <button class="btn-update-product">Güncelle</button>
@@ -1562,6 +1561,68 @@ $(document).ready(function() {
         updateProduct(productId);
     });
 
+
+
+    // Üründe "Güncelle" butonuna tıklandığında
+    $(document).on('click', '.btn-update-product', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const productId = $(this).closest('.product-update-modal').data('product-id');
+        const productName = $(this).closest('.product-update-modal').find('.product-name').val();
+        const productPrice = $(this).closest('.product-update-modal').find('.product-price').val();
+        
+        if (productName.trim() === '') {
+            showToast('error', 'Hata', 'Lütfen ürün adını giriniz!');
+            return;
+        }
+
+        if (productPrice.trim() === '') {
+            showToast('error', 'Hata', 'Lütfen ürün fiyatını giriniz!');
+            return;
+        }
+
+        const productImage = $('#productImage')[0].files[0];
+
+        const formData = new FormData();
+        formData.append('name', productName);
+        formData.append('price', productPrice);
+        if (productImage) {
+            formData.append('image', productImage);
+        }
+        
+        const token = localStorage.getItem('token');
+        
+        $.ajax({
+            url: `https://eatwell-api.azurewebsites.net/api/products/update?productId=${productId}`,
+            type: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                if (response.success) {
+                    showToast('success', 'Başarılı', 'Ürün başarıyla güncellendi!');
+                    $('.product-update-modal').fadeOut(300, function() {
+                        $(this).remove();
+                    });
+
+                    const menuId = localStorage.getItem('selectedMenuId');
+                    const menuName = localStorage.getItem('selectedMenuName');
+                    
+                    getProducts(menuId, menuName); // Ürün listesini yenile
+                } else {
+                    showToast('error', 'Hata', 'Ürün güncellenirken hata oluştu!');
+                }
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : 'Ürün güncellenirken hata oluştu!');
+            }
+        });
+    });
 
 
     // Sayfa ilk açıldığında yani admin-panel.html sayfası yüklendiğinde
