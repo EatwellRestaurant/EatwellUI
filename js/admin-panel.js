@@ -1230,7 +1230,8 @@ $(document).ready(function() {
         const menuId = $(this).data('menu-id');
         const menuName = $(this).data('menu-name');
 
-        
+        localStorage.setItem('selectedMenuId', menuId);
+        localStorage.setItem('selectedMenuName', menuName);
 
         // URL'ye sahte bir adım ekliyoruz
         history.pushState({ page: 'products' }, '', `?page=products`); 
