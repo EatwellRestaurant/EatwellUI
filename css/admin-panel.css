@@ -463,7 +463,8 @@ td, th {
 .product-details-modal,
 .menu-update-modal,
 .product-update-modal,
-.menu-create-modal {
+.menu-create-modal,
+.product-create-modal {
   display: none;
   position: fixed;
   z-index: 1001;
@@ -480,7 +481,8 @@ td, th {
 .product-details-content,
 .menu-update-content,
 .product-update-content,
-.menu-create-content {
+.menu-create-content,
+.product-create-content {
   background-color: #edece1;
   margin: 5% auto;
   padding: 20px;
@@ -496,7 +498,8 @@ td, th {
 .product-details-header,
 .menu-update-header,
 .product-update-header,
-.menu-create-header {
+.menu-create-header,
+.product-create-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -510,7 +513,8 @@ td, th {
 .product-details-header h2,
 .menu-update-header h2,
 .product-update-header h2,
-.menu-create-header h2 {
+.menu-create-header h2,
+.product-create-header h2 {
   color: #000;
   margin: 0;
   font-size: 24px;
@@ -521,7 +525,8 @@ td, th {
 .close-product-details,
 .close-menu-update,
 .close-product-update,
-.close-menu-create {
+.close-menu-create,
+.close-product-create {
   color: #3a3a3a;
   font-size: 28px;
   font-weight: bold;
@@ -536,7 +541,8 @@ td, th {
 .close-user-details:hover,
 .close-menu-update:hover,
 .close-product-update:hover,
-.close-menu-create:hover {
+.close-menu-create:hover,
+.close-product-create:hover {
   color: #ffc515;
 }
 
@@ -626,7 +632,8 @@ td, th {
 .product-details-body,
 .menu-update-body,
 .product-update-body,
-.menu-create-body {
+.menu-create-body,
+.product-create-body {
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -643,7 +650,8 @@ td, th {
 
 .menu-update-body .menu-image-container,
 .product-update-body .product-image-container,
-.menu-create-body .menu-image-container{
+.menu-create-body .menu-image-container,
+.product-create-body .product-image-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -655,7 +663,8 @@ td, th {
 
 .btn-update-menu,
 .btn-update-product,
-.btn-add-menu{
+.btn-add-menu,
+.btn-add-product{
   margin-top: 15px;
   border: none;
   padding: 13px 16px;
@@ -672,7 +681,8 @@ td, th {
 .custom-upload-button,
 .btn-update-menu,
 .btn-update-product,
-.btn-add-menu {
+.btn-add-menu,
+.btn-add-product{
   display: inline-block;
   background-color: #ffc515;
   color: #000;
@@ -685,7 +695,8 @@ td, th {
 .custom-upload-button:hover,
 .btn-update-menu:hover,
 .btn-update-product:hover,
-.btn-add-menu:hover{
+.btn-add-menu:hover,
+.btn-add-product:hover{
   background-color: #ffd760;;
 }
 
@@ -693,7 +704,8 @@ td, th {
 .product-detail-image,
 .menu-update-image,
 .product-update-image,
-.menu-create-image {
+.menu-create-image,
+.product-create-image {
   max-width: 100%;
   max-height: 300px;
   object-fit: contain;
@@ -745,7 +757,8 @@ td, th {
 
 .menu-update-body .menu-value,
 .product-update-body .product-value,
-.menu-create-body .menu-value{
+.menu-create-body .menu-value,
+.product-create-body .product-value{
   border: 1px solid #ddd;
   padding: 5px 8px;
   border-radius: 6px;
@@ -755,7 +768,8 @@ td, th {
 
 .menu-update-body .menu-value:focus-visible,
 .product-update-body .product-value:focus-visible,
-.menu-create-body .menu-value:focus-visible{
+.menu-create-body .menu-value:focus-visible,
+.product-create-body .product-value:focus-visible{
   outline: none;
   border: 1px solid #ffc515;
 }
@@ -1068,7 +1082,8 @@ input:not(:checked) + .toggle-slider:after {
   .menus-modal-header h2,
   .menu-update-header h2,
   .product-update-header h2,
-  .menu-create-header h2 {
+  .menu-create-header h2,
+  .product-create-header h2 {
     font-size: 20px;
   }
   
@@ -1096,7 +1111,8 @@ input:not(:checked) + .toggle-slider:after {
   .product-details-content,
   .menu-update-content,
   .product-update-content,
-  .menu-create-content {
+  .menu-create-content,
+  .product-create-content {
     margin: 10% auto;
     width: 95%;
     padding: 15px;
@@ -1106,7 +1122,8 @@ input:not(:checked) + .toggle-slider:after {
   .product-detail-image,
   .menu-update-image,
   .product-update-image,
-  .menu-create-image {
+  .menu-create-image,
+  .product-create-image {
     max-height: 250px;
   }
 
@@ -1116,7 +1133,8 @@ input:not(:checked) + .toggle-slider:after {
   
   .btn-update-menu,
   .btn-update-product,
-  .btn-add-menu{
+  .btn-add-menu,
+  .btn-add-product{
     padding: 12px 14px;
     width: 140px;
     font-size: 15px;
@@ -1188,9 +1206,10 @@ input:not(:checked) + .toggle-slider:after {
   .product-details-body, 
   .menu-update-body, 
   .product-update-body, 
-  .menu-create-body {
+  .menu-create-body,
+  .product-create-body {
     align-items: center;
-}
+  }
 
   .col-div-3 {
     width: 100%;
@@ -1247,7 +1266,8 @@ input:not(:checked) + .toggle-slider:after {
   .menus-modal-header h2,
   .menu-update-header h2,
   .product-update-header h2,
-  .menu-create-header h2 {
+  .menu-create-header h2,
+  .product-create-header h2 {
     font-size: 18px;
   }
   
@@ -1294,7 +1314,8 @@ input:not(:checked) + .toggle-slider:after {
   .product-details-content,
   .menu-update-content,
   .product-update-content,
-  .menu-create-content {
+  .menu-create-content,
+  .product-create-content {
     margin: 15% auto;
     padding: 10px;
   }
@@ -1303,7 +1324,8 @@ input:not(:checked) + .toggle-slider:after {
   .product-detail-image,
   .menu-update-image,
   .product-update-image,
-  .menu-create-image {
+  .menu-create-image,
+  .product-create-image {
     max-height: 200px;
   }
 
@@ -1319,7 +1341,8 @@ input:not(:checked) + .toggle-slider:after {
   
   .btn-update-menu,
   .btn-update-product,
-  .btn-add-menu{
+  .btn-add-menu,
+  .btn-add-product{
     padding: 11px 13px;
     width: 130px;
     font-size: 14px;

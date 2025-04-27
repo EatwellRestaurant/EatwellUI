@@ -946,7 +946,7 @@ $(document).ready(function() {
         });
     });
 
-    // Resim seçildiğinde önizleme gösterme
+    // Resim seçildiğinde önizleme gösterme (Menü için)
     $(document).on('change', '#menuImage', function(e) {
         const file = e.target.files[0];
         
@@ -1089,7 +1089,7 @@ $(document).ready(function() {
         const token = localStorage.getItem('token');
         
         $.ajax({
-            url: `https://eatwell-api.azurewebsites.net/api/products/GetAllForAdminByMealCategoryId?mealCategoryId=${menuId}`,
+            url: `https://eatwell-api.azurewebsites.net/api/products/getAllForAdminByMealCategoryId?mealCategoryId=${menuId}`,
             type: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -1562,7 +1562,6 @@ $(document).ready(function() {
     });
 
 
-
     // Üründe "Güncelle" butonuna tıklandığında
     $(document).on('click', '.btn-update-product', function(e) {
         e.preventDefault();
@@ -1578,7 +1577,7 @@ $(document).ready(function() {
         }
 
         if (productPrice.trim() === '') {
-            showToast('error', 'Hata', 'Lütfen ürün fiyatını giriniz!');
+            showToast('error', 'Hata', 'Lütfen ürünün fiyat bilgisini giriniz!');
             return;
         }
 
@@ -1624,6 +1623,159 @@ $(document).ready(function() {
         });
     });
 
+
+    function createProduct() {
+        let productCreateHTML = `
+        <div class="product-create-modal">
+            <div class="product-create-content">
+                <div class="product-create-header">
+                    <h2>Ürün Ekleme</h2>
+                    <span class="close-product-create">&times;</span>
+                </div>
+                <div class="product-create-body">
+                    <div class="product-image-container">
+                        <img src="../icons/default-menu-image-placeholder.png" alt="default-product-image" class="product-create-image" id="previewImage">
+                        <label for="productImage" class="custom-upload-button">Resim Seç</label>
+                        <input type="file" id="productImage" accept="image/*" class="image-input">
+                    </div>
+                    <div class="product-info">
+                        <div class="product-info-item">
+                            <div class="product-label">
+                                <strong>Ürün Adı</strong> 
+                                <span>:</span>
+                            </div>
+                            <input type="text" class="product-value product-name">
+                        </div>
+                        <div class="product-info-item">
+                            <div class="product-label">
+                                <strong>Fiyatı (₺)</strong> 
+                                <span>:</span>
+                            </div>
+                            <input type="text" class="product-value product-price price-value">    
+                        </div>
+                    </div>
+                    <button class="btn-add-product">Ekle</button>
+                </div>
+            </div>
+        </div>`;
+        
+        
+        // Detay modülünü ekle
+        $('body').append(productCreateHTML);
+        
+        // Detay modülünü göster
+        $('.product-create-modal').fadeIn(300, function() {
+            checkIfItemsAreOnNewLine(false);
+        });
+        
+        // Kapatma butonuna tıklandığında
+        $('.close-product-create').click(function() {
+            $('.product-create-modal').fadeOut(300, function() {
+                $(this).remove();
+            });
+        });
+        
+        // Modül dışına tıklandığında kapat
+        $('.product-create-modal').click(function(e) {
+            if ($(e.target).hasClass('product-create-modal')) {
+                $('.product-create-modal').fadeOut(300, function() {
+                    $(this).remove();
+                });
+            }
+        });
+    }
+
+    // Menüde "Ürün Ekle" butonuna tıklandığında
+    $(document).on('click', '.btn-create-product', function(e) {
+        e.stopPropagation();
+
+        createProduct();
+    });
+
+
+    // Üründe "Ekle" butonuna tıklandığında
+    $(document).on('click', '.btn-add-product', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const productName = $(this).closest('.product-create-modal').find('.product-name').val();
+        const productPrice = $(this).closest('.product-create-modal').find('.product-price').val();
+        const productImage = $('#productImage')[0].files[0];
+
+        if (productName.trim() === '') {
+            showToast('error', 'Hata', 'Lütfen ürün adını giriniz!');
+            return;
+        }
+
+        if (productPrice.trim() === '') {
+            showToast('error', 'Hata', 'Lütfen ürünün fiyat bilgisini giriniz!');
+            return;
+        }
+
+        const menuId = localStorage.getItem('selectedMenuId');
+        const menuName = localStorage.getItem('selectedMenuName');
+
+        const formData = new FormData();
+        formData.append('name', productName);
+        formData.append('price', productPrice);
+        formData.append('mealCategoryId', menuId);
+
+        if (productImage) {
+            formData.append('image', productImage);
+        }
+        else{
+            showToast('error', 'Hata', 'Lütfen ürün resmi seçiniz!');
+            return;
+        }
+
+        const token = localStorage.getItem('token');
+        
+        $.ajax({
+            url: `https://eatwell-api.azurewebsites.net/api/products/add`,
+            type: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                if (response.success) {
+                    showToast('success', 'Başarılı', 'Ürün başarıyla eklendi!');
+                    $('.product-create-modal').fadeOut(300, function() {
+                        $(this).remove();
+                    });
+
+                    getProducts(menuId, menuName); // Ürün listesini yenile
+                } else {
+                    showToast('error', 'Hata', response.message);
+                }
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Menü eklenirken hata oluştu!");
+            }
+        });
+    });
+
+
+    // Resim seçildiğinde önizleme gösterme (Ürün için)
+    $(document).on('change', '#productImage', function(e) {
+        const file = e.target.files[0];
+        
+        if (file) {
+            // FileReader ile dosyayı oku
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                // Önizleme resmini güncelle
+                $('#previewImage').attr('src', e.target.result);
+            }
+            
+            // Dosyayı base64 formatında oku
+            reader.readAsDataURL(file);
+        }
+    });
 
     // Sayfa ilk açıldığında yani admin-panel.html sayfası yüklendiğinde
     window.addEventListener('load', function() {
