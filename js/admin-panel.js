@@ -385,7 +385,7 @@ $(document).ready(function() {
                                     <p><strong>E-posta:</strong> ${user.email}</p>
                                     <p><strong>Doğrulama Durumu:</strong> ${user.verification ? 'Doğrulanmış' : 'Doğrulanmamış'}</p>
                                     <p><strong>Kayıt Tarihi:</strong> ${formattedDate}</p>
-                                    <p><strong>Durum:</strong> ${user.isDeleted ? 'Silinmiş' : 'Aktif'}</p>
+                                    <p><strong>Durum:</strong> ${user.isActive ? 'Aktif' : 'Pasif'}</p>
                                 </div>
                             </div>
                         </div>
@@ -513,13 +513,17 @@ $(document).ready(function() {
                                 <tr class="menu-row" data-menu-id="${menu.id}">
                                     <td>
                                         <label class="toggle-switch menu-toggle-switch">
-                                            <input type="checkbox" ${menu.isDeleted ? '' : 'checked'} data-menu-id="${menu.id}">
+                                            <input type="checkbox" ${menu.isActive ? 'checked' : ''} data-menu-id="${menu.id}">
                                             <span class="toggle-slider"></span>
                                         </label>
                                     </td>
                                     <td>${menu.name}</td>
                                     <td>${formattedDate}</td>
                                     <td>
+                                        <button class="btn-delete-menu" data-menu-id="${menu.id}">
+                                            <i class="fa-solid fa-trash"></i>
+                                            Sil
+                                        </button>
                                         <button class="btn-edit-menu" data-menu-id="${menu.id}">
                                             <i class="fa-solid fa-pen-to-square"></i>
                                             Düzenle
@@ -644,13 +648,9 @@ $(document).ready(function() {
                 if (response.success && response.data) {
                     const menu = response.data;
                     const createDate = new Date(menu.createDate);
-                    const updateDate = menu.updateDate ? new Date(menu.updateDate) : null;
-                    const deleteDate = menu.deleteDate ? new Date(menu.deleteDate) : null;
                     
                     // Tarihleri formatla
                     const formattedCreateDate = `${createDate.getDate().toString().padStart(2, '0')}.${(createDate.getMonth() + 1).toString().padStart(2, '0')}.${createDate.getFullYear()}`;
-                    const formattedUpdateDate = updateDate ? `${updateDate.getDate().toString().padStart(2, '0')}.${(updateDate.getMonth() + 1).toString().padStart(2, '0')}.${updateDate.getFullYear()}` : '-';
-                    const formattedDeleteDate = deleteDate ? `${deleteDate.getDate().toString().padStart(2, '0')}.${(deleteDate.getMonth() + 1).toString().padStart(2, '0')}.${deleteDate.getFullYear()}` : '-';
                     
                     let menuDetailsHTML = `
                     <div class="menu-details-modal">
@@ -676,7 +676,7 @@ $(document).ready(function() {
                                             <strong>Durum</strong> 
                                             <span>:</span>
                                         </div>
-                                        <p class="menu-value">${menu.isDeleted ? 'Pasif' : 'Aktif'}</p>
+                                        <p class="menu-value">${menu.isActive ? 'Aktif' : 'Pasif'}</p>
                                     </div>
                                     <div class="menu-info-item">
                                         <div class="menu-label">
@@ -684,20 +684,6 @@ $(document).ready(function() {
                                             <span>:</span>
                                         </div>
                                         <p class="menu-value">${formattedCreateDate}</p>
-                                    </div>
-                                    <div class="menu-info-item">
-                                        <div class="menu-label">
-                                            <strong>Güncellenme Tarihi</strong> 
-                                            <span>:</span>
-                                        </div>
-                                        <p class="menu-value">${formattedUpdateDate}</p>
-                                    </div>
-                                    <div class="menu-info-item">
-                                        <div class="menu-label">
-                                            <strong>Silinme Tarihi</strong> 
-                                            <span>:</span>
-                                        </div>
-                                        <p class="menu-value">${formattedDeleteDate}</p>
                                     </div>
                                 </div>
                             </div>
@@ -1081,6 +1067,63 @@ $(document).ready(function() {
     });
 
 
+    // Menüde "Sil" butonuna tıklandığında
+    $(document).on('click', '.btn-delete-menu', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const menuId = $(this).closest('.menu-row').data('menu-id');
+        
+        // SweetAlert2 ile özelleştirilmiş onay kutusu
+        Swal.fire({
+            title: 'Emin misiniz?',
+            text: "Bu menüyü silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Evet, Sil!',
+            cancelButtonText: 'İptal',
+            customClass: {
+                popup: 'swal2-popup-custom',
+                icon: 'swal2-icon-custom',
+                title: 'swal2-title-custom',
+                htmlContainer: 'swal2-content-custom',
+                confirmButton: 'swal2-confirm-custom',
+                cancelButton: 'swal2-cancel-custom'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const token = localStorage.getItem('token');
+                
+                $.ajax({
+                    url: `https://eatwell-api.azurewebsites.net/api/mealCategories/delete?mealCategoryId=${menuId}`,
+                    type: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            showToast('success', 'Başarılı', 'Menü başarıyla silindi!');
+
+                            $('.menu-update-modal').fadeOut(300, function() {
+                                $(this).remove();
+                            });
+
+                            getMenus(); // Menü listesini yenile
+                        } else {
+                            showToast('error', 'Hata', 'Menü silinirken bir hata oluştu!');
+                        }
+                    },
+                    error: function(xhr) {
+                        const errorMessage = xhr.responseJSON?.Message;
+                        showToast('error', 'Hata', errorMessage ? errorMessage : 'Menü silinirken bir hata oluştu!');
+                    }
+                });
+            }
+        });
+    });
+
 
 
 
@@ -1163,7 +1206,7 @@ $(document).ready(function() {
                                 <tr class="product-row" data-product-id="${product.id}">
                                     <td>
                                         <label class="toggle-switch product-toggle-switch">
-                                            <input type="checkbox" ${product.isDeleted ? '' : 'checked'} data-product-id="${product.id}">
+                                            <input type="checkbox" ${product.isActive ? 'checked' : ''} data-product-id="${product.id}">
                                             <span class="toggle-slider"></span>
                                         </label>
                                     </td>
@@ -1259,13 +1302,9 @@ $(document).ready(function() {
                 if (response.success && response.data) {
                     const product = response.data;
                     const createDate = new Date(product.createDate);
-                    const updateDate = product.updateDate ? new Date(product.updateDate) : null;
-                    const deleteDate = product.deleteDate ? new Date(product.deleteDate) : null;
                     
                     // Tarihleri formatla
                     const formattedCreateDate = `${createDate.getDate().toString().padStart(2, '0')}.${(createDate.getMonth() + 1).toString().padStart(2, '0')}.${createDate.getFullYear()}`;
-                    const formattedUpdateDate = updateDate ? `${updateDate.getDate().toString().padStart(2, '0')}.${(updateDate.getMonth() + 1).toString().padStart(2, '0')}.${updateDate.getFullYear()}` : '-';
-                    const formattedDeleteDate = deleteDate ? `${deleteDate.getDate().toString().padStart(2, '0')}.${(deleteDate.getMonth() + 1).toString().padStart(2, '0')}.${deleteDate.getFullYear()}` : '-';
                     
                     let productDetailsHTML = `
                     <div class="product-details-modal">
@@ -1298,7 +1337,7 @@ $(document).ready(function() {
                                             <strong>Durum</strong> 
                                             <span>:</span>
                                         </div>
-                                        <p class="product-value">${product.isDeleted ? 'Pasif' : 'Aktif'}</p>
+                                        <p class="product-value">${product.isActive ? 'Aktif' : 'Pasif'}</p>
                                     </div>
                                     <div class="product-info-item">
                                         <div class="product-label">
@@ -1306,20 +1345,6 @@ $(document).ready(function() {
                                             <span>:</span>
                                         </div>
                                         <p class="product-value">${formattedCreateDate}</p>
-                                    </div>
-                                    <div class="product-info-item">
-                                        <div class="product-label">
-                                            <strong>Güncellenme Tarihi</strong> 
-                                            <span>:</span>
-                                        </div>
-                                        <p class="product-value">${formattedUpdateDate}</p>
-                                    </div>
-                                    <div class="product-info-item">
-                                        <div class="product-label">
-                                            <strong>Silinme Tarihi</strong> 
-                                            <span>:</span>
-                                        </div>
-                                        <p class="product-value">${formattedDeleteDate}</p>
                                     </div>
                                 </div>
                             </div>

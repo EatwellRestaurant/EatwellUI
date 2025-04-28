@@ -800,12 +800,14 @@ td, th {
 
 .btn-edit-menu,
 .btn-edit-product,
+.btn-delete-menu,
 .btn-delete-product,
 .btn-products-menu{
   padding: 8px 10px;
 }
 
 .btn-products-menu,
+.btn-edit-menu,
 .btn-edit-product{
   margin-left: 8px;
 }
@@ -814,6 +816,7 @@ td, th {
 .btn-create-menu,
 .btn-create-product,
 .btn-edit-product,
+.btn-delete-menu,
 .btn-delete-product,
 .btn-products-menu {
   background-color: #ffc515;
@@ -827,6 +830,7 @@ td, th {
 .btn-edit-menu:hover,
 .btn-create-menu:hover,
 .btn-edit-product:hover,
+.btn-delete-menu:hover,
 .btn-delete-product:hover,
 .btn-create-product:hover,
 .btn-products-menu:hover {
@@ -836,6 +840,7 @@ td, th {
 .btn-edit-menu i,
 .btn-create-menu i,
 .btn-edit-product i,
+.btn-delete-menu i,
 .btn-delete-product i,
 .btn-create-product i,
 .btn-products-menu i{
@@ -957,6 +962,8 @@ input:not(:checked) + .toggle-slider:after {
   font-family: 'Poppins', sans-serif;
   border-radius: 10px;
   padding: 2.6em;
+  width: 400px;
+  height: 300px;
 }
 
 .swal2-icon-custom{
@@ -971,7 +978,7 @@ input:not(:checked) + .toggle-slider:after {
 
 .swal2-content-custom {
   color: #666;
-  font-size: 1.3em;
+  font-size: 1.6em;
   padding: 1em .3em 0.3em;;
 }
 
@@ -981,10 +988,13 @@ input:not(:checked) + .toggle-slider:after {
 
 .swal2-confirm-custom,
 .swal2-cancel-custom{ 
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
   border: none !important;
   padding: 0.5em 2em !important;
   font-size: 1.3em !important;
   border-radius: 5px !important;
+  letter-spacing: .05em;
 }
 
 .swal2-cancel-custom {
@@ -1403,6 +1413,7 @@ input:not(:checked) + .toggle-slider:after {
 
   .btn-edit-menu,
   .btn-edit-product,
+  .btn-delete-menu,
   .btn-delete-product,
   .btn-products-menu {
     padding: 6px 8px;
@@ -1456,10 +1467,18 @@ input:not(:checked) + .toggle-slider:after {
 
   .btn-edit-menu,
   .btn-edit-product,
+  .btn-delete-menu,
   .btn-delete-product,
   .btn-products-menu {
     padding: 5px 8px;
     font-size: 12px;
+  }
+
+  .swal2-popup-custom {
+    border-radius: 10px;
+    padding: 2.3em;
+    width: 350px;
+    height: 270px;
   }
  
   .swal2-icon-custom{
@@ -1469,14 +1488,20 @@ input:not(:checked) + .toggle-slider:after {
   
   .swal2-title-custom {
     font-size: 2.1em;
+    padding: 0.4em 1em 0;
   }
 
   .swal2-content-custom {
-    font-size: 1.2em;
-    padding: 1em .5em 0.3em;
+    font-size: 1.5em;
+    padding: .5em .5em 0.3em;
   }
 
-  .swal2-confirm-custom, .swal2-cancel-custom {
+  .swal2-actions{
+    margin: 0 auto !important;
+  }
+
+  .swal2-confirm-custom, 
+  .swal2-cancel-custom {
     font-size: 1.2em !important;
     padding: 0.5em 1.8em !important;
   }
