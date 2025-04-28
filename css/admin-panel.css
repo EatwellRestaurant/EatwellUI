@@ -800,11 +800,13 @@ td, th {
 
 .btn-edit-menu,
 .btn-edit-product,
+.btn-delete-product,
 .btn-products-menu{
   padding: 8px 10px;
 }
 
-.btn-products-menu{
+.btn-products-menu,
+.btn-edit-product{
   margin-left: 8px;
 }
 
@@ -812,6 +814,7 @@ td, th {
 .btn-create-menu,
 .btn-create-product,
 .btn-edit-product,
+.btn-delete-product,
 .btn-products-menu {
   background-color: #ffc515;
   color: #1b203d;
@@ -824,6 +827,7 @@ td, th {
 .btn-edit-menu:hover,
 .btn-create-menu:hover,
 .btn-edit-product:hover,
+.btn-delete-product:hover,
 .btn-create-product:hover,
 .btn-products-menu:hover {
   background-color: #ffd760;
@@ -832,6 +836,7 @@ td, th {
 .btn-edit-menu i,
 .btn-create-menu i,
 .btn-edit-product i,
+.btn-delete-product i,
 .btn-create-product i,
 .btn-products-menu i{
   margin-right: 3px;
@@ -944,6 +949,54 @@ input:not(:checked) + .toggle-slider:after {
   content: "Pasif";
   margin-left: 17px;
   transition: margin-left 0.4s ease;
+}
+
+
+/* SweetAlert2 Özel Stilleri */
+.swal2-popup-custom {
+  font-family: 'Poppins', sans-serif;
+  border-radius: 10px;
+  padding: 2.6em;
+}
+
+.swal2-icon-custom{
+  margin-top: .5em;
+}
+
+.swal2-title-custom {
+  color: #333;
+  font-size: 2.3em;
+  font-weight: 600;
+}
+
+.swal2-content-custom {
+  color: #666;
+  font-size: 1.3em;
+  padding: 1em .3em 0.3em;;
+}
+
+.swal2-confirm-custom {
+  background-color: #d33 !important;
+}
+
+.swal2-confirm-custom,
+.swal2-cancel-custom{ 
+  border: none !important;
+  padding: 0.5em 2em !important;
+  font-size: 1.3em !important;
+  border-radius: 5px !important;
+}
+
+.swal2-cancel-custom {
+  background-color: #3085d6 !important;
+}
+
+.swal2-confirm-custom:hover {
+  background-color: #c22 !important;
+}
+
+.swal2-cancel-custom:hover {
+  background-color: #2a7bc8 !important;
 }
 
 
@@ -1350,6 +1403,7 @@ input:not(:checked) + .toggle-slider:after {
 
   .btn-edit-menu,
   .btn-edit-product,
+  .btn-delete-product,
   .btn-products-menu {
     padding: 6px 8px;
     font-size: 13px;
@@ -1402,11 +1456,32 @@ input:not(:checked) + .toggle-slider:after {
 
   .btn-edit-menu,
   .btn-edit-product,
+  .btn-delete-product,
   .btn-products-menu {
     padding: 5px 8px;
     font-size: 12px;
   }
+ 
+  .swal2-icon-custom{
+    width: 4em;
+    height: 4em;
+  }
+  
+  .swal2-title-custom {
+    font-size: 2.1em;
+  }
+
+  .swal2-content-custom {
+    font-size: 1.2em;
+    padding: 1em .5em 0.3em;
+  }
+
+  .swal2-confirm-custom, .swal2-cancel-custom {
+    font-size: 1.2em !important;
+    padding: 0.5em 1.8em !important;
+  }
 }
+
 
 
 

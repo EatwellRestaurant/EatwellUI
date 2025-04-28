@@ -1171,6 +1171,10 @@ $(document).ready(function() {
                                     <td>${formatPriceInputLive(product.price.toFixed(2).replace('.', ','))}₺</td>
                                     <td>${formattedDate}</td>
                                     <td>
+                                        <button class="btn-delete-product" data-product-id="${product.id}">
+                                            <i class="fa-solid fa-trash"></i>
+                                            Sil
+                                        </button>
                                         <button class="btn-edit-product" data-product-id="${product.id}">
                                             <i class="fa-solid fa-pen-to-square"></i>
                                             Düzenle
@@ -1360,8 +1364,8 @@ $(document).ready(function() {
 
     // Ürün satırına tıklama olayı
     $(document).on('click', '.product-row', function(e) {
-        // Eğer tıklanan element düzenleme butonu, toggle switch veya ürünleri gör butonu ise işlemi durdur
-        if ($(e.target).closest('.btn-edit-product, .toggle-switch, .btn-products-menu').length) {
+        // Eğer tıklanan element düzenleme butonu, silme butonu veya toggle switch butonu ise işlemi durdur
+        if ($(e.target).closest('.btn-edit-product, .btn-delete-product, .toggle-switch').length) {
             return;
         }
 
@@ -1755,6 +1759,67 @@ $(document).ready(function() {
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
                 showToast('error', 'Hata', errorMessage ? errorMessage : "Menü eklenirken hata oluştu!");
+            }
+        });
+    });
+
+
+    // Üründe "Sil" butonuna tıklandığında
+    $(document).on('click', '.btn-delete-product', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const productId = $(this).closest('.product-row').data('product-id');
+        
+        // SweetAlert2 ile özelleştirilmiş onay kutusu
+        Swal.fire({
+            title: 'Emin misiniz?',
+            text: "Bu ürünü silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Evet, Sil!',
+            cancelButtonText: 'İptal',
+            customClass: {
+                popup: 'swal2-popup-custom',
+                icon: 'swal2-icon-custom',
+                title: 'swal2-title-custom',
+                htmlContainer: 'swal2-content-custom',
+                confirmButton: 'swal2-confirm-custom',
+                cancelButton: 'swal2-cancel-custom'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const token = localStorage.getItem('token');
+                
+                $.ajax({
+                    url: `https://eatwell-api.azurewebsites.net/api/products/delete?productId=${productId}`,
+                    type: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            showToast('success', 'Başarılı', 'Ürün başarıyla silindi!');
+
+                            $('.product-update-modal').fadeOut(300, function() {
+                                $(this).remove();
+                            });
+
+                            const menuId = localStorage.getItem('selectedMenuId');
+                            const menuName = localStorage.getItem('selectedMenuName');
+                            
+                            getProducts(menuId, menuName); // Ürün listesini yenile
+                        } else {
+                            showToast('error', 'Hata', 'Ürün silinirken bir hata oluştu!');
+                        }
+                    },
+                    error: function(xhr) {
+                        const errorMessage = xhr.responseJSON?.Message;
+                        showToast('error', 'Hata', errorMessage ? errorMessage : 'Ürün silinirken bir hata oluştu!');
+                    }
+                });
             }
         });
     });
