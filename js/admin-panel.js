@@ -512,7 +512,7 @@ $(document).ready(function() {
                             menusTableHTML += `
                                 <tr class="menu-row" data-menu-id="${menu.id}">
                                     <td>
-                                        <label class="toggle-switch">
+                                        <label class="toggle-switch menu-toggle-switch">
                                             <input type="checkbox" ${menu.isDeleted ? '' : 'checked'} data-menu-id="${menu.id}">
                                             <span class="toggle-slider"></span>
                                         </label>
@@ -616,14 +616,14 @@ $(document).ready(function() {
     }
 
     // Menü durumunu değiştirme olayı
-    $(document).on('change', '.toggle-switch input', function(e) {
+    $(document).on('change', '.menu-toggle-switch input', function(e) {
         e.stopPropagation(); // Event'in yayılmasını durduruyoruz yani menü detayının gelmesini engelliyoruz.
         const menuId = $(this).data('menu-id');
         deleteOrRestoreMenu(menuId);
     });
 
     // Toggle switch'e tıklama olayını engelle
-    $(document).on('click', '.toggle-switch', function(e) {
+    $(document).on('click', '.menu-toggle-switch', function(e) {
         e.stopPropagation();
     });
 
@@ -1162,7 +1162,7 @@ $(document).ready(function() {
                             productsTableHTML += `
                                 <tr class="product-row" data-product-id="${product.id}">
                                     <td>
-                                        <label class="toggle-switch">
+                                        <label class="toggle-switch product-toggle-switch">
                                             <input type="checkbox" ${product.isDeleted ? '' : 'checked'} data-product-id="${product.id}">
                                             <span class="toggle-slider"></span>
                                         </label>
@@ -1763,6 +1763,25 @@ $(document).ready(function() {
         });
     });
 
+    
+    // Resim seçildiğinde önizleme gösterme (Ürün için)
+    $(document).on('change', '#productImage', function(e) {
+        const file = e.target.files[0];
+        
+        if (file) {
+            // FileReader ile dosyayı oku
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                // Önizleme resmini güncelle
+                $('#previewImage').attr('src', e.target.result);
+            }
+            
+            // Dosyayı base64 formatında oku
+            reader.readAsDataURL(file);
+        }
+    });
+
 
     // Üründe "Sil" butonuna tıklandığında
     $(document).on('click', '.btn-delete-product', function(e) {
@@ -1825,24 +1844,50 @@ $(document).ready(function() {
     });
 
 
-    // Resim seçildiğinde önizleme gösterme (Ürün için)
-    $(document).on('change', '#productImage', function(e) {
-        const file = e.target.files[0];
-        
-        if (file) {
-            // FileReader ile dosyayı oku
-            const reader = new FileReader();
-            
-            reader.onload = function(e) {
-                // Önizleme resmini güncelle
-                $('#previewImage').attr('src', e.target.result);
+
+    function deleteOrRestoreProduct(productId) {
+        const token = localStorage.getItem('token');
+        const toggleSwitch = $(`.toggle-switch input[data-product-id="${productId}"]`);
+
+        $.ajax({
+            url: `https://eatwell-api.azurewebsites.net/api/products/setDeleteOrRestore?productId=${productId}`,
+            type: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                if (response.success) {
+                    showToast('success', 'Başarılı', response.message);
+                } else {
+                    showToast('error', 'Hata', response.message);
+                     // Toggle switch'i eski haline getir
+                     toggleSwitch.prop('checked', !toggleSwitch.prop('checked'));
+                }
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : 'Ürün durumunu değiştirirken hata oluştu!');
+                 // Toggle switch'i eski haline getir
+                 toggleSwitch.prop('checked', !toggleSwitch.prop('checked'));
             }
-            
-            // Dosyayı base64 formatında oku
-            reader.readAsDataURL(file);
-        }
+        });
+    }
+
+    // Ürün durumunu değiştirme olayı
+    $(document).on('change', '.product-toggle-switch input', function(e) {
+        e.stopPropagation(); // Event'in yayılmasını durduruyoruz yani ürün detayının gelmesini engelliyoruz.
+
+        const productId = $(this).data('product-id');
+        deleteOrRestoreProduct(productId);
     });
 
+    // Toggle switch'e tıklama olayını engelle
+    $(document).on('click', '.product-toggle-switch', function(e) {
+        e.stopPropagation();
+    });
+
+
+    
     // Sayfa ilk açıldığında yani admin-panel.html sayfası yüklendiğinde
     window.addEventListener('load', function() {
 
