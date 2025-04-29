@@ -47,7 +47,9 @@ body{
   padding-top: 30px;
 }
 
-.sidenav .sidenav-header .logo{
+.sidenav 
+.sidenav-header 
+.logo{
   font-weight: 500;
   color: rgb(0, 0, 0);
   font-family: Raleway, sans-serif;
@@ -358,71 +360,6 @@ td, th {
 	float: left;
 }
 
-
-/* Kullanıcılar Modal Stili */
-.users-modal,
-.menus-modal {
-  display: none;
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0, 0, 0, 0.6);
-}
-
-.users-modal{
-  z-index: 1000;
-}
-
-.users-modal-content,
-.menus-modal-content {
-  background-color: #272c4a;
-  margin: 5% auto;
-  padding: 20px;
-  border-radius: 5px;
-  width: 90%;
-  max-width: 1000px;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-  animation: modalFadeIn 0.3s;
-}
-
-@keyframes modalFadeIn {
-  from {opacity: 0; transform: translateY(-20px);}
-  to {opacity: 1; transform: translateY(0);}
-}
-
-.users-modal-header,
-.menus-modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #81818140;
-  margin-bottom: 20px;
-}
-
-.users-modal-header h2,
-.menus-modal-header h2 {
-  color: #ffc515;
-  margin: 0;
-  font-size: 24px;
-}
-
-.close-users-modal,
-.close-menus-modal {
-  color: #aaa;
-  font-size: 28px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.users-modal-body,
-.menus-modal-body {
-  overflow-x: auto;
-}
-
 .users-table,
 .menus-table,
 .users-table,
@@ -460,8 +397,6 @@ td, th {
   padding-left: 6px;
 }
 
-
-/* Kullanıcı Detayları Modal Stili */
 .user-details-modal,
 .menu-details-modal,
 .product-details-modal,
@@ -497,6 +432,11 @@ td, th {
   animation: modalFadeIn 0.3s;
 }
 
+@keyframes modalFadeIn {
+  from {opacity: 0; transform: translateY(-20px);}
+  to {opacity: 1; transform: translateY(0);}
+}
+
 .user-details-header,
 .menu-details-header,
 .product-details-header,
@@ -524,8 +464,8 @@ td, th {
   font-size: 24px;
 }
 
-.close-user-details,
 .close-menu-details,
+.close-user-details,
 .close-product-details,
 .close-menu-update,
 .close-product-update,
@@ -538,11 +478,9 @@ td, th {
   transition: color 0.3s;
 }
 
-.close-users-modal:hover,
-.close-menus-modal:hover,
 .close-menu-details:hover,
-.close-product-details:hover,
 .close-user-details:hover,
+.close-product-details:hover,
 .close-menu-update:hover,
 .close-product-update:hover,
 .close-menu-create:hover,
@@ -550,24 +488,6 @@ td, th {
   color: #ffc515;
 }
 
-.user-details-body {
-  color: #fff;
-}
-
-.user-info {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.user-info p {
-  margin: 0;
-  font-size: 16px;
-}
-
-
-/* Kullanıcı satırı hover efekti */
-.user-row,
 .menu-row,
 .user-row,
 .product-row {
@@ -575,7 +495,6 @@ td, th {
   transition: background-color 0.3s;
 }
 
-.user-row:hover,
 .menu-row:hover,
 .user-row:hover,
 .product-row:hover {
@@ -633,9 +552,10 @@ td, th {
 
 
 
-/* Menü Detayları Modal Stili */
+/* Entity Detayları Modal Stili */
 
 .menu-details-body,
+.user-details-body,
 .product-details-body,
 .menu-update-body,
 .product-update-body,
@@ -721,6 +641,7 @@ td, th {
 }
 
 .menu-info,
+.user-info,
 .product-info {
   color: #000;
   border: 1px solid #81818140;
@@ -728,6 +649,7 @@ td, th {
 }
 
 .menu-info-item,
+.user-info-item,
 .product-info-item{
   display: flex;
   align-items: center;
@@ -736,11 +658,13 @@ td, th {
 }
 
 .menu-info-item:last-child,
+.user-info-item:last-child,
 .product-info-item:last-child{
   border-bottom: none;
 } 
 
 .menu-label,
+.user-label,
 .product-label{
   display: flex;
   align-items: center;
@@ -750,6 +674,7 @@ td, th {
 }
 
 .menu-label strong,
+.user-label strong,
 .product-label strong {
   color: #000;
   margin-right: 10px;
@@ -758,6 +683,7 @@ td, th {
 }
 
 .menu-label span,
+.user-label span,
 .product-label span{
   font-weight: bold;
 }
@@ -782,6 +708,7 @@ td, th {
 }
 
 .menu-value,
+.user-value,
 .product-value {
   margin: 10px 0;
   margin-left: 15px;
@@ -793,12 +720,13 @@ td, th {
 .empty-table-row {
   text-align: center;
   padding: 20px 0;
-  color: #888; /* Hafif gri yazı */
+  color: #888; 
   font-style: italic;
   padding: 20px !important;
 }
 
-/* Menü İşlemleri İçin Buton Stili */
+
+/* Menü ve Ürün İşlemleri İçin Buton Stili */
 .btn-create-menu,
 .btn-create-product{
   padding: 10px 12px;
@@ -1053,26 +981,31 @@ input:not(:checked) + .toggle-slider:after {
     margin-top: 55px;
   }
 
-  .nav, .nav2 {
+  .nav, 
+  .nav2 {
     cursor: pointer;
   }
 
-  .users, .menu{
+  .users, 
+  .menu{
     margin-top: 13px;
     margin-bottom: 15px;
   }
 
-  .orders, .reservations{
+  .orders, 
+  .reservations{
     margin-top: 0px;
     margin-bottom: 5px;
   }
   
-  .col-div-8, .col-div-4 {
+  .col-div-8, 
+  .col-div-4 {
     width: 100%;
     margin-top: 20px;
   }
   
-  .box-8, .box-4 {
+  .box-8, 
+  .box-4 {
     margin-bottom: 20px;
     width: 97%;
   }
@@ -1080,7 +1013,9 @@ input:not(:checked) + .toggle-slider:after {
 
 
 @media screen and (max-width: 768px) {
-  .sidenav .sidenav-header .logo {
+  .sidenav 
+  .sidenav-header 
+  .logo {
     font-size: 33px;
   }
 
@@ -1088,21 +1023,25 @@ input:not(:checked) + .toggle-slider:after {
     font-size: 20px;
   }
 
-  .users, .menu{
+  .users, 
+  .menu{
     margin-top: 10px;
     margin-bottom: 0px;
   }
 
-  .orders, .reservations{
+  .orders, 
+  .reservations{
     margin-top: 0px;
     margin-bottom: 0px;
   }
 
-  .col-div-8, .col-div-4 {
+  .col-div-8, 
+  .col-div-4 {
     margin-top: 10px;
   }
 
-  .box-8, .box-4 {
+  .box-8, 
+  .box-4 {
     margin-bottom: 10px;
     width: 97%;
     margin-left: auto;
@@ -1143,18 +1082,10 @@ input:not(:checked) + .toggle-slider:after {
     white-space: nowrap;
     font-size: 25px ;
   }
-
-  .users-modal-content,
-  .menus-modal-content {
-    margin: 10% auto;
-    width: 95%;
-    padding: 15px;
-  }
   
-  .users-modal-header h2,
   .menu-details-header h2,
+  .user-details-header h2,
   .product-details-header h2,
-  .menus-modal-header h2,
   .menu-update-header h2,
   .product-update-header h2,
   .menu-create-header h2,
@@ -1218,6 +1149,7 @@ input:not(:checked) + .toggle-slider:after {
   }
 
   .menu-info,
+  .user-info,
   .product-info {
     width: 95%;
   }
@@ -1249,7 +1181,9 @@ input:not(:checked) + .toggle-slider:after {
     width: 215px;
   }
 
-  .sidenav .sidenav-header .logo {
+  .sidenav 
+  .sidenav-header 
+  .logo {
     font-size: 30px;
   }
 
@@ -1270,16 +1204,19 @@ input:not(:checked) + .toggle-slider:after {
   }
 
   .menu-label, 
+  .user-label,
   .product-label {
     font-size: 14px;
   }
 
   .menu-value, 
+  .user-value,
   .product-value {
     font-size: 14px;
   }
   
   .menu-details-body, 
+  .user-details-body,
   .product-details-body, 
   .menu-update-body, 
   .product-update-body, 
@@ -1324,33 +1261,15 @@ input:not(:checked) + .toggle-slider:after {
   .pro-img {
     width: 30px;
   }
-
-  .users-modal-content,
-  .menus-modal-content {
-    margin: 15% auto;
-    padding: 10px;
-  }
   
-  .users-modal-header,
-  .menus-modal-header {
-    padding-bottom: 8px;
-    margin-bottom: 10px;
-  }
-  
-  .users-modal-header h2,
   .menu-details-header h2,
+  .user-details-header h2
   .product-details-header h2,
-  .menus-modal-header h2,
   .menu-update-header h2,
   .product-update-header h2,
   .menu-create-header h2,
   .product-create-header h2 {
     font-size: 18px;
-  }
-  
-  .close-users-modal,
-  .close-menus-modal {
-    font-size: 24px;
   }
   
   .users-table th, 
@@ -1390,6 +1309,7 @@ input:not(:checked) + .toggle-slider:after {
   }
 
   .menu-details-content,
+  .user-details-content
   .product-details-content,
   .menu-update-content,
   .product-update-content,
@@ -1459,7 +1379,9 @@ input:not(:checked) + .toggle-slider:after {
     width: 205px;
   }
 
-  .sidenav .sidenav-header .logo {
+  .sidenav 
+  .sidenav-header 
+  .logo {
     font-size: 27px;
   }
 

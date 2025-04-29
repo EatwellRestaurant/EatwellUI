@@ -327,7 +327,13 @@ $(document).ready(function() {
         getUsers();
     });
 
-    
+    // Kullanıcılar kutusuna tıklandığında
+    $('.col-div-3:eq(0) .box').click(function() {
+        getUsers();
+    });
+
+
+
     // Kullanıcı detaylarını getiren fonksiyon
     function getUserDetails(userId) {
         const token = localStorage.getItem('token');
@@ -342,7 +348,11 @@ $(document).ready(function() {
                 if (response.success && response.data) {
                     const user = response.data;
                     const createDate = new Date(user.createDate);
-                    const formattedDate = `${createDate.getDate()}.${(createDate.getMonth() + 1).toString().padStart(2, '0')}.${createDate.getFullYear()}`;
+                    const lastLoginDate = user.lastLoginDate ? new Date(user.lastLoginDate) : null;
+                    
+                    // Tarihleri formatla
+                    const formattedCreateDate = `${createDate.getDate().toString().padStart(2, '0')}.${(createDate.getMonth() + 1).toString().padStart(2, '0')}.${createDate.getFullYear()}`;
+                    const formattedLastLoginDate = lastLoginDate ? `${lastLoginDate.getDate().toString().padStart(2, '0')}.${(lastLoginDate.getMonth() + 1).toString().padStart(2, '0')}.${lastLoginDate.getFullYear()}` : '-';
                     
                     let userDetailsHTML = `
                     <div class="user-details-modal">
@@ -353,12 +363,41 @@ $(document).ready(function() {
                             </div>
                             <div class="user-details-body">
                                 <div class="user-info">
-                                    <p><strong>Ad:</strong> ${user.firstName}</p>
-                                    <p><strong>Soyad:</strong> ${user.lastName}</p>
-                                    <p><strong>E-posta:</strong> ${user.email}</p>
-                                    <p><strong>Doğrulama Durumu:</strong> ${user.verification ? 'Doğrulanmış' : 'Doğrulanmamış'}</p>
-                                    <p><strong>Kayıt Tarihi:</strong> ${formattedDate}</p>
-                                    <p><strong>Durum:</strong> ${user.isActive ? 'Aktif' : 'Pasif'}</p>
+                                    <div class="user-info-item">
+                                        <div class="user-label">
+                                            <strong>Adı Soyadı</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <p class="user-value">${user.firstName} ${user.lastName}</p>
+                                    </div>
+                                    <div class="user-info-item">
+                                        <div class="user-label">
+                                            <strong>Email</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <p class="user-value">${user.email}</p>
+                                    </div>
+                                    <div class="user-info-item">
+                                        <div class="user-label">
+                                            <strong>Kayıt Tarihi</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <p class="user-value">${formattedCreateDate}</p>
+                                    </div>
+                                    <div class="user-info-item">
+                                        <div class="user-label">
+                                            <strong>Doğrulama</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <p class="user-value">${user.verification ? 'Yapılmış' : 'Yapılmamış'}</p>
+                                    </div>
+                                    <div class="user-info-item">
+                                        <div class="user-label">
+                                            <strong>Son Giriş Tarihi</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <p class="user-value">${formattedLastLoginDate}</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -399,12 +438,12 @@ $(document).ready(function() {
         });
     }
 
-    // Kullanıcılar kutusuna tıklandığında
-    $('.col-div-3:eq(0) .box').click(function() {
-        getUsers();
+    // Kullanıcı satırına tıklama olayı
+    $(document).on('click', '.user-row', function() {
+        const userId = $(this).data('user-id');
+       
+        getUserDetails(userId);
     });
-
-
 
 
 
