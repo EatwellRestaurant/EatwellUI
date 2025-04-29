@@ -70,13 +70,45 @@ body{
   font-size: 22px;
   color: #000;
   display: block;
-  transition: 0.4s ease-in-out;
+  position: relative;
+  transition: all 0.4s ease-in-out;
 }
 
 .sidenav a:hover {
   color: #f1f1f1;
 }
 
+.sidenav-img,
+.sidenav-img-hover {
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  top: 50%;
+  left: 17%;
+  transform: translate(-50%, -50%);
+  transition: all 0.4s ease-in-out;
+}
+
+.sidenav-img {
+  z-index: 2;
+}
+
+.sidenav-img-hover {
+  opacity: 0;
+  z-index: 0;
+}
+
+.sidenav a:hover .sidenav-img {
+  opacity: 0;
+}
+
+.sidenav a:hover .sidenav-img-hover {
+  opacity: 1;
+}
+
+.sidenav-img:hover+.sidenav-img-hover {
+  opacity: 1;
+}
 
 .sidenav a span{
   margin-left: 10px;
@@ -85,7 +117,7 @@ body{
 }
 
 .sidenav a i{
-    transition: margin-left 0.5s ease-in-out;
+  transition: margin-left 0.5s ease-in-out;
 }
 
 #main {

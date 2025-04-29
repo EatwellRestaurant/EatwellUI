@@ -68,7 +68,38 @@ $(document).ready(function() {
     });
 
     
+
+    function openSidenavStyles() {
+        $('#main').css('margin-left', '245px');
+        $('.head').css({
+            'margin-left': '245px',
+            'width': 'calc(100% - 245px)'
+        });
+        $('.sidenav a span').css({
+            'margin-left': '40px',
+            'opacity': '1'
+        });
+        $('.sidenav a img').css('left', '17%');
+    }
+
+
+    function closeSidenavStyles() {
+        $('#mySidenav').css({
+            'transform': 'translateX(-100%)',
+            'visibility': 'hidden'
+        });
+        $('.sidenav .sidenav-header .logo').css({
+            'opacity': '0',
+            'cursor': 'default'
+        });
+        $('.sidenav a span').css({
+            'margin-left': '0px',
+            'opacity': '0'
+        });
+        $('.sidenav a img').css('left', '17%');
+    }
     
+
     $('.menu-header').on('click', function () {
         $('#mySidenav').toggleClass('show');
 
@@ -81,13 +112,9 @@ $(document).ready(function() {
             if($(window).width() < 992){
                 $('body').append('<div class="overlay"></div>');
                 $('.overlay').addClass('active');
-                $('.sidenav a span').css({'margin-left': '13px', 'opacity': '1'});
+                $('.sidenav a span').css({'margin-left': '40px', 'opacity': '1'});
             } else {
-                $('#main').css('margin-left', '245px');
-                $('.head').css('margin-left', '245px');
-                $('.head').css('width', 'calc(100% - 245px)');
-                $('.sidenav a span').css({'margin-left': '8px', 'opacity': '1'});
-                $('.sidenav a i').css({'margin-left': '0'});
+                openSidenavStyles();
             }
 
         } else {
@@ -99,33 +126,37 @@ $(document).ready(function() {
             $('#mySidenav').css({'transform': 'translateX(-70%)', 'visibility': 'visible'});
             $('.sidenav .sidenav-header .logo ').css({'opacity': '0', 'cursor': 'default'});
             $('.sidenav a span').css({'margin-left': '-200px', 'opacity': '0'});
-            $('.sidenav a i').css({'margin-left': '165px'});
+            $('.sidenav a img').css('left', '84%');
         }
     });
+
 
     // .overlay'e tıklanınca menüyü kapat
     $(document).on('click', '.overlay', function () {
         $('#mySidenav').removeClass('show');
         $(this).remove(); // overlay'i kaldır
-        $('#mySidenav').css({'transform': 'translateX(-100%)', 'visibility': 'hidden'});
-        $('.sidenav .sidenav-header .logo ').css({'opacity': '0', 'cursor': 'default'});
-        $('.sidenav a span').css({'margin-left': '0px', 'opacity': '0'});
-        $('.sidenav a i').css({'margin-left': '0'});
+        closeSidenavStyles();
+    });
+    
+
+    // sidenav'daki herhangi bir linke tıklanınca menüyü kapat
+    $(document).on('click', '.sidenav a', function () {
+        if ($('#mySidenav').hasClass('show') && $(window).width() < 992) {
+            $('#mySidenav').removeClass('show');
+            $('.overlay').remove(); 
+            closeSidenavStyles();
+        }
     });
     
     
     function checkScreenSize() {
         // Sayfa yüklendiğinde ve ekran boyutu 992px ve üzerindeyse sidenav'ı aç
         if ($(window).width() >= 992) {
+            
             $('#mySidenav').addClass('show');
-            $('#main').css('margin-left', '245px');
-            $('.head').css('margin-left', '245px');
-            $('.head').css('width', 'calc(100% - 245px)');
-
             $('#mySidenav').css({'transform': 'translateX(0)', 'visibility': 'visible'});
             $('.sidenav .sidenav-header .logo ').css({'opacity': '1', 'cursor': 'pointer'});
-            $('.sidenav a span').css({'margin-left': '8px', 'opacity': '1'});
-            $('.sidenav a i').css({'margin-left': '0'});
+            openSidenavStyles();
 
         } else {
             if ($('#mySidenav').hasClass('show')) {
@@ -139,23 +170,23 @@ $(document).ready(function() {
                     $('.overlay').remove();
                 }
             } else {
-                $('#mySidenav').css({'transform': 'translateX(-100%)', 'visibility': 'hidden'});
-                $('.sidenav .sidenav-header .logo ').css({'opacity': '0', 'cursor': 'default'});
-                $('.sidenav a span').css({'margin-left': '0px', 'opacity': '0'});
-                $('.sidenav a i').css({'margin-left': '0'});
+                closeSidenavStyles();
             }
         }
     }
     
+
     // Sayfa yüklendiğinde çalıştır
     checkScreenSize();
     
+
     // Ekran boyutu değiştiğinde tekrar kontrol et
     $(window).resize(function() {
         checkScreenSize();
     });
 
 
+    
 
     // İstatistikleri API'den al
     function getStatistics() {
@@ -2012,7 +2043,7 @@ $(document).ready(function() {
 
 
     // Dashboard'a tıklandığında
-    $('.sidenav a:contains("Dashboard")').click(function(e) {
+    $('.sidenav a:contains("Anasayfa")').click(function(e) {
         e.preventDefault();
         resetDashboard();
         getStatistics();
