@@ -425,6 +425,7 @@ td, th {
 
 .users-table,
 .menus-table,
+.users-table,
 .products-table {
   width: 100%;
   border-collapse: collapse;
@@ -434,6 +435,7 @@ td, th {
 
 .users-table th,
 .menus-table th,
+.users-table th,
 .products-table th {
   background-color: #d8d9e1;
   color: #000;
@@ -444,6 +446,7 @@ td, th {
 
 .users-table td,
 .menus-table td,
+.users-table td,
 .products-table td {
   border-bottom: 1px solid #81818140;
   padding: 12px;
@@ -451,6 +454,7 @@ td, th {
 }
 
 .menus-table td:first-child,
+.users-table td:first-child,
 .products-table td:first-child{
   padding: 0px;
   padding-left: 6px;
@@ -565,6 +569,7 @@ td, th {
 /* Kullanıcı satırı hover efekti */
 .user-row,
 .menu-row,
+.user-row,
 .product-row {
   cursor: pointer;
   transition: background-color 0.3s;
@@ -572,6 +577,7 @@ td, th {
 
 .user-row:hover,
 .menu-row:hover,
+.user-row:hover,
 .product-row:hover {
   background-color: #ebebeb;
 }
@@ -616,6 +622,7 @@ td, th {
 
 #pageInfo, 
 #menuPageInfo, 
+#userPageInfo,
 #productPageInfo {
   color: #000;
   font-size: 14px;
@@ -851,6 +858,7 @@ td, th {
 
 /* Menüler Container Stili */
 .menus-container,
+.users-container,
 .products-container {
   width: 98.5%;
   background-color: transparent;
@@ -862,6 +870,7 @@ td, th {
 }
 
 .menus-header,
+.users-header,
 .products-header {
   margin-bottom: 20px;
   padding-bottom: 10px;
@@ -872,6 +881,7 @@ td, th {
 }
 
 .menus-header h2,
+.users-header h2,
 .products-header h2 {
   color: #000;
   margin: 0;
@@ -879,12 +889,14 @@ td, th {
 }
 
 .menus-body,
+.users-body,
 .products-body {
   color: #000;
   overflow-x: auto;
 }
 
 .menus-table,
+.users-table,
 .products-table {
   width: 100%;
   border-collapse: collapse;
@@ -1154,6 +1166,8 @@ input:not(:checked) + .toggle-slider:after {
   .users-table td,
   .menus-table th,
   .menus-table td,
+  .users-table th,
+  .users-table td,
   .products-table th,
   .products-table td {
     padding: 10px 8px;
@@ -1343,6 +1357,8 @@ input:not(:checked) + .toggle-slider:after {
   .users-table td,
   .menus-table th,
   .menus-table td,
+  .users-table th,
+  .users-table td,
   .products-table th,
   .products-table td {
     padding: 8px 5px;

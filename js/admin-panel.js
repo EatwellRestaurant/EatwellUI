@@ -193,7 +193,7 @@ $(document).ready(function() {
 
 
 
-    // Kullanıcılar listesini getir
+    // Kullanıcıları getiren fonksiyon
     function getUsers() {
         const token = localStorage.getItem('token');
         
@@ -204,51 +204,48 @@ $(document).ready(function() {
                 'Authorization': `Bearer ${token}`
             },
             success: function(response) {
-                // Kullanıcılar listesi modalının HTML yapısı
-                let usersHTML = `
-                <div class="users-modal">
-                    <div class="users-modal-content">
-                        <div class="users-modal-header">
-                            <h2>Kullanıcı Listesi</h2>
-                            <span class="close-users-modal">&times;</span>
-                        </div>
-                        <div class="users-modal-body">
-                            <table class="users-table">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Ad</th>
-                                        <th>Soyad</th>
-                                        <th>E-posta</th>
-                                        <th>Kayıt Tarihi</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="usersTableBody">
-                                </tbody>
-                            </table>
-                            <!-- Sayfalama kontrolleri -->
-                            <div class="pagination-container">
-                                <div class="pagination">
-                                    <button id="prevPage" class="pagination-btn" disabled><i class="fas fa-chevron-left"></i></button>
-                                    <span id="pageInfo">Sayfa 1</span>
-                                    <button id="nextPage" class="pagination-btn"><i class="fas fa-chevron-right"></i></button>
-                                </div>
+                // Dashboard içeriğini temizle
+                $('.dashboard-content').empty();
+                
+                // Menüler için HTML yapısı
+                let menusHTML = `
+                <div class="users-container">
+                    <div class="users-header">
+                        <h2>Kullanıcı Listesi</h2>
+                    </div>
+                    <div class="users-body">
+                        <table class="users-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Ad</th>
+                                    <th>Soyad</th>
+                                    <th>E-posta</th>
+                                    <th>Kayıt Tarihi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody">
+                            </tbody>
+                        </table>
+                        <!-- Sayfalama kontrolleri -->
+                        <div class="pagination-container">
+                            <div class="pagination">
+                                <button id="prevUserPage" class="pagination-btn" disabled><i class="fas fa-chevron-left"></i></button>
+                                <span id="userPageInfo">Sayfa 1</span>
+                                <button id="nextUserPage" class="pagination-btn"><i class="fas fa-chevron-right"></i></button>
                             </div>
                         </div>
                     </div>
                 </div>`;
                 
-                // Eğer modül zaten varsa kaldır
-                $('.users-modal').remove();
-                
-                // Modülü ekle
-                $('body').append(usersHTML);
+                // Menüleri dashboard'a ekle
+                $('.dashboard-content').append(menusHTML);
                 
                 // Sayfalama için gerekli değişkenler
                 let currentPage = 1; // Mevcut sayfa numarası
                 const itemsPerPage = 10; // Her sayfada gösterilecek kullanıcı sayısı
                 const totalUsers = response.data.length; // Toplam kullanıcı sayısı
-                const totalPages = Math.ceil(totalUsers / itemsPerPage); // Toplam sayfa sayısı
+                const totalPages = Math.ceil(totalUsers / itemsPerPage) ? Math.ceil(totalUsers / itemsPerPage) : 1 ; // Toplam sayfa sayısı
 
                 // Kullanıcıları sayfalara böl ve göster
                 function displayUsers(page) {
@@ -287,18 +284,18 @@ $(document).ready(function() {
                     // Tabloyu güncelle
                     $('#usersTableBody').html(usersTableHTML);
                     // Sayfa bilgisini güncelle
-                    $('#pageInfo').text(`Sayfa ${page} / ${totalPages}`);
+                    $('#userPageInfo').text(`Sayfa ${page} / ${totalPages}`);
                     
                     // Sayfalama butonlarının durumunu güncelle
-                    $('#prevPage').prop('disabled', page === 1); // İlk sayfada geri butonu devre dışı
-                    $('#nextPage').prop('disabled', page === totalPages); // Son sayfada ileri butonu devre dışı
+                    $('#prevUserPage').prop('disabled', page === 1); // İlk sayfada geri butonu devre dışı
+                    $('#nextUserPage').prop('disabled', page === totalPages); // Son sayfada ileri butonu devre dışı
                 }
                 
-                // Mevcut sayfayı göster
+                // İlk sayfayı göster
                 displayUsers(currentPage);
                 
                 // Önceki sayfa butonuna tıklama olayı
-                $('#prevPage').click(function() {
+                $('#prevUserPage').click(function() {
                     if (currentPage > 1) {
                         currentPage--;
                         displayUsers(currentPage);
@@ -306,53 +303,29 @@ $(document).ready(function() {
                 });
                 
                 // Sonraki sayfa butonuna tıklama olayı
-                $('#nextPage').click(function() {
+                $('#nextUserPage').click(function() {
                     if (currentPage < totalPages) {
                         currentPage++;
                         displayUsers(currentPage);
                     }
                 });
-                
-                // Modülü göster
-                $('.users-modal').fadeIn(300);
-                
-                // Kapatma butonuna tıklandığında
-                $('.close-users-modal').click(function() {
-                    $('.users-modal').fadeOut(300, function() {
-                        $(this).remove();
-                    });
-                });
-                
-                // Modül dışına tıklandığında kapat
-                $('.users-modal').click(function(e) {
-                    if ($(e.target).hasClass('users-modal')) {
-                        $('.users-modal').fadeOut(300, function() {
-                            $(this).remove();
-                        });
-                    }
-                });
-
-                // Klavye olaylarını dinle (ESC tuşu ile kapatma)
-                $(document).on('keydown', function(e) {
-                    if (e.key === "Escape" && $('.users-modal').is(':visible')) {
-                        $('.users-modal').fadeOut(300, function() {
-                            $(this).remove();
-                        });
-                    }
-                });
-
-                // Kullanıcı satırına tıklama olayı (dinamik olarak eklenen elementler için)
-                $(document).on('click', '.user-row', function() {
-                    const userId = $(this).data('user-id');
-                    getUserDetails(userId);
-                });
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
-                showToast('error', 'Hata', errorMessage ? errorMessage : 'Kullanıcılar listesi alınırken hata oluştu!');
+                showToast('error', 'Hata', errorMessage ? errorMessage : 'Kullanıcılar alınırken hata oluştu!');
             }
         });
     }
+
+    // Navbar'daki "Kullanıcılar" seçeneğine tıklandığında
+    $('.sidenav a:contains("Kullanıcılar")').click(function(e) {
+        e.preventDefault();
+
+        //URL'ye sahte bir adım ekliyoruz
+        history.pushState({ page: 'users' }, 'Kullanıcılar', '?page=users'); 
+
+        getUsers();
+    });
 
     
     // Kullanıcı detaylarını getiren fonksiyon
@@ -1913,7 +1886,7 @@ $(document).ready(function() {
 
 
     
-    // Sayfa ilk açıldığında yani admin-panel.html sayfası yüklendiğinde
+    // Sayfa ilk açıldığında, yüklendiğinde
     window.addEventListener('load', function() {
 
         //URL’deki parametreleri (?page=xxx) okuyoruz
@@ -1939,7 +1912,12 @@ $(document).ready(function() {
             const menuName = localStorage.getItem('selectedMenuName');
 
             getProducts(menuId, menuName);
-        } else {
+        } else if (page === 'users') {
+            history.replaceState({ page: 'users' }, 'Kullanıcılar', `?page=users`);
+
+            getUsers();
+        }
+        else {
             // Hiç page değeri yoksa dashboard'u yükle.
 
             //Tarayıcı geçmişinde sahte bir adım (dashboard) oluşturuyoruz
@@ -1970,7 +1948,11 @@ $(document).ready(function() {
 
                     getProducts(menuId, menuName);
                     break;
-                
+
+                case 'users':
+                    getUsers();
+                    break;
+
                 case 'dashboard':
                     resetDashboard();
                     getStatistics();
