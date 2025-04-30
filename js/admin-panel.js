@@ -1188,6 +1188,7 @@ $(document).ready(function() {
 
 
 
+
     // Ürünleri getiren fonksiyon
     function renderProductsList(data, options = {}) {
         const {
@@ -2079,7 +2080,136 @@ $(document).ready(function() {
     });
 
 
+
+
+
+    // Şehirleri getiren fonksiyon
+    function getCities() {
+        const token = localStorage.getItem('token');
+        
+        $.ajax({
+            url: 'https://eatwell-api.azurewebsites.net/api/cities/getAll',
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                // Dashboard içeriğini temizle
+                $('.dashboard-content').empty();
+                
+                // Şehirler için HTML yapısı
+                let citiesHTML = `
+                <div class="cities-container">
+                    <div class="cities-header">
+                        <h2>Şehir Listesi</h2>
+                    </div>
+                    <div class="cities-body">
+                        <table class="cities-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Şehir Adı</th>
+                                    <th>Şube Sayısı</th>
+                                    <th>İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody id="citiesTableBody">
+                            </tbody>
+                        </table>
+                        <!-- Sayfalama kontrolleri -->
+                        <div class="pagination-container">
+                            <div class="pagination">
+                                <button id="prevCityPage" class="pagination-btn" disabled><i class="fas fa-chevron-left"></i></button>
+                                <span id="cityPageInfo">Sayfa 1</span>
+                                <button id="nextCityPage" class="pagination-btn"><i class="fas fa-chevron-right"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+                
+                // Şehirleri dashboard'a ekle
+                $('.dashboard-content').append(citiesHTML);
+                
+                // Sayfalama için gerekli değişkenler
+                let currentPage = 1; // Mevcut sayfa numarası
+                const itemsPerPage = 10; // Her sayfada gösterilecek şehir sayısı
+                const totalCities = response.data.length; // Toplam şehir sayısı
+                const totalPages = Math.ceil(totalCities / itemsPerPage) ? Math.ceil(totalCities / itemsPerPage) : 1 ; // Toplam sayfa sayısı
+
+                // Şehirleri sayfalara böl ve göster
+                function displayCities(page) {
+                    // Gösterilecek şehirlerin başlangıç ve bitiş indekslerini hesapla
+                    const startIndex = (page - 1) * itemsPerPage;
+                    const endIndex = startIndex + itemsPerPage;
+                    // İlgili sayfadaki şehirleri seç
+                    const citiesToShow = response.data.slice(startIndex, endIndex);
+                    
+                    let citiesTableHTML = '';
+                    
+                    // Seçilen şehirleri tabloya ekle
+                    if (citiesToShow.length > 0) {
+                        citiesToShow.forEach(city => {
+                            citiesTableHTML += `
+                                <tr class="city-row" data-city-id="${city.id}">
+                                    <td>${city.id}</td>
+                                    <td>${city.name}</td>
+                                    <td>${city.branchCount}</td>
+                                    <td>
+                                        <button class="btn-branches-city" data-city-id="${city.id}" data-city-name="${city.name}">
+                                            <i class="fa-solid fa-list"></i>
+                                            Şubeleri Gör
+                                        </button>
+                                    </td>
+                                </tr>`;
+                        });
+                    } 
+                    
+                    // Tabloyu güncelle
+                    $('#citiesTableBody').html(citiesTableHTML);
+                    // Sayfa bilgisini güncelle
+                    $('#cityPageInfo').text(`Sayfa ${page} / ${totalPages}`);
+                    
+                    // Sayfalama butonlarının durumunu güncelle
+                    $('#prevCityPage').prop('disabled', page === 1); // İlk sayfada geri butonu devre dışı
+                    $('#nextCityPage').prop('disabled', page === totalPages); // Son sayfada ileri butonu devre dışı
+                }
+                
+                // İlk sayfayı göster
+                displayCities(currentPage);
+                
+                // Önceki sayfa butonuna tıklama olayı
+                $('#prevCityPage').click(function() {
+                    if (currentPage > 1) {
+                        currentPage--;
+                        displayCities(currentPage);
+                    }
+                });
+                
+                // Sonraki sayfa butonuna tıklama olayı
+                $('#nextCityPage').click(function() {
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                        displayCities(currentPage);
+                    }
+                });
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : 'Şehirler alınırken hata oluştu!');
+            }
+        });
+    }
     
+
+    // Navbar'daki "Şehir ve Şubeler" seçeneğine tıklandığında
+    $('.sidenav a:contains("Şehir ve Şubeler")').click(function(e) {
+        e.preventDefault();
+
+        //URL'ye sahte bir adım ekliyoruz
+        history.pushState({ page: 'cities' }, 'Şehirler', '?page=cities'); 
+
+        getCities();
+    });
     
     
     // Sayfa ilk açıldığında, yüklendiğinde

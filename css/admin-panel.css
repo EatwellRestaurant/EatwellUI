@@ -394,6 +394,7 @@ td, th {
 
 .users-table,
 .menus-table,
+.cities-table,
 .users-table,
 .products-table {
   width: 100%;
@@ -404,6 +405,7 @@ td, th {
 
 .users-table th,
 .menus-table th,
+.cities-table th,
 .users-table th,
 .products-table th {
   background-color: #d8d9e1;
@@ -415,6 +417,7 @@ td, th {
 
 .users-table td,
 .menus-table td,
+.cities-table td,
 .users-table td,
 .products-table td {
   border-bottom: 1px solid #81818140;
@@ -427,6 +430,7 @@ td, th {
 }
 
 .menus-table td:first-child,
+.cities-table td:first-child,
 .users-table td:first-child,
 .products-table td:first-child{
   padding: 0px;
@@ -525,6 +529,7 @@ td, th {
 }
 
 .menu-row,
+.city-row,
 .user-row,
 .product-row {
   cursor: pointer;
@@ -532,6 +537,7 @@ td, th {
 }
 
 .menu-row:hover,
+.city-row:hover,
 .user-row:hover,
 .product-row:hover {
   background-color: #ebebeb;
@@ -577,6 +583,7 @@ td, th {
 
 #pageInfo, 
 #menuPageInfo, 
+#cityPageInfo,
 #userPageInfo,
 #productPageInfo {
   color: #000;
@@ -774,11 +781,13 @@ td, th {
 .btn-delete-menu,
 .btn-delete-product,
 .btn-products-menu,
+.btn-branches-city,
 .btn-menu{
   padding: 8px 10px;
 }
 
 .btn-products-menu,
+.btn-branches-city,
 .btn-menu,
 .btn-edit-menu,
 .btn-edit-product{
@@ -792,6 +801,7 @@ td, th {
 .btn-delete-menu,
 .btn-delete-product,
 .btn-products-menu,
+.btn-branches-city,
 .btn-menu {
   background-color: #ffc515;
   color: #1b203d;
@@ -808,6 +818,7 @@ td, th {
 .btn-delete-product:hover,
 .btn-create-product:hover,
 .btn-products-menu:hover,
+.btn-branches-city:hover,
 .btn-menu:hover {
   background-color: #ffd760;
 }
@@ -819,6 +830,7 @@ td, th {
 .btn-delete-product i,
 .btn-create-product i,
 .btn-products-menu i,
+.btn-branches-city i,
 .btn-menu i{
   margin-right: 3px;
 }
@@ -827,6 +839,7 @@ td, th {
 
 /* Menüler Container Stili */
 .menus-container,
+.cities-container,
 .users-container,
 .products-container {
   width: 98.5%;
@@ -839,6 +852,7 @@ td, th {
 }
 
 .menus-header,
+.cities-header,
 .users-header,
 .products-header {
   margin-bottom: 20px;
@@ -850,6 +864,7 @@ td, th {
 }
 
 .menus-header h2,
+.cities-header h2,
 .users-header h2,
 .products-header h2 {
   color: #000;
@@ -858,6 +873,7 @@ td, th {
 }
 
 .menus-body,
+.cities-body,
 .users-body,
 .products-body {
   color: #000;
@@ -865,6 +881,7 @@ td, th {
 }
 
 .menus-table,
+.cities-table,
 .users-table,
 .products-table {
   width: 100%;
@@ -1138,6 +1155,8 @@ input:not(:checked) + .toggle-slider:after {
   .users-table td,
   .menus-table th,
   .menus-table td,
+  .cities-table th,
+  .cities-table td,
   .users-table th,
   .users-table td,
   .products-table th,
@@ -1317,6 +1336,8 @@ input:not(:checked) + .toggle-slider:after {
   .users-table td,
   .menus-table th,
   .menus-table td,
+  .cities-table th,
+  .cities-table td,
   .users-table th,
   .users-table td,
   .products-table th,
@@ -1393,6 +1414,7 @@ input:not(:checked) + .toggle-slider:after {
   .btn-delete-menu,
   .btn-delete-product,
   .btn-products-menu,
+  .btn-branches-city,
   .btn-menu {
     padding: 6px 8px;
     font-size: 13px;
@@ -1450,6 +1472,7 @@ input:not(:checked) + .toggle-slider:after {
   .btn-delete-menu,
   .btn-delete-product,
   .btn-products-menu,
+  .btn-branches-city,
   .btn-menu {
     padding: 5px 8px;
     font-size: 12px;
