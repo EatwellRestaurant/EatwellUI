@@ -769,11 +769,13 @@ td, th {
 .btn-edit-product,
 .btn-delete-menu,
 .btn-delete-product,
-.btn-products-menu{
+.btn-products-menu,
+.btn-menu{
   padding: 8px 10px;
 }
 
 .btn-products-menu,
+.btn-menu,
 .btn-edit-menu,
 .btn-edit-product{
   margin-left: 8px;
@@ -785,7 +787,8 @@ td, th {
 .btn-edit-product,
 .btn-delete-menu,
 .btn-delete-product,
-.btn-products-menu {
+.btn-products-menu,
+.btn-menu {
   background-color: #ffc515;
   color: #1b203d;
   border: none;
@@ -800,7 +803,8 @@ td, th {
 .btn-delete-menu:hover,
 .btn-delete-product:hover,
 .btn-create-product:hover,
-.btn-products-menu:hover {
+.btn-products-menu:hover,
+.btn-menu:hover {
   background-color: #ffd760;
 }
 
@@ -810,7 +814,8 @@ td, th {
 .btn-delete-menu i,
 .btn-delete-product i,
 .btn-create-product i,
-.btn-products-menu i{
+.btn-products-menu i,
+.btn-menu i{
   margin-right: 3px;
 }
 
@@ -1136,6 +1141,10 @@ input:not(:checked) + .toggle-slider:after {
     padding: 10px 8px;
     font-size: 14px;
   }
+
+  .products-table td:last-child{
+    min-width: 295px;
+  }
   
   .dashboard-text {
     font-size: 23px;
@@ -1383,7 +1392,8 @@ input:not(:checked) + .toggle-slider:after {
   .btn-edit-product,
   .btn-delete-menu,
   .btn-delete-product,
-  .btn-products-menu {
+  .btn-products-menu,
+  .btn-menu {
     padding: 6px 8px;
     font-size: 13px;
   }
@@ -1439,7 +1449,8 @@ input:not(:checked) + .toggle-slider:after {
   .btn-edit-product,
   .btn-delete-menu,
   .btn-delete-product,
-  .btn-products-menu {
+  .btn-products-menu,
+  .btn-menu {
     padding: 5px 8px;
     font-size: 12px;
   }
