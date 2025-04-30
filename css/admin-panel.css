@@ -422,6 +422,10 @@ td, th {
   color: #000;
 }
 
+.products-table td:last-child{
+  min-width: 300px;
+}
+
 .menus-table td:first-child,
 .users-table td:first-child,
 .products-table td:first-child{
@@ -1140,10 +1144,6 @@ input:not(:checked) + .toggle-slider:after {
   .products-table td {
     padding: 10px 8px;
     font-size: 14px;
-  }
-
-  .products-table td:last-child{
-    min-width: 295px;
   }
   
   .dashboard-text {

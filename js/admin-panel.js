@@ -39,6 +39,8 @@ $(document).ready(function() {
         // Eğer kullanıcının yetkisi admin değilse
         if (userRole !== 'Admin') {
             localStorage.removeItem('token');
+            localStorage.removeItem('selectedMenuId');
+            localStorage.removeItem('selectedMenuName');
             window.location.href = 'admin-login.html';
             return;
         }
@@ -51,6 +53,9 @@ $(document).ready(function() {
     } catch (error) {
         console.error('Token decode hatası:', error);
         localStorage.removeItem('token');
+        localStorage.removeItem('selectedMenuId');
+        localStorage.removeItem('selectedMenuName');
+
         window.location.href = 'admin-login.html';
     }
 
@@ -63,6 +68,9 @@ $(document).ready(function() {
             localStorage.removeItem('token');
             localStorage.removeItem('userName');
             localStorage.removeItem('adminRemembered');
+            localStorage.removeItem('selectedMenuId');
+            localStorage.removeItem('selectedMenuName');
+
             window.location.href = 'admin-login.html';
         }, 1500);
     });
@@ -1168,9 +1176,19 @@ $(document).ready(function() {
     });
 
 
+    
+    function selectMenu(menuId, menuName) {
+        let history = JSON.parse(localStorage.getItem('menuHistory')) || [];
+    
+        // Yeni menüyü nesne olarak ekle
+        history.push({ id: menuId, name: menuName });
+    
+        localStorage.setItem('menuHistory', JSON.stringify(history));
+    }
 
 
-    // Menüdeki ürünleri getiren fonksiyon
+
+    // Ürünleri getiren fonksiyon
     function renderProductsList(data, options = {}) {
         const {
             title = 'Ürün Listesi',
@@ -1193,6 +1211,7 @@ $(document).ready(function() {
                     <thead>
                         <tr>
                             <th>Durum</th>
+                            ${showGoToMenuButton ? `<th>Menü Adı</th>` : '' }
                             <th>Ürün Adı</th>
                             <th>Fiyatı</th>
                             <th>Kayıt Tarihi</th>
@@ -1235,6 +1254,7 @@ $(document).ready(function() {
                                 <span class="toggle-slider"></span>
                             </label>
                         </td>
+                        ${showGoToMenuButton ? `<td>${product.mealCategoryName}</td>` : '' }
                         <td>${product.name}</td>
                         <td>${formatPriceInputLive(product.price.toFixed(2).replace('.', ','))}₺</td>
                         <td>${formattedDate}</td>
@@ -1248,10 +1268,11 @@ $(document).ready(function() {
                                 Düzenle
                             </button>
                             ${showGoToMenuButton ? `
-                                <button class="btn-menu" data-product-id="${product.id}" data-product-name="${product.name}">
+                                <button class="btn-menu" data-menu-id="${product.mealCategoryId}" data-menu-name="${product.mealCategoryName}">
                                     <i class="fa-solid fa-arrow-up-right-from-square"></i>
                                     Menüye Git
-                                </button>` : ''}
+                                </button>` : ''
+                            }
                         </td>
                     </tr>`;
                 });
@@ -1302,6 +1323,9 @@ $(document).ready(function() {
         const menuId = $(this).data('menu-id');
         const menuName = $(this).data('menu-name');
 
+        // Seçilen menüyü geçmişe kaydediyoruz
+        selectMenu(menuId, menuName);
+
         localStorage.setItem('selectedMenuId', menuId);
         localStorage.setItem('selectedMenuName', menuName);
 
@@ -1314,8 +1338,6 @@ $(document).ready(function() {
 
     function getAllProducts() {
         const token = localStorage.getItem('token');
-        localStorage.removeItem('selectedMenuId');
-        localStorage.removeItem('selectedMenuName');
 
         $.ajax({
             url: 'https://eatwell-api.azurewebsites.net/api/products/getAllForAdmin',
@@ -1337,6 +1359,25 @@ $(document).ready(function() {
         getAllProducts();
     });
 
+
+    // Ürünler listesinde "Menüye Git" butonuna tıklandığında
+    $(document).on('click', '.btn-menu', function(e) {
+        e.stopPropagation();
+
+        const menuId = $(this).data('menu-id');
+        const menuName = $(this).data('menu-name');
+
+        // Seçilen menüyü geçmişe kaydediyoruz
+        selectMenu(menuId, menuName);
+
+        localStorage.setItem('selectedMenuId', menuId);
+        localStorage.setItem('selectedMenuName', menuName);
+
+        // URL'ye sahte bir adım ekliyoruz
+        history.pushState({ page: 'productsByMenu' }, 'Ürünler', `?page=products&menuId=${menuId}`); 
+
+        getProductsByMenu(menuId, menuName);
+    });
 
 
     // Ürün detaylarını getiren fonksiyon
@@ -1821,7 +1862,7 @@ $(document).ready(function() {
         const params = new URLSearchParams(window.location.search);
         const menuId = params.get('menuId');
         const showMenuList = menuId === null; // menuId varsa menü listesini göstermiyoruz
-        
+
         createProduct(showMenuList);
     });
 
@@ -1846,14 +1887,16 @@ $(document).ready(function() {
         }
 
 
-        let menuId = localStorage.getItem('selectedMenuId');
-        const menuName = localStorage.getItem('selectedMenuName');
-        
         // menuId varsa demektir ki Ürünler sayfasında ürün ekleme işlemi yapılıyordur. 
         // Bu yüzden localStorage'da menuId değeri bulunmaz. Menü listesinden menuId değerini almamız gerekir.
-        const existsMenuId = menuId === null 
+        
+        const menuName = localStorage.getItem('selectedMenuName');
+        const params = new URLSearchParams(window.location.search);
+        let menuId = params.get('menuId');
 
-        if (existsMenuId) {
+        const isExistsMenuId = menuId === null; // menuId varsa menü listesini göstermiyoruz
+
+        if (isExistsMenuId) {
             menuId = $('#menuSelect').val();
 
             if (menuId === null ){
@@ -2085,6 +2128,39 @@ $(document).ready(function() {
     });
 
 
+
+    // Bu metot sayesinde, kullanıcı geri tuşuna bastığında doğru şekilde bir önceki menüye döner.
+    // Ve geçmişi düzgün yöneterek daha kontrollü bir kullanıcı deneyimi sağlanır.
+    function goBackToPreviousMenu() {
+
+        // localStorage’dan daha önce tuttuğumuz menuHistory verisini alıyoruz.
+        // Ve bu veri string olduğu için JSON.parse ile tekrar dizi (array) haline getiriyoruz.
+        // Eğer hiç veri yoksa (yani null dönerse), boş bir dizi ([]) başlatıyoruz.
+        let history = JSON.parse(localStorage.getItem('menuHistory')) || [];
+        
+
+        // Şu anki (en son girilen) menüyü diziden çıkarıyoruz.
+        // Çünkü kullanıcı "geri" diyor; yani şu an bulunduğu yeri bırakıp bir önceki menüye gitmek istiyor.
+        history.pop();
+    
+
+        // Dizinin en sonundaki eleman artık bir önceki menü oluyor.
+        let previousMenu = history[history.length - 1];
+
+        
+        // Eğer bir önceki menü varsa (yani boş değilse), o zaman o menünün ürünlerini getiriyoruz.
+        if (previousMenu) {
+
+            // getProductsByMenu fonksiyonunu kullanarak belirtilen menüye ait ürünleri getiriyoruz.
+            getProductsByMenu(previousMenu.id, previousMenu.name);
+
+            // Diziden son menüyü çıkardıktan sonra (yani geçmişi güncelledikten sonra), bu yeni hali tekrar localStorage'a kaydediyoruz.
+            // Böylece tekrar geri gitmeye çalıştığımızda güncel geçmişi kullanmış oluruz.
+            localStorage.setItem('menuHistory', JSON.stringify(history));
+        }
+    }
+
+
     //Kullanıcı tarayıcıda geri veya ileri tuşuna basınca
     window.addEventListener('popstate', function (e) {
 
@@ -2099,10 +2175,7 @@ $(document).ready(function() {
                     break;
 
                 case 'productsByMenu':
-                    const menuId = localStorage.getItem('selectedMenuId');
-                    const menuName = localStorage.getItem('selectedMenuName');
-
-                    getProductsByMenu(menuId, menuName);
+                    goBackToPreviousMenu();
                     break;
 
                 case 'users':
