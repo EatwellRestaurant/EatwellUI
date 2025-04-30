@@ -571,18 +571,20 @@ $(document).ready(function() {
                                     <td>${menu.name}</td>
                                     <td>${formattedDate}</td>
                                     <td>
-                                        <button class="btn-delete-menu" data-menu-id="${menu.id}">
-                                            <i class="fa-solid fa-trash"></i>
-                                            Sil
-                                        </button>
-                                        <button class="btn-edit-menu" data-menu-id="${menu.id}">
-                                            <i class="fa-solid fa-pen-to-square"></i>
-                                            Düzenle
-                                        </button>
-                                        <button class="btn-products-menu" data-menu-id="${menu.id}" data-menu-name="${menu.name}">
-                                            <i class="fa-solid fa-list"></i>
-                                            Ürünleri Gör
-                                        </button>
+                                        <div class="table-actions-scroll">
+                                            <button class="btn-delete-menu" data-menu-id="${menu.id}">
+                                                <i class="fa-solid fa-trash"></i>
+                                                Sil
+                                            </button>
+                                            <button class="btn-edit-menu" data-menu-id="${menu.id}">
+                                                <i class="fa-solid fa-pen-to-square"></i>
+                                                Düzenle
+                                            </button>
+                                            <button class="btn-products-menu" data-menu-id="${menu.id}" data-menu-name="${menu.name}">
+                                                <i class="fa-solid fa-list"></i>
+                                                Ürünleri Gör
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>`;
                         });
@@ -1260,20 +1262,22 @@ $(document).ready(function() {
                         <td>${formatPriceInputLive(product.price.toFixed(2).replace('.', ','))}₺</td>
                         <td>${formattedDate}</td>
                         <td>
-                            <button class="btn-delete-product" data-product-id="${product.id}">
-                                <i class="fa-solid fa-trash"></i>
-                                Sil
-                            </button>
-                            <button class="btn-edit-product" data-product-id="${product.id}">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                                Düzenle
-                            </button>
-                            ${showGoToMenuButton ? `
-                                <button class="btn-menu" data-menu-id="${product.mealCategoryId}" data-menu-name="${product.mealCategoryName}">
-                                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                                    Menüye Git
-                                </button>` : ''
-                            }
+                            <div class="table-actions-scroll">
+                                <button class="btn-delete-product" data-product-id="${product.id}">
+                                    <i class="fa-solid fa-trash"></i>
+                                    Sil
+                                </button>
+                                <button class="btn-edit-product" data-product-id="${product.id}">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                    Düzenle
+                                </button>
+                                ${showGoToMenuButton ? `
+                                    <button class="btn-menu" data-menu-id="${product.mealCategoryId}" data-menu-name="${product.mealCategoryName}">
+                                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                        Menüye Git
+                                    </button>` : ''
+                                }
+                            </div>
                         </td>
                     </tr>`;
                 });
@@ -1733,8 +1737,12 @@ $(document).ready(function() {
 
                     const menuId = localStorage.getItem('selectedMenuId');
                     const menuName = localStorage.getItem('selectedMenuName');
-                    
-                    getProductsByMenu(menuId, menuName); // Ürün listesini yenile
+
+                    if (menuName === null){
+                        getAllProducts();
+                    }else{
+                        getProductsByMenu(menuId, menuName); 
+                    }
                 } else {
                     showToast('error', 'Hata', 'Ürün güncellenirken hata oluştu!');
                 }
