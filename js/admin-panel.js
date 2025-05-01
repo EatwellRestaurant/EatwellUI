@@ -39,8 +39,19 @@ $(document).ready(function() {
         // Eğer kullanıcının yetkisi admin değilse
         if (userRole !== 'Admin') {
             localStorage.removeItem('token');
+            localStorage.removeItem('userName');
+            localStorage.removeItem('adminRemembered');
+
             localStorage.removeItem('selectedMenuId');
             localStorage.removeItem('selectedMenuName');
+
+            localStorage.removeItem('selectedCityId');
+            localStorage.removeItem('selectedCityName');
+
+            localStorage.removeItem('cityHistory');
+            localStorage.removeItem('menuHistory');
+            localStorage.removeItem('menuHistoryIndex');
+
             window.location.href = 'admin-login.html';
             return;
         }
@@ -53,8 +64,18 @@ $(document).ready(function() {
     } catch (error) {
         console.error('Token decode hatası:', error);
         localStorage.removeItem('token');
+        localStorage.removeItem('userName');
+        localStorage.removeItem('adminRemembered');
+        
         localStorage.removeItem('selectedMenuId');
         localStorage.removeItem('selectedMenuName');
+        
+        localStorage.removeItem('selectedCityId');
+        localStorage.removeItem('selectedCityName');
+        
+        localStorage.removeItem('cityHistory');
+        localStorage.removeItem('menuHistory');
+        localStorage.removeItem('menuHistoryIndex');
 
         window.location.href = 'admin-login.html';
     }
@@ -77,6 +98,7 @@ $(document).ready(function() {
 
             localStorage.removeItem('cityHistory');
             localStorage.removeItem('menuHistory');
+            localStorage.removeItem('menuHistoryIndex');
 
             window.location.href = 'admin-login.html';
         }, 1500);
@@ -1185,17 +1207,6 @@ $(document).ready(function() {
     });
 
 
-    
-    function selectMenu(menuId, menuName) {
-        let history = JSON.parse(localStorage.getItem('menuHistory')) || [];
-    
-        // Yeni menüyü nesne olarak ekle
-        history.push({ id: menuId, name: menuName });
-    
-        localStorage.setItem('menuHistory', JSON.stringify(history));
-    }
-
-
 
 
     // Ürünleri getiren ortak fonksiyon
@@ -1341,9 +1352,6 @@ $(document).ready(function() {
         localStorage.setItem('selectedMenuId', menuId);
         localStorage.setItem('selectedMenuName', menuName);
 
-        // URL'ye sahte bir adım ekliyoruz
-        history.pushState({ page: 'productsByMenu' }, 'Ürünler', `?page=products&menuId=${menuId}`); 
-
         getProductsByMenu(menuId, menuName);
     });
 
@@ -1384,9 +1392,6 @@ $(document).ready(function() {
 
         localStorage.setItem('selectedMenuId', menuId);
         localStorage.setItem('selectedMenuName', menuName);
-
-        // URL'ye sahte bir adım ekliyoruz
-        history.pushState({ page: 'productsByMenu' }, 'Ürünler', `?page=products&menuId=${menuId}`); 
 
         getProductsByMenu(menuId, menuName);
     });
@@ -2036,7 +2041,7 @@ $(document).ready(function() {
 
                             const menuId = localStorage.getItem('selectedMenuId');
                             const menuName = localStorage.getItem('selectedMenuName');
-                            
+
                             getProductsByMenu(menuId, menuName); // Ürün listesini yenile
                         } else {
                             showToast('error', 'Hata', 'Ürün silinirken bir hata oluştu!');
@@ -2424,7 +2429,7 @@ $(document).ready(function() {
             const menuId = localStorage.getItem('selectedMenuId');
             const menuName = localStorage.getItem('selectedMenuName');
             
-            history.replaceState({ page: 'productsByMenu' }, 'Ürünler', `?page=products&menuId=${menuId}`);
+            history.replaceState({ page: 'productsByMenu' }, 'Ürünler', `?page=productsByMenu&menuId=${menuId}`);
             
             getProductsByMenu(menuId, menuName);
 
@@ -2456,36 +2461,94 @@ $(document).ready(function() {
 
 
 
+
+    // localStorage’dan daha önce tuttuğumuz menuHistory verisini alıyoruz.
+    // Ve bu veri string olduğu için JSON.parse ile tekrar dizi (array) haline getiriyoruz.
+    // Eğer hiç veri yoksa (yani null dönerse), boş bir dizi ([]) başlatıyoruz.
+    let menuHistory = JSON.parse(localStorage.getItem('menuHistory')) || [];
+
+    // Şu an kullanıcı hangi menüde bulunuyor, onu takip edebilmek için bir indeks değeri tutuyoruz.
+    // localStorage'dan alıyoruz, yoksa dizinin en son elemanını varsayıyoruz.
+    let currentIndex = parseInt(localStorage.getItem('menuHistoryIndex')) || (menuHistory.length - 1);
+
+
+
+    // Bu fonksiyon yeni bir menüye geçildiğinde çağrılır.
+    function selectMenu(menuId, menuName) {
+
+        // Yeni seçilen menü bilgisi
+        const newMenu = { id: menuId, name: menuName };
+
+
+        // Eğer mevcut index dizinin sonundaysa normal şekilde devam eder.
+        // Ancak kullanıcı geri gittikten sonra başka bir menüye geçerse,
+        // ileriye ait geçmişi siliyoruz (tarayıcı mantığına benzer şekilde).
+        if (currentIndex < menuHistory.length - 1) {
+            menuHistory = menuHistory.slice(0, currentIndex + 1);
+        }
+
+        // Yeni menüyü geçmiş dizisine ekliyoruz.
+        menuHistory.push(newMenu);
+
+        // İndeksi güncelliyoruz.
+        currentIndex = menuHistory.length - 1;
+
+        // localStorage’a yeni geçmişi ve güncel indeksi kaydediyoruz.
+        localStorage.setItem('menuHistory', JSON.stringify(menuHistory));
+        localStorage.setItem('menuHistoryIndex', currentIndex);
+
+        // URL'yi güncelliyoruz.
+        history.pushState({ page: 'productsByMenu' }, 'Ürünler', `?page=productsByMenu&menuId=${menuId}`);
+    }
+
+
     // Bu metot sayesinde, kullanıcı geri tuşuna bastığında doğru şekilde bir önceki menüye döner.
     // Ve geçmişi düzgün yöneterek daha kontrollü bir kullanıcı deneyimi sağlanır.
     function goBackToPreviousMenu() {
 
-        // localStorage’dan daha önce tuttuğumuz menuHistory verisini alıyoruz.
-        // Ve bu veri string olduğu için JSON.parse ile tekrar dizi (array) haline getiriyoruz.
-        // Eğer hiç veri yoksa (yani null dönerse), boş bir dizi ([]) başlatıyoruz.
-        let history = JSON.parse(localStorage.getItem('menuHistory')) || [];
-        
+        // Eğer kullanıcı daha önce bir menü ziyaret etmişse (yani index 0'dan büyükse) geri gidiyoruz.
+        if (currentIndex > 0) {
 
-        // Şu anki (en son girilen) menüyü diziden çıkarıyoruz.
-        // Çünkü kullanıcı "geri" diyor; yani şu an bulunduğu yeri bırakıp bir önceki menüye gitmek istiyor.
-        history.pop();
-    
+            // İndeks değerini 1 azaltarak bir önceki menüyü hedefliyoruz.
+            currentIndex--;
 
-        // Dizinin en sonundaki eleman artık bir önceki menü oluyor.
-        let previousMenu = history[history.length - 1];
+            // İlgili menüyü geçmiş dizisinden alıyoruz.
+            const previousMenu = menuHistory[currentIndex];
 
-        
-        // Eğer bir önceki menü varsa (yani boş değilse), o zaman o menünün ürünlerini getiriyoruz.
-        if (previousMenu) {
+            // Eğer geçerli bir menü varsa, o menünün ürünlerini getiriyoruz.
+            if (previousMenu) {
+                getProductsByMenu(previousMenu.id, previousMenu.name);
 
-            // getProductsByMenu fonksiyonunu kullanarak belirtilen menüye ait ürünleri getiriyoruz.
-            getProductsByMenu(previousMenu.id, previousMenu.name);
-
-            // Diziden son menüyü çıkardıktan sonra (yani geçmişi güncelledikten sonra), bu yeni hali tekrar localStorage'a kaydediyoruz.
-            // Böylece tekrar geri gitmeye çalıştığımızda güncel geçmişi kullanmış oluruz.
-            localStorage.setItem('menuHistory', JSON.stringify(history));
+                // Güncel index değerini localStorage’a kaydediyoruz.
+                localStorage.setItem('menuHistoryIndex', currentIndex);
+            }
         }
     }
+
+
+    // Bu metot sayesinde, kullanıcı ileri tuşuna bastığında doğru şekilde bir sonraki menüye döner.
+    // Ve geçmişi düzgün yöneterek daha kontrollü bir kullanıcı deneyimi sağlanır.
+    function goForwardToNextMenu() {
+
+        // Eğer daha ileriye gidilebilecek bir menü varsa (dizi sınırını aşmıyorsak)
+        if (currentIndex < menuHistory.length - 1) {
+
+            // İndeks değerini 1 artırarak bir sonraki menüyü hedefliyoruz.
+            currentIndex++;
+
+            // İlgili menüyü geçmiş dizisinden alıyoruz.
+            const nextMenu = menuHistory[currentIndex];
+
+            // Eğer geçerli bir menü varsa, o menünün ürünlerini getiriyoruz.
+            if (nextMenu) {
+                getProductsByMenu(nextMenu.id, nextMenu.name);
+
+                // Güncel index değerini localStorage’a kaydediyoruz.
+                localStorage.setItem('menuHistoryIndex', currentIndex);
+            }
+        }
+    }
+
 
 
     // Bu metot sayesinde, kullanıcı geri tuşuna bastığında doğru şekilde bir önceki menüye döner.
@@ -2525,7 +2588,30 @@ $(document).ready(function() {
                     break;
 
                 case 'productsByMenu':
-                    goBackToPreviousMenu();
+                    
+                    const storedIndex = parseInt(localStorage.getItem('menuHistoryIndex')) || 0;
+                    const menuHistory = JSON.parse(localStorage.getItem('menuHistory')) || [];
+                
+                    // URL'deki menuId'yi al
+                    const params = new URLSearchParams(window.location.search);
+                    const currentMenuIdFromURL = params.get('menuId');
+                
+                    // URL'deki menü dizide kaçıncı sıradaysa onu bul
+                    const currentIndexInHistory = menuHistory.findIndex(m => m.id == currentMenuIdFromURL);
+                
+                    if (currentIndexInHistory < storedIndex) {
+                        // Geriye gidilmiş
+                        goBackToPreviousMenu();
+                    } else if (currentIndexInHistory > storedIndex) {
+                        // İleriye gidilmiş
+                        goForwardToNextMenu();
+                    } else {
+                        // Aynı yerde kalınmış
+                        const menu = menuHistory[currentIndexInHistory];
+                        if (menu) getProductsByMenu(menu.id, menu.name);
+                        
+                    }
+
                     break;
 
                 case 'users':
@@ -2552,6 +2638,19 @@ $(document).ready(function() {
                 default:
                     // Eğer hiç tanımlamadığımız bir page değeri gelirse token'ı silip ve login sayfasına yönlendiriyoruz.
                     localStorage.removeItem('token');
+                    localStorage.removeItem('userName');
+                    localStorage.removeItem('adminRemembered');
+
+                    localStorage.removeItem('selectedMenuId');
+                    localStorage.removeItem('selectedMenuName');
+
+                    localStorage.removeItem('selectedCityId');
+                    localStorage.removeItem('selectedCityName');
+
+                    localStorage.removeItem('cityHistory');
+                    localStorage.removeItem('menuHistory');
+                    localStorage.removeItem('menuHistoryIndex');
+                    
                     window.location.href = 'admin-login.html';
                     break;
             }
