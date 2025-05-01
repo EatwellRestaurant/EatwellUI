@@ -68,8 +68,15 @@ $(document).ready(function() {
             localStorage.removeItem('token');
             localStorage.removeItem('userName');
             localStorage.removeItem('adminRemembered');
+
             localStorage.removeItem('selectedMenuId');
             localStorage.removeItem('selectedMenuName');
+
+            localStorage.removeItem('selectedCityId');
+            localStorage.removeItem('selectedCityName');
+
+            localStorage.removeItem('cityHistory');
+            localStorage.removeItem('menuHistory');
 
             window.location.href = 'admin-login.html';
         }, 1500);
@@ -1191,7 +1198,7 @@ $(document).ready(function() {
 
 
 
-    // Ürünleri getiren fonksiyon
+    // Ürünleri getiren ortak fonksiyon
     function renderProductsList(data, options = {}) {
         const {
             title = 'Ürün Listesi',
@@ -2110,6 +2117,10 @@ $(document).ready(function() {
                 <div class="cities-container">
                     <div class="cities-header">
                         <h2>Şehir Listesi</h2>
+                        <button class="btn-all-branches">
+                             <i class="fa-solid fa-building"></i>
+                            Tüm Şubeler
+                        </button>
                     </div>
                     <div class="cities-body">
                         <table class="cities-table">
@@ -2218,6 +2229,175 @@ $(document).ready(function() {
 
         getCities();
     });
+
+
+
+    // Şehirlerin şubelerini getiren fonksiyon
+    function getCityBranches(cityId, cityName) {
+        const token = localStorage.getItem('token');
+        
+        $.ajax({
+            url: `https://eatwell-api.azurewebsites.net/api/cities/get?cityId=${cityId}`,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                // Dashboard içeriğini temizle
+                $('.dashboard-content').empty();
+                
+                // Şehir şubeleri için HTML yapısı
+                let branchesHTML = `
+                <div class="branches-container">
+                    <div class="branches-header">
+                        <h2>${cityName}</h2>
+                        <button class="btn-create-branch">
+                             <i class="fa-solid fa-plus"></i>
+                            Şube Ekle
+                        </button>
+                    </div>
+                    <div class="branches-body">
+                        <table class="branches-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Şube Adı</th>
+                                    <th>Adres</th>
+                                    <th>Email</th>
+                                    <th>İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody id="branchesTableBody">
+                            </tbody>
+                        </table>
+                        <!-- Sayfalama kontrolleri -->
+                        <div class="pagination-container">
+                            <div class="pagination">
+                                <button id="prevBranchPage" class="pagination-btn" disabled><i class="fas fa-chevron-left"></i></button>
+                                <span id="branchPageInfo">Sayfa 1</span>
+                                <button id="nextBranchPage" class="pagination-btn"><i class="fas fa-chevron-right"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+                
+                // Şubeleri dashboard'a ekle
+                $('.dashboard-content').append(branchesHTML);
+                
+                // Sayfalama için gerekli değişkenler
+                let currentPage = 1; // Mevcut sayfa numarası
+                const itemsPerPage = 10; // Her sayfada gösterilecek şube sayısı
+                const totalBranches = response.data.branches.length; // Toplam şube sayısı
+                const totalPages = Math.ceil(totalBranches / itemsPerPage) ? Math.ceil(totalBranches / itemsPerPage) : 1 ; // Toplam sayfa sayısı
+
+                // Şubeleri sayfalara böl ve göster
+                function displayBranches(page) {
+                    // Gösterilecek şubelerin başlangıç ve bitiş indekslerini hesapla
+                    const startIndex = (page - 1) * itemsPerPage;
+                    const endIndex = startIndex + itemsPerPage;
+                    // İlgili sayfadaki şubeleri seç
+                    const branchesToShow = response.data.branches.slice(startIndex, endIndex);
+                    
+                    let branchesTableHTML = '';
+                    
+                    // Seçilen şubeleri tabloya ekle
+                    if (branchesToShow.length > 0) {
+                        branchesToShow.forEach(branch => {
+                            branchesTableHTML += `
+                                <tr class="branch-row" data-branch-id="${branch.id}">
+                                    <td>${branch.id}</td>
+                                    <td>${branch.name}</td>
+                                    <td>${branch.address}</td>
+                                    <td>${branch.email}</td>
+                                    <td>
+                                        <div class="table-actions-scroll">
+                                            <button class="btn-delete-branch" data-branch-id="${branch.id}">
+                                                <i class="fa-solid fa-trash"></i>
+                                                Sil
+                                            </button>
+                                            <button class="btn-edit-branch" data-branch-id="${branch.id}">
+                                                <i class="fa-solid fa-pen-to-square"></i>
+                                                Düzenle
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>`;
+                        });
+                    } else {
+                        // Şube yoksa bilgi mesajı göster
+                        branchesTableHTML = `
+                            <tr>
+                                <td colspan="5" class="empty-table-row">Henüz şube bulunmamaktadır.</td>
+                            </tr>`;
+                    }
+                    
+                    // Tabloyu güncelle
+                    $('#branchesTableBody').html(branchesTableHTML);
+                    // Sayfa bilgisini güncelle
+                    $('#branchPageInfo').text(`Sayfa ${page} / ${totalPages}`);
+                    
+                    // Sayfalama butonlarının durumunu güncelle
+                    $('#prevBranchPage').prop('disabled', page === 1); // İlk sayfada geri butonu devre dışı
+                    $('#nextBranchPage').prop('disabled', page === totalPages); // Son sayfada ileri butonu devre dışı
+                }
+                
+                // İlk sayfayı göster
+                displayBranches(currentPage);
+                
+                // Önceki sayfa butonuna tıklama olayı
+                $('#prevBranchPage').click(function() {
+                    if (currentPage > 1) {
+                        currentPage--;
+                        displayBranches(currentPage);
+                    }
+                });
+                
+                // Sonraki sayfa butonuna tıklama olayı
+                $('#nextBranchPage').click(function() {
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                        displayBranches(currentPage);
+                    }
+                });
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : 'Şubeler alınırken hata oluştu!');
+            }
+        });
+    }
+
+
+    function selectCity(cityId, cityName) {
+        let history = JSON.parse(localStorage.getItem('cityHistory')) || [];
+    
+        // Yeni menüyü nesne olarak ekle
+        history.push({ id: cityId, name: cityName });
+    
+        localStorage.setItem('cityHistory', JSON.stringify(history));
+    }
+
+
+    // Şehirlerde "Şubeleri Gör" butonuna tıklandığında
+    $(document).on('click', '.btn-branches-city', function(e) {
+        e.stopPropagation();
+
+        const cityId = $(this).data('city-id');
+        const cityName = $(this).data('city-name');
+
+        // Seçilen şehri geçmişe kaydediyoruz
+        selectCity(cityId, cityName);
+
+        localStorage.setItem('selectedCityId', cityId);
+        localStorage.setItem('selectedCityName', cityName);
+
+        // URL'ye sahte bir adım ekliyoruz
+        history.pushState({ page: 'branchesByCity' }, 'Şubeler', `?page=branches&cityId=${cityId}`); 
+
+        getCityBranches(cityId, cityName);
+    });
+
+
     
     
     // Sayfa ilk açıldığında, yüklendiğinde
@@ -2239,21 +2419,30 @@ $(document).ready(function() {
             history.replaceState({ page: 'menus' }, 'Menüler', '?page=menus');
 
             getMenus();
+
         } else if (page === 'productsByMenu') {
             const menuId = localStorage.getItem('selectedMenuId');
             const menuName = localStorage.getItem('selectedMenuName');
             
             history.replaceState({ page: 'productsByMenu' }, 'Ürünler', `?page=products&menuId=${menuId}`);
-
+            
             getProductsByMenu(menuId, menuName);
+
         } else if (page === 'users') {
             history.replaceState({ page: 'users' }, 'Kullanıcılar', `?page=users`);
 
             getUsers();
+
         }else if (page === 'products') {
             history.replaceState({ page: 'products' }, 'Ürünler', `?page=products`);
 
             getAllProducts();
+
+        }else if (page === 'cities') {
+            history.pushState({ page: 'cities' }, 'Şehirler', '?page=cities'); 
+
+            getCities();
+
         }else {
             // Hiç page değeri yoksa dashboard'u yükle.
 
@@ -2299,6 +2488,29 @@ $(document).ready(function() {
     }
 
 
+    // Bu metot sayesinde, kullanıcı geri tuşuna bastığında doğru şekilde bir önceki menüye döner.
+    // Ve geçmişi düzgün yöneterek daha kontrollü bir kullanıcı deneyimi sağlanır.
+    function goBackToPreviousCity() {
+
+        let history = JSON.parse(localStorage.getItem('cityHistory')) || [];
+        
+        history.pop();
+    
+
+        let previousCity = history[history.length - 1];
+
+        
+        if (previousCity) {
+
+            // getCityBranches fonksiyonunu kullanarak belirtilen şehre ait şubeleri getiriyoruz.
+            getCityBranches(previousCity.id, previousCity.name);
+
+
+            localStorage.setItem('cityHistory', JSON.stringify(history));
+        }
+    }
+
+
     //Kullanıcı tarayıcıda geri veya ileri tuşuna basınca
     window.addEventListener('popstate', function (e) {
 
@@ -2322,6 +2534,14 @@ $(document).ready(function() {
 
                 case 'products':
                     getAllProducts();
+                    break;
+
+                case 'cities':
+                    getCities();
+                    break;
+
+                case 'branchesByCity':
+                    goBackToPreviousCity();
                     break;
 
                 case 'dashboard':

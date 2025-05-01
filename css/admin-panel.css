@@ -392,37 +392,55 @@ td, th {
 	float: left;
 }
 
-.cities-table td:nth-child(1){
-  width: 15%;
-}
-
-.cities-table td:nth-child(2){
-  width: 30%;
-}
-
-.cities-table td:nth-child(3){
-  width: 25%;
-}
-
-.cities-table td:nth-child(4){
-  width: 30%;
-}
-
-.users-table td:nth-child(1){
+.users-table td:nth-child(1),
+.menus-table td:nth-child(1),
+.products-table td:nth-child(1) {
   width: 10%;
 }
 
+.cities-table td:nth-child(1),
+.products-table td:nth-child(4),
+.products-table td:nth-child(5) {
+  width: 15%;
+}
+
 .users-table td:nth-child(2),
-.users-table td:nth-child(3){
+.users-table td:nth-child(3),
+.users-table td:nth-child(5),
+.products-table td:nth-child(2),
+.products-table td:nth-child(3),
+.products-table td:nth-child(6) {
   width: 20%;
 }
 
-.users-table td:nth-child(4){
+.cities-table td:nth-child(3),
+.menus-table td:nth-child(2),
+.menus-table td:nth-child(3) {
+  width: 25%;
+}
+
+.cities-table td:nth-child(2),
+.cities-table td:nth-child(4),
+.users-table td:nth-child(4) {
   width: 30%;
 }
 
-.users-table td:nth-child(5){
-  width: 20%;
+.menus-table td:nth-child(4){
+  width: 40%;
+}
+
+.branches-table td:nth-child(1) {
+  width: 10%;
+}
+
+.branches-table td:nth-child(2),
+.branches-table td:nth-child(3),
+.branches-table td:nth-child(4) {
+  width: 22%;
+}
+
+.branches-table td:nth-child(5) {
+  width: 24%;
 }
 
 .table-actions-scroll {
@@ -431,41 +449,9 @@ td, th {
   display: block;
 }
 
-.menus-table td:nth-child(1),
-.products-table td:nth-child(1){
-  width: 10%;
-}
-
-.menus-table td:nth-child(2){
-  width: 25%;
-}
-
-.menus-table td:nth-child(3){
-  width: 25%;
-}
-
-.menus-table td:nth-child(4){
-  width: 40%;
-}
-
-.products-table td:nth-child(2),
-.products-table td:nth-child(3){
-  width: 20%;
-}
-
-.products-table td:nth-child(4),
-.products-table td:nth-child(5){
-  width: 15%;
-}
-
-.products-table td:nth-child(6){
-  width: 20%;
-}
-
-
-
 .menus-table,
 .cities-table,
+.branches-table,
 .users-table,
 .products-table {
   width: 100%;
@@ -476,6 +462,7 @@ td, th {
 
 .menus-table th,
 .cities-table th,
+.branches-table th,
 .users-table th,
 .products-table th {
   background-color: #d8d9e1;
@@ -487,6 +474,7 @@ td, th {
 
 .menus-table td,
 .cities-table td,
+.branches-table td,
 .products-table td {
   border-bottom: 1px solid #81818140;
   padding: 12px;
@@ -497,12 +485,14 @@ td, th {
   padding: 18px;
 }
 
-.cities-table td {
+.cities-table td,
+.branches-table td {
   padding: 12px 18px;
 }
 
 .users-table th,
-.cities-table th {
+.cities-table th,
+.branches-table th {
   padding: 12px 16px;
 }
 
@@ -604,6 +594,7 @@ td, th {
 
 .menu-row,
 .city-row,
+.branch-row,
 .user-row,
 .product-row {
   cursor: pointer;
@@ -612,6 +603,7 @@ td, th {
 
 .menu-row:hover,
 .city-row:hover,
+.branch-row:hover,
 .user-row:hover,
 .product-row:hover {
   background-color: #ebebeb;
@@ -658,6 +650,7 @@ td, th {
 #pageInfo, 
 #menuPageInfo, 
 #cityPageInfo,
+#branchPageInfo,
 #userPageInfo,
 #productPageInfo {
   color: #000;
@@ -845,15 +838,19 @@ td, th {
 
 /* Menü ve Ürün İşlemleri İçin Buton Stili */
 .btn-create-menu,
-.btn-create-product{
+.btn-create-product,
+.btn-create-branch,
+.btn-all-branches {
   padding: 10px 12px;
   font-size: 14px;
 }
 
 .btn-edit-menu,
 .btn-edit-product,
+.btn-edit-branch,
 .btn-delete-menu,
 .btn-delete-product,
+.btn-delete-branch,
 .btn-products-menu,
 .btn-branches-city,
 .btn-menu{
@@ -861,19 +858,23 @@ td, th {
 }
 
 .btn-products-menu,
-.btn-branches-city,
 .btn-menu,
 .btn-edit-menu,
-.btn-edit-product{
+.btn-edit-product, 
+.btn-edit-branch {
   margin-left: 8px;
 }
 
 .btn-edit-menu,
 .btn-create-menu,
 .btn-create-product,
+.btn-create-branch,
+.btn-all-branches,
 .btn-edit-product,
+.btn-edit-branch,
 .btn-delete-menu,
 .btn-delete-product,
+.btn-delete-branch,
 .btn-products-menu,
 .btn-branches-city,
 .btn-menu {
@@ -888,9 +889,13 @@ td, th {
 .btn-edit-menu:hover,
 .btn-create-menu:hover,
 .btn-edit-product:hover,
+.btn-edit-branch:hover,
 .btn-delete-menu:hover,
 .btn-delete-product:hover,
+.btn-delete-branch:hover,
 .btn-create-product:hover,
+.btn-create-branch:hover,
+.btn-all-branches:hover,
 .btn-products-menu:hover,
 .btn-branches-city:hover,
 .btn-menu:hover {
@@ -900,9 +905,13 @@ td, th {
 .btn-edit-menu i,
 .btn-create-menu i,
 .btn-edit-product i,
+.btn-edit-branch i,
 .btn-delete-menu i,
 .btn-delete-product i,
+.btn-delete-branch i,
 .btn-create-product i,
+.btn-create-branch i,
+.btn-all-branches i,
 .btn-products-menu i,
 .btn-branches-city i,
 .btn-menu i{
@@ -914,6 +923,7 @@ td, th {
 /* Menüler Container Stili */
 .menus-container,
 .cities-container,
+.branches-container,
 .users-container,
 .products-container {
   width: 98.5%;
@@ -927,6 +937,7 @@ td, th {
 
 .menus-header,
 .cities-header,
+.branches-header,
 .users-header,
 .products-header {
   margin-bottom: 20px;
@@ -939,6 +950,7 @@ td, th {
 
 .menus-header h2,
 .cities-header h2,
+.branches-header h2,
 .users-header h2,
 .products-header h2 {
   color: #000;
@@ -948,6 +960,7 @@ td, th {
 
 .menus-body,
 .cities-body,
+.branches-body,
 .users-body,
 .products-body {
   color: #000;
@@ -956,6 +969,7 @@ td, th {
 
 .menus-table,
 .cities-table,
+.branches-table,
 .users-table,
 .products-table {
   width: 100%;
@@ -1139,20 +1153,14 @@ input:not(:checked) + .toggle-slider:after {
 
 @media screen and (max-width: 1144px){
   .products-table td,
-  .products-table th {
-    padding: 12px 25px;
-  }
-
+  .products-table th,
   .menus-table td, 
   .menus-table th {
     padding: 12px 25px;
-}
+  }
 
   .products-table td:nth-child(2),
-  .products-table td:nth-child(3){
-    width: 13%;
-  }
-  
+  .products-table td:nth-child(3),
   .products-table td:nth-child(4),
   .products-table td:nth-child(5){
     width: 13%;
@@ -1160,6 +1168,20 @@ input:not(:checked) + .toggle-slider:after {
   
   .products-table td:nth-child(6){
     width: 36%;
+  }
+
+  .branches-table td:nth-child(1) {
+    width: 8%;
+  }
+  
+  .branches-table td:nth-child(2),
+  .branches-table td:nth-child(3),
+  .branches-table td:nth-child(4) {
+    width: 22%;
+  }
+  
+  .branches-table td:nth-child(5) {
+    width: 26%;
   }
 }
 
@@ -1319,11 +1341,12 @@ input:not(:checked) + .toggle-slider:after {
   }
 
   .cities-table th,
-  .cities-table td{
+  .cities-table td,
+  .branches-table th,
+  .branches-table td {
     padding: 12px 14px;
   }
 
-  
   .dashboard-text {
     font-size: 23px;
   }
@@ -1537,7 +1560,9 @@ input:not(:checked) + .toggle-slider:after {
   }
 
   .btn-create-menu,
-  .btn-create-product {
+  .btn-create-product,
+  .btn-create-branch,
+  .btn-all-branches {
     padding: 8px 10px;
   }
   
@@ -1552,8 +1577,10 @@ input:not(:checked) + .toggle-slider:after {
 
   .btn-edit-menu,
   .btn-edit-product,
+  .btn-edit-branch,
   .btn-delete-menu,
   .btn-delete-product,
+  .btn-delete-branch,
   .btn-products-menu,
   .btn-branches-city,
   .btn-menu {
@@ -1587,15 +1614,19 @@ input:not(:checked) + .toggle-slider:after {
   }
 
   .btn-create-menu,
-  .btn-create-product {
+  .btn-create-product,
+  .btn-create-branch,
+  .btn-all-branches {
     padding: 8px 9px;
     font-size: 13px;
   }
 
   .btn-edit-menu,
   .btn-edit-product,
+  .btn-edit-branch,
   .btn-delete-menu,
   .btn-delete-product,
+  .btn-delete-branch,
   .btn-products-menu,
   .btn-branches-city,
   .btn-menu {
