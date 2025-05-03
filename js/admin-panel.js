@@ -951,12 +951,12 @@ $(document).ready(function() {
                         }
                     });
                 } else {
-                    showToast('error', 'Hata', 'Menü güncellenirken hata oluştu!');
+                    showToast('error', 'Hata', 'Menü bilgileri alınırken hata oluştu!');
                 }
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
-                showToast('error', 'Hata', errorMessage ? errorMessage : 'Menü güncellenirken hata oluştu!');
+                showToast('error', 'Hata', errorMessage ? errorMessage : 'Menü bilgileri alınırken hata oluştu!');
             }
         });
     }
@@ -1009,7 +1009,7 @@ $(document).ready(function() {
                     });
                     getMenus(); // Menü listesini yenile
                 } else {
-                    showToast('error', 'Hata', response.message);
+                    showToast('error', 'Hata', 'Menü güncellenirken hata oluştu!');
                 }
             },
             error: function(xhr) {
@@ -1590,12 +1590,12 @@ $(document).ready(function() {
                         }
                     });
                 } else {
-                    showToast('error', 'Hata', 'Ürün güncellenirken hata oluştu!');
+                    showToast('error', 'Hata', 'Ürün bilgileri alınırken hata oluştu!');
                 }
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
-                showToast('error', 'Hata', errorMessage ? errorMessage : "Ürün güncellenirken hata oluştu!");
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Ürün bilgileri alınırken hata oluştu!");
             }
         });
     }
@@ -2317,7 +2317,9 @@ $(document).ready(function() {
                                 <tr class="branch-row" data-branch-id="${branch.id}">
                                     <td>${branch.id}</td>
                                     <td>${branch.name}</td>
-                                    <td>${branch.address}</td>
+                                    <td>
+                                        <span class="truncate">${branch.address}</span>
+                                    </td>
                                     <td>${branch.email}</td>
                                     <td>
                                         <div class="table-actions-scroll">
@@ -2395,8 +2397,301 @@ $(document).ready(function() {
     });
 
 
+
+
+    function updateBranch(branchId) {
+        const token = localStorage.getItem('token');
+        
+        $.ajax({
+            url: `https://eatwell-api.azurewebsites.net/api/branches/getForAdmin?branchId=${branchId}`,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                if (response.success && response.data) {
+                    const branch = response.data;
+
+                    let branchUpdateHTML = `
+                    <div class="branch-update-modal" data-branch-id="${branch.id}">
+                        <div class="branch-update-content">
+                            <div class="branch-update-header">
+                                <h2>Şube Güncelleme</h2>
+                                <span class="close-branch-update">&times;</span>
+                            </div>
+                            <div class="branch-update-body">
+                                <div class="branch-info">
+                                    <div class="branch-info-item">
+                                        <div class="branch-label">
+                                            <strong>Şube Adı</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <input type="text" class="branch-value branch-name" value="${branch.name}">
+                                    </div>
+                                    <div class="branch-info-item">
+                                        <div class="branch-label">
+                                            <strong>Adres</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <input type="text" class="branch-value branch-address" value="${branch.address}">    
+                                    </div>
+                                    <div class="branch-info-item">
+                                        <div class="branch-label">
+                                            <strong>Email</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <input type="text" class="branch-value branch-email" value="${branch.email}">    
+                                    </div>
+                                    <div class="branch-info-item">
+                                        <div class="branch-label">
+                                            <strong>Telefon</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <input type="text" id="branchPhone" class="branch-value branch-phone" placeholder="0___ ___ __ __"  value="${branch.phone}">    
+                                    </div>
+                                    <div class="branch-info-item">
+                                        <div class="branch-label">
+                                            <strong>Web Site</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <input type="text" class="branch-value branch-web-site" value="${branch.webSite}">    
+                                    </div>
+                                    <div class="branch-info-item">
+                                        <div class="branch-label">
+                                            <strong>Facebook</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <input type="text" class="branch-value branch-facebook" value="${branch.facebook === null ? '' : branch.facebook}">    
+                                    </div>
+                                    <div class="branch-info-item">
+                                        <div class="branch-label">
+                                            <strong>Instagram</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <input type="text" class="branch-value branch-instagram" value="${branch.instagram === null ? '' : branch.instagram}">    
+                                    </div>
+                                    <div class="branch-info-item">
+                                        <div class="branch-label">
+                                            <strong>Twitter</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <input type="text" class="branch-value branch-twitter" value="${branch.twitter === null ? '' : branch.twitter}">    
+                                    </div>
+                                    <div class="branch-info-item">
+                                        <div class="branch-label">
+                                            <strong>Gmail</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <input type="text" class="branch-value branch-gmail" value="${branch.gmail === null ? '' : branch.gmail}">    
+                                    </div>
+                                    <button class="btn-update-branch">Güncelle</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                    
+                    // Eğer detay modülü zaten varsa kaldır
+                    $('.branch-update-modal').remove();
+                    
+                    // Detay modülünü ekle
+                    $('body').append(branchUpdateHTML);
+                    
+                    // Detay modülünü göster
+                    $('.branch-update-modal').fadeIn(300, function() {
+                        checkIfItemsAreOnNewLine(true);
+                    });
+                    
+                    // Kapatma butonuna tıklandığında
+                    $('.close-branch-update').click(function() {
+                        $('.branch-update-modal').fadeOut(300, function() {
+                            $(this).remove();
+                        });
+                    });
+                    
+                    // Modül dışına tıklandığında kapat
+                    $('.branch-update-modal').click(function(e) {
+                        if ($(e.target).hasClass('branch-update-modal')) {
+                            $('.branch-update-modal').fadeOut(300, function() {
+                                $(this).remove();
+                            });
+                        }
+                    });
+                } else {
+                    showToast('error', 'Hata', 'Şube bilgileri getirilirken hata oluştu!');
+                }
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Şube bilgileri getirilirken hata oluştu!");
+            }
+        });
+    }
+
+
+    $(document).on('input', '#branchPhone', function () {
+        
+        let $this = $(this);
+        let inputElement = this;
+        
+        // İmlecin mevcut pozisyonunu alıyoruz
+        let cursorPosition = inputElement.selectionStart;
+        let oldValue = $this.val();
+        let oldLength = oldValue.length;
+        
+        // Eğer input tamamen boşsa, formatlama yapmadan çık
+        if (oldValue.trim() === '') {
+            return;
+        }
+        
+        // Eğer inputta rakam dışı (boşluk hariç) karakter varsa uyarı veriyoruz
+        if (/[^0-9\s]/.test(oldValue)) {
+            showToast('error', 'Hata', 'Lütfen yalnızca sayısal karakter kullanın.');
+        }
+        
+        // Tüm rakamları al (boşluk dahil değil)
+        let digitsOnly = oldValue.replace(/\D/g, '').substring(0, 12);
+        
+        
+        // En başta her zaman sıfır olmasını sağlıyoruz
+        if (digitsOnly.charAt(0) !== '0') {
+            digitsOnly = '0' + digitsOnly; // Eğer sıfır yoksa başa ekliyoruz
+        }
+        
+        // Formatlama: 0xxx xxx xx xx
+        let formatted = '';
+        if (digitsOnly.length > 0) formatted += digitsOnly.substring(0, 4);
+        if (digitsOnly.length > 4) formatted += ' ' + digitsOnly.substring(4, 7);
+        if (digitsOnly.length > 7) formatted += ' ' + digitsOnly.substring(7, 9);
+        if (digitsOnly.length > 9) formatted += ' ' + digitsOnly.substring(9, 11);
+        
+        $(this).val(formatted);
+        
+        // Yeni uzunluğu alıp imleç pozisyonunu ayarlıyoruz
+        let newLength = formatted.length;
+        cursorPosition += newLength - oldLength;
+        inputElement.setSelectionRange(cursorPosition, cursorPosition);
+    });
     
     
+    // Sıfırın silinmesini engelliyoruz
+    $(document).on('keydown', '#branchPhone', function (e) {
+        let input = $(this).val();
+        
+        // Eğer imleç 0'ın olduğu yerdeyse ve silme tuşuna basılmışsa (Backspace veya Delete)
+        let cursorPosition = this.selectionStart;
+        
+        if ((e.key === 'Backspace' && cursorPosition === 1) ||
+        (e.key === 'Delete' && cursorPosition === 0)) {
+            
+            // İlk karakter 0 ise silinmesini engelle
+            if (input.charAt(0) === '0') {
+                e.preventDefault();
+            }
+        }
+    });
+
+
+    // Şubede "Düzenle" butonuna tıklandığında
+    $(document).on('click', '.btn-edit-branch', function(e) {
+        e.stopPropagation();
+
+        const branchId = $(this).data('branch-id');
+        updateBranch(branchId);
+    });
+    
+
+    
+    // Şubede "Güncelle" butonuna tıklandığında
+    $(document).on('click', '.btn-update-branch', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const updateModal = $(this).closest('.branch-update-modal');
+        
+        const branchId = updateModal.data('branch-id');
+        const branchName = updateModal.find('.branch-name').val();
+        const branchAddress = updateModal.find('.branch-address').val();
+        const branchEmail = updateModal.find('.branch-email').val();
+        const branchPhone = updateModal.find('.branch-phone').val();
+        const branchWebSite = updateModal.find('.branch-web-site').val();
+        const branchFacebook = updateModal.find('.branch-facebook').val();
+        const branchInstagram = updateModal.find('.branch-instagram').val();
+        const branchTwitter = updateModal.find('.branch-twitter').val();
+        const branchGmail = updateModal.find('.branch-gmail').val();
+        const phoneRegex = /^0\d{3}\s\d{3}\s\d{2}\s\d{2}$/;
+        
+        if (branchName.trim() === '') {
+            showToast('error', 'Hata', 'Lütfen şube adını giriniz!');
+            return;
+        }
+
+        if (branchAddress.trim() === '') {
+            showToast('error', 'Hata', 'Lütfen şubenin adresini giriniz!');
+            return;
+        }
+
+        if (branchEmail.trim() === '') {
+            showToast('error', 'Hata', 'Lütfen şubenin e-posta adresini giriniz!');
+            return;
+        }
+
+        if (branchPhone.trim() === '') {
+            showToast('error', 'Hata', 'Lütfen şubenin telefon numarasını giriniz!');
+            return;
+        }
+
+        if (!phoneRegex.test(branchPhone.trim())) {
+            showToast('error', 'Hata', 'Lütfen geçerli bir telefon numarası giriniz!');
+            return;
+        }
+        
+        const token = localStorage.getItem('token');
+        
+        $.ajax({
+            url: `https://eatwell-api.azurewebsites.net/api/branches/update?branchId=${branchId}`,
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify({
+                name: branchName,
+                address: branchAddress,
+                email: branchEmail,
+                phone: branchPhone,
+                webSite: branchWebSite,
+                facebook: branchFacebook,
+                instagram: branchInstagram,
+                twitter: branchTwitter,
+                gmail: branchGmail
+            }),
+            success: function(response) {
+                if (response.success) {
+                    showToast('success', 'Başarılı', 'Şube başarıyla güncellendi!');
+                    
+                    $('.branch-update-modal').fadeOut(300, function() {
+                        $(this).remove();
+                    });
+
+                    const cityId = localStorage.getItem('selectedCityId');
+                    const cityName = localStorage.getItem('selectedCityName');
+
+                    getCityBranches(cityId, cityName);
+                } else {
+                    showToast('error', 'Hata', 'Şube güncellenirken hata oluştu!');
+                }
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : 'Şube güncellenirken hata oluştu!');
+            }
+        });
+    });
+
+
+
+    
+
     // Sayfa ilk açıldığında, yüklendiğinde
     window.addEventListener('load', function() {
 
@@ -2440,7 +2735,7 @@ $(document).ready(function() {
 
             getCities();
 
-        }else if (page === 'branches') {
+        }else if (page === 'branchesByCity') {
             const cityId = localStorage.getItem('selectedCityId');
             const cityName = localStorage.getItem('selectedCityName');
 
@@ -2458,7 +2753,6 @@ $(document).ready(function() {
             getStatistics();
         }
     });
-
 
 
 
