@@ -502,6 +502,7 @@ td, th {
 
 .user-details-modal,
 .menu-details-modal,
+.branch-details-modal,
 .product-details-modal,
 .menu-update-modal,
 .product-update-modal,
@@ -521,6 +522,7 @@ td, th {
 
 .user-details-content,
 .menu-details-content,
+.branch-details-content,
 .product-details-content,
 .menu-update-content,
 .product-update-content,
@@ -537,7 +539,8 @@ td, th {
   animation: modalFadeIn 0.3s;
 }
 
-.branch-update-content{
+.branch-update-content,
+.branch-details-content {
   max-width: 800px;
 }
 
@@ -548,6 +551,7 @@ td, th {
 
 .user-details-header,
 .menu-details-header,
+.branch-details-header,
 .product-details-header,
 .menu-update-header,
 .product-update-header,
@@ -564,6 +568,7 @@ td, th {
 
 .user-details-header h2,
 .menu-details-header h2,
+.branch-details-header h2,
 .product-details-header h2,
 .menu-update-header h2,
 .product-update-header h2,
@@ -576,6 +581,7 @@ td, th {
 }
 
 .close-menu-details,
+.close-branch-details,
 .close-user-details,
 .close-product-details,
 .close-menu-update,
@@ -591,6 +597,7 @@ td, th {
 }
 
 .close-menu-details:hover,
+.close-branch-details:hover,
 .close-user-details:hover,
 .close-product-details:hover,
 .close-menu-update:hover,
@@ -674,6 +681,7 @@ td, th {
 /* Entity Detayları Modal Stili */
 
 .menu-details-body,
+.branch-details-body,
 .user-details-body,
 .product-details-body,
 .menu-update-body,
@@ -787,8 +795,11 @@ td, th {
   flex-wrap: wrap;              
   gap: 6px;                    
   justify-content: space-between;
-  border: none;
   align-items: center;
+}
+
+.branch-update-body .branch-info {
+  border: none;
 }
 
 .menu-info-item,
@@ -804,6 +815,9 @@ td, th {
 .branch-info-item {
   flex: 0 0 auto;    /* Her eleman genişliğin yaklaşık %50'sini kaplasın */
   width: 45%;
+}
+
+.branch-update-body .branch-info-item {
   border: none;
 }
 
@@ -858,13 +872,9 @@ td, th {
   width: 60%;
 }
 
-.branch-update-body .branch-value {
-  width: 73%;
-}
-
 .menu-update-body .menu-value:focus-visible,
 .product-update-body .product-value:focus-visible,
-.branch-update-body .branch-value:focus-visible,
+.branch-value:focus-visible,
 .menu-create-body .menu-value:focus-visible,
 .product-create-body .product-value:focus-visible {
   outline: none;
@@ -880,6 +890,10 @@ td, th {
   font-size: 16px;
   line-height: 1.5;
   padding: 5px 10px;
+}
+
+.branch-value {
+  width: 73% !important;
 }
 
 .empty-table-row {
@@ -1302,7 +1316,8 @@ input:not(:checked) + .toggle-slider:after {
     width: 97%;
   }
 
-  .branch-update-content {
+  .branch-update-content,
+  .branch-details-content {
     max-width: 500px;
   }
 
@@ -1404,6 +1419,7 @@ input:not(:checked) + .toggle-slider:after {
   }
   
   .menu-details-header h2,
+  .branch-details-header h2,
   .user-details-header h2,
   .product-details-header h2,
   .menu-update-header h2,
@@ -1436,6 +1452,7 @@ input:not(:checked) + .toggle-slider:after {
 
   .user-details-content,
   .menu-details-content,
+  .branch-details-content,
   .product-details-content,
   .menu-update-content,
   .product-update-content,
@@ -1538,6 +1555,7 @@ input:not(:checked) + .toggle-slider:after {
   }
   
   .menu-details-body, 
+  .branch-details-body,
   .user-details-body,
   .product-details-body, 
   .menu-update-body, 
@@ -1590,6 +1608,7 @@ input:not(:checked) + .toggle-slider:after {
   }
   
   .menu-details-header h2,
+  .branch-details-header h2,
   .user-details-header h2
   .product-details-header h2,
   .menu-update-header h2,
@@ -1621,6 +1640,7 @@ input:not(:checked) + .toggle-slider:after {
   }
 
   .menu-details-content,
+  .branch-details-content,
   .user-details-content
   .product-details-content,
   .menu-update-content,

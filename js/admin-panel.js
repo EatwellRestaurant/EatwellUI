@@ -2398,6 +2398,145 @@ $(document).ready(function() {
 
 
 
+    // Şube detaylarını getiren fonksiyon
+    function getBranchDetails(branchId) {
+        const token = localStorage.getItem('token');
+        
+        $.ajax({
+            url: `https://eatwell-api.azurewebsites.net/api/branches/getForAdmin?branchId=${branchId}`,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                if (response.success && response.data) {
+                    const branch = response.data;
+                                        
+                    let branchDetailsHTML = `
+                    <div class="branch-details-modal">
+                        <div class="branch-details-content">
+                            <div class="branch-details-header">
+                                <h2>Şube Detayı</h2>
+                                <span class="close-branch-details">&times;</span>
+                            </div>
+                            <div class="branch-details-body">
+                                <div class="branch-info">
+                                    <div class="branch-info-item">
+                                        <div class="branch-label">
+                                            <strong>Şube Adı</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <p class="branch-value">${branch.name}</p>
+                                    </div>
+                                    <div class="branch-info-item">
+                                        <div class="branch-label">
+                                            <strong>Adres</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <p class="branch-value">${branch.address}</p>   
+                                    </div>
+                                    <div class="branch-info-item">
+                                        <div class="branch-label">
+                                            <strong>Email</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <p class="branch-value">${branch.email}</p>    
+                                    </div>
+                                    <div class="branch-info-item">
+                                        <div class="branch-label">
+                                            <strong>Telefon</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <p class="branch-value">${branch.phone}</p>   
+                                    </div>
+                                    <div class="branch-info-item">
+                                        <div class="branch-label">
+                                            <strong>Web Site</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <p class="branch-value">${branch.webSite || '<span style="color: gray;">—</span>'}</p> 
+                                    </div>
+                                    <div class="branch-info-item">
+                                        <div class="branch-label">
+                                            <strong>Facebook</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <p class="branch-value">${branch.facebook || '<span style="color: gray;">—</span>'}</p>    
+                                    </div>
+                                    <div class="branch-info-item">
+                                        <div class="branch-label">
+                                            <strong>Instagram</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <p class="branch-value">${branch.instagram || '<span style="color: gray;">—</span>'}</p>    
+                                    </div>
+                                    <div class="branch-info-item">
+                                        <div class="branch-label">
+                                            <strong>Twitter</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <p class="branch-value">${branch.twitter || '<span style="color: gray;">—</span>'}</p>    
+                                    </div>
+                                    <div class="branch-info-item">
+                                        <div class="branch-label">
+                                            <strong>Gmail</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <p class="branch-value">${branch.gmail || '<span style="color: gray;">—</span>' }</p>    
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                    
+                    // Eğer detay modülü zaten varsa kaldır
+                    $('.branch-details-modal').remove();
+                    
+                    // Detay modülünü ekle
+                    $('body').append(branchDetailsHTML);
+                    
+                    // Detay modülünü göster
+                    $('.branch-details-modal').fadeIn(300);
+                    
+                    // Kapatma butonuna tıklandığında
+                    $('.close-branch-details').click(function() {
+                        $('.branch-details-modal').fadeOut(300, function() {
+                            $(this).remove();
+                        });
+                    });
+                    
+                    // Modül dışına tıklandığında kapat
+                    $('.branch-details-modal').click(function(e) {
+                        if ($(e.target).hasClass('branch-details-modal')) {
+                            $('.branch-details-modal').fadeOut(300, function() {
+                                $(this).remove();
+                            });
+                        }
+                    });
+                } else {
+                    showToast('error', 'Hata', 'Şube detayı alınırken hata oluştu!');
+                }
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : 'Şube detayı alınırken hata oluştu!');
+            }
+        });
+    }
+
+
+    // Şube satırına tıklama olayı
+    $(document).on('click', '.branch-row', function(e) {
+        // Eğer tıklanan element düzenleme butonu veya silme butonu ise işlemi durdur
+        if ($(e.target).closest('.btn-edit-branch, .btn-delete-product').length) {
+            return;
+        }
+
+        const branchId = $(this).data('branch-id');
+        getBranchDetails(branchId);
+    });
+
+
 
     function updateBranch(branchId) {
         const token = localStorage.getItem('token');
