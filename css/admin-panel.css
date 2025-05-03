@@ -258,6 +258,7 @@ table {
 }
 
 td, th {
+  white-space: nowrap;
   text-align: left;
   padding: 15px;
   color: #000;
@@ -508,7 +509,8 @@ td, th {
 .product-update-modal,
 .branch-update-modal,
 .menu-create-modal,
-.product-create-modal {
+.product-create-modal,
+.branch-create-modal {
   display: none;
   position: fixed;
   z-index: 1001;
@@ -528,7 +530,8 @@ td, th {
 .product-update-content,
 .branch-update-content,
 .menu-create-content,
-.product-create-content {
+.product-create-content,
+.branch-create-content {
   background-color: #edece1;
   margin: 5% auto;
   padding: 20px;
@@ -540,7 +543,8 @@ td, th {
 }
 
 .branch-update-content,
-.branch-details-content {
+.branch-details-content,
+.branch-create-content {
   max-width: 800px;
 }
 
@@ -557,7 +561,8 @@ td, th {
 .product-update-header,
 .branch-update-header,
 .menu-create-header,
-.product-create-header {
+.product-create-header,
+.branch-create-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -574,7 +579,8 @@ td, th {
 .product-update-header h2,
 .branch-update-header h2,
 .menu-create-header h2,
-.product-create-header h2 {
+.product-create-header h2,
+.branch-create-header h2 {
   color: #000;
   margin: 0;
   font-size: 24px;
@@ -588,7 +594,8 @@ td, th {
 .close-product-update,
 .close-branch-update,
 .close-menu-create,
-.close-product-create {
+.close-product-create,
+.close-branch-create {
   color: #3a3a3a;
   font-size: 28px;
   font-weight: bold;
@@ -604,7 +611,8 @@ td, th {
 .close-product-update:hover,
 .close-branch-update:hover,
 .close-menu-create:hover,
-.close-product-create:hover {
+.close-product-create:hover,
+.close-branch-create:hover {
   color: #ffc515;
 }
 
@@ -688,7 +696,8 @@ td, th {
 .product-update-body,
 .branch-update-body,
 .menu-create-body,
-.product-create-body {
+.product-create-body,
+.branch-create-body {
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -727,7 +736,8 @@ td, th {
   font-size: 17px;
 }
 
-.btn-update-branch {
+.btn-update-branch,
+.btn-add-branch {
   margin-right: 15px;
   padding: 1px 14px;
   margin-top: 0px;
@@ -747,6 +757,7 @@ td, th {
 .btn-update-menu,
 .btn-update-product,
 .btn-update-branch,
+.btn-add-branch,
 .btn-add-menu,
 .btn-add-product{
   display: inline-block;
@@ -762,6 +773,7 @@ td, th {
 .btn-update-menu:hover,
 .btn-update-product:hover,
 .btn-update-branch:hover,
+.btn-add-branch:hover,
 .btn-add-menu:hover,
 .btn-add-product:hover{
   background-color: #ffd760;;
@@ -798,7 +810,8 @@ td, th {
   align-items: center;
 }
 
-.branch-update-body .branch-info {
+.branch-update-body .branch-info,
+.branch-create-body .branch-info {
   border: none;
 }
 
@@ -817,7 +830,8 @@ td, th {
   width: 45%;
 }
 
-.branch-update-body .branch-info-item {
+.branch-update-body .branch-info-item,
+.branch-create-body .branch-info-item {
   border: none;
 }
 
@@ -864,7 +878,8 @@ td, th {
 .product-update-body .product-value,
 .branch-update-body .branch-value,
 .menu-create-body .menu-value,
-.product-create-body .product-value {
+.product-create-body .product-value,
+.branch-create-body .branch-value {
   border: 1px solid #ddd;
   padding: 5px 8px;
   border-radius: 6px;
@@ -872,9 +887,9 @@ td, th {
   width: 60%;
 }
 
+.branch-value:focus-visible,
 .menu-update-body .menu-value:focus-visible,
 .product-update-body .product-value:focus-visible,
-.branch-value:focus-visible,
 .menu-create-body .menu-value:focus-visible,
 .product-create-body .product-value:focus-visible {
   outline: none;
@@ -1166,7 +1181,6 @@ input:not(:checked) + .toggle-slider:after {
 
 .truncate {
   max-width: 150px; 
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   display: inline-block;
@@ -1317,7 +1331,8 @@ input:not(:checked) + .toggle-slider:after {
   }
 
   .branch-update-content,
-  .branch-details-content {
+  .branch-details-content,
+  .branch-create-content {
     max-width: 500px;
   }
 
@@ -1332,7 +1347,8 @@ input:not(:checked) + .toggle-slider:after {
     width: 93%;
   }
 
-  .btn-update-branch {
+  .btn-update-branch,
+  .btn-add-branch {
     margin-left: auto;
     margin-top: 5px;
   }
@@ -1426,7 +1442,8 @@ input:not(:checked) + .toggle-slider:after {
   .product-update-header h2,
   .branch-update-header h2,
   .menu-create-header h2,
-  .product-create-header h2 {
+  .product-create-header h2,
+  .branch-create-header h2 {
     font-size: 20px;
   }
    
@@ -1458,7 +1475,8 @@ input:not(:checked) + .toggle-slider:after {
   .product-update-content,
   .branch-update-content,
   .menu-create-content,
-  .product-create-content {
+  .product-create-content,
+  .branch-create-content {
     margin: 10% auto;
     width: 95%;
     padding: 15px;
@@ -1481,6 +1499,7 @@ input:not(:checked) + .toggle-slider:after {
   .btn-update-menu,
   .btn-update-product,
   .btn-update-branch,
+  .btn-add-branch,
   .btn-add-menu,
   .btn-add-product{
     padding: 12px 14px;
@@ -1562,7 +1581,8 @@ input:not(:checked) + .toggle-slider:after {
   .product-update-body, 
   .branch-update-body,
   .menu-create-body,
-  .product-create-body {
+  .product-create-body,
+  .branch-create-body {
     align-items: center;
   }
 
@@ -1615,7 +1635,8 @@ input:not(:checked) + .toggle-slider:after {
   .product-update-header h2,
   .branch-update-header h2,
   .menu-create-header h2,
-  .product-create-header h2 {
+  .product-create-header h2,
+  .branch-create-header h2 {
     font-size: 18px;
   }
   
@@ -1647,7 +1668,8 @@ input:not(:checked) + .toggle-slider:after {
   .product-update-content,
   .branch-update-content,
   .menu-create-content,
-  .product-create-content {
+  .product-create-content,
+  .branch-create-content {
     margin: 15% auto;
     padding: 10px;
   }
@@ -1677,6 +1699,7 @@ input:not(:checked) + .toggle-slider:after {
   .btn-update-menu,
   .btn-update-product,
   .btn-update-branch,
+  .btn-add-branch,
   .btn-add-menu,
   .btn-add-product{
     padding: 11px 13px;

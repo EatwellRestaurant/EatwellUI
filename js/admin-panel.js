@@ -2247,7 +2247,7 @@ $(document).ready(function() {
         const token = localStorage.getItem('token');
         
         $.ajax({
-            url: `https://eatwell-api.azurewebsites.net/api/cities/get?cityId=${cityId}`,
+            url: `https://eatwell-api.azurewebsites.net/api/branches/getAllForAdminByCityId?cityId=${cityId}`,
             type: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -2297,7 +2297,7 @@ $(document).ready(function() {
                 // Sayfalama için gerekli değişkenler
                 let currentPage = 1; // Mevcut sayfa numarası
                 const itemsPerPage = 10; // Her sayfada gösterilecek şube sayısı
-                const totalBranches = response.data.branches.length; // Toplam şube sayısı
+                const totalBranches = response.data.length; // Toplam şube sayısı
                 const totalPages = Math.ceil(totalBranches / itemsPerPage) ? Math.ceil(totalBranches / itemsPerPage) : 1 ; // Toplam sayfa sayısı
 
                 // Şubeleri sayfalara böl ve göster
@@ -2306,7 +2306,7 @@ $(document).ready(function() {
                     const startIndex = (page - 1) * itemsPerPage;
                     const endIndex = startIndex + itemsPerPage;
                     // İlgili sayfadaki şubeleri seç
-                    const branchesToShow = response.data.branches.slice(startIndex, endIndex);
+                    const branchesToShow = response.data.slice(startIndex, endIndex);
                     
                     let branchesTableHTML = '';
                     
@@ -2576,7 +2576,7 @@ $(document).ready(function() {
                                     </div>
                                     <div class="branch-info-item">
                                         <div class="branch-label">
-                                            <strong>Email</strong> 
+                                            <strong>E-posta</strong> 
                                             <span>:</span>
                                         </div>
                                         <input type="text" class="branch-value branch-email" value="${branch.email}">    
@@ -2885,6 +2885,240 @@ $(document).ready(function() {
                         showToast('error', 'Hata', errorMessage ? errorMessage : 'Şube silinirken hata oluştu!');
                     }
                 });
+            }
+        });
+    });
+
+
+
+    function createBranch(showCityList) {
+        
+        let branchCreateHTML = `
+        <div class="branch-create-modal">
+            <div class="branch-create-content">
+                <div class="branch-create-header">
+                    <h2>Şube Ekleme</h2>
+                    <span class="close-branch-create">&times;</span>
+                </div>
+                <div class="branch-create-body">
+                    <div class="branch-info">
+                        ${showCityList ? `
+                        <div class="branch-info-item">
+                            <div class="branch-label">
+                                <strong>Şehir Listesi</strong> 
+                                <span>:</span>
+                            </div>
+                            <select class="branch-value" id="citySelect">
+                            </select>
+                        </div>` : ''}
+                        <div class="branch-info-item">
+                            <div class="branch-label">
+                                <strong>Şube Adı</strong> 
+                                <span>:</span>
+                            </div>
+                            <input type="text" class="branch-value branch-name">
+                        </div>
+                        <div class="branch-info-item">
+                            <div class="branch-label">
+                                <strong>Adres</strong> 
+                                <span>:</span>
+                            </div>
+                            <input type="text" class="branch-value branch-address">    
+                        </div>
+                        <div class="branch-info-item">
+                            <div class="branch-label">
+                                <strong>E-posta</strong> 
+                                <span>:</span>
+                            </div>
+                            <input type="text" class="branch-value branch-email">    
+                        </div>
+                        <div class="branch-info-item">
+                            <div class="branch-label">
+                                <strong>Telefon</strong> 
+                                <span>:</span>
+                            </div>
+                            <input type="text" id="branchPhone" class="branch-value branch-phone" placeholder="0___ ___ __ __" >    
+                        </div>
+                        <div class="branch-info-item">
+                            <div class="branch-label">
+                                <strong>Web Site</strong> 
+                                <span>:</span>
+                            </div>
+                            <input type="text" class="branch-value branch-web-site">    
+                        </div>
+                        <div class="branch-info-item">
+                            <div class="branch-label">
+                                <strong>Facebook</strong> 
+                                <span>:</span>
+                            </div>
+                            <input type="text" class="branch-value branch-facebook">    
+                        </div>
+                        <div class="branch-info-item">
+                            <div class="branch-label">
+                                <strong>Instagram</strong> 
+                                <span>:</span>
+                            </div>
+                            <input type="text" class="branch-value branch-instagram">    
+                        </div>
+                        <div class="branch-info-item">
+                            <div class="branch-label">
+                                <strong>Twitter</strong> 
+                                <span>:</span>
+                            </div>
+                            <input type="text" class="branch-value branch-twitter">    
+                        </div>
+                        <div class="branch-info-item">
+                            <div class="branch-label">
+                                <strong>Gmail</strong> 
+                                <span>:</span>
+                            </div>
+                            <input type="text" class="branch-value branch-gmail">    
+                        </div>
+                        <button class="btn-add-branch">Ekle</button>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+        
+        
+        // Detay modülünü ekle
+        $('body').append(branchCreateHTML);
+        
+        // Detay modülünü göster
+        $('.branch-create-modal').fadeIn(300);
+        
+        // Kapatma butonuna tıklandığında
+        $('.close-branch-create').click(function() {
+            $('.branch-create-modal').fadeOut(300, function() {
+                $(this).remove();
+            });
+        });
+        
+        // Modül dışına tıklandığında kapat
+        $('.branch-create-modal').click(function(e) {
+            if ($(e.target).hasClass('branch-create-modal')) {
+                $('.branch-create-modal').fadeOut(300, function() {
+                    $(this).remove();
+                });
+            }
+        });
+    }
+
+
+    // Şehirde "Şube Ekle" butonuna tıklandığında
+    $(document).on('click', '.btn-create-branch', function(e) {
+        e.stopPropagation();
+
+        const params = new URLSearchParams(window.location.search);
+        const cityId = params.get('cityId');
+        const showCityList = cityId === null; // cityId varsa şehir listesini göstermiyoruz
+
+        createBranch(showCityList);
+    });
+
+
+
+    // Şubede "Ekle" butonuna tıklandığında
+    $(document).on('click', '.btn-add-branch', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const createModal = $(this).closest('.branch-create-modal');
+
+        const branchId = createModal.data('branch-id');
+        const branchName = createModal.find('.branch-name').val();
+        const branchAddress = createModal.find('.branch-address').val();
+        const branchEmail = createModal.find('.branch-email').val();
+        const branchPhone = createModal.find('.branch-phone').val();
+        const branchWebSite = createModal.find('.branch-web-site').val();
+        const branchFacebook = createModal.find('.branch-facebook').val();
+        const branchInstagram = createModal.find('.branch-instagram').val();
+        const branchTwitter = createModal.find('.branch-twitter').val();
+        const branchGmail = createModal.find('.branch-gmail').val();
+        const phoneRegex = /^0\d{3}\s\d{3}\s\d{2}\s\d{2}$/;
+
+        if (branchName.trim() === '') {
+            showToast('error', 'Hata', 'Lütfen şube adını giriniz!');
+            return;
+        }
+
+        if (branchAddress.trim() === '') {
+            showToast('error', 'Hata', 'Lütfen şubenin adresini giriniz!');
+            return;
+        }
+
+        if (branchEmail.trim() === '') {
+            showToast('error', 'Hata', 'Lütfen şubenin e-posta adresini giriniz!');
+            return;
+        }
+
+        if (branchPhone.trim() === '') {
+            showToast('error', 'Hata', 'Lütfen şubenin telefon numarasını giriniz!');
+            return;
+        }
+
+        if (!phoneRegex.test(branchPhone.trim())) {
+            showToast('error', 'Hata', 'Lütfen geçerli bir telefon numarası giriniz!');
+            return;
+        }
+        
+        
+        const cityName = localStorage.getItem('selectedCityName');
+        const params = new URLSearchParams(window.location.search);
+        let cityId = params.get('cityId');
+
+        const isExistsCityId = cityId === null; // cityId varsa şehir listesini göstermiyoruz
+
+        if (isExistsCityId) {
+            cityId = $('#citySelect').val();
+
+            if (cityId === null ){
+                showToast('error', 'Hata', 'Lütfen şehir seçiniz!');
+                return;
+            }
+        }
+
+        const token = localStorage.getItem('token');
+        
+        $.ajax({
+            url: `https://eatwell-api.azurewebsites.net/api/branches/add`,
+            type: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify({
+                cityId: cityId,
+                name: branchName,
+                address: branchAddress,
+                email: branchEmail,
+                phone: branchPhone,
+                webSite: branchWebSite,
+                facebook: branchFacebook,
+                instagram: branchInstagram,
+                twitter: branchTwitter,
+                gmail: branchGmail
+            }),
+            success: function(response) {
+                if (response.success) {
+                    showToast('success', 'Başarılı', 'Şube başarıyla eklendi!');
+
+                    $('.branch-create-modal').fadeOut(300, function() {
+                        $(this).remove();
+                    });
+
+                    if (cityName === null){
+                        return;
+                    }else{
+                        getCityBranches(cityId, cityName); 
+                    }
+                } else {
+                    showToast('error', 'Hata', response.message);
+                }
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Şube eklenirken hata oluştu!");
             }
         });
     });
