@@ -1199,12 +1199,12 @@ $(document).ready(function() {
 
                             getMenus(); // Menü listesini yenile
                         } else {
-                            showToast('error', 'Hata', 'Menü silinirken bir hata oluştu!');
+                            showToast('error', 'Hata', 'Menü silinirken hata oluştu!');
                         }
                     },
                     error: function(xhr) {
                         const errorMessage = xhr.responseJSON?.Message;
-                        showToast('error', 'Hata', errorMessage ? errorMessage : 'Menü silinirken bir hata oluştu!');
+                        showToast('error', 'Hata', errorMessage ? errorMessage : 'Menü silinirken hata oluştu!');
                     }
                 });
             }
@@ -2049,12 +2049,12 @@ $(document).ready(function() {
 
                             getProductsByMenu(menuId, menuName); // Ürün listesini yenile
                         } else {
-                            showToast('error', 'Hata', 'Ürün silinirken bir hata oluştu!');
+                            showToast('error', 'Hata', 'Ürün silinirken hata oluştu!');
                         }
                     },
                     error: function(xhr) {
                         const errorMessage = xhr.responseJSON?.Message;
-                        showToast('error', 'Hata', errorMessage ? errorMessage : 'Ürün silinirken bir hata oluştu!');
+                        showToast('error', 'Hata', errorMessage ? errorMessage : 'Ürün silinirken hata oluştu!');
                     }
                 });
             }
@@ -2827,6 +2827,67 @@ $(document).ready(function() {
         });
     });
 
+
+
+    // Şubede "Sil" butonuna tıklandığında
+    $(document).on('click', '.btn-delete-branch', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const branchId = $(this).closest('.branch-row').data('branch-id');
+        
+        // SweetAlert2 ile özelleştirilmiş onay kutusu
+        Swal.fire({
+            title: 'Emin misiniz?',
+            text: "Bu şubeyi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Evet, Sil!',
+            cancelButtonText: 'İptal',
+            customClass: {
+                popup: 'swal2-popup-custom',
+                icon: 'swal2-icon-custom',
+                title: 'swal2-title-custom',
+                htmlContainer: 'swal2-content-custom',
+                confirmButton: 'swal2-confirm-custom',
+                cancelButton: 'swal2-cancel-custom'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const token = localStorage.getItem('token');
+                
+                $.ajax({
+                    url: `https://eatwell-api.azurewebsites.net/api/branches/delete?branchId=${branchId}`,
+                    type: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            showToast('success', 'Başarılı', 'Şube başarıyla silindi!');
+
+                            $('.branch-update-modal').fadeOut(300, function() {
+                                $(this).remove();
+                            });
+
+                            const cityId = localStorage.getItem('selectedCityId');
+                            const cityName = localStorage.getItem('selectedCityName');
+
+                            getCityBranches(cityId, cityName); // Şube listesini yenile
+                        } else {
+                            showToast('error', 'Hata', 'Şube silinirken hata oluştu!');
+                        }
+                    },
+                    error: function(xhr) {
+                        const errorMessage = xhr.responseJSON?.Message;
+                        showToast('error', 'Hata', errorMessage ? errorMessage : 'Şube silinirken hata oluştu!');
+                    }
+                });
+            }
+        });
+    });
 
 
     
