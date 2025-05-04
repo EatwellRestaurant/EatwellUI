@@ -2419,6 +2419,25 @@ $(document).ready(function() {
     });
 
 
+
+    // Şubeler listesinde "Şehre Git" butonuna tıklandığında
+    $(document).on('click', '.btn-city', function(e) {
+        e.stopPropagation();
+
+        const cityId = $(this).data('city-id');
+        const cityName = $(this).data('city-name');
+
+        // Seçilen şehri geçmişe kaydediyoruz
+        selectEntity(cityId, cityName, Entity.CITY);
+
+        localStorage.setItem('selectedCityId', cityId);
+        localStorage.setItem('selectedCityName', cityName);
+
+        getBranchesByCity(cityId, cityName);
+    });
+
+
+
     // Şube detaylarını getiren fonksiyon
     function getBranchDetails(branchId) {
         const token = localStorage.getItem('token');
@@ -2548,8 +2567,8 @@ $(document).ready(function() {
 
     // Şube satırına tıklama olayı
     $(document).on('click', '.branch-row', function(e) {
-        // Eğer tıklanan element düzenleme butonu veya silme butonu ise işlemi durdur
-        if ($(e.target).closest('.btn-edit-branch, .btn-delete-product').length) {
+        // Eğer tıklanan element düzenleme butonu, silme butonu veya şehre git butonu ise işlemi durdur
+        if ($(e.target).closest('.btn-edit-branch, .btn-delete-product, .btn-city').length) {
             return;
         }
 
