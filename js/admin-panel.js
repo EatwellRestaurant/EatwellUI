@@ -50,7 +50,9 @@ $(document).ready(function() {
 
             localStorage.removeItem('cityHistory');
             localStorage.removeItem('menuHistory');
+
             localStorage.removeItem('menuHistoryIndex');
+            localStorage.removeItem('cityHistoryIndex');
 
             window.location.href = 'admin-login.html';
             return;
@@ -75,7 +77,9 @@ $(document).ready(function() {
         
         localStorage.removeItem('cityHistory');
         localStorage.removeItem('menuHistory');
+
         localStorage.removeItem('menuHistoryIndex');
+        localStorage.removeItem('cityHistoryIndex');
 
         window.location.href = 'admin-login.html';
     }
@@ -98,7 +102,9 @@ $(document).ready(function() {
 
             localStorage.removeItem('cityHistory');
             localStorage.removeItem('menuHistory');
+
             localStorage.removeItem('menuHistoryIndex');
+            localStorage.removeItem('cityHistoryIndex');
 
             window.location.href = 'admin-login.html';
         }, 1500);
@@ -335,7 +341,7 @@ $(document).ready(function() {
                         usersToShow.forEach(user => {
                             // Tarihi formatla (gün.ay.yıl şeklinde)
                             const date = new Date(user.createDate);
-                            const formattedDate = `${date.getDate()}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`;
+                            const formattedDate = `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`;
                             
                             usersTableHTML += `
                                 <tr class="user-row" data-user-id="${user.id}">
@@ -592,7 +598,7 @@ $(document).ready(function() {
                         menusToShow.forEach(menu => {
                             // Tarihi formatla (gün.ay.yıl şeklinde)
                             const date = new Date(menu.createDate);
-                            const formattedDate = `${date.getDate()}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`;
+                            const formattedDate = `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`;
                             
                             menusTableHTML += `
                                 <tr class="menu-row" data-menu-id="${menu.id}">
@@ -1271,7 +1277,7 @@ $(document).ready(function() {
             if (productsToShow.length > 0) {
                 productsToShow.forEach(product => {
                     const date = new Date(product.createDate);
-                    const formattedDate = `${date.getDate()}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`;
+                    const formattedDate = `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`;
                     tableHTML += `
                     <tr class="product-row" data-product-id="${product.id}">
                         <td>
@@ -2242,140 +2248,131 @@ $(document).ready(function() {
 
 
 
+    // Şubeleri getiren ortak fonksiyon
+    function renderBranchesList(data, options = {}) {
+        const {
+            title = 'Şube Listesi',
+            showGoToCityButton = false
+        } = options;
+    
+        // Ortak HTML yapısı
+        $('.dashboard-content').empty();
+
+        let html = `
+        <div class="branches-container">
+            <div class="branches-header">
+                <h2>${title}</h2>
+                <button class="btn-create-branch">
+                    <i class="fa-solid fa-plus"></i>
+                    Şube Ekle
+                </button>
+            </div>
+            <div class="branches-body">
+                <table class="branches-table">
+                    <thead>
+                        <tr>
+                            ${showGoToCityButton ? `<th class="city-col">Şehir</th>` : '' }
+                            <th class="branch-name-col">Şube Adı</th>
+                            <th class="address-col">Adres</th>
+                            <th class="email-col">E-posta</th>
+                            <th class="actions-col">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody id="branchesTableBody"></tbody>
+                </table>
+                <div class="pagination-container">
+                    <div class="pagination">
+                        <button id="prevBranchPage" class="pagination-btn" disabled><i class="fas fa-chevron-left"></i></button>
+                        <span id="branchPageInfo">Sayfa 1</span>
+                        <button id="nextBranchPage" class="pagination-btn"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+
+        $('.dashboard-content').append(html);
+    
+        let currentPage = 1;
+        const itemsPerPage = 10;
+        const totalBranches = data.length;
+        const totalPages = Math.ceil(totalBranches / itemsPerPage) || 1;
+    
+        function displayBranches(page) {
+            const start = (page - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const branchesToShow = data.slice(start, end);
+    
+            let tableHTML = '';
+            if (branchesToShow.length > 0) {
+
+                branchesToShow.forEach(branch => {
+
+                    tableHTML += `
+                    <tr class="branch-row" data-branch-id="${branch.id}">
+                        ${showGoToCityButton ? `<td>${branch.cityName}</td>` : '' }
+                        <td>${branch.name}</td>
+                        <td>
+                            <span class="truncate">${branch.address}</span>
+                        </td>
+                        <td>${branch.email}</td>
+                        <td>
+                            <div class="table-actions-scroll">
+                                <button class="btn-delete-branch" data-branch-id="${branch.id}">
+                                    <i class="fa-solid fa-trash"></i>
+                                    Sil
+                                </button>
+                                <button class="btn-edit-branch" data-branch-id="${branch.id}">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                    Düzenle
+                                </button>
+                                ${showGoToCityButton ? `
+                                    <button class="btn-city" data-city-id="${branch.cityId}" data-city-name="${branch.cityName}">
+                                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                        Şehre Git
+                                    </button>` : ''
+                                }
+                            </div>
+                        </td>
+                    </tr>`;
+                });
+            } else {
+                tableHTML = `<tr><td colspan="5" class="empty-table-row">Henüz şube bulunmamaktadır.</td></tr>`;
+            }
+    
+            $('#branchesTableBody').html(tableHTML);
+            $('#branchPageInfo').text(`Sayfa ${page} / ${totalPages}`);
+            $('#prevBranchPage').prop('disabled', page === 1);
+            $('#nextBranchPage').prop('disabled', page === totalPages);
+        }
+    
+        displayBranches(currentPage);
+    
+        $('#prevBranchPage').click(() => {
+            if (currentPage > 1) {
+                currentPage--;
+                displayBranches(currentPage);
+            }
+        });
+    
+        $('#nextBranchPage').click(() => {
+            if (currentPage < totalPages) {
+                currentPage++;
+                displayBranches(currentPage);
+            }
+        });
+    }
+
+
     // Şehirlerin şubelerini getiren fonksiyon
-    function getCityBranches(cityId, cityName) {
+    function getBranchesByCity(cityId, cityName) {
         const token = localStorage.getItem('token');
         
         $.ajax({
             url: `https://eatwell-api.azurewebsites.net/api/branches/getAllForAdminByCityId?cityId=${cityId}`,
             type: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            },
-            success: function(response) {
-                // Dashboard içeriğini temizle
-                $('.dashboard-content').empty();
-                
-                // Şehir şubeleri için HTML yapısı
-                let branchesHTML = `
-                <div class="branches-container">
-                    <div class="branches-header">
-                        <h2>${cityName}</h2>
-                        <button class="btn-create-branch">
-                             <i class="fa-solid fa-plus"></i>
-                            Şube Ekle
-                        </button>
-                    </div>
-                    <div class="branches-body">
-                        <table class="branches-table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Şube Adı</th>
-                                    <th>Adres</th>
-                                    <th>Email</th>
-                                    <th>İşlemler</th>
-                                </tr>
-                            </thead>
-                            <tbody id="branchesTableBody">
-                            </tbody>
-                        </table>
-                        <!-- Sayfalama kontrolleri -->
-                        <div class="pagination-container">
-                            <div class="pagination">
-                                <button id="prevBranchPage" class="pagination-btn" disabled><i class="fas fa-chevron-left"></i></button>
-                                <span id="branchPageInfo">Sayfa 1</span>
-                                <button id="nextBranchPage" class="pagination-btn"><i class="fas fa-chevron-right"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                </div>`;
-                
-                // Şubeleri dashboard'a ekle
-                $('.dashboard-content').append(branchesHTML);
-                
-                // Sayfalama için gerekli değişkenler
-                let currentPage = 1; // Mevcut sayfa numarası
-                const itemsPerPage = 10; // Her sayfada gösterilecek şube sayısı
-                const totalBranches = response.data.length; // Toplam şube sayısı
-                const totalPages = Math.ceil(totalBranches / itemsPerPage) ? Math.ceil(totalBranches / itemsPerPage) : 1 ; // Toplam sayfa sayısı
-
-                // Şubeleri sayfalara böl ve göster
-                function displayBranches(page) {
-                    // Gösterilecek şubelerin başlangıç ve bitiş indekslerini hesapla
-                    const startIndex = (page - 1) * itemsPerPage;
-                    const endIndex = startIndex + itemsPerPage;
-                    // İlgili sayfadaki şubeleri seç
-                    const branchesToShow = response.data.slice(startIndex, endIndex);
-                    
-                    let branchesTableHTML = '';
-                    
-                    // Seçilen şubeleri tabloya ekle
-                    if (branchesToShow.length > 0) {
-                        branchesToShow.forEach(branch => {
-                            branchesTableHTML += `
-                                <tr class="branch-row" data-branch-id="${branch.id}">
-                                    <td>${branch.id}</td>
-                                    <td>${branch.name}</td>
-                                    <td>
-                                        <span class="truncate">${branch.address}</span>
-                                    </td>
-                                    <td>${branch.email}</td>
-                                    <td>
-                                        <div class="table-actions-scroll">
-                                            <button class="btn-delete-branch" data-branch-id="${branch.id}">
-                                                <i class="fa-solid fa-trash"></i>
-                                                Sil
-                                            </button>
-                                            <button class="btn-edit-branch" data-branch-id="${branch.id}">
-                                                <i class="fa-solid fa-pen-to-square"></i>
-                                                Düzenle
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>`;
-                        });
-                    } else {
-                        // Şube yoksa bilgi mesajı göster
-                        branchesTableHTML = `
-                            <tr>
-                                <td colspan="5" class="empty-table-row">Henüz şube bulunmamaktadır.</td>
-                            </tr>`;
-                    }
-                    
-                    // Tabloyu güncelle
-                    $('#branchesTableBody').html(branchesTableHTML);
-                    // Sayfa bilgisini güncelle
-                    $('#branchPageInfo').text(`Sayfa ${page} / ${totalPages}`);
-                    
-                    // Sayfalama butonlarının durumunu güncelle
-                    $('#prevBranchPage').prop('disabled', page === 1); // İlk sayfada geri butonu devre dışı
-                    $('#nextBranchPage').prop('disabled', page === totalPages); // Son sayfada ileri butonu devre dışı
-                }
-                
-                // İlk sayfayı göster
-                displayBranches(currentPage);
-                
-                // Önceki sayfa butonuna tıklama olayı
-                $('#prevBranchPage').click(function() {
-                    if (currentPage > 1) {
-                        currentPage--;
-                        displayBranches(currentPage);
-                    }
-                });
-                
-                // Sonraki sayfa butonuna tıklama olayı
-                $('#nextBranchPage').click(function() {
-                    if (currentPage < totalPages) {
-                        currentPage++;
-                        displayBranches(currentPage);
-                    }
-                });
-            },
-            error: function(xhr) {
-                const errorMessage = xhr.responseJSON?.Message;
-                showToast('error', 'Hata', errorMessage ? errorMessage : 'Şubeler alınırken hata oluştu!');
-            }
+            headers: { 'Authorization': `Bearer ${token}` },
+            success: (response) => renderBranchesList(response.data, { title: cityName, showGoToCityButton: false }),
+            error: (xhr) => showToast('error', 'Hata', xhr.responseJSON?.Message || 'Şubeler getirilirken hata oluştu!')
         });
     }
 
@@ -2393,9 +2390,33 @@ $(document).ready(function() {
         localStorage.setItem('selectedCityId', cityId);
         localStorage.setItem('selectedCityName', cityName);
 
-        getCityBranches(cityId, cityName);
+        getBranchesByCity(cityId, cityName);
     });
 
+
+
+    function getAllBranches() {
+        const token = localStorage.getItem('token');
+
+        $.ajax({
+            url: 'https://eatwell-api.azurewebsites.net/api/branches/getAllForAdmin',
+            type: 'GET',
+            headers: { 'Authorization': `Bearer ${token}` },
+            success: (response) => renderBranchesList(response.data, { title: 'Şube Listesi', showGoToCityButton: true }),
+            error: (xhr) => showToast('error', 'Hata', xhr.responseJSON?.Message || 'Şubeler alınırken hata oluştu!')
+        });
+    }
+
+
+    // Şehir listesindeki "Tüm Şubeler" butonuna tıklandığında
+    $(document).on('click', '.btn-all-branches', function(e) {
+        e.preventDefault();
+
+        //URL'ye sahte bir adım ekliyoruz
+        history.pushState({ page: 'branches' }, 'Şubeler', '?page=branches'); 
+
+        getAllBranches();
+    });
 
 
     // Şube detaylarını getiren fonksiyon
@@ -2815,7 +2836,7 @@ $(document).ready(function() {
                     const cityId = localStorage.getItem('selectedCityId');
                     const cityName = localStorage.getItem('selectedCityName');
 
-                    getCityBranches(cityId, cityName);
+                    getBranchesByCity(cityId, cityName);
                 } else {
                     showToast('error', 'Hata', 'Şube güncellenirken hata oluştu!');
                 }
@@ -2875,7 +2896,7 @@ $(document).ready(function() {
                             const cityId = localStorage.getItem('selectedCityId');
                             const cityName = localStorage.getItem('selectedCityName');
 
-                            getCityBranches(cityId, cityName); // Şube listesini yenile
+                            getBranchesByCity(cityId, cityName); // Şube listesini yenile
                         } else {
                             showToast('error', 'Hata', 'Şube silinirken hata oluştu!');
                         }
@@ -2905,7 +2926,7 @@ $(document).ready(function() {
                         ${showCityList ? `
                         <div class="branch-info-item">
                             <div class="branch-label">
-                                <strong>Şehir Listesi</strong> 
+                                <strong>Şehirler</strong> 
                                 <span>:</span>
                             </div>
                             <select class="branch-value" id="citySelect">
@@ -2930,7 +2951,7 @@ $(document).ready(function() {
                                 <strong>E-posta</strong> 
                                 <span>:</span>
                             </div>
-                            <input type="text" class="branch-value branch-email">    
+                            <input type="email" class="branch-value branch-email">    
                         </div>
                         <div class="branch-info-item">
                             <div class="branch-label">
@@ -2980,10 +3001,11 @@ $(document).ready(function() {
             </div>
         </div>`;
         
-        
         // Detay modülünü ekle
         $('body').append(branchCreateHTML);
         
+        if ($('#citySelect').length > 0) $('.btn-add-branch').css('margin-left', 'auto');
+
         // Detay modülünü göster
         $('.branch-create-modal').fadeIn(300);
         
@@ -3003,6 +3025,39 @@ $(document).ready(function() {
             }
         });
     }
+
+
+    function getCitiesForAddBranch() {
+        const token = localStorage.getItem('token');
+
+        if ($('#citySelect option').length === 0) {
+            $.ajax({
+                url: 'https://eatwell-api.azurewebsites.net/api/cities/getAll',
+                type: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                success: function(response) {
+                    const cities = response.data;
+    
+                    cities.forEach(city =>{
+                        $('#citySelect').append(`<option value="${city.id}">${city.name}</option>`);
+                    })
+                },
+                error: function(xhr) {
+                    const errorMessage = xhr.responseJSON?.Message;
+                    showToast('error', 'Hata', errorMessage ? errorMessage : "Şehirler alınırken hata oluştu!");
+                }
+            })
+        }
+    }
+
+
+    // Şube listesinde "Şube Ekle" butonuna tıklanıp şehir listesi görüntülendiğinde 
+    $(document).on('click', '#citySelect', function(e) {
+        getCitiesForAddBranch();
+    });
+
 
 
     // Şehirde "Şube Ekle" butonuna tıklandığında
@@ -3025,7 +3080,20 @@ $(document).ready(function() {
 
         const createModal = $(this).closest('.branch-create-modal');
 
-        const branchId = createModal.data('branch-id');
+        const params = new URLSearchParams(window.location.search);
+        let cityId = params.get('cityId');
+
+        const isExistsCityId = cityId === null; // cityId varsa şehir listesini göstermiyoruz
+
+        if (isExistsCityId) {
+            cityId = $('#citySelect').val();
+
+            if (cityId === null ){
+                showToast('error', 'Hata', 'Lütfen şehir seçiniz!');
+                return;
+            }
+        }
+
         const branchName = createModal.find('.branch-name').val();
         const branchAddress = createModal.find('.branch-address').val();
         const branchEmail = createModal.find('.branch-email').val();
@@ -3064,20 +3132,6 @@ $(document).ready(function() {
         
         
         const cityName = localStorage.getItem('selectedCityName');
-        const params = new URLSearchParams(window.location.search);
-        let cityId = params.get('cityId');
-
-        const isExistsCityId = cityId === null; // cityId varsa şehir listesini göstermiyoruz
-
-        if (isExistsCityId) {
-            cityId = $('#citySelect').val();
-
-            if (cityId === null ){
-                showToast('error', 'Hata', 'Lütfen şehir seçiniz!');
-                return;
-            }
-        }
-
         const token = localStorage.getItem('token');
         
         $.ajax({
@@ -3108,9 +3162,9 @@ $(document).ready(function() {
                     });
 
                     if (cityName === null){
-                        return;
+                        getAllBranches();
                     }else{
-                        getCityBranches(cityId, cityName); 
+                        getBranchesByCity(cityId, cityName); 
                     }
                 } else {
                     showToast('error', 'Hata', response.message);
@@ -3175,7 +3229,12 @@ $(document).ready(function() {
 
             history.replaceState({ page: 'branchesByCity' }, 'Şubeler', `?page=branchesByCity&cityId=${cityId}`);
 
-            getCityBranches(cityId, cityName);
+            getBranchesByCity(cityId, cityName);
+
+        }else if (page === 'branches') {
+            history.replaceState({ page: 'branches' }, 'Şubeler', `?page=branches`);
+
+            getAllBranches();
 
         }else {
             // Hiç page değeri yoksa dashboard'u yükle.
@@ -3309,7 +3368,7 @@ $(document).ready(function() {
     
                 // Eğer geçerli bir şehir varsa, o şehrin şubelerini getiriyoruz.
                 if (previousCity) {
-                    getCityBranches(previousCity.id, previousCity.name);
+                    getBranchesByCity(previousCity.id, previousCity.name);
     
                     // Güncel index değerini localStorage’a kaydediyoruz.
                     localStorage.setItem('cityHistoryIndex', currentIndex);
@@ -3349,7 +3408,7 @@ $(document).ready(function() {
 
                 // Eğer geçerli bir menü varsa, o menünün ürünlerini getiriyoruz.
                 if (nextCity) {
-                    getCityBranches(nextCity.id, nextCity.name);
+                    getBranchesByCity(nextCity.id, nextCity.name);
     
                     // Güncel index değerini localStorage’a kaydediyoruz.
                     localStorage.setItem('cityHistoryIndex', currentIndex);
@@ -3423,7 +3482,7 @@ $(document).ready(function() {
                     } else {
                         // Aynı yerde kalınmış
                         const city = cityHistory[cityCurrentIndexInHistory];
-                        if (city) getCityBranches(city.id, city.name);
+                        if (city) getBranchesByCity(city.id, city.name);
                     }
                     
                     break;
@@ -3439,6 +3498,10 @@ $(document).ready(function() {
                 case 'cities':
                     getCities();
                     break;
+
+                case 'branches':
+                    getAllBranches();
+                    break;    
 
                 case 'dashboard':
                     resetDashboard();
@@ -3459,8 +3522,10 @@ $(document).ready(function() {
 
                     localStorage.removeItem('cityHistory');
                     localStorage.removeItem('menuHistory');
+
                     localStorage.removeItem('menuHistoryIndex');
-                    
+                    localStorage.removeItem('cityHistoryIndex');
+
                     window.location.href = 'admin-login.html';
                     break;
             }

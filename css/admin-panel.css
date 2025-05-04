@@ -394,7 +394,8 @@ td, th {
 
 .users-table td:nth-child(1),
 .menus-table td:nth-child(1),
-.products-table td:nth-child(1) {
+.products-table td:nth-child(1),
+.branches-table .city-col {
   width: 10%;
 }
 
@@ -429,17 +430,13 @@ td, th {
   width: 40%;
 }
 
-.branches-table td:nth-child(1) {
-  width: 10%;
-}
-
-.branches-table td:nth-child(2),
-.branches-table td:nth-child(3),
-.branches-table td:nth-child(4) {
+.branches-table .branch-name-col,
+.branches-table .address-col,
+.branches-table .email-col {
   width: 22%;
 }
 
-.branches-table td:nth-child(5) {
+.branches-table .actions-col {
   width: 24%;
 }
 
@@ -937,12 +934,14 @@ td, th {
 .btn-delete-branch,
 .btn-products-menu,
 .btn-branches-city,
-.btn-menu{
+.btn-menu,
+.btn-city {
   padding: 8px 10px;
 }
 
 .btn-products-menu,
 .btn-menu,
+.btn-city,
 .btn-edit-menu,
 .btn-edit-product, 
 .btn-edit-branch {
@@ -961,7 +960,8 @@ td, th {
 .btn-delete-branch,
 .btn-products-menu,
 .btn-branches-city,
-.btn-menu {
+.btn-menu,
+.btn-city {
   background-color: #ffc515;
   color: #1b203d;
   border: none;
@@ -982,7 +982,8 @@ td, th {
 .btn-all-branches:hover,
 .btn-products-menu:hover,
 .btn-branches-city:hover,
-.btn-menu:hover {
+.btn-menu:hover,
+.btn-city:hover {
   background-color: #ffd760;
 }
 
@@ -998,7 +999,8 @@ td, th {
 .btn-all-branches i,
 .btn-products-menu i,
 .btn-branches-city i,
-.btn-menu i{
+.btn-menu i,
+.btn-city i {
   margin-right: 3px;
 }
 
@@ -1180,7 +1182,7 @@ input:not(:checked) + .toggle-slider:after {
 }
 
 .truncate {
-  max-width: 150px; 
+  max-width: 230px; 
   overflow: hidden;
   text-overflow: ellipsis;
   display: inline-block;
@@ -1260,17 +1262,17 @@ input:not(:checked) + .toggle-slider:after {
     width: 36%;
   }
 
-  .branches-table td:nth-child(1) {
+  .branches-table .city-col {
     width: 8%;
   }
   
-  .branches-table td:nth-child(2),
-  .branches-table td:nth-child(3),
-  .branches-table td:nth-child(4) {
+  .branches-table .branch-name-col,
+  .branches-table .address-col,
+  .branches-table .email-col {
     width: 22%;
   }
   
-  .branches-table td:nth-child(5) {
+  .branches-table .actions-col {
     width: 26%;
   }
 }
@@ -1715,7 +1717,8 @@ input:not(:checked) + .toggle-slider:after {
   .btn-delete-branch,
   .btn-products-menu,
   .btn-branches-city,
-  .btn-menu {
+  .btn-menu,
+  .btn-city {
     padding: 6px 8px;
     font-size: 13px;
   }
@@ -1762,7 +1765,8 @@ input:not(:checked) + .toggle-slider:after {
   .btn-delete-branch,
   .btn-products-menu,
   .btn-branches-city,
-  .btn-menu {
+  .btn-menu,
+  .btn-city {
     padding: 5px 8px;
     font-size: 12px;
   }
