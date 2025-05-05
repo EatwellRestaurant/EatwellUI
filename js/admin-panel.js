@@ -3255,6 +3255,11 @@ $(document).ready(function() {
 
             getAllBranches();
 
+        }else if (page === 'reservations') {
+            history.replaceState({ page: 'reservations' }, 'Rezervasyonlar', '?page=reservations');
+
+            getReservationTemplate();
+
         }else {
             // Hiç page değeri yoksa dashboard'u yükle.
 
@@ -3436,6 +3441,225 @@ $(document).ready(function() {
         }
     }
 
+
+
+    // Rezervasyonlar sayfasının taslağını getiren fonksiyon
+    function getReservationTemplate() {
+        const token = localStorage.getItem('token');
+        
+        $.ajax({
+            url: 'https://eatwell-api.azurewebsites.net/api/reservations/getAll',
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                // Dashboard içeriğini temizle
+                $('.dashboard-content').empty();
+                
+                // Rezervasyonlar için temel HTML yapısı
+                let reservationsHTML = `
+                <div class="reservations-container">
+                    <div class="reservations-header">
+                        <h2>Rezervasyon Listesi</h2>
+                        <button class="btn-create-reservation">
+                            <i class="fa-solid fa-plus"></i>
+                            Masa Ekle
+                        </button>
+                    </div>
+                    <div class="reservations-body">
+                        <div class="reservation-section">
+                            <div class="reservation-box customer-name">
+                                <div class="input-wrapper">
+                                    <input id="filter-name" type="text" placeholder="Müşteri adı ara...">
+                                    <button class="search-button">
+                                        <i class="fa-solid fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="reservation-box">
+                                <div class="input-wrapper">
+                                    <select id="filter-branch">
+                                      <option value="">Şubelerde ara...</option>
+                                      <option value="1">Avcılar</option>
+                                      <option value="4">Nişantaşı</option>
+                                      <option value="7">Ataşehir</option>
+                                    </select>
+                                    <span class="location">
+                                        <i class="fa-solid fa-location-dot"></i>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="reservation-box">
+                                <div class="input-wrapper">
+                                    <select id="filter-table">
+                                      <option value="">Masalarda ara...</option>
+                                      <option value="1">Masa 1</option>
+                                      <option value="4">Masa 2</option>
+                                      <option value="7">Masa 3</option>
+                                    </select>
+                                    <span class="chair">
+                                        <i class="fa-solid fa-chair"></i>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="reservation-box">
+                                <div class="input-wrapper">
+                                    <label for="filter-start-date">Başlangıç Tarihi</label>
+                                    <input id="filter-start-date" type="date" class="custom-date">
+                                    <span class="calendar">
+                                        <i class="fa-solid fa-calendar-days"></i>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="reservation-box">
+                                <div class="input-wrapper">
+                                    <label for="filter-end-date">Bitiş Tarihi</label>
+                                    <input id="filter-end-date" type="date" class="custom-date">
+                                    <span class="calendar">
+                                        <i class="fa-solid fa-calendar-days"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+                `;
+                
+                // Rezervasyon taslağını dashboard'a ekle
+                $('.dashboard-content').append(reservationsHTML);
+                
+                // İki ay öncesinin tarihi
+                const twoMonthsAgo = new Date();
+                twoMonthsAgo.setMonth(twoMonthsAgo.getMonth() - 2);
+                const startDateStr = twoMonthsAgo.toISOString().split('T')[0];
+                $('#filter-start-date').val(startDateStr);
+                
+                // Bugünün tarihi
+                const today = new Date();
+                const todayStr = today.toISOString().split('T')[0];
+                $('#filter-end-date').val(todayStr);
+                
+
+                // Sayfalama için gerekli değişkenler
+                let currentPage = 1; // Mevcut sayfa numarası
+                const itemsPerPage = 10; // Her sayfada gösterilecek rezervasyon sayısı
+                const totalReservations = response.data.length; // Toplam rezervasyon sayısı
+                const totalPages = Math.ceil(totalReservations / itemsPerPage) ? Math.ceil(totalReservations / itemsPerPage) : 1 ; // Toplam sayfa sayısı
+
+                // Rezervasyonları sayfalara böl ve göster
+                function displayReservations(page) {
+                    // Gösterilecek rezervasyonların başlangıç ve bitiş indekslerini hesapla
+                    const startIndex = (page - 1) * itemsPerPage;
+                    const endIndex = startIndex + itemsPerPage;
+                    // İlgili sayfadaki rezervasyonları seç
+                    const reservationsToShow = response.data.slice(startIndex, endIndex);
+                    
+                    let reservationsTableHTML = '';
+                    
+                    // Seçilen rezervasyonları tabloya ekle
+                    if (reservationsToShow.length > 0) {
+                        reservationsToShow.forEach(reservation => {
+                            // Tarihi formatla (gün.ay.yıl şeklinde)
+                            const date = new Date(reservation.createDate);
+                            const formattedDate = `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`;
+                            
+                            reservationsTableHTML += `
+                                <tr class="reservation-row" data-reservation-id="${reservation.id}">
+                                    <td>${reservation.firstName}</td>
+                                    <td>${formattedDate}</td>
+                                    <td>
+                                        <div class="table-actions-scroll">
+                                            <button class="btn-delete-menu" data-menu-id="${menu.id}">
+                                                <i class="fa-solid fa-trash"></i>
+                                                Sil
+                                            </button>
+                                            <button class="btn-edit-menu" data-menu-id="${menu.id}">
+                                                <i class="fa-solid fa-pen-to-square"></i>
+                                                Düzenle
+                                            </button>
+                                            <button class="btn-products-menu" data-menu-id="${menu.id}" data-menu-name="${menu.name}">
+                                                <i class="fa-solid fa-list"></i>
+                                                Ürünleri Gör
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>`;
+                        });
+                    } else {
+                        // Rezervasyon yoksa bilgi mesajı göster
+                        reservationsTableHTML = `
+                            <tr>
+                                <td colspan="3" class="empty-table-row">Henüz rezervasyon bulunmamaktadır.</td>
+                            </tr>`;
+                    }
+                    
+                    // Tabloyu güncelle
+                    $('#reservationsTableBody').html(reservationsTableHTML);
+                    // Sayfa bilgisini güncelle
+                    $('#reservationPageInfo').text(`Sayfa ${page} / ${totalPages}`);
+                    
+                    // Sayfalama butonlarının durumunu güncelle
+                    $('#prevReservationPage').prop('disabled', page === 1); // İlk sayfada geri butonu devre dışı
+                    $('#nextReservationPage').prop('disabled', page === totalPages); // Son sayfada ileri butonu devre dışı
+                }
+                
+                // İlk sayfayı göster
+                displayReservations(currentPage);
+                
+                // Önceki sayfa butonuna tıklama olayı
+                $('#prevReservationPage').click(function() {
+                    if (currentPage > 1) {
+                        currentPage--;
+                        displayReservations(currentPage);
+                    }
+                });
+                
+                // Sonraki sayfa butonuna tıklama olayı
+                $('#nextReservationPage').click(function() {
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                        displayReservations(currentPage);
+                    }
+                });
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : 'Rezervasyonlar alınırken hata oluştu!');
+            }
+        });
+    }
+
+    // Navbar'daki "Rezervasyonlar" seçeneğine tıklandığında
+    $('.sidenav a:contains("Rezervasyonlar")').click(function(e) {
+        e.preventDefault();
+
+        //URL'ye sahte bir adım ekliyoruz
+        history.pushState({ page: 'reservations' }, 'Rezervasyonlar', '?page=reservations'); 
+
+        getReservationTemplate();
+    });
+
+
+    // Rezervasyon filtreleme seçeneklerinde "Takvim" ikonuna tıklandığında takvim listesinin görüntülenmesi için...
+    $(document).on('click', '.calendar', function(e) {
+        e.stopPropagation();
+        
+       // İkona en yakın input'u hedefliyoruz
+        const input = $(this).siblings('.custom-date')[0];
+
+        if (input && typeof input.showPicker === 'function') {
+            input.showPicker();
+        } else {
+            input?.focus();
+        }
+    });
 
 
 

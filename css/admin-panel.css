@@ -447,6 +447,7 @@ td, th {
 }
 
 .menus-table,
+.reservations-table,
 .cities-table,
 .branches-table,
 .users-table,
@@ -458,6 +459,7 @@ td, th {
 }
 
 .menus-table th,
+.reservations-table th,
 .cities-table th,
 .branches-table th,
 .users-table th,
@@ -470,6 +472,7 @@ td, th {
 }
 
 .menus-table td,
+.reservations-table td,
 .cities-table td,
 .branches-table td,
 .products-table td {
@@ -494,6 +497,7 @@ td, th {
 }
 
 .menus-table td:first-child,
+.reservations-table td:first-child,
 .products-table td:first-child {
   padding: 0px 10px;
 }
@@ -614,6 +618,7 @@ td, th {
 }
 
 .menu-row,
+.reservation-row,
 .city-row,
 .branch-row,
 .user-row,
@@ -623,6 +628,7 @@ td, th {
 }
 
 .menu-row:hover,
+.reservation-row:hover,
 .city-row:hover,
 .branch-row:hover,
 .user-row:hover,
@@ -919,6 +925,7 @@ td, th {
 
 /* Menü ve Ürün İşlemleri İçin Buton Stili */
 .btn-create-menu,
+.btn-create-reservation,
 .btn-create-product,
 .btn-create-branch,
 .btn-all-branches {
@@ -950,6 +957,7 @@ td, th {
 
 .btn-edit-menu,
 .btn-create-menu,
+.btn-create-reservation,
 .btn-create-product,
 .btn-create-branch,
 .btn-all-branches,
@@ -972,6 +980,7 @@ td, th {
 
 .btn-edit-menu:hover,
 .btn-create-menu:hover,
+.btn-create-reservation:hover,
 .btn-edit-product:hover,
 .btn-edit-branch:hover,
 .btn-delete-menu:hover,
@@ -989,6 +998,7 @@ td, th {
 
 .btn-edit-menu i,
 .btn-create-menu i,
+.btn-create-reservation i,
 .btn-edit-product i,
 .btn-edit-branch i,
 .btn-delete-menu i,
@@ -1008,6 +1018,7 @@ td, th {
 
 /* Menüler Container Stili */
 .menus-container,
+.reservations-container,
 .cities-container,
 .branches-container,
 .users-container,
@@ -1022,6 +1033,7 @@ td, th {
 }
 
 .menus-header,
+.reservations-header,
 .cities-header,
 .branches-header,
 .users-header,
@@ -1035,6 +1047,7 @@ td, th {
 }
 
 .menus-header h2,
+.reservations-header h2,
 .cities-header h2,
 .branches-header h2,
 .users-header h2,
@@ -1045,6 +1058,7 @@ td, th {
 }
 
 .menus-body,
+.reservations-body,
 .cities-body,
 .branches-body,
 .users-body,
@@ -1053,7 +1067,142 @@ td, th {
   overflow-x: auto;
 }
 
+.table-section{
+  width: 45%;
+}
+
+.reservation-section{
+  width: 53%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.reservation-section .customer-name {
+  width: 100%;
+}
+
+.reservation-box {
+  width: 48%;
+}
+
+.input-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.input-wrapper input,
+.input-wrapper select {
+  width: 100%;
+  height: 40px;
+  padding: 8px 40px 8px 7px; 
+  font-size: 1.6rem;
+  letter-spacing: .03rem;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  border: 2px solid #dedbdb;
+  background: #fff;
+  transition: all 0.2s ease-in;
+  font-family: "Mulish", sans-serif;
+}
+
+.input-wrapper input:focus,
+.input-wrapper select:focus {
+  outline: 0;
+  border-color: #ffc515;
+}
+
+.input-wrapper #filter-branch,
+.input-wrapper #filter-table{
+  padding: 8px 40px 8px 4px;
+}
+
+.input-wrapper label {
+  font-size: 1.3rem;
+  font-weight: 500;
+  margin-left: 5px;
+  margin-bottom: 7px;
+  display: inline-block;
+  font-family: "Mulish", sans-serif;
+  letter-spacing: .04rem;
+}
+
+.search-button, 
+.input-wrapper select {
+  cursor: pointer;
+}
+
+.input-wrapper select:focus-visible{
+  outline: 0;
+}
+
+.search-button,
+.input-wrapper span {
+  position: absolute;
+  top: 33%;
+  right: 0px;
+  padding: 0 10px;
+  transform: translateY(-50%);
+  border: none;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  color: #fff;
+  font-size: 1.8rem;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-left: 1px solid #ffc515;
+  transition: all .2s ease-in;
+  background-color: #ffc515;
+}
+
+.input-wrapper .location{
+  font-size: 2.4rem;
+}
+
+.input-wrapper .chair,
+.input-wrapper .calendar{
+  font-size: 2rem;
+}
+
+.input-wrapper .calendar {
+  top: 52%;
+}
+
+#filter-start-date,
+#filter-end-date {
+  font-family: 'Arial', sans-serif;
+  font-size: 1.6rem;
+  color: #444;
+}
+
+.search-button:hover{
+  background-color: #ffd760;
+}
+
+/* Tüm tarayıcılarda default calendar ikonunu gizliyoruz */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  display: none;
+}
+
+input[type="date"]::-webkit-inner-spin-button,
+input[type="date"]::-webkit-clear-button {
+  display: none;
+  -webkit-appearance: none;
+}
+
+input[type="date"] {
+  position: relative;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
 .menus-table,
+.reservations-table,
 .cities-table,
 .branches-table,
 .users-table,
@@ -1251,7 +1400,9 @@ input:not(:checked) + .toggle-slider:after {
   .products-table td,
   .products-table th,
   .menus-table td, 
-  .menus-table th {
+  .menus-table th,
+  .reservations-table td,
+  .reservations-table th {
     padding: 12px 25px;
   }
 
@@ -1456,7 +1607,9 @@ input:not(:checked) + .toggle-slider:after {
   .products-table th:first-child,
   .products-table td:first-child,
   .menus-table th:first-child,
-  .menus-table td:first-child{
+  .menus-table td:first-child
+  .reservations-table th:first-child,
+  .reservations-table td:first-child {
     padding: 0px 13px;
   }
 
@@ -1538,6 +1691,10 @@ input:not(:checked) + .toggle-slider:after {
   input:checked + .toggle-slider:after,
   input:not(:checked) + .toggle-slider:after {
     content: "";
+  }
+
+  .reservation-box {
+    width: 100%;
   }
 }
 
@@ -1696,6 +1853,7 @@ input:not(:checked) + .toggle-slider:after {
   }
 
   .btn-create-menu,
+  .btn-create-reservation,
   .btn-create-product,
   .btn-create-branch,
   .btn-all-branches {
@@ -1726,6 +1884,14 @@ input:not(:checked) + .toggle-slider:after {
     padding: 6px 8px;
     font-size: 13px;
   }
+
+  .reservation-section {
+    width: 100%;
+  }
+
+  .table-section {
+    width: 100%;
+  }
 }
 
 
@@ -1754,6 +1920,7 @@ input:not(:checked) + .toggle-slider:after {
   }
 
   .btn-create-menu,
+  .btn-create-reservation,
   .btn-create-product,
   .btn-create-branch,
   .btn-all-branches {
