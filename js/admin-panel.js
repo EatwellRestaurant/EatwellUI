@@ -3462,7 +3462,7 @@ $(document).ready(function() {
                 <div class="reservations-container">
                     <div class="reservations-header">
                         <h2>Rezervasyon Listesi</h2>
-                        <button class="btn-create-reservation">
+                        <button class="btn-create-table">
                             <i class="fa-solid fa-plus"></i>
                             Masa Ekle
                         </button>
@@ -3526,9 +3526,10 @@ $(document).ready(function() {
                                 </div>
                             </div>
                         </div>
+
+                        <div class="table-section">
+                        </div>
                     </div>
-
-
                 </div>
                 `;
                 
@@ -3636,6 +3637,7 @@ $(document).ready(function() {
         });
     }
 
+
     // Navbar'daki "Rezervasyonlar" seçeneğine tıklandığında
     $('.sidenav a:contains("Rezervasyonlar")').click(function(e) {
         e.preventDefault();
@@ -3647,7 +3649,7 @@ $(document).ready(function() {
     });
 
 
-    // Rezervasyon filtreleme seçeneklerinde "Takvim" ikonuna tıklandığında takvim listesinin görüntülenmesi için...
+    // Rezervasyon filtreleme seçeneklerinden "Takvim" ikonuna tıklandığında takvim listesinin görüntülenmesi için...
     $(document).on('click', '.calendar', function(e) {
         e.stopPropagation();
         
@@ -3660,6 +3662,112 @@ $(document).ready(function() {
             input?.focus();
         }
     });
+
+
+    function createTable() {
+        
+        let tableCreateHTML = `
+        <div class="table-create-modal">
+            <div class="table-create-content">
+                <div class="table-create-header">
+                    <h2>Masa Ekleme</h2>
+                    <span class="close-table-create">&times;</span>
+                </div>
+                <div class="table-create-body">
+                    <div class="table-info">
+                        <div class="table-info-item">
+                            <div class="table-label">
+                                <strong>Masa Adı</strong> 
+                                <span>:</span>
+                            </div>
+                            <input type="text" class="table-value table-name">
+                        </div>
+                        <div class="table-info-item">
+                            <div class="table-label">
+                                <strong>Masa No</strong> 
+                                <span>:</span>
+                            </div>
+                            <input type="text" class="table-value table-no">
+                        </div>
+                        <div class="table-info-item">
+                            <div class="table-label">
+                                <strong>Kapasite</strong> 
+                                <span>:</span>
+                            </div>
+                            <input type="text" class="table-value table-capacity">
+                        </div>
+                    </div>
+                    
+                    <button class="btn-add-table">Ekle</button>
+                </div>
+            </div>
+        </div>`;
+        
+        // Detay modülünü ekle
+        $('body').append(tableCreateHTML);
+        
+        // Detay modülünü göster
+        $('.table-create-modal').fadeIn(300);
+        
+        // Kapatma butonuna tıklandığında
+        $('.close-table-create').click(function() {
+            $('.table-create-modal').fadeOut(300, function() {
+                $(this).remove();
+            });
+        });
+        
+        // Modül dışına tıklandığında kapat
+        $('.table-create-modal').click(function(e) {
+            if ($(e.target).hasClass('table-create-modal')) {
+                $('.table-create-modal').fadeOut(300, function() {
+                    $(this).remove();
+                });
+            }
+        });
+    }
+
+
+    // Masa No ve Masa Kapasitesi alanlarına rakam dışında diğer karakterlerin girilmesini engelliyoruz.
+    $(document).on('input', '.table-no, .table-capacity', function () {
+        
+        let $this = $(this);
+        let inputElement = this;
+        
+        // İmlecin mevcut pozisyonunu alıyoruz
+        let cursorPosition = inputElement.selectionStart;
+        let oldValue = $this.val();
+        let oldLength = oldValue.length;
+        
+        // Eğer input tamamen boşsa, formatlama yapmadan çık
+        if (oldValue.trim() === '') {
+            return;
+        }
+        
+        // Eğer inputta rakam dışı karakter varsa uyarı veriyoruz
+        if (/[^0-9]/.test(oldValue)) {
+            showToast('error', 'Hata', 'Lütfen yalnızca sayısal karakter kullanın.');
+        }
+        
+        // Tüm rakamları al 
+        let digitsOnly = oldValue.replace(/\D/g, '').substring(0, 12);
+        
+        
+        $(this).val(digitsOnly);
+        
+        // Yeni uzunluğu alıp imleç pozisyonunu ayarlıyoruz
+        let newLength = digitsOnly.length;
+        cursorPosition += newLength - oldLength;
+        inputElement.setSelectionRange(cursorPosition, cursorPosition);
+    });
+
+
+    // Rezervasyonda "Masa Ekle" butonuna tıklandığında
+    $(document).on('click', '.btn-create-table', function(e) {
+        e.stopPropagation();
+
+        createTable();
+    });
+
 
 
 

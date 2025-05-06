@@ -511,7 +511,8 @@ td, th {
 .branch-update-modal,
 .menu-create-modal,
 .product-create-modal,
-.branch-create-modal {
+.branch-create-modal,
+.table-create-modal {
   display: none;
   position: fixed;
   z-index: 1001;
@@ -532,7 +533,8 @@ td, th {
 .branch-update-content,
 .menu-create-content,
 .product-create-content,
-.branch-create-content {
+.branch-create-content,
+.table-create-content {
   background-color: #edece1;
   margin: 5% auto;
   padding: 20px;
@@ -563,7 +565,8 @@ td, th {
 .branch-update-header,
 .menu-create-header,
 .product-create-header,
-.branch-create-header {
+.branch-create-header,
+.table-create-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -581,7 +584,8 @@ td, th {
 .branch-update-header h2,
 .menu-create-header h2,
 .product-create-header h2,
-.branch-create-header h2 {
+.branch-create-header h2,
+.table-create-header h2 {
   color: #000;
   margin: 0;
   font-size: 24px;
@@ -596,7 +600,8 @@ td, th {
 .close-branch-update,
 .close-menu-create,
 .close-product-create,
-.close-branch-create {
+.close-branch-create,
+.close-table-create {
   color: #3a3a3a;
   font-size: 28px;
   font-weight: bold;
@@ -613,7 +618,8 @@ td, th {
 .close-branch-update:hover,
 .close-menu-create:hover,
 .close-product-create:hover,
-.close-branch-create:hover {
+.close-branch-create:hover,
+.close-table-create:hover {
   color: #ffc515;
 }
 
@@ -700,7 +706,8 @@ td, th {
 .branch-update-body,
 .menu-create-body,
 .product-create-body,
-.branch-create-body {
+.branch-create-body,
+.table-create-body {
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -731,6 +738,7 @@ td, th {
 .btn-update-menu,
 .btn-update-product,
 .btn-add-menu,
+.btn-add-table,
 .btn-add-product{
   margin-top: 15px;
   border: none;
@@ -761,6 +769,7 @@ td, th {
 .btn-update-product,
 .btn-update-branch,
 .btn-add-branch,
+.btn-add-table,
 .btn-add-menu,
 .btn-add-product{
   display: inline-block;
@@ -777,6 +786,7 @@ td, th {
 .btn-update-product:hover,
 .btn-update-branch:hover,
 .btn-add-branch:hover,
+.btn-add-table:hover,
 .btn-add-menu:hover,
 .btn-add-product:hover{
   background-color: #ffd760;;
@@ -799,7 +809,8 @@ td, th {
 .menu-info,
 .user-info,
 .product-info,
-.branch-info {
+.branch-info,
+.table-info {
   color: #000;
   border: 1px solid #81818140;
   width: 100%;
@@ -821,7 +832,8 @@ td, th {
 .menu-info-item,
 .user-info-item,
 .product-info-item,
-.branch-info-item {
+.branch-info-item,
+.table-info-item {
   display: flex;
   align-items: center;
   margin: 0 15px;
@@ -841,14 +853,16 @@ td, th {
 .menu-info-item:last-child,
 .user-info-item:last-child,
 .product-info-item:last-child,
-.branch-info-item:last-child {
+.branch-info-item:last-child,
+.table-info-item:last-child {
   border-bottom: none;
 } 
 
 .menu-label,
 .user-label,
 .product-label,
-.branch-label {
+.branch-label,
+.table-label {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -863,7 +877,8 @@ td, th {
 .menu-label strong,
 .user-label strong,
 .product-label strong,
-.branch-label strong {
+.branch-label strong,
+.table-label strong {
   color: #000;
   margin-right: 10px;
   display: inline-block;
@@ -873,7 +888,8 @@ td, th {
 .menu-label span,
 .user-label span,
 .product-label span,
-.branch-label span {
+.branch-label span,
+.table-label span {
   font-weight: bold;
 }
 
@@ -882,7 +898,8 @@ td, th {
 .branch-update-body .branch-value,
 .menu-create-body .menu-value,
 .product-create-body .product-value,
-.branch-create-body .branch-value {
+.branch-create-body .branch-value,
+.table-create-body .table-value {
   border: 1px solid #ddd;
   padding: 5px 8px;
   border-radius: 6px;
@@ -891,6 +908,7 @@ td, th {
 }
 
 .branch-value:focus-visible,
+.table-value:focus-visible,
 .menu-update-body .menu-value:focus-visible,
 .product-update-body .product-value:focus-visible,
 .menu-create-body .menu-value:focus-visible,
@@ -902,7 +920,8 @@ td, th {
 .menu-value,
 .user-value,
 .product-value,
-.branch-value {
+.branch-value,
+.table-value {
   margin: 10px 0;
   margin-left: 15px;
   font-size: 16px;
@@ -925,7 +944,7 @@ td, th {
 
 /* Menü ve Ürün İşlemleri İçin Buton Stili */
 .btn-create-menu,
-.btn-create-reservation,
+.btn-create-table,
 .btn-create-product,
 .btn-create-branch,
 .btn-all-branches {
@@ -957,7 +976,7 @@ td, th {
 
 .btn-edit-menu,
 .btn-create-menu,
-.btn-create-reservation,
+.btn-create-table,
 .btn-create-product,
 .btn-create-branch,
 .btn-all-branches,
@@ -980,7 +999,7 @@ td, th {
 
 .btn-edit-menu:hover,
 .btn-create-menu:hover,
-.btn-create-reservation:hover,
+.btn-create-table:hover,
 .btn-edit-product:hover,
 .btn-edit-branch:hover,
 .btn-delete-menu:hover,
@@ -998,7 +1017,7 @@ td, th {
 
 .btn-edit-menu i,
 .btn-create-menu i,
-.btn-create-reservation i,
+.btn-create-table i,
 .btn-edit-product i,
 .btn-edit-branch i,
 .btn-delete-menu i,
@@ -1600,7 +1619,8 @@ input:not(:checked) + .toggle-slider:after {
   .branch-update-header h2,
   .menu-create-header h2,
   .product-create-header h2,
-  .branch-create-header h2 {
+  .branch-create-header h2,
+  .table-create-header h2 {
     font-size: 20px;
   }
    
@@ -1635,7 +1655,8 @@ input:not(:checked) + .toggle-slider:after {
   .branch-update-content,
   .menu-create-content,
   .product-create-content,
-  .branch-create-content {
+  .branch-create-content,
+  .table-create-content {
     margin: 10% auto;
     width: 95%;
     padding: 15px;
@@ -1659,6 +1680,7 @@ input:not(:checked) + .toggle-slider:after {
   .btn-update-product,
   .btn-update-branch,
   .btn-add-branch,
+  .btn-add-table,
   .btn-add-menu,
   .btn-add-product{
     padding: 12px 14px;
@@ -1669,7 +1691,8 @@ input:not(:checked) + .toggle-slider:after {
   .menu-info,
   .user-info,
   .product-info,
-  .branch-info {
+  .branch-info,
+  .table-info {
     width: 95%;
   }
 
@@ -1725,14 +1748,16 @@ input:not(:checked) + .toggle-slider:after {
   .menu-label, 
   .user-label,
   .product-label,
-  .branch-label {
+  .branch-label,
+  .table-label {
     font-size: 14px;
   }
 
   .menu-value, 
   .user-value,
   .product-value,
-  .branch-value {
+  .branch-value
+  .table-value {
     font-size: 14px;
   }
   
@@ -1745,7 +1770,8 @@ input:not(:checked) + .toggle-slider:after {
   .branch-update-body,
   .menu-create-body,
   .product-create-body,
-  .branch-create-body {
+  .branch-create-body,
+  .table-create-body {
     align-items: center;
   }
 
@@ -1799,7 +1825,8 @@ input:not(:checked) + .toggle-slider:after {
   .branch-update-header h2,
   .menu-create-header h2,
   .product-create-header h2,
-  .branch-create-header h2 {
+  .branch-create-header h2,
+  .table-create-header h2 {
     font-size: 18px;
   }
   
@@ -1832,7 +1859,8 @@ input:not(:checked) + .toggle-slider:after {
   .branch-update-content,
   .menu-create-content,
   .product-create-content,
-  .branch-create-content {
+  .branch-create-content,
+  .table-create-content {
     margin: 15% auto;
     padding: 10px;
   }
@@ -1853,7 +1881,7 @@ input:not(:checked) + .toggle-slider:after {
   }
 
   .btn-create-menu,
-  .btn-create-reservation,
+  .btn-create-table,
   .btn-create-product,
   .btn-create-branch,
   .btn-all-branches {
@@ -1864,6 +1892,7 @@ input:not(:checked) + .toggle-slider:after {
   .btn-update-product,
   .btn-update-branch,
   .btn-add-branch,
+  .btn-add-table,
   .btn-add-menu,
   .btn-add-product{
     padding: 11px 13px;
@@ -1920,7 +1949,7 @@ input:not(:checked) + .toggle-slider:after {
   }
 
   .btn-create-menu,
-  .btn-create-reservation,
+  .btn-create-table,
   .btn-create-product,
   .btn-create-branch,
   .btn-all-branches {
