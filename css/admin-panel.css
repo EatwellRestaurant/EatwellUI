@@ -961,7 +961,8 @@ td, th {
 .btn-products-menu,
 .btn-branches-city,
 .btn-menu,
-.btn-city {
+.btn-city,
+.btn-reservation {
   padding: 8px 10px;
 }
 
@@ -988,7 +989,8 @@ td, th {
 .btn-products-menu,
 .btn-branches-city,
 .btn-menu,
-.btn-city {
+.btn-city,
+.btn-reservation {
   background-color: #ffc515;
   color: #1b203d;
   border: none;
@@ -1011,7 +1013,8 @@ td, th {
 .btn-products-menu:hover,
 .btn-branches-city:hover,
 .btn-menu:hover,
-.btn-city:hover {
+.btn-city:hover,
+.btn-reservation:hover {
   background-color: #ffd760;
 }
 
@@ -1029,7 +1032,8 @@ td, th {
 .btn-products-menu i,
 .btn-branches-city i,
 .btn-menu i,
-.btn-city i {
+.btn-city i,
+.btn-reservation i {
   margin-right: 3px;
 }
 
@@ -1909,7 +1913,8 @@ input:not(:checked) + .toggle-slider:after {
   .btn-products-menu,
   .btn-branches-city,
   .btn-menu,
-  .btn-city {
+  .btn-city,
+  .btn-reservation {
     padding: 6px 8px;
     font-size: 13px;
   }
@@ -1966,7 +1971,8 @@ input:not(:checked) + .toggle-slider:after {
   .btn-products-menu,
   .btn-branches-city,
   .btn-menu,
-  .btn-city {
+  .btn-city,
+  .btn-reservation {
     padding: 5px 8px;
     font-size: 12px;
   }

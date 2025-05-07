@@ -47,12 +47,17 @@ $(document).ready(function() {
 
             localStorage.removeItem('selectedCityId');
             localStorage.removeItem('selectedCityName');
+            
+            localStorage.removeItem('selectedBranchId');
+            localStorage.removeItem('selectedBranchName');
 
-            localStorage.removeItem('cityHistory');
             localStorage.removeItem('menuHistory');
+            localStorage.removeItem('cityHistory');
+            localStorage.removeItem('branchHistory');
 
             localStorage.removeItem('menuHistoryIndex');
             localStorage.removeItem('cityHistoryIndex');
+            localStorage.removeItem('branchHistoryIndex');
 
             window.location.href = 'admin-login.html';
             return;
@@ -74,12 +79,17 @@ $(document).ready(function() {
         
         localStorage.removeItem('selectedCityId');
         localStorage.removeItem('selectedCityName');
+
+        localStorage.removeItem('selectedBranchId');
+        localStorage.removeItem('selectedBranchName');
         
-        localStorage.removeItem('cityHistory');
         localStorage.removeItem('menuHistory');
+        localStorage.removeItem('cityHistory');
+        localStorage.removeItem('branchHistory');
 
         localStorage.removeItem('menuHistoryIndex');
         localStorage.removeItem('cityHistoryIndex');
+        localStorage.removeItem('branchHistoryIndex');
 
         window.location.href = 'admin-login.html';
     }
@@ -100,11 +110,16 @@ $(document).ready(function() {
             localStorage.removeItem('selectedCityId');
             localStorage.removeItem('selectedCityName');
 
-            localStorage.removeItem('cityHistory');
+            localStorage.removeItem('selectedBranchId');
+            localStorage.removeItem('selectedBranchName');
+
             localStorage.removeItem('menuHistory');
+            localStorage.removeItem('cityHistory');
+            localStorage.removeItem('branchHistory');
 
             localStorage.removeItem('menuHistoryIndex');
             localStorage.removeItem('cityHistoryIndex');
+            localStorage.removeItem('branchHistoryIndex');
 
             window.location.href = 'admin-login.html';
         }, 1500);
@@ -2252,7 +2267,8 @@ $(document).ready(function() {
     function renderBranchesList(data, options = {}) {
         const {
             title = 'Şube Listesi',
-            showGoToCityButton = false
+            showGoToCityButton = false,
+            showGoToReservationsButton = false
         } = options;
     
         // Ortak HTML yapısı
@@ -2262,16 +2278,18 @@ $(document).ready(function() {
         <div class="branches-container">
             <div class="branches-header">
                 <h2>${title}</h2>
-                <button class="btn-create-branch">
-                    <i class="fa-solid fa-plus"></i>
-                    Şube Ekle
-                </button>
+                ${!showGoToReservationsButton ? `
+                    <button class="btn-create-branch">
+                        <i class="fa-solid fa-plus"></i>
+                        Şube Ekle
+                    </button>` : ''
+                }
             </div>
             <div class="branches-body">
                 <table class="branches-table">
                     <thead>
                         <tr>
-                            ${showGoToCityButton ? `<th class="city-col">Şehir</th>` : '' }
+                            ${showGoToCityButton || showGoToReservationsButton ? `<th class="city-col">Şehir</th>` : '' }
                             <th class="branch-name-col">Şube Adı</th>
                             <th class="address-col">Adres</th>
                             <th class="email-col">E-posta</th>
@@ -2309,7 +2327,7 @@ $(document).ready(function() {
 
                     tableHTML += `
                     <tr class="branch-row" data-branch-id="${branch.id}">
-                        ${showGoToCityButton ? `<td>${branch.cityName}</td>` : '' }
+                        ${showGoToCityButton || showGoToReservationsButton ? `<td>${branch.cityName}</td>` : '' }
                         <td>${branch.name}</td>
                         <td>
                             <span class="truncate">${branch.address}</span>
@@ -2317,6 +2335,7 @@ $(document).ready(function() {
                         <td>${branch.email}</td>
                         <td>
                             <div class="table-actions-scroll">
+                                ${!showGoToReservationsButton ? `
                                 <button class="btn-delete-branch" data-branch-id="${branch.id}">
                                     <i class="fa-solid fa-trash"></i>
                                     Sil
@@ -2324,11 +2343,18 @@ $(document).ready(function() {
                                 <button class="btn-edit-branch" data-branch-id="${branch.id}">
                                     <i class="fa-solid fa-pen-to-square"></i>
                                     Düzenle
-                                </button>
+                                </button>` : ''
+                                }
                                 ${showGoToCityButton ? `
                                     <button class="btn-city" data-city-id="${branch.cityId}" data-city-name="${branch.cityName}">
                                         <i class="fa-solid fa-arrow-up-right-from-square"></i>
                                         Şehre Git
+                                    </button>` : ''
+                                }
+                                ${showGoToReservationsButton ? `
+                                    <button class="btn-reservation" data-branch-id="${branch.id}" data-branch-name="${branch.name}">
+                                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                        Rezervasyonlara Git
                                     </button>` : ''
                                 }
                             </div>
@@ -2371,7 +2397,7 @@ $(document).ready(function() {
             url: `https://eatwell-api.azurewebsites.net/api/branches/getAllForAdminByCityId?cityId=${cityId}`,
             type: 'GET',
             headers: { 'Authorization': `Bearer ${token}` },
-            success: (response) => renderBranchesList(response.data, { title: cityName, showGoToCityButton: false }),
+            success: (response) => renderBranchesList(response.data, { title: cityName, showGoToCityButton: false, showGoToReservationsButton: false }),
             error: (xhr) => showToast('error', 'Hata', xhr.responseJSON?.Message || 'Şubeler getirilirken hata oluştu!')
         });
     }
@@ -2402,7 +2428,7 @@ $(document).ready(function() {
             url: 'https://eatwell-api.azurewebsites.net/api/branches/getAllForAdmin',
             type: 'GET',
             headers: { 'Authorization': `Bearer ${token}` },
-            success: (response) => renderBranchesList(response.data, { title: 'Şube Listesi', showGoToCityButton: true }),
+            success: (response) => renderBranchesList(response.data, { title: 'Şube Listesi', showGoToCityButton: true, showGoToReservationsButton: false }),
             error: (xhr) => showToast('error', 'Hata', xhr.responseJSON?.Message || 'Şubeler alınırken hata oluştu!')
         });
     }
@@ -2567,8 +2593,8 @@ $(document).ready(function() {
 
     // Şube satırına tıklama olayı
     $(document).on('click', '.branch-row', function(e) {
-        // Eğer tıklanan element düzenleme butonu, silme butonu veya şehre git butonu ise işlemi durdur
-        if ($(e.target).closest('.btn-edit-branch, .btn-delete-product, .btn-city').length) {
+        // Eğer tıklanan element düzenleme butonu, silme butonu, şehre git veya rezervasyonlara git butonu ise işlemi durdur
+        if ($(e.target).closest('.btn-edit-branch, .btn-delete-product, .btn-city, .btn-reservation').length) {
             return;
         }
 
@@ -2855,7 +2881,11 @@ $(document).ready(function() {
                     const cityId = localStorage.getItem('selectedCityId');
                     const cityName = localStorage.getItem('selectedCityName');
 
-                    getBranchesByCity(cityId, cityName);
+                    if (cityName === null){
+                        getAllBranches();
+                    }else{
+                        getBranchesByCity(cityId, cityName); 
+                    }
                 } else {
                     showToast('error', 'Hata', 'Şube güncellenirken hata oluştu!');
                 }
@@ -2915,7 +2945,11 @@ $(document).ready(function() {
                             const cityId = localStorage.getItem('selectedCityId');
                             const cityName = localStorage.getItem('selectedCityName');
 
-                            getBranchesByCity(cityId, cityName); // Şube listesini yenile
+                            if (cityName === null){
+                                getAllBranches();
+                            }else{
+                                getBranchesByCity(cityId, cityName); 
+                            }
                         } else {
                             showToast('error', 'Hata', 'Şube silinirken hata oluştu!');
                         }
@@ -3197,258 +3231,39 @@ $(document).ready(function() {
     });
 
 
-    
-
-    // Sayfa ilk açıldığında, yüklendiğinde
-    window.addEventListener('load', function() {
-
-        //URL’deki parametreleri (?page=xxx) okuyoruz
-        const params = new URLSearchParams(window.location.search);
-
-        //Tarayıcının adres çubuğunda yazan URL'den, query string değerini (?page=menus, ?page=products gibi) alıyoruz.
-        const page = params.get('page');
 
 
-        //URL’de hangi "page" değeri varsa ona göre yönlendiriyoruz...
-        if (page === 'menus') {
+    function getAllBranchesForReservations() {
+        const token = localStorage.getItem('token');
 
-            //Tarayıcı geçmişinde sahte bir adım (menus) oluşturuyoruz.
-            //Tarayıcı sekmesinin başlığı 'Menüler' oluyor.
-            // Ve URL'de ?page=menus yazıyor.
-            history.replaceState({ page: 'menus' }, 'Menüler', '?page=menus');
+        $.ajax({
+            url: 'https://eatwell-api.azurewebsites.net/api/branches/getAllForAdmin',
+            type: 'GET',
+            headers: { 'Authorization': `Bearer ${token}` },
+            success: (response) => renderBranchesList(response.data, { title: 'Şube Seçiniz...', showGoToCityButton: false, showGoToReservationsButton: true }),
+            error: (xhr) => showToast('error', 'Hata', xhr.responseJSON?.Message || 'Şubeler alınırken hata oluştu!')
+        });
+    }
 
-            getMenus();
 
-        } else if (page === 'productsByMenu') {
-            const menuId = localStorage.getItem('selectedMenuId');
-            const menuName = localStorage.getItem('selectedMenuName');
-            
-            history.replaceState({ page: 'productsByMenu' }, 'Ürünler', `?page=productsByMenu&menuId=${menuId}`);
-            
-            getProductsByMenu(menuId, menuName);
+    // Navbar'daki "Rezervasyonlar" seçeneğine tıklandığında
+    $('.sidenav a:contains("Rezervasyonlar")').click(function(e) {
+        e.preventDefault();
 
-        } else if (page === 'users') {
-            history.replaceState({ page: 'users' }, 'Kullanıcılar', `?page=users`);
+        //URL'ye sahte bir adım ekliyoruz
+        history.pushState({ page: 'branchesForReservation' }, 'Şubeler', '?page=branchesForReservation'); 
 
-            getUsers();
-
-        }else if (page === 'products') {
-            history.replaceState({ page: 'products' }, 'Ürünler', `?page=products`);
-
-            getAllProducts();
-
-        }else if (page === 'cities') {
-            history.replaceState({ page: 'cities' }, 'Şehirler', '?page=cities'); 
-
-            getCities();
-
-        }else if (page === 'branchesByCity') {
-            const cityId = localStorage.getItem('selectedCityId');
-            const cityName = localStorage.getItem('selectedCityName');
-
-            history.replaceState({ page: 'branchesByCity' }, 'Şubeler', `?page=branchesByCity&cityId=${cityId}`);
-
-            getBranchesByCity(cityId, cityName);
-
-        }else if (page === 'branches') {
-            history.replaceState({ page: 'branches' }, 'Şubeler', `?page=branches`);
-
-            getAllBranches();
-
-        }else if (page === 'reservations') {
-            history.replaceState({ page: 'reservations' }, 'Rezervasyonlar', '?page=reservations');
-
-            getReservationTemplate();
-
-        }else {
-            // Hiç page değeri yoksa dashboard'u yükle.
-
-            //Tarayıcı geçmişinde sahte bir adım (dashboard) oluşturuyoruz
-            //URL temiz oluyor (admin-panel.html gibi).
-            history.replaceState({ page: 'dashboard' }, '', window.location.pathname);
-
-            getStatistics();
-        }
+        getAllBranchesForReservations();
     });
 
 
 
-    // localStorage’dan daha önce tuttuğumuz menuHistory verisini alıyoruz.
-    // Ve bu veri string olduğu için JSON.parse ile tekrar dizi (array) haline getiriyoruz.
-    // Eğer hiç veri yoksa (yani null dönerse), boş bir dizi ([]) başlatıyoruz.
-    let menuHistory = JSON.parse(localStorage.getItem('menuHistory')) || [];
-    let cityHistory = JSON.parse(localStorage.getItem('cityHistory')) || [];
-
-    // Şu an kullanıcı hangi menüde bulunuyor, onu takip edebilmek için bir indeks değeri tutuyoruz.
-    // localStorage'dan alıyoruz, yoksa dizinin en son elemanını varsayıyoruz.
-    let menuCurrentIndex = parseInt(localStorage.getItem('menuHistoryIndex')) || (menuHistory.length - 1);
-    let cityCurrentIndex = parseInt(localStorage.getItem('cityHistoryIndex')) || (cityHistory.length - 1);
-
-
-    const Entity = {
-        MENU: 0,
-        CITY: 1
-    };
-
-
-    // Bu fonksiyon, kullanıcı farklı bir menü veya şehir seçtiğinde çağrılır.
-    function selectEntity(entityId, entityName, selectedEntity) {
-
-        // Seçilen yeni id ve adıyla birlikte nesne oluşturulur
-        const newEntity = { id: entityId, name: entityName };
-
-        let entityHistory;
-        let entityCurrentIndex;
-
-        // Seçilen nesnenin tipi menü ise, ilgili geçmiş ve indeks bilgileri alınır.
-        if (selectedEntity === Entity.MENU){
-            entityHistory = menuHistory;
-            entityCurrentIndex = menuCurrentIndex;
-
-        } else{
-            // Aksi halde şehir geçmişi ve indeksi alınır
-            entityHistory = cityHistory;
-            entityCurrentIndex = cityCurrentIndex;
-        }
-
-        // Eğer mevcut index dizinin sonundaysa normal şekilde devam eder.
-        // Ancak kullanıcı geri gittikten sonra başka bir menüye geçerse,
-        // ileriye ait geçmişi siliyoruz (tarayıcı mantığına benzer şekilde).
-        if (entityCurrentIndex < entityHistory.length - 1) {
-            entityHistory = entityHistory.slice(0, entityCurrentIndex + 1);
-        }
-
-        // Yeni seçilen nesneyi geçmişe ekliyoruz.
-        entityHistory.push(newEntity);
-
-        // Geçerli konumu güncelliyoruz (dizinin sonu artık yeni konumdur).
-        entityCurrentIndex = entityHistory.length - 1;
-
-        // Geçici olarak kullanılan entityHistory ve entityCurrentIndex değişkenlerinde yapılan değişiklikleri, 
-        // asıl cityHistory, cityCurrentIndex gibi gerçek uygulama durumunu yöneten değişkenlere geri yazmalıyız.
-        // Çünkü entityHistory ve entityCurrentIndex sadece birer kopya referans gibi davranıyor. 
-        // Asıl değişkenler (menuHistory, cityHistory, vs.) doğrudan bu isimlerle güncellenmediği sürece, 
-        // sadece bu geçici değişkenlerde yaptığımız değişiklikler uygulamanın durumunu değiştirmez.
-        if (selectedEntity === Entity.MENU){
-            menuHistory = entityHistory;
-            menuCurrentIndex = entityCurrentIndex;
-            updateMenuNavigationState(entityId)
-
-        } else{
-            cityHistory = entityHistory;
-            cityCurrentIndex = entityCurrentIndex;
-            updateCityNavigationState(entityId)
-        }
-    }
-
-
-    function updateMenuNavigationState(menuId){
-        // localStorage’a yeni geçmişi ve güncel indeksi kaydediyoruz.
-        localStorage.setItem('menuHistory', JSON.stringify(menuHistory));
-        localStorage.setItem('menuHistoryIndex', menuCurrentIndex);
-
-        // URL'yi güncelliyoruz.
-        history.pushState({ page: 'productsByMenu' }, 'Ürünler', `?page=productsByMenu&menuId=${menuId}`);
-    }
-
-
-    function updateCityNavigationState(cityId){
-        // localStorage’a yeni geçmişi ve güncel indeksi kaydediyoruz.
-        localStorage.setItem('cityHistory', JSON.stringify(cityHistory));
-        localStorage.setItem('cityHistoryIndex', cityCurrentIndex);
-
-        // URL'yi güncelliyoruz.
-        history.pushState({ page: 'branchesByCity' }, 'Şubeler', `?page=branchesByCity&cityId=${cityId}`);
-    }
-
-
-    // Bu metot sayesinde, kullanıcı geri tuşuna bastığında doğru şekilde bir önceki menü veya şehre döner.
-    // Ve geçmişi düzgün yöneterek daha kontrollü bir kullanıcı deneyimi sağlanır.
-    function goBackToPreviousEntity(currentIndex, selectedEntity) {
-
-        // Eğer kullanıcı daha önce bir menü veya şehri ziyaret etmişse (yani index 0'dan büyükse) geri gidiyoruz.
-        if (currentIndex > 0) {
-
-            // İndeks değerini 1 azaltarak bir önceki menü veya şehri hedefliyoruz.
-            currentIndex--;
-
-            if (selectedEntity === Entity.MENU){
-
-                // İlgili menüyü geçmiş dizisinden alıyoruz.
-                const previousMenu = menuHistory[currentIndex];
-    
-                // Eğer geçerli bir menü varsa, o menünün ürünlerini getiriyoruz.
-                if (previousMenu) {
-                    getProductsByMenu(previousMenu.id, previousMenu.name);
-    
-                    // Güncel index değerini localStorage’a kaydediyoruz.
-                    localStorage.setItem('menuHistoryIndex', currentIndex);
-                }
-
-            } else{
-                
-                // İlgili şehri geçmiş dizisinden alıyoruz.
-                const previousCity = cityHistory[currentIndex];
-    
-                // Eğer geçerli bir şehir varsa, o şehrin şubelerini getiriyoruz.
-                if (previousCity) {
-                    getBranchesByCity(previousCity.id, previousCity.name);
-    
-                    // Güncel index değerini localStorage’a kaydediyoruz.
-                    localStorage.setItem('cityHistoryIndex', currentIndex);
-                }
-            }
-        }
-    }
-
-
-    // Bu metot sayesinde, kullanıcı ileri tuşuna bastığında doğru şekilde bir sonraki menü veya şehre döner.
-    // Ve geçmişi düzgün yöneterek daha kontrollü bir kullanıcı deneyimi sağlanır.
-    function goForwardToNextEntity(currentIndex, selectedEntity) {
-
-        // Eğer daha ileriye gidilebilecek bir menü varsa (dizi sınırını aşmıyorsak)
-        if (currentIndex < menuHistory.length - 1) {
-
-            // İndeks değerini 1 artırarak bir sonraki menüyü hedefliyoruz.
-            currentIndex++;
-
-            if (selectedEntity === Entity.MENU){
-
-                // İlgili menüyü geçmiş dizisinden alıyoruz.
-                const nextMenu = menuHistory[currentIndex];
-    
-                // Eğer geçerli bir menü varsa, o menünün ürünlerini getiriyoruz.
-                if (nextMenu) {
-                    getProductsByMenu(nextMenu.id, nextMenu.name);
-    
-                    // Güncel index değerini localStorage’a kaydediyoruz.
-                    localStorage.setItem('menuHistoryIndex', currentIndex);
-                }
-
-            } else {
-                
-                // İlgili menüyü geçmiş dizisinden alıyoruz.
-                const nextCity = cityHistory[currentIndex];
-
-                // Eğer geçerli bir menü varsa, o menünün ürünlerini getiriyoruz.
-                if (nextCity) {
-                    getBranchesByCity(nextCity.id, nextCity.name);
-    
-                    // Güncel index değerini localStorage’a kaydediyoruz.
-                    localStorage.setItem('cityHistoryIndex', currentIndex);
-                }
-            }
-        }
-    }
-
-
-
     // Rezervasyonlar sayfasının taslağını getiren fonksiyon
-    function getReservationTemplate() {
+    function getReservationTemplate(branchId, branchName) {
         const token = localStorage.getItem('token');
         
         $.ajax({
-            url: 'https://eatwell-api.azurewebsites.net/api/reservations/getAll',
+            url: `https://eatwell-api.azurewebsites.net/api/reservations/getAllForAdmin?branchId=${branchId}&pageNumber=1&pageSize=10`,
             type: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -3461,7 +3276,7 @@ $(document).ready(function() {
                 let reservationsHTML = `
                 <div class="reservations-container">
                     <div class="reservations-header">
-                        <h2>Rezervasyon Listesi</h2>
+                        <h2>${branchName} Şubesi</h2>
                         <button class="btn-create-table">
                             <i class="fa-solid fa-plus"></i>
                             Masa Ekle
@@ -3550,23 +3365,16 @@ $(document).ready(function() {
 
                 // Sayfalama için gerekli değişkenler
                 let currentPage = 1; // Mevcut sayfa numarası
-                const itemsPerPage = 10; // Her sayfada gösterilecek rezervasyon sayısı
-                const totalReservations = response.data.length; // Toplam rezervasyon sayısı
-                const totalPages = Math.ceil(totalReservations / itemsPerPage) ? Math.ceil(totalReservations / itemsPerPage) : 1 ; // Toplam sayfa sayısı
 
                 // Rezervasyonları sayfalara böl ve göster
                 function displayReservations(page) {
-                    // Gösterilecek rezervasyonların başlangıç ve bitiş indekslerini hesapla
-                    const startIndex = (page - 1) * itemsPerPage;
-                    const endIndex = startIndex + itemsPerPage;
-                    // İlgili sayfadaki rezervasyonları seç
-                    const reservationsToShow = response.data.slice(startIndex, endIndex);
-                    
+
+                    const response = response.data;
                     let reservationsTableHTML = '';
                     
-                    // Seçilen rezervasyonları tabloya ekle
-                    if (reservationsToShow.length > 0) {
-                        reservationsToShow.forEach(reservation => {
+                    // Rezervasyonları tabloya ekle
+                    if (response.data.dashboardHTML.length > 0) {
+                        response.data.forEach(reservation => {
                             // Tarihi formatla (gün.ay.yıl şeklinde)
                             const date = new Date(reservation.createDate);
                             const formattedDate = `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`;
@@ -3604,11 +3412,11 @@ $(document).ready(function() {
                     // Tabloyu güncelle
                     $('#reservationsTableBody').html(reservationsTableHTML);
                     // Sayfa bilgisini güncelle
-                    $('#reservationPageInfo').text(`Sayfa ${page} / ${totalPages}`);
+                    $('#reservationPageInfo').text(`Sayfa ${page} / ${response.totalPages}`);
                     
                     // Sayfalama butonlarının durumunu güncelle
                     $('#prevReservationPage').prop('disabled', page === 1); // İlk sayfada geri butonu devre dışı
-                    $('#nextReservationPage').prop('disabled', page === totalPages); // Son sayfada ileri butonu devre dışı
+                    $('#nextReservationPage').prop('disabled', page === response.totalPages); // Son sayfada ileri butonu devre dışı
                 }
                 
                 // İlk sayfayı göster
@@ -3638,14 +3446,20 @@ $(document).ready(function() {
     }
 
 
-    // Navbar'daki "Rezervasyonlar" seçeneğine tıklandığında
-    $('.sidenav a:contains("Rezervasyonlar")').click(function(e) {
-        e.preventDefault();
+    // Şubeler listesinde "Rezervasyonlara Git" butonuna tıklandığında
+    $(document).on('click', '.btn-reservation', function(e) {
+        e.stopPropagation();
 
-        //URL'ye sahte bir adım ekliyoruz
-        history.pushState({ page: 'reservations' }, 'Rezervasyonlar', '?page=reservations'); 
+        const branchId = $(this).data('branch-id');
+        const branchName = $(this).data('branch-name');
 
-        getReservationTemplate();
+        // Seçilen şubeyi geçmişe kaydediyoruz
+        selectEntity(branchId, branchName, Entity.BRANCH);
+
+        localStorage.setItem('selectedBranchId', branchId);
+        localStorage.setItem('selectedBranchName', branchName);
+
+        getReservationTemplate(branchId, branchName);
     });
 
 
@@ -3770,6 +3584,295 @@ $(document).ready(function() {
 
 
 
+    
+
+    // Sayfa ilk açıldığında, yüklendiğinde
+    window.addEventListener('load', function() {
+
+        //URL’deki parametreleri (?page=xxx) okuyoruz
+        const params = new URLSearchParams(window.location.search);
+
+        //Tarayıcının adres çubuğunda yazan URL'den, query string değerini (?page=menus, ?page=products gibi) alıyoruz.
+        const page = params.get('page');
+
+
+        //URL’de hangi "page" değeri varsa ona göre yönlendiriyoruz...
+        if (page === 'menus') {
+
+            //Tarayıcı geçmişinde sahte bir adım (menus) oluşturuyoruz.
+            //Tarayıcı sekmesinin başlığı 'Menüler' oluyor.
+            // Ve URL'de ?page=menus yazıyor.
+            history.replaceState({ page: 'menus' }, 'Menüler', '?page=menus');
+
+            getMenus();
+
+        } else if (page === 'productsByMenu') {
+            const menuId = localStorage.getItem('selectedMenuId');
+            const menuName = localStorage.getItem('selectedMenuName');
+            
+            history.replaceState({ page: 'productsByMenu' }, 'Ürünler', `?page=productsByMenu&menuId=${menuId}`);
+            
+            getProductsByMenu(menuId, menuName);
+
+        } else if (page === 'users') {
+            history.replaceState({ page: 'users' }, 'Kullanıcılar', `?page=users`);
+
+            getUsers();
+
+        }else if (page === 'products') {
+            history.replaceState({ page: 'products' }, 'Ürünler', `?page=products`);
+
+            getAllProducts();
+
+        }else if (page === 'cities') {
+            history.replaceState({ page: 'cities' }, 'Şehirler', '?page=cities'); 
+
+            getCities();
+
+        }else if (page === 'branchesByCity') {
+            const cityId = localStorage.getItem('selectedCityId');
+            const cityName = localStorage.getItem('selectedCityName');
+
+            history.replaceState({ page: 'branchesByCity' }, 'Şubeler', `?page=branchesByCity&cityId=${cityId}`);
+
+            getBranchesByCity(cityId, cityName);
+
+        }else if (page === 'branches') {
+            history.replaceState({ page: 'branches' }, 'Şubeler', `?page=branches`);
+
+            getAllBranches();
+
+        }else if (page === 'branchesForReservation') {
+            history.replaceState({ page: 'branchesForReservation' }, 'Şubeler', '?page=branchesForReservation');
+            
+            getAllBranchesForReservations();
+
+        }else if (page === 'reservationsByBranch') {
+            const branchId = localStorage.getItem('selectedBranchId');
+            const branchName = localStorage.getItem('selectedBranchName');
+
+            history.replaceState({ page: 'reservationsByBranch' }, 'Rezervasyonlar', `?page=reservationsByBranch&branchId=${branchId}`);
+
+            getReservationTemplate(branchId, branchName);
+
+        }else {
+            // Hiç page değeri yoksa dashboard'u yükle.
+
+            //Tarayıcı geçmişinde sahte bir adım (dashboard) oluşturuyoruz
+            //URL temiz oluyor (admin-panel.html gibi).
+            history.replaceState({ page: 'dashboard' }, '', window.location.pathname);
+
+            getStatistics();
+        }
+    });
+
+
+
+    // localStorage’dan daha önce tuttuğumuz menuHistory verisini alıyoruz.
+    // Ve bu veri string olduğu için JSON.parse ile tekrar dizi (array) haline getiriyoruz.
+    // Eğer hiç veri yoksa (yani null dönerse), boş bir dizi ([]) başlatıyoruz.
+    let menuHistory = JSON.parse(localStorage.getItem('menuHistory')) || [];
+    let cityHistory = JSON.parse(localStorage.getItem('cityHistory')) || [];
+    let branchHistory = JSON.parse(localStorage.getItem('branchHistory')) || [];
+
+    // Şu an kullanıcı hangi menüde bulunuyor, onu takip edebilmek için bir indeks değeri tutuyoruz.
+    // localStorage'dan alıyoruz, yoksa dizinin en son elemanını varsayıyoruz.
+    let menuCurrentIndex = parseInt(localStorage.getItem('menuHistoryIndex')) || (menuHistory.length - 1);
+    let cityCurrentIndex = parseInt(localStorage.getItem('cityHistoryIndex')) || (cityHistory.length - 1);
+    let branchCurrentIndex = parseInt(localStorage.getItem('branchHistoryIndex')) || (branchHistory.length - 1);
+
+
+    const Entity = {
+        MENU: 0,
+        CITY: 1,
+        BRANCH: 2
+    };
+
+
+    // Bu fonksiyon, kullanıcı farklı bir menü veya şehir seçtiğinde çağrılır.
+    function selectEntity(entityId, entityName, selectedEntity) {
+
+        // Seçilen yeni id ve adıyla birlikte nesne oluşturulur
+        const newEntity = { id: entityId, name: entityName };
+
+        let entityHistory;
+        let entityCurrentIndex;
+
+        // Seçilen nesnenin tipi menü ise, ilgili geçmiş ve indeks bilgileri alınır.
+        if (selectedEntity === Entity.MENU){
+            entityHistory = menuHistory;
+            entityCurrentIndex = menuCurrentIndex;
+
+        } else if (selectedEntity === Entity.BRANCH) {
+            entityHistory = branchHistory;
+            entityCurrentIndex = branchCurrentIndex;
+
+        } else{
+            // Aksi halde şehir geçmişi ve indeksi alınır
+            entityHistory = cityHistory;
+            entityCurrentIndex = cityCurrentIndex;
+        }
+
+        // Eğer mevcut index dizinin sonundaysa normal şekilde devam eder.
+        // Ancak kullanıcı geri gittikten sonra başka bir menüye geçerse,
+        // ileriye ait geçmişi siliyoruz (tarayıcı mantığına benzer şekilde).
+        if (entityCurrentIndex < entityHistory.length - 1) {
+            entityHistory = entityHistory.slice(0, entityCurrentIndex + 1);
+        }
+
+        // Yeni seçilen nesneyi geçmişe ekliyoruz.
+        entityHistory.push(newEntity);
+
+        // Geçerli konumu güncelliyoruz (dizinin sonu artık yeni konumdur).
+        entityCurrentIndex = entityHistory.length - 1;
+
+        // Geçici olarak kullanılan entityHistory ve entityCurrentIndex değişkenlerinde yapılan değişiklikleri, 
+        // asıl cityHistory, cityCurrentIndex gibi gerçek uygulama durumunu yöneten değişkenlere geri yazmalıyız.
+        // Çünkü entityHistory ve entityCurrentIndex sadece birer kopya referans gibi davranıyor. 
+        // Asıl değişkenler (menuHistory, cityHistory, vs.) doğrudan bu isimlerle güncellenmediği sürece, 
+        // sadece bu geçici değişkenlerde yaptığımız değişiklikler uygulamanın durumunu değiştirmez.
+        if (selectedEntity === Entity.MENU){
+            menuHistory = entityHistory;
+            menuCurrentIndex = entityCurrentIndex;
+            updateMenuNavigationState(entityId);
+
+        } else if (selectedEntity === Entity.BRANCH) {
+            branchHistory = entityHistory;
+            branchCurrentIndex = entityCurrentIndex;
+            updateBranchNavigationState(entityId);
+
+        } else{
+            cityHistory = entityHistory;
+            cityCurrentIndex = entityCurrentIndex;
+            updateCityNavigationState(entityId);
+        }
+    }
+
+
+    function updateMenuNavigationState(menuId){
+        // localStorage’a yeni geçmişi ve güncel indeksi kaydediyoruz.
+        localStorage.setItem('menuHistory', JSON.stringify(menuHistory));
+        localStorage.setItem('menuHistoryIndex', menuCurrentIndex);
+
+        // URL'yi güncelliyoruz.
+        history.pushState({ page: 'productsByMenu' }, 'Ürünler', `?page=productsByMenu&menuId=${menuId}`);
+    }
+
+
+    function updateCityNavigationState(cityId){
+        // localStorage’a yeni geçmişi ve güncel indeksi kaydediyoruz.
+        localStorage.setItem('cityHistory', JSON.stringify(cityHistory));
+        localStorage.setItem('cityHistoryIndex', cityCurrentIndex);
+
+        // URL'yi güncelliyoruz.
+        history.pushState({ page: 'branchesByCity' }, 'Şubeler', `?page=branchesByCity&cityId=${cityId}`);
+    }
+    
+    
+    function updateBranchNavigationState(branchId){
+        // localStorage’a yeni geçmişi ve güncel indeksi kaydediyoruz.
+        localStorage.setItem('branchHistory', JSON.stringify(branchHistory));
+        localStorage.setItem('branchHistoryIndex', branchCurrentIndex);
+
+        // URL'yi güncelliyoruz.
+        history.pushState({ page: 'reservationsByBranch' }, 'Rezervasyonlar', `?page=reservationsByBranch&branchId=${branchId}`);
+    }
+
+
+    // Bu metot sayesinde, kullanıcı geri tuşuna bastığında doğru şekilde bir önceki menü, şube veya şehre döner.
+    // Ve geçmişi düzgün yöneterek daha kontrollü bir kullanıcı deneyimi sağlanır.
+    function goBackToPreviousEntity(currentIndex, selectedEntity) {
+
+        // Eğer kullanıcı daha önce bir menü, şube veya şehri ziyaret etmişse (yani index 0'dan büyükse) geri gidiyoruz.
+        if (currentIndex > 0) {
+
+            // İndeks değerini 1 azaltarak bir önceki menü veya şehri hedefliyoruz.
+            currentIndex--;
+
+            if (selectedEntity === Entity.MENU){
+
+                // İlgili menüyü geçmiş dizisinden alıyoruz.
+                const previousMenu = menuHistory[currentIndex];
+    
+                // Eğer geçerli bir menü varsa, o menünün ürünlerini getiriyoruz.
+                if (previousMenu) {
+                    getProductsByMenu(previousMenu.id, previousMenu.name);
+    
+                    // Güncel index değerini localStorage’a kaydediyoruz.
+                    localStorage.setItem('menuHistoryIndex', currentIndex);
+                }
+
+            } else if (selectedEntity === Entity.BRANCH) {
+
+                // İlgili şubeyi geçmiş dizisinden alıyoruz.
+                const previousBranch = branchHistory[currentIndex];
+    
+                // Eğer geçerli bir şube varsa, o şubenin rezervasyonlarını getiriyoruz.
+                if (previousBranch) {
+                    getReservationTemplate(previousBranch.id, previousBranch.name);
+    
+                    // Güncel index değerini localStorage’a kaydediyoruz.
+                    localStorage.setItem('branchHistoryIndex', currentIndex);
+                }
+
+            } else{
+                
+                // İlgili şehri geçmiş dizisinden alıyoruz.
+                const previousCity = cityHistory[currentIndex];
+    
+                // Eğer geçerli bir şehir varsa, o şehrin şubelerini getiriyoruz.
+                if (previousCity) {
+                    getBranchesByCity(previousCity.id, previousCity.name);
+    
+                    // Güncel index değerini localStorage’a kaydediyoruz.
+                    localStorage.setItem('cityHistoryIndex', currentIndex);
+                }
+            }
+        }
+    }
+
+
+    // Bu metot sayesinde, kullanıcı ileri tuşuna bastığında doğru şekilde bir sonraki menü, şube veya şehre döner.
+    // Ve geçmişi düzgün yöneterek daha kontrollü bir kullanıcı deneyimi sağlanır.
+    function goForwardToNextEntity(currentIndex, selectedEntity) {
+
+        let historyList = selectedEntity === Entity.MENU 
+        ? menuHistory 
+        : selectedEntity === Entity.BRANCH 
+            ? branchHistory 
+            : cityHistory; 
+
+
+        // Eğer daha ileriye gidilebilecek bir menü, şube veya şehir varsa (dizi sınırını aşmıyorsak)
+        if (currentIndex < historyList.length - 1) {
+
+            // İndeks değerini 1 artırarak bir sonraki menüyü hedefliyoruz.
+            currentIndex++;
+
+            // İlgili menüyü, şubeyi veya şehri geçmiş dizisinden alıyoruz.
+            const nextItem = historyList[currentIndex];
+
+
+            // Eğer geçerli bir öge varsa ilgili elemanlarını getiriyoruz.
+            if (nextItem) {
+
+                if (selectedEntity === Entity.MENU) {
+                    getProductsByMenu(nextItem.id, nextItem.name);
+                    localStorage.setItem('menuHistoryIndex', currentIndex);
+
+                } else if (selectedEntity === Entity.CITY) {
+                    getReservationTemplate(nextItem.id, nextItem.name);
+                    localStorage.setItem('branchHistoryIndex', currentIndex);
+
+                } else {
+                    getBranchesByCity(nextItem.id, nextItem.name);
+                    localStorage.setItem('cityHistoryIndex', currentIndex);
+                }
+            }
+        }
+    }
+
+
 
     //Kullanıcı tarayıcıda geri veya ileri tuşuna basınca
     window.addEventListener('popstate', function (e) {
@@ -3838,6 +3941,32 @@ $(document).ready(function() {
                     
                     break;
 
+                case 'reservationsByBranch':
+                    
+                    const storedIndexBranch = parseInt(localStorage.getItem('branchHistoryIndex')) || 0;
+                    const branchHistory = JSON.parse(localStorage.getItem('branchHistory')) || [];
+                    
+                    const currentBranchIdFromURL = params.get('branchId');
+                    
+                    // URL'deki şube dizide kaçıncı sıradaysa onu bul
+                    const branchCurrentIndexInHistory = branchHistory.findIndex(m => m.id == currentBranchIdFromURL);
+                    
+                    if (branchCurrentIndexInHistory < storedIndexBranch) {
+                        // Geriye gidilmiş
+                        goBackToPreviousEntity(storedIndexBranch, Entity.BRANCH);
+
+                    } else if (branchCurrentIndexInHistory > storedIndexBranch) {
+                        // İleriye gidilmiş
+                        goForwardToNextEntity(storedIndexBranch, Entity.BRANCH);
+
+                    } else {
+                        // Aynı yerde kalınmış
+                        const branch = branchHistory[branchCurrentIndexInHistory];
+                        if (branch) getReservationTemplate(branch.id, branch.name);
+                    }
+                    
+                    break;
+
                 case 'users':
                     getUsers();
                     break;
@@ -3852,7 +3981,11 @@ $(document).ready(function() {
 
                 case 'branches':
                     getAllBranches();
-                    break;    
+                    break;  
+                    
+                case 'branchesForReservation':
+                    getAllBranchesForReservations();
+                    break;
 
                 case 'dashboard':
                     resetDashboard();
@@ -3870,12 +4003,17 @@ $(document).ready(function() {
 
                     localStorage.removeItem('selectedCityId');
                     localStorage.removeItem('selectedCityName');
+                    
+                    localStorage.removeItem('selectedBranchId');
+                    localStorage.removeItem('selectedBranchName');
 
-                    localStorage.removeItem('cityHistory');
                     localStorage.removeItem('menuHistory');
+                    localStorage.removeItem('cityHistory');
+                    localStorage.removeItem('branchHistory');
 
                     localStorage.removeItem('menuHistoryIndex');
                     localStorage.removeItem('cityHistoryIndex');
+                    localStorage.removeItem('branchHistoryIndex');
 
                     window.location.href = 'admin-login.html';
                     break;
