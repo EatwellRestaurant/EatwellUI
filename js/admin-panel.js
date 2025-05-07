@@ -3271,6 +3271,9 @@ $(document).ready(function() {
             success: function(response) {
                 // Dashboard içeriğini temizle
                 $('.dashboard-content').empty();
+
+                const tableResponse = response.tableResponse.data;
+                const reservationResponse = response.reservationResponse.data;
                 
                 // Rezervasyonlar için temel HTML yapısı
                 let reservationsHTML = `
@@ -3284,26 +3287,12 @@ $(document).ready(function() {
                     </div>
                     <div class="reservations-body">
                         <div class="reservation-section">
-                            <div class="reservation-box customer-name">
+                            <div class="reservation-box">
                                 <div class="input-wrapper">
                                     <input id="filter-name" type="text" placeholder="Müşteri adı ara...">
                                     <button class="search-button">
                                         <i class="fa-solid fa-search"></i>
                                     </button>
-                                </div>
-                            </div>
-
-                            <div class="reservation-box">
-                                <div class="input-wrapper">
-                                    <select id="filter-branch">
-                                      <option value="">Şubelerde ara...</option>
-                                      <option value="1">Avcılar</option>
-                                      <option value="4">Nişantaşı</option>
-                                      <option value="7">Ataşehir</option>
-                                    </select>
-                                    <span class="location">
-                                        <i class="fa-solid fa-location-dot"></i>
-                                    </span>
                                 </div>
                             </div>
 
@@ -3343,13 +3332,57 @@ $(document).ready(function() {
                         </div>
 
                         <div class="table-section">
+                            <h2>Masa Durumu</h2>
+                            <div class="table-box">
+                            </div>
                         </div>
                     </div>
                 </div>
                 `;
-                
+
                 // Rezervasyon taslağını dashboard'a ekle
                 $('.dashboard-content').append(reservationsHTML);
+
+                // Masaları göster
+                function displayTables() { 
+                    $('.table-box').empty();
+
+                    let tablesHTML = '';
+
+                    if (tableResponse.length > 0) {
+                        // Masaları ekle
+                        tableResponse.forEach(table => {
+                            tablesHTML += `
+                            <div class="table-item">
+                                <span>${table.tableNo}</span>
+                                <div class="tooltip-text">
+                                    
+                                        <span class="tooltip-label">
+                                            <strong>Masa Adı</strong> 
+                                            <span>:</span>
+                                            ${table.name}
+                                        </span>
+                                        </br>
+                                    
+                                        <span class="tooltip-label">
+                                            <strong>Kapasite</strong> 
+                                            <span>:</span>
+                                            ${table.capacity}
+                                        </span>
+                                    
+                                </div>
+                            </div>`;
+                        })
+                    } else {
+                        tablesHTML = `
+                            <h3 class="empty-table-row">Henüz masa bulunmamaktadır.</h3>
+                        `;
+                    }
+
+                    $('.table-box').html(tablesHTML);
+                }
+
+                displayTables();
                 
                 // İki ay öncesinin tarihi
                 const twoMonthsAgo = new Date();
@@ -3366,14 +3399,12 @@ $(document).ready(function() {
                 // Sayfalama için gerekli değişkenler
                 let currentPage = 1; // Mevcut sayfa numarası
 
-                // Rezervasyonları sayfalara böl ve göster
+                // Rezervasyonları göster
                 function displayReservations(page) {
-
-                    const response = response.data;
                     let reservationsTableHTML = '';
                     
                     // Rezervasyonları tabloya ekle
-                    if (response.data.dashboardHTML.length > 0) {
+                    if (response.data.length > 0) {
                         response.data.forEach(reservation => {
                             // Tarihi formatla (gün.ay.yıl şeklinde)
                             const date = new Date(reservation.createDate);
@@ -3383,22 +3414,6 @@ $(document).ready(function() {
                                 <tr class="reservation-row" data-reservation-id="${reservation.id}">
                                     <td>${reservation.firstName}</td>
                                     <td>${formattedDate}</td>
-                                    <td>
-                                        <div class="table-actions-scroll">
-                                            <button class="btn-delete-menu" data-menu-id="${menu.id}">
-                                                <i class="fa-solid fa-trash"></i>
-                                                Sil
-                                            </button>
-                                            <button class="btn-edit-menu" data-menu-id="${menu.id}">
-                                                <i class="fa-solid fa-pen-to-square"></i>
-                                                Düzenle
-                                            </button>
-                                            <button class="btn-products-menu" data-menu-id="${menu.id}" data-menu-name="${menu.name}">
-                                                <i class="fa-solid fa-list"></i>
-                                                Ürünleri Gör
-                                            </button>
-                                        </div>
-                                    </td>
                                 </tr>`;
                         });
                     } else {
