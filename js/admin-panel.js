@@ -3311,12 +3311,15 @@ $(document).ready(function() {
 
                             <div class="reservation-box">
                                 <div class="input-wrapper">
-                                    <select id="filter-table">
-                                      <option value="">Masalarda ara...</option>
-                                      <option value="1">Masa 1</option>
-                                      <option value="4">Masa 2</option>
-                                      <option value="7">Masa 3</option>
-                                    </select>
+                                    <div class="dropdown" id="customDropdown">
+                                        <div class="dropdown-toggle" id="selectedValue">Masalarda ara...</div>
+                                        <div class="dropdown-menu">
+                                            <div class="dropdown-option" data-value="">Masalarda ara...</div>
+                                            <div class="dropdown-option" data-value="1">Masa 1</div>
+                                            <div class="dropdown-option" data-value="4">Masa 2</div>
+                                            <div class="dropdown-option" data-value="7">Masa 3</div>
+                                        </div>
+                                    </div>
                                     <span class="chair">
                                         <i class="fa-solid fa-chair"></i>
                                     </span>
@@ -3488,6 +3491,52 @@ $(document).ready(function() {
     });
 
 
+    // Rezervasyonlar sayfasındaki "Masalarda Ara" option'ına tıklandığında
+    $(document).on('click', '.dropdown-toggle', function(e) {
+        e.stopPropagation(); 
+
+        $("#customDropdown").find(".dropdown-menu").toggleClass("active");
+    });
+
+
+    // "Masalarda Ara" option kutusunda bir seçenek seçildiğinde
+    $(document).on('click', '.dropdown-option', function(e) {
+        const value = $(this).data("value");
+        const label = $(this).text();
+
+        const dropdownToggle = $("#customDropdown").find(".dropdown-toggle");
+
+        dropdownToggle.text(label);
+        dropdownToggle.attr("data-value", value);
+
+        // Renk değiştirme
+        if (value !== "") {
+            dropdownToggle.css("color", "#000");
+        } else {
+            dropdownToggle.css("color", "#797878");
+        }
+
+        $("#customDropdown").find(".dropdown-menu").removeClass("active");
+    });
+
+
+    // Dışarı tıklanınca ilgili menüleri kapat
+    $(document).on("click", function (e) {
+
+        // Eğer tıklanan yer Rezervasyonlar sayfasındaki "Masalarda Ara..." listesi veya içindeki seçenekler değilse
+        if (!$("#customDropdown").is(e.target) && $("#customDropdown").has(e.target).length === 0) {
+            $("#customDropdown").find(".dropdown-menu").removeClass("active");
+        }
+
+
+        // Eğer tıklanan yer .table-options kutusu (yani "Masaları Yönet" butonuna tıklandığında açılan kutu) veya içindeki seçenekler değilse
+        if (!$(e.target).closest('.table-options, .btn-manage-table').length) {
+            $('.table-options').removeClass('table-manage-show');
+            $(".btn-manage-table i").removeClass("rotated");
+        }
+    });
+
+
     // Rezervasyon filtreleme seçeneklerinden "Takvim" ikonuna tıklandığında takvim listesinin görüntülenmesi için...
     $(document).on('click', '.calendar', function(e) {
         e.stopPropagation();
@@ -3604,20 +3653,15 @@ $(document).ready(function() {
     $(document).on('click', '.btn-manage-table', function(e) {
         e.stopPropagation();
 
-        $('.table-options').toggleClass('table-manage-show')
-    });
+        $('.table-options').toggleClass('table-manage-show');
 
-    // table-options kutusunun dışında bir yere tıklandığında kutuyu kapat
-    $(document).on('click', function (e) {
-        // Eğer tıklanan yer .table-options veya içindekiler değilse
-        if (!$(e.target).closest('.table-options, .btn-manage-table').length) {
-            $('.table-options').removeClass('table-manage-show');
-        }
+        $(".btn-manage-table i").toggleClass("rotated");
     });
 
     // table-options içindeki butonlardan herhangi birine tıklandığında table-options kutusunu kapat
     $(document).on('click', '.table-manage-button', function () {
         $('.table-options').removeClass('table-manage-show');
+        $(".btn-manage-table i").removeClass("rotated");
     });
 
 
