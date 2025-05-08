@@ -3280,10 +3280,23 @@ $(document).ready(function() {
                 <div class="reservations-container">
                     <div class="reservations-header">
                         <h2>${branchName} Şubesi</h2>
-                        <button class="btn-create-table">
-                            <i class="fa-solid fa-plus"></i>
-                            Masa Ekle
-                        </button>
+                        <div class="table-management">
+                            <button class="btn-manage-table">
+                                <i class="fa-solid fa-gear"></i>
+                                Masaları Yönet
+                            </button>
+                            <div class="table-options">
+                                <button class="btn-create-table table-manage-button">
+                                    Ekle
+                                </button>
+                                <button class="btn-update-table table-manage-button">
+                                    Güncelle
+                                </button>
+                                <button class="btn-delete-table table-manage-button">
+                                    Sil
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     <div class="reservations-body">
                         <div class="reservation-section">
@@ -3354,22 +3367,19 @@ $(document).ready(function() {
                         tableResponse.forEach(table => {
                             tablesHTML += `
                             <div class="table-item">
-                                <span>${table.tableNo}</span>
+                                <span>${table.no}</span>
                                 <div class="tooltip-text">
-                                    
-                                        <span class="tooltip-label">
-                                            <strong>Masa Adı</strong> 
-                                            <span>:</span>
-                                            ${table.name}
-                                        </span>
-                                        </br>
-                                    
-                                        <span class="tooltip-label">
-                                            <strong>Kapasite</strong> 
-                                            <span>:</span>
-                                            ${table.capacity}
-                                        </span>
-                                    
+                                    <span class="tooltip-label">
+                                        <strong>Masa Adı</strong> 
+                                        <span>:</span>
+                                        ${table.name}
+                                    </span>
+                                    </br>
+                                    <span class="tooltip-label">
+                                        <strong>Kapasite</strong> 
+                                        <span>:</span>
+                                        ${table.capacity}
+                                    </span>
                                 </div>
                             </div>`;
                         })
@@ -3590,7 +3600,28 @@ $(document).ready(function() {
     });
 
 
-    // Rezervasyonda "Masa Ekle" butonuna tıklandığında
+    // Rezervasyonda "Masaları Yönet" butonuna tıklandığında
+    $(document).on('click', '.btn-manage-table', function(e) {
+        e.stopPropagation();
+
+        $('.table-options').toggleClass('table-manage-show')
+    });
+
+    // table-options kutusunun dışında bir yere tıklandığında kutuyu kapat
+    $(document).on('click', function (e) {
+        // Eğer tıklanan yer .table-options veya içindekiler değilse
+        if (!$(e.target).closest('.table-options, .btn-manage-table').length) {
+            $('.table-options').removeClass('table-manage-show');
+        }
+    });
+
+    // table-options içindeki butonlardan herhangi birine tıklandığında table-options kutusunu kapat
+    $(document).on('click', '.table-manage-button', function () {
+        $('.table-options').removeClass('table-manage-show');
+    });
+
+
+    // Masaları Yönet butonlarından "Ekle" butonuna tıklandığında
     $(document).on('click', '.btn-create-table', function(e) {
         e.stopPropagation();
 
@@ -3598,6 +3629,69 @@ $(document).ready(function() {
     });
 
 
+    // Masalarda "Ekle" butonuna tıklandığında
+    $(document).on('click', '.btn-add-table', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const createModal = $(this).closest('.table-create-modal');
+
+        const tableName = createModal.find('.table-name').val();
+        const tableNo = createModal.find('.table-no').val();
+        const tableCapacity = createModal.find('.table-capacity').val();
+
+        
+        if (tableName.trim() === '') {
+            showToast('error', 'Hata', 'Lütfen masa adını giriniz!');
+            return;
+        }
+        
+        if (tableNo.trim() === '') {
+            showToast('error', 'Hata', 'Lütfen masa numarasını giriniz!');
+            return;
+        }
+        
+        if (tableCapacity.trim() === '') {
+            showToast('error', 'Hata', 'Lütfen masa kapasitesini giriniz!');
+            return;
+        }
+        
+        const token = localStorage.getItem('token');
+        const branchName = localStorage.getItem('selectedBranchName');
+        const params = new URLSearchParams(window.location.search);
+        const branchId = params.get('branchId');
+        
+        $.ajax({
+            url: `https://eatwell-api.azurewebsites.net/api/tables`,
+            type: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify({
+                branchId: branchId,
+                no: tableNo,
+                name: tableName,
+                capacity: tableCapacity
+            }),
+            success: function(response) {
+                if (response.success) {
+                    showToast('success', 'Başarılı', 'Masa başarıyla eklendi!');
+                    $('.table-create-modal').fadeOut(300, function() {
+                        $(this).remove();
+                    });
+
+                    getReservationTemplate(branchId, branchName)
+                } else {
+                    showToast('error', 'Hata', response.message);
+                }
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Masa eklenirken hata oluştu!");
+            }
+        });
+    });
 
     
 
