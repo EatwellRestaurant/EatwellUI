@@ -3314,7 +3314,7 @@ $(document).ready(function() {
                                     <div class="dropdown" id="customDropdown">
                                         <div class="dropdown-toggle" id="selectedValue">Masalarda ara...</div>
                                         <div class="dropdown-menu">
-                                            <div class="dropdown-option" data-value="">Masalarda ara...</div>
+                                            <div class="dropdown-option" data-value="">Tüm masaları göster</div>
                                             <div class="dropdown-option" data-value="1">Masa 1</div>
                                             <div class="dropdown-option" data-value="4">Masa 2</div>
                                             <div class="dropdown-option" data-value="7">Masa 3</div>
@@ -3354,6 +3354,33 @@ $(document).ready(function() {
                         </div>
                     </div>
                 </div>
+
+                <div class="reservations-container subdivision">
+                    <div class="reservations-body">
+                        <table class="reservations-table">
+                            <thead>
+                                <tr>
+                                    <th class="table-col">Masa No</th>
+                                    <th class="actions-col">Kişi Sayısı</th>
+                                    <th class="actions-col">Rezervasyon Tarihi</th>
+                                    <th class="customer-name-col">Müşteri Adı</th>
+                                    <th class="address-col">Telefon</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reservationsTableBody"></tbody>
+                        </table>
+                        <div class="pagination-container">
+                            <div class="pagination">
+                                <button id="prevReservationPage" class="pagination-btn" disabled><i class="fas fa-chevron-left"></i></button>
+                                <span id="reservationPageInfo">Sayfa 1</span>
+                                <button id="nextReservationPage" class="pagination-btn"><i class="fas fa-chevron-right"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                
                 `;
 
                 // Rezervasyon taslağını dashboard'a ekle
@@ -3417,34 +3444,37 @@ $(document).ready(function() {
                     let reservationsTableHTML = '';
                     
                     // Rezervasyonları tabloya ekle
-                    if (response.data.length > 0) {
-                        response.data.forEach(reservation => {
+                    if (reservationResponse.length > 0) {
+                        reservationResponse.forEach(reservation => {
                             // Tarihi formatla (gün.ay.yıl şeklinde)
-                            const date = new Date(reservation.createDate);
+                            const date = new Date(reservation.reservationDate);
                             const formattedDate = `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`;
                             
                             reservationsTableHTML += `
                                 <tr class="reservation-row" data-reservation-id="${reservation.id}">
-                                    <td>${reservation.firstName}</td>
+                                    <td>${reservation.tableNo}</td>
+                                    <td>${reservation.personCount}</td>
                                     <td>${formattedDate}</td>
+                                    <td>${reservation.fullName}</td>
+                                    <td>${reservation.phone}</td>
                                 </tr>`;
                         });
                     } else {
                         // Rezervasyon yoksa bilgi mesajı göster
                         reservationsTableHTML = `
                             <tr>
-                                <td colspan="3" class="empty-table-row">Henüz rezervasyon bulunmamaktadır.</td>
+                                <td colspan="5" class="empty-table-row">Henüz rezervasyon bulunmamaktadır.</td>
                             </tr>`;
                     }
                     
                     // Tabloyu güncelle
                     $('#reservationsTableBody').html(reservationsTableHTML);
                     // Sayfa bilgisini güncelle
-                    $('#reservationPageInfo').text(`Sayfa ${page} / ${response.totalPages}`);
+                    $('#reservationPageInfo').text(`Sayfa ${page} / ${response.reservationResponse.totalPages}`);
                     
                     // Sayfalama butonlarının durumunu güncelle
                     $('#prevReservationPage').prop('disabled', page === 1); // İlk sayfada geri butonu devre dışı
-                    $('#nextReservationPage').prop('disabled', page === response.totalPages); // Son sayfada ileri butonu devre dışı
+                    $('#nextReservationPage').prop('disabled', page === response.reservationResponse.totalPages); // Son sayfada ileri butonu devre dışı
                 }
                 
                 // İlk sayfayı göster
@@ -3508,13 +3538,8 @@ $(document).ready(function() {
 
         dropdownToggle.text(label);
         dropdownToggle.attr("data-value", value);
+        dropdownToggle.css("color", "#000");
 
-        // Renk değiştirme
-        if (value !== "") {
-            dropdownToggle.css("color", "#000");
-        } else {
-            dropdownToggle.css("color", "#797878");
-        }
 
         $("#customDropdown").find(".dropdown-menu").removeClass("active");
     });

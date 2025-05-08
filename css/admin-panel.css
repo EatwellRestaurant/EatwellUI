@@ -486,18 +486,19 @@ td, th {
 }
 
 .cities-table td,
-.branches-table td {
+.branches-table td,
+.reservations-table td {
   padding: 12px 18px;
 }
 
 .users-table th,
 .cities-table th,
-.branches-table th {
+.branches-table th,
+.reservations-table th {
   padding: 12px 16px;
 }
 
 .menus-table td:first-child,
-.reservations-table td:first-child,
 .products-table td:first-child {
   padding: 0px 10px;
 }
@@ -685,6 +686,7 @@ td, th {
 #menuPageInfo, 
 #cityPageInfo,
 #branchPageInfo,
+#reservationPageInfo,
 #userPageInfo,
 #productPageInfo {
   color: #000;
@@ -1115,6 +1117,10 @@ td, th {
   margin: 17px auto 0 auto;
 }
 
+.reservations-container.subdivision {
+  margin-top: 20px;
+}
+
 .menus-header,
 .reservations-header,
 .cities-header,
@@ -1155,6 +1161,11 @@ td, th {
   justify-content: space-between;
   flex-wrap: wrap;
   overflow-x: unset;
+}
+
+.subdivision .reservations-body {
+  display: block;
+  overflow-x: auto;
 }
 
 .table-section {
@@ -1589,9 +1600,7 @@ input:not(:checked) + .toggle-slider:after {
   .products-table td,
   .products-table th,
   .menus-table td, 
-  .menus-table th,
-  .reservations-table td,
-  .reservations-table th {
+  .menus-table th {
     padding: 12px 25px;
   }
 
@@ -1797,16 +1806,16 @@ input:not(:checked) + .toggle-slider:after {
   .products-table th:first-child,
   .products-table td:first-child,
   .menus-table th:first-child,
-  .menus-table td:first-child
-  .reservations-table th:first-child,
-  .reservations-table td:first-child {
+  .menus-table td:first-child {
     padding: 0px 13px;
   }
 
   .cities-table th,
   .cities-table td,
   .branches-table th,
-  .branches-table td {
+  .branches-table td,
+  .reservations-table th,
+  .reservations-table td {
     padding: 12px 14px;
   }
 
@@ -1899,10 +1908,13 @@ input:not(:checked) + .toggle-slider:after {
 @media screen and (max-width: 600px) {
   .reservation-section {
     width: 100%;
+    order: 2;
   }
 
   .table-section {
     width: 100%;
+    order: 1;
+    margin-bottom: 20px;
   }
 }
 
