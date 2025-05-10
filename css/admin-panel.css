@@ -648,7 +648,7 @@ td, th {
 /* Sayfalama Stilleri */
 .pagination-container {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   margin-top: 20px;
   padding: 10px;
 }
@@ -693,6 +693,78 @@ td, th {
   font-size: 14px;
   min-width: 100px;
   text-align: center;
+}
+
+.pagination-page-size {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: "Mulish", sans-serif;
+  font-size: 1.4rem;
+}
+
+.page-size-label {
+  min-width: 55px;
+}
+
+.pagination-page-size .dropdown {
+  min-width: 60px;
+  cursor: pointer;
+}
+
+.pagination-page-size .dropdown i {
+  position: absolute;
+  top: 28%;
+  left: 68%;
+  transition: all .4s ease-in-out;
+}
+
+.dropdown-pagination-toggle {
+  padding: 5px;
+  padding-left: 7px; 
+  border-radius: 5px;
+  border: 2px solid #dedbdb;
+  color: #000;
+  background: #fff;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  transition: all 0.2s ease-in;
+}
+
+.dropdown-pagination {
+  position: absolute;
+  top: 112%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 2px solid #dedbdb;
+  display: none;
+  z-index: 10;
+  border-radius: 4px;
+  max-height: 160px;
+  overflow-x: auto;
+}
+
+.dropdown-pagination-option {
+  padding: 7px;
+}
+
+.dropdown-pagination-option:hover {
+  background-color: #f0f0f0;
+}
+
+.dropdown-pagination.active {
+  display: block;
+}
+
+.pagination-total-info{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+  color: #797878;
+  font-weight: 500;
 }
 
 
@@ -1088,7 +1160,8 @@ td, th {
 .btn-branches-city i,
 .btn-menu i,
 .btn-city i,
-.btn-reservation i {
+.btn-reservation i,
+.btn-filter-table i {
   margin-right: 3px;
 }
 
@@ -1096,8 +1169,12 @@ td, th {
   transition: transform 0.3s ease;
 }
 
-.rotated {
+.rotated-90 {
   transform: rotate(90deg);
+}
+
+.rotated-180 {
+  transform: rotate(180deg);
 }
 
 
@@ -1247,7 +1324,8 @@ td, th {
   width: 48%;
 }
 
-.input-wrapper {
+.input-wrapper,
+.btn-filter-table {
   position: relative;
   display: inline-block;
   width: 100%;
@@ -1285,10 +1363,25 @@ td, th {
   position: relative;
 }
 
-.dropdown-toggle {
-  background: #fff;
+.dropdown-toggle,
+.btn-filter-table {
   cursor: pointer;
-  border-radius: 5px;
+}
+
+.btn-filter-table {
+  width: 18%;
+  background-color: #ffc515;
+  color: #fff;
+  padding: 10px 12px;
+  font-size: 14px;
+  border-radius: 4px;
+  border: none;
+  margin-left: auto;
+  transition: all 0.2s ease-in;
+}
+
+.btn-filter-table:hover{
+  background-color: #ffd760;
 }
 
 .dropdown-menu {
@@ -1296,11 +1389,13 @@ td, th {
   top: 112%;
   left: 0;
   right: 0;
-  background: white;
+  background: #fff;
   border: 2px solid #dedbdb;
   display: none;
   z-index: 10;
   border-radius: 4px;
+  max-height: 160px;
+  overflow-x: auto;
 }
 
 .dropdown-menu.active {
@@ -1328,7 +1423,6 @@ td, th {
   letter-spacing: .04rem;
 }
 
-.search-button, 
 .input-wrapper select {
   cursor: pointer;
 }
@@ -1337,7 +1431,6 @@ td, th {
   outline: 0;
 }
 
-.search-button,
 .input-wrapper span {
   position: absolute;
   top: 33%;
@@ -1378,9 +1471,6 @@ td, th {
   color: #444;
 }
 
-.search-button:hover{
-  background-color: #ffd760;
-}
 
 /* Tüm tarayıcılarda default calendar ikonunu gizliyoruz */
 input[type="date"]::-webkit-calendar-picker-indicator {

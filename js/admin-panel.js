@@ -1,4 +1,4 @@
-$(document).ready(function() {
+    $(document).ready(function() {
     // Toast container'ı oluştur
     $('body').append('<div class="toast-container"></div>');
 
@@ -249,7 +249,13 @@ $(document).ready(function() {
     });
 
 
-    
+    //Global değişkenler
+    const baseUrl = 'https://eatwell-api.azurewebsites.net/api/';
+    let currentPage = 1; // Global tanım
+    let totalPages = 1;  // Toplam sayfa sayısı
+    let totalItems = 0;  // Toplam öge sayısı
+    let pageItems = 10;  // Toplam görüntülenmek istenen öge sayısı
+
 
     // İstatistikleri API'den al
     function getStatistics() {
@@ -3257,13 +3263,60 @@ $(document).ready(function() {
     });
 
 
+    // Rezervasyonları göster
+    function displayReservations(response) {
+        let reservationsTableHTML = '';
+        
+        // Rezervasyonları tabloya ekle
+        if (response.data.length > 0) {
+            response.data.forEach(reservation => {
+                // Tarihi formatla (gün.ay.yıl şeklinde)
+                const date = new Date(reservation.reservationDate);
+                const formattedDate = `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`;
+                
+                reservationsTableHTML += `
+                    <tr class="reservation-row" data-reservation-id="${reservation.id}">
+                        <td>${reservation.tableNo}</td>
+                        <td>${reservation.personCount}</td>
+                        <td>${formattedDate}</td>
+                        <td>${reservation.fullName}</td>
+                        <td>${reservation.phone}</td>
+                    </tr>`;
+            });
+        } else {
+            // Rezervasyon yoksa bilgi mesajı göster
+            reservationsTableHTML = `
+                <tr>
+                    <td colspan="5" class="empty-table-row">Henüz rezervasyon bulunmamaktadır.</td>
+                </tr>`;
+        }
+        
+        // Tabloyu güncelle
+        $('#reservationsTableBody').html(reservationsTableHTML);
+
+        totalPages = response.totalPages;
+        totalItems = response.totalItems;
+
+        // Sayfa bilgisini güncelle
+        $('#reservationPageInfo').text(`Sayfa ${currentPage} / ${totalPages}`);
+        $('#reservationTotalItemsInfo').text(`Toplam Kayıt: ${totalItems}`);
+
+        // Sayfalama butonlarının durumunu güncelle
+        $('#prevReservationPage').prop('disabled', currentPage === 1); // İlk sayfada geri butonu devre dışı
+        $('#nextReservationPage').prop('disabled', currentPage === totalPages); // Son sayfada ileri butonu devre dışı
+    }
+
 
     // Rezervasyonlar sayfasının taslağını getiren fonksiyon
-    function getReservationTemplate(branchId, branchName) {
+    function getReservationTemplate(branchId, branchName, page = 1) {
         const token = localStorage.getItem('token');
         
+        // Bugünün tarihi
+        const today = new Date();
+        const todayStr = today.toISOString().split('T')[0];
+
         $.ajax({
-            url: `https://eatwell-api.azurewebsites.net/api/reservations/getAllForAdmin?branchId=${branchId}&pageNumber=1&pageSize=10`,
+            url: `${baseUrl}reservations/getAdminDashboardReservationData?pageNumber=1&pageSize=10&branchId=${branchId}&DateRangeFilter.StartDate=${todayStr}&DateRangeFilter.EndDate=${todayStr}`,
             type: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -3273,8 +3326,10 @@ $(document).ready(function() {
                 $('.dashboard-content').empty();
 
                 const tableResponse = response.tableResponse.data;
-                const reservationResponse = response.reservationResponse.data;
-                
+                totalPages = response.reservationResponse.totalPages;
+                totalItems = response.reservationResponse.totalItems;
+                currentPage = page;
+
                 // Rezervasyonlar için temel HTML yapısı
                 let reservationsHTML = `
                 <div class="reservations-container">
@@ -3303,21 +3358,17 @@ $(document).ready(function() {
                             <div class="reservation-box">
                                 <div class="input-wrapper">
                                     <input id="filter-name" type="text" placeholder="Müşteri adı ara...">
-                                    <button class="search-button">
-                                        <i class="fa-solid fa-search"></i>
-                                    </button>
+                                    <span class="user">
+                                        <i class="fa-solid fa-user"></i>
+                                    </span>
                                 </div>
                             </div>
 
                             <div class="reservation-box">
                                 <div class="input-wrapper">
                                     <div class="dropdown" id="customDropdown">
-                                        <div class="dropdown-toggle" id="selectedValue">Masalarda ara...</div>
+                                        <div class="dropdown-toggle" id="selectedId" data-selected-id="">Masalarda ara...</div>
                                         <div class="dropdown-menu">
-                                            <div class="dropdown-option" data-value="">Tüm masaları göster</div>
-                                            <div class="dropdown-option" data-value="1">Masa 1</div>
-                                            <div class="dropdown-option" data-value="4">Masa 2</div>
-                                            <div class="dropdown-option" data-value="7">Masa 3</div>
                                         </div>
                                     </div>
                                     <span class="chair">
@@ -3345,6 +3396,11 @@ $(document).ready(function() {
                                     </span>
                                 </div>
                             </div>
+
+                            <button class="btn-filter-table">
+                                <i class="fa-solid fa-search"></i>
+                                Ara
+                            </button>
                         </div>
 
                         <div class="table-section">
@@ -3369,22 +3425,38 @@ $(document).ready(function() {
                             </thead>
                             <tbody id="reservationsTableBody"></tbody>
                         </table>
-                        <div class="pagination-container">
+                    </div>
+                    <div class="pagination-container">
+                            <div class="pagination-page-size">
+                                <span class="page-size-label">Göster: </span>
+                                <div class="dropdown" id="customPaginationDropdown">
+                                    <i class="fa-solid fa-caret-down"></i>
+                                    <div class="dropdown-pagination-toggle" id="selectedValue">10</div>
+                                    <div class="dropdown-pagination">
+                                        <div class="dropdown-pagination-option">1</div>
+                                        <div class="dropdown-pagination-option">10</div>
+                                        <div class="dropdown-pagination-option">15</div>
+                                        <div class="dropdown-pagination-option">20</div>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="pagination">
                                 <button id="prevReservationPage" class="pagination-btn" disabled><i class="fas fa-chevron-left"></i></button>
                                 <span id="reservationPageInfo">Sayfa 1</span>
                                 <button id="nextReservationPage" class="pagination-btn"><i class="fas fa-chevron-right"></i></button>
                             </div>
+                            <div class="pagination-total-info">
+                                <span id="reservationTotalItemsInfo">Toplam Kayıt: ${totalItems}</span>
+                            </div>
                         </div>
-                    </div>
                 </div>
-
-
-                
                 `;
 
                 // Rezervasyon taslağını dashboard'a ekle
                 $('.dashboard-content').append(reservationsHTML);
+                $('#filter-start-date').val(todayStr);
+                $('#filter-end-date').val(todayStr);
+
 
                 // Masaları göster
                 function displayTables() { 
@@ -3423,78 +3495,43 @@ $(document).ready(function() {
                 }
 
                 displayTables();
-                
-                // İki ay öncesinin tarihi
-                const twoMonthsAgo = new Date();
-                twoMonthsAgo.setMonth(twoMonthsAgo.getMonth() - 2);
-                const startDateStr = twoMonthsAgo.toISOString().split('T')[0];
-                $('#filter-start-date').val(startDateStr);
-                
-                // Bugünün tarihi
-                const today = new Date();
-                const todayStr = today.toISOString().split('T')[0];
-                $('#filter-end-date').val(todayStr);
-                
 
-                // Sayfalama için gerekli değişkenler
-                let currentPage = 1; // Mevcut sayfa numarası
 
-                // Rezervasyonları göster
-                function displayReservations(page) {
-                    let reservationsTableHTML = '';
-                    
-                    // Rezervasyonları tabloya ekle
-                    if (reservationResponse.length > 0) {
-                        reservationResponse.forEach(reservation => {
-                            // Tarihi formatla (gün.ay.yıl şeklinde)
-                            const date = new Date(reservation.reservationDate);
-                            const formattedDate = `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`;
-                            
-                            reservationsTableHTML += `
-                                <tr class="reservation-row" data-reservation-id="${reservation.id}">
-                                    <td>${reservation.tableNo}</td>
-                                    <td>${reservation.personCount}</td>
-                                    <td>${formattedDate}</td>
-                                    <td>${reservation.fullName}</td>
-                                    <td>${reservation.phone}</td>
-                                </tr>`;
-                        });
+                function updateTableList(){
+                    $('.dropdown-menu').empty();
+
+                    let tablesHTML = '';
+
+                    if (tableResponse.length > 0) {
+                        tablesHTML += `
+                        <div class="dropdown-option" data-table-id="">Tüm masaları göster</div>
+                        `;
+
+                        // Masaları ekle
+                        tableResponse.forEach(table => {
+                            tablesHTML += `
+                            <div class="dropdown-option" data-table-id="${table.id}">${table.no}</div>
+                            `;
+                        })
                     } else {
-                        // Rezervasyon yoksa bilgi mesajı göster
-                        reservationsTableHTML = `
-                            <tr>
-                                <td colspan="5" class="empty-table-row">Henüz rezervasyon bulunmamaktadır.</td>
-                            </tr>`;
+                        tablesHTML = `
+                            <h3 class="empty-table-row">Henüz masa bulunmamaktadır.</h3>
+                        `;
                     }
-                    
-                    // Tabloyu güncelle
-                    $('#reservationsTableBody').html(reservationsTableHTML);
-                    // Sayfa bilgisini güncelle
-                    $('#reservationPageInfo').text(`Sayfa ${page} / ${response.reservationResponse.totalPages}`);
-                    
-                    // Sayfalama butonlarının durumunu güncelle
-                    $('#prevReservationPage').prop('disabled', page === 1); // İlk sayfada geri butonu devre dışı
-                    $('#nextReservationPage').prop('disabled', page === response.reservationResponse.totalPages); // Son sayfada ileri butonu devre dışı
+
+                    $('.dropdown-menu').html(tablesHTML);
                 }
+
+                updateTableList();
                 
-                // İlk sayfayı göster
-                displayReservations(currentPage);
-                
-                // Önceki sayfa butonuna tıklama olayı
-                $('#prevReservationPage').click(function() {
-                    if (currentPage > 1) {
-                        currentPage--;
-                        displayReservations(currentPage);
-                    }
-                });
-                
-                // Sonraki sayfa butonuna tıklama olayı
-                $('#nextReservationPage').click(function() {
-                    if (currentPage < totalPages) {
-                        currentPage++;
-                        displayReservations(currentPage);
-                    }
-                });
+                displayReservations(response.reservationResponse);
+
+                // Sayfa bilgisini güncelle
+                $('#reservationPageInfo').text(`Sayfa ${page} / ${totalPages}`);
+
+                // Sayfalama butonlarının durumunu güncelle
+                $('#prevReservationPage').prop('disabled', page === 1); // İlk sayfada geri butonu devre dışı
+                $('#nextReservationPage').prop('disabled', page === totalPages); // Son sayfada ileri butonu devre dışı
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
@@ -3502,6 +3539,68 @@ $(document).ready(function() {
             }
         });
     }
+
+
+    function fetchReservations() {
+        const reservationBody = $('.reservations-body');
+    
+        const customerName = reservationBody.find('#filter-name').val();
+        const tableId = reservationBody.find('.dropdown-toggle').attr('data-selected-id');
+        const startDate = reservationBody.find('#filter-start-date').val();
+        const endDate = reservationBody.find('#filter-end-date').val();
+    
+        const token = localStorage.getItem('token');
+        const params = new URLSearchParams(window.location.search);
+        const branchId = params.get('branchId');
+    
+        let baseRequest = `${baseUrl}reservations/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}&branchId=${branchId}&DateRangeFilter.StartDate=${startDate}&DateRangeFilter.EndDate=${endDate}`;
+    
+        if (customerName.trim() !== '') baseRequest += `&fullName=${customerName}`;
+        if (tableId !== "") baseRequest += `&tableId=${tableId}`;
+    
+        $.ajax({
+            url: baseRequest,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                $('#reservationsTableBody').empty();
+
+                displayReservations(response);
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Rezervasyonlar alınırken hata oluştu!");
+            }
+        });
+    }
+    
+
+    $(document).on('click', '#prevReservationPage', function() {
+        if (currentPage > 1) {
+            currentPage--;
+            fetchReservations();
+        }
+    });
+    
+    
+    $(document).on('click', '#nextReservationPage', function() {
+        if (currentPage < totalPages) {
+            currentPage++;
+            fetchReservations();
+        }
+    });
+    
+
+
+    // Rezervasyon filtreleme seçeneklerinden "Ara" butonuna tıklandığında
+    $(document).on('click', '.btn-filter-table', function(e) {
+        e.stopPropagation();
+
+        currentPage = 1; // Filtreleme yapıldığında sayfa başa dönsün
+        fetchReservations();
+    });
 
 
     // Şubeler listesinde "Rezervasyonlara Git" butonuna tıklandığında
@@ -3521,27 +3620,83 @@ $(document).ready(function() {
     });
 
 
+    // Pagination bölümündeki "Göster" option'ına tıklandığında
+    $(document).on('click', '.dropdown-pagination-toggle', function(e) {
+        e.stopPropagation(); 
+
+        const pagination = $("#customPaginationDropdown").find(".dropdown-pagination");
+        pagination.toggleClass("active");
+
+        if (pagination.hasClass("active")) {
+            $(".dropdown-pagination-toggle").css("border-color", "#ffc515"); 
+            $('#customPaginationDropdown i').addClass('rotated-180');
+        } else {
+            $(".dropdown-pagination-toggle").css("border-color", "#dedbdb"); 
+            $('#customPaginationDropdown i').removeClass('rotated-180');
+        }
+    });
+    
+    
+    // Pagination bölümündeki "Göster" option'ının ikonuna tıklandığında
+    $(document).on('click', '#customPaginationDropdown i', function(e) {
+        e.stopPropagation(); 
+
+        const pagination = $("#customPaginationDropdown").find(".dropdown-pagination");
+        pagination.toggleClass("active");
+
+        if (pagination.hasClass("active")) {
+            $(".dropdown-pagination-toggle").css("border-color", "#ffc515"); 
+            $('#customPaginationDropdown i').addClass('rotated-180');
+        } else {
+            $(".dropdown-pagination-toggle").css("border-color", "#dedbdb"); 
+            $('#customPaginationDropdown i').removeClass('rotated-180');
+        }
+    });
+
+
+    // "Göster" option kutusunda bir seçenek seçildiğinde
+    $(document).on('click', '.dropdown-pagination-option', function() {
+        const label = $(this).text();
+        const dropdownToggle = $("#customPaginationDropdown").find(".dropdown-pagination-toggle");
+
+        pageItems = label;
+        dropdownToggle.text(label);
+        dropdownToggle.css("color", "#000");
+
+        $("#customPaginationDropdown").find(".dropdown-pagination").removeClass("active");
+        $(".dropdown-pagination-toggle").css("border-color", "#dedbdb"); 
+        $('#customPaginationDropdown i').removeClass('rotated-180');
+    });
+
+
+
     // Rezervasyonlar sayfasındaki "Masalarda Ara" option'ına tıklandığında
     $(document).on('click', '.dropdown-toggle', function(e) {
         e.stopPropagation(); 
 
-        $("#customDropdown").find(".dropdown-menu").toggleClass("active");
+        const menu = $("#customDropdown").find(".dropdown-menu");
+        menu.toggleClass("active");
+
+        if (menu.hasClass("active")) {
+            $(".dropdown-toggle").css("border-color", "#ffc515"); 
+        } else {
+            $(".dropdown-toggle").css("border-color", "#dedbdb"); 
+        }
     });
 
 
     // "Masalarda Ara" option kutusunda bir seçenek seçildiğinde
-    $(document).on('click', '.dropdown-option', function(e) {
-        const value = $(this).data("value");
+    $(document).on('click', '.dropdown-option', function() {
         const label = $(this).text();
-
+        const selectedId = $(this).data('table-id');
         const dropdownToggle = $("#customDropdown").find(".dropdown-toggle");
 
         dropdownToggle.text(label);
-        dropdownToggle.attr("data-value", value);
         dropdownToggle.css("color", "#000");
-
+        dropdownToggle.attr('data-selected-id', selectedId); // seçilen nesnenin id bilgisini saklıyoruz
 
         $("#customDropdown").find(".dropdown-menu").removeClass("active");
+        $(".dropdown-toggle").css("border-color", "#dedbdb"); 
     });
 
 
@@ -3551,13 +3706,22 @@ $(document).ready(function() {
         // Eğer tıklanan yer Rezervasyonlar sayfasındaki "Masalarda Ara..." listesi veya içindeki seçenekler değilse
         if (!$("#customDropdown").is(e.target) && $("#customDropdown").has(e.target).length === 0) {
             $("#customDropdown").find(".dropdown-menu").removeClass("active");
+            $(".dropdown-toggle").css("border-color", "#dedbdb"); 
+        }
+        
+
+        // Eğer tıklanan yer pagination bölümündeki "Göster" listesi veya içindeki seçenekler değilse
+        if (!$("#customPaginationDropdown").is(e.target) && $("#customPaginationDropdown").has(e.target).length === 0) {
+            $("#customPaginationDropdown").find(".dropdown-pagination").removeClass("active");
+            $(".dropdown-pagination-toggle").css("border-color", "#dedbdb"); 
+            $('#customPaginationDropdown i').removeClass('rotated-180');
         }
 
 
         // Eğer tıklanan yer .table-options kutusu (yani "Masaları Yönet" butonuna tıklandığında açılan kutu) veya içindeki seçenekler değilse
         if (!$(e.target).closest('.table-options, .btn-manage-table').length) {
             $('.table-options').removeClass('table-manage-show');
-            $(".btn-manage-table i").removeClass("rotated");
+            $(".btn-manage-table i").removeClass("rotated-90");
         }
     });
 
@@ -3680,13 +3844,13 @@ $(document).ready(function() {
 
         $('.table-options').toggleClass('table-manage-show');
 
-        $(".btn-manage-table i").toggleClass("rotated");
+        $(".btn-manage-table i").toggleClass("rotated-90");
     });
 
     // table-options içindeki butonlardan herhangi birine tıklandığında table-options kutusunu kapat
     $(document).on('click', '.table-manage-button', function () {
         $('.table-options').removeClass('table-manage-show');
-        $(".btn-manage-table i").removeClass("rotated");
+        $(".btn-manage-table i").removeClass("rotated-90");
     });
 
 
@@ -3831,7 +3995,7 @@ $(document).ready(function() {
 
             history.replaceState({ page: 'reservationsByBranch' }, 'Rezervasyonlar', `?page=reservationsByBranch&branchId=${branchId}`);
 
-            getReservationTemplate(branchId, branchName);
+            getReservationTemplate(branchId, branchName, 1);
 
         }else {
             // Hiç page değeri yoksa dashboard'u yükle.
