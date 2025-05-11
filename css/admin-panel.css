@@ -686,8 +686,7 @@ td, th {
 #menuPageInfo, 
 #cityPageInfo,
 #branchPageInfo,
-#reservationPageInfo,
-#userPageInfo,
+.pagination span,
 #productPageInfo {
   color: #000;
   font-size: 14px;
@@ -708,7 +707,7 @@ td, th {
 }
 
 .pagination-page-size .dropdown {
-  min-width: 60px;
+  min-width: 55px;
   cursor: pointer;
 }
 
@@ -1190,7 +1189,7 @@ td, th {
   border-radius: 5px;
   box-shadow: 0 0 10px 4px rgba(0, 0, 0, 0.2);
   padding: 20px;
-  min-width: 317px;
+  min-width: 347px;
   margin: 17px auto 0 auto;
 }
 
@@ -1370,6 +1369,7 @@ td, th {
 
 .btn-filter-table {
   width: 18%;
+  min-width: 72px;
   background-color: #ffc515;
   color: #fff;
   padding: 10px 12px;
@@ -1992,6 +1992,27 @@ input:not(:checked) + .toggle-slider:after {
   .table-box {
     padding: 15px 20px;
   }
+
+  .pagination-page-size {
+    font-size: 1.3rem;
+  }
+
+  .pagination {
+    gap: 7px;
+  }
+
+  .pagination span {
+    font-size: 13px;
+  }
+
+  .pagination-btn {
+    padding: 7px 12px;
+    font-size: 12px;
+  }
+  
+  .pagination-total-info {
+    font-size: 13px;
+  }
 }
 
 
@@ -2005,6 +2026,34 @@ input:not(:checked) + .toggle-slider:after {
     width: 100%;
     order: 1;
     margin-bottom: 20px;
+  }
+
+  .pagination-container {
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
+  }
+
+  .pagination-page-size {
+    font-size: 1.4rem;
+  }
+
+  .pagination {
+    gap: 9px;
+  }
+
+  .pagination span {
+    font-size: 14px;
+  }
+
+  .pagination-btn {
+    padding: 8px 13px;
+    font-size: 13px;
+  }
+  
+  .pagination-total-info {
+    font-size: 14px;
   }
 }
 
@@ -2308,6 +2357,10 @@ input:not(:checked) + .toggle-slider:after {
     letter-spacing: .05rem;
   }
 
+  .btn-filter-table {
+    font-size: 13px;
+  }
+
   #filter-start-date, 
   #filter-end-date {
     font-size: 1.5rem;
@@ -2330,6 +2383,31 @@ input:not(:checked) + .toggle-slider:after {
     width: 45px;
     height: 45px;
     font-size: 14px;
+  }
+
+  .pagination-container {
+    gap: 17px;
+  }
+
+  .pagination-page-size {
+    font-size: 1.3rem;
+  }
+
+  .pagination {
+    gap: 3px;
+  }
+
+  .pagination span {
+    font-size: 13px;
+  }
+
+  .pagination-btn {
+    padding: 7px 12px;
+    font-size: 12px;
+  }
+  
+  .pagination-total-info {
+    font-size: 13px;
   }
 }
 

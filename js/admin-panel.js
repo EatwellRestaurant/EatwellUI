@@ -257,12 +257,42 @@
     let pageItems = 10;  // Toplam görüntülenmek istenen öge sayısı
 
 
+    function paginationTemplate(addToDiv, prevId, nextId, pageInfoId, totalItemsInfoId){
+        
+        let paginationsHtml = `
+        <div class="pagination-container">
+            <div class="pagination-page-size">
+                <span class="page-size-label">Göster: </span>
+                <div class="dropdown" id="customPaginationDropdown">
+                    <i class="fa-solid fa-caret-down"></i>
+                    <div class="dropdown-pagination-toggle" id="selectedValue">10</div>
+                    <div class="dropdown-pagination">
+                        <div class="dropdown-pagination-option">10</div>
+                        <div class="dropdown-pagination-option">15</div>
+                        <div class="dropdown-pagination-option">20</div>
+                    </div>
+                </div>
+            </div>
+            <div class="pagination">
+                <button id="${prevId}" class="pagination-btn" disabled><i class="fas fa-chevron-left"></i></button>
+                <span id="${pageInfoId}">Sayfa 1</span>
+                <button id="${nextId}" class="pagination-btn"><i class="fas fa-chevron-right"></i></button>
+            </div>
+            <div class="pagination-total-info">
+                <span id="${totalItemsInfoId}">Toplam Kayıt: ${totalItems}</span>
+            </div>
+        </div>
+        `;
+
+        $(`.${addToDiv}`).append(paginationsHtml);
+    }
+
     // İstatistikleri API'den al
     function getStatistics() {
         const token = localStorage.getItem('token');
         
         $.ajax({
-            url: 'https://eatwell-api.azurewebsites.net/api/dashboards',
+            url: `${baseUrl}dashboards`,
             type: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -292,13 +322,57 @@
     setInterval(getStatistics, 600000);
 
 
+    // Kullanıcıları göster
+    function displayUsers(response) {
+
+        let usersTableHTML = '';
+        
+        // Kullanıcıları tabloya ekle
+        if (response.data.length > 0) {
+            response.data.forEach(user => {
+                // Tarihi formatla (gün.ay.yıl şeklinde)
+                const date = new Date(user.createDate);
+                const formattedDate = `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`;
+                
+                usersTableHTML += `
+                    <tr class="user-row" data-user-id="${user.id}">
+                        <td>${user.id}</td>
+                        <td>${user.firstName}</td>
+                        <td>${user.lastName}</td>
+                        <td>${user.email}</td>
+                        <td>${formattedDate}</td>
+                    </tr>`;
+            });
+        } else {
+            // Kullanıcı yoksa bilgi mesajı göster
+            usersTableHTML = `
+                <tr>
+                    <td colspan="5" class="empty-table-row">Henüz kullanıcı bulunmamaktadır.</td>
+                </tr>`;
+        }
+        
+        // Tabloyu güncelle
+        $('#usersTableBody').html(usersTableHTML);
+
+        totalPages = response.totalPages;
+        totalItems = response.totalItems;
+
+        // Sayfa bilgisini güncelle
+        $('#userPageInfo').text(`Sayfa ${currentPage} / ${totalPages}`);
+        $('#userTotalItemsInfo').text(`Toplam Kayıt: ${totalItems}`);
+        
+        // Sayfalama butonlarının durumunu güncelle
+        $('#prevUserPage').prop('disabled', !response.hasPrevious); // İlk sayfada geri butonu devre dışı
+        $('#nextUserPage').prop('disabled', !response.hasNext); // Son sayfada ileri butonu devre dışı
+    }
+
 
     // Kullanıcıları getiren fonksiyon
-    function getUsers() {
+    function getUsers(page = 1) {
         const token = localStorage.getItem('token');
         
         $.ajax({
-            url: 'https://eatwell-api.azurewebsites.net/api/users/getall',
+            url: `${baseUrl}users/getall?pageNumber=1&pageSize=10`,
             type: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -307,8 +381,10 @@
                 // Dashboard içeriğini temizle
                 $('.dashboard-content').empty();
                 
-                // Menüler için HTML yapısı
-                let menusHTML = `
+                currentPage = page;
+
+                // Kullanıcılar için HTML yapısı
+                let usersHTML = `
                 <div class="users-container">
                     <div class="users-header">
                         <h2>Kullanıcı Listesi</h2>
@@ -327,88 +403,17 @@
                             <tbody id="usersTableBody">
                             </tbody>
                         </table>
-                        <!-- Sayfalama kontrolleri -->
-                        <div class="pagination-container">
-                            <div class="pagination">
-                                <button id="prevUserPage" class="pagination-btn" disabled><i class="fas fa-chevron-left"></i></button>
-                                <span id="userPageInfo">Sayfa 1</span>
-                                <button id="nextUserPage" class="pagination-btn"><i class="fas fa-chevron-right"></i></button>
-                            </div>
-                        </div>
                     </div>
-                </div>`;
+                </div>
+                `;
                 
-                // Menüleri dashboard'a ekle
-                $('.dashboard-content').append(menusHTML);
-                
-                // Sayfalama için gerekli değişkenler
-                let currentPage = 1; // Mevcut sayfa numarası
-                const itemsPerPage = 10; // Her sayfada gösterilecek kullanıcı sayısı
-                const totalUsers = response.data.length; // Toplam kullanıcı sayısı
-                const totalPages = Math.ceil(totalUsers / itemsPerPage) ? Math.ceil(totalUsers / itemsPerPage) : 1 ; // Toplam sayfa sayısı
+                // Kullanıcıları dashboard'a ekle
+                $('.dashboard-content').append(usersHTML);
 
-                // Kullanıcıları sayfalara böl ve göster
-                function displayUsers(page) {
-                    // Gösterilecek kullanıcıların başlangıç ve bitiş indekslerini hesapla
-                    const startIndex = (page - 1) * itemsPerPage;
-                    const endIndex = startIndex + itemsPerPage;
-                    // İlgili sayfadaki kullanıcıları seç
-                    const usersToShow = response.data.slice(startIndex, endIndex);
-                    
-                    let usersTableHTML = '';
-                    
-                    // Seçilen kullanıcıları tabloya ekle
-                    if (usersToShow.length > 0) {
-                        usersToShow.forEach(user => {
-                            // Tarihi formatla (gün.ay.yıl şeklinde)
-                            const date = new Date(user.createDate);
-                            const formattedDate = `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`;
-                            
-                            usersTableHTML += `
-                                <tr class="user-row" data-user-id="${user.id}">
-                                    <td>${user.id}</td>
-                                    <td>${user.firstName}</td>
-                                    <td>${user.lastName}</td>
-                                    <td>${user.email}</td>
-                                    <td>${formattedDate}</td>
-                                </tr>`;
-                        });
-                    } else {
-                        // Kullanıcı yoksa bilgi mesajı göster
-                        usersTableHTML = `
-                            <tr>
-                                <td colspan="5" class="empty-table-row">Henüz kullanıcı bulunmamaktadır.</td>
-                            </tr>`;
-                    }
-                    
-                    // Tabloyu güncelle
-                    $('#usersTableBody').html(usersTableHTML);
-                    // Sayfa bilgisini güncelle
-                    $('#userPageInfo').text(`Sayfa ${page} / ${totalPages}`);
-                    
-                    // Sayfalama butonlarının durumunu güncelle
-                    $('#prevUserPage').prop('disabled', page === 1); // İlk sayfada geri butonu devre dışı
-                    $('#nextUserPage').prop('disabled', page === totalPages); // Son sayfada ileri butonu devre dışı
-                }
-                
-                // İlk sayfayı göster
-                displayUsers(currentPage);
-                
-                // Önceki sayfa butonuna tıklama olayı
-                $('#prevUserPage').click(function() {
-                    if (currentPage > 1) {
-                        currentPage--;
-                        displayUsers(currentPage);
-                    }
-                });
-                
-                // Sonraki sayfa butonuna tıklama olayı
-                $('#nextUserPage').click(function() {
-                    if (currentPage < totalPages) {
-                        currentPage++;
-                        displayUsers(currentPage);
-                    }
-                });
+                paginationTemplate("users-container", "prevUserPage", "nextUserPage", "userPageInfo", "userTotalItemsInfo");
+
+                // Sayfayı göster
+                displayUsers(response);
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
@@ -417,6 +422,47 @@
         });
     }
 
+
+    function fetchUsers() {
+        let baseRequest = `${baseUrl}users/getall?pageNumber=${currentPage}&pageSize=${pageItems}`;
+
+        $.ajax({
+            url: baseRequest,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                $('#usersTableBody').empty();
+
+                displayUsers(response);
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Kullanıcılar alınırken hata oluştu!");
+            }
+        });
+    }
+
+
+    // Kullanıcılar sayfasında geri tuşuna basıldığında
+    $(document).on('click', '#prevUserPage', function() {
+        if (currentPage > 1) {
+            currentPage--;
+            fetchUsers();
+        }
+    });
+    
+    
+    // Kullanıcılar sayfasında ileri tuşuna basıldığında
+    $(document).on('click', '#nextUserPage', function() {
+        if (currentPage < totalPages) {
+            currentPage++;
+            fetchUsers();
+        }
+    });
+
+
     // Navbar'daki "Kullanıcılar" seçeneğine tıklandığında
     $('.sidenav a:contains("Kullanıcılar")').click(function(e) {
         e.preventDefault();
@@ -424,11 +470,6 @@
         //URL'ye sahte bir adım ekliyoruz
         history.pushState({ page: 'users' }, 'Kullanıcılar', '?page=users'); 
 
-        getUsers();
-    });
-
-    // Kullanıcılar kutusuna tıklandığında
-    $('.col-div-3:eq(0) .box').click(function() {
         getUsers();
     });
 
@@ -537,6 +578,7 @@
             }
         });
     }
+    
 
     // Kullanıcı satırına tıklama olayı
     $(document).on('click', '.user-row', function() {
@@ -3302,8 +3344,8 @@
         $('#reservationTotalItemsInfo').text(`Toplam Kayıt: ${totalItems}`);
 
         // Sayfalama butonlarının durumunu güncelle
-        $('#prevReservationPage').prop('disabled', currentPage === 1); // İlk sayfada geri butonu devre dışı
-        $('#nextReservationPage').prop('disabled', currentPage === totalPages); // Son sayfada ileri butonu devre dışı
+        $('#prevReservationPage').prop('disabled', !response.hasPrevious); // İlk sayfada geri butonu devre dışı
+        $('#nextReservationPage').prop('disabled', !response.hasNext); // Son sayfada ileri butonu devre dışı
     }
 
 
@@ -3326,8 +3368,6 @@
                 $('.dashboard-content').empty();
 
                 const tableResponse = response.tableResponse.data;
-                totalPages = response.reservationResponse.totalPages;
-                totalItems = response.reservationResponse.totalItems;
                 currentPage = page;
 
                 // Rezervasyonlar için temel HTML yapısı
@@ -3426,34 +3466,13 @@
                             <tbody id="reservationsTableBody"></tbody>
                         </table>
                     </div>
-                    <div class="pagination-container">
-                            <div class="pagination-page-size">
-                                <span class="page-size-label">Göster: </span>
-                                <div class="dropdown" id="customPaginationDropdown">
-                                    <i class="fa-solid fa-caret-down"></i>
-                                    <div class="dropdown-pagination-toggle" id="selectedValue">10</div>
-                                    <div class="dropdown-pagination">
-                                        <div class="dropdown-pagination-option">1</div>
-                                        <div class="dropdown-pagination-option">10</div>
-                                        <div class="dropdown-pagination-option">15</div>
-                                        <div class="dropdown-pagination-option">20</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="pagination">
-                                <button id="prevReservationPage" class="pagination-btn" disabled><i class="fas fa-chevron-left"></i></button>
-                                <span id="reservationPageInfo">Sayfa 1</span>
-                                <button id="nextReservationPage" class="pagination-btn"><i class="fas fa-chevron-right"></i></button>
-                            </div>
-                            <div class="pagination-total-info">
-                                <span id="reservationTotalItemsInfo">Toplam Kayıt: ${totalItems}</span>
-                            </div>
-                        </div>
                 </div>
                 `;
 
                 // Rezervasyon taslağını dashboard'a ekle
                 $('.dashboard-content').append(reservationsHTML);
+                paginationTemplate("reservations-container.subdivision", "prevReservationPage", "nextReservationPage", "reservationPageInfo", "reservationTotalItemsInfo");
+                
                 $('#filter-start-date').val(todayStr);
                 $('#filter-end-date').val(todayStr);
 
@@ -3525,13 +3544,6 @@
                 updateTableList();
                 
                 displayReservations(response.reservationResponse);
-
-                // Sayfa bilgisini güncelle
-                $('#reservationPageInfo').text(`Sayfa ${page} / ${totalPages}`);
-
-                // Sayfalama butonlarının durumunu güncelle
-                $('#prevReservationPage').prop('disabled', page === 1); // İlk sayfada geri butonu devre dışı
-                $('#nextReservationPage').prop('disabled', page === totalPages); // Son sayfada ileri butonu devre dışı
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
