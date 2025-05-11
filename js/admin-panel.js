@@ -412,7 +412,7 @@
 
                 paginationTemplate("users-container", "prevUserPage", "nextUserPage", "userPageInfo", "userTotalItemsInfo");
 
-                // Sayfayı göster
+                // Kullanıcıları göster
                 displayUsers(response);
             },
             error: function(xhr) {
@@ -445,7 +445,7 @@
     }
 
 
-    // Kullanıcılar sayfasında geri tuşuna basıldığında
+    // Kullanıcılar sayfasında önceki sayfa butonuna tıklama olayı
     $(document).on('click', '#prevUserPage', function() {
         if (currentPage > 1) {
             currentPage--;
@@ -454,7 +454,7 @@
     });
     
     
-    // Kullanıcılar sayfasında ileri tuşuna basıldığında
+    // Kullanıcılar sayfasında sonraki sayfa butonuna tıklama olayı
     $(document).on('click', '#nextUserPage', function() {
         if (currentPage < totalPages) {
             currentPage++;
@@ -578,7 +578,7 @@
             }
         });
     }
-    
+
 
     // Kullanıcı satırına tıklama olayı
     $(document).on('click', '.user-row', function() {
@@ -588,13 +588,76 @@
     });
 
 
+    // Menüleri göster
+    function displayMenus(response) {
+
+        let menusTableHTML = '';
+        
+        // Menüleri tabloya ekle
+        if (response.data.length > 0) {
+            response.data.forEach(menu => {
+                // Tarihi formatla (gün.ay.yıl şeklinde)
+                const date = new Date(menu.createDate);
+                const formattedDate = `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`;
+                
+                menusTableHTML += `
+                    <tr class="menu-row" data-menu-id="${menu.id}">
+                        <td>
+                            <label class="toggle-switch menu-toggle-switch">
+                                <input type="checkbox" ${menu.isActive ? 'checked' : ''} data-menu-id="${menu.id}">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </td>
+                        <td>${menu.name}</td>
+                        <td>${formattedDate}</td>
+                        <td>
+                            <div class="table-actions-scroll">
+                                <button class="btn-delete-menu" data-menu-id="${menu.id}">
+                                    <i class="fa-solid fa-trash"></i>
+                                    Sil
+                                </button>
+                                <button class="btn-edit-menu" data-menu-id="${menu.id}">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                    Düzenle
+                                </button>
+                                <button class="btn-products-menu" data-menu-id="${menu.id}" data-menu-name="${menu.name}">
+                                    <i class="fa-solid fa-list"></i>
+                                    Ürünleri Gör
+                                </button>
+                            </div>
+                        </td>
+                    </tr>`;
+            });
+        } else {
+            // Menü yoksa bilgi mesajı göster
+            menusTableHTML = `
+                <tr>
+                    <td colspan="5" class="empty-table-row">Henüz menü bulunmamaktadır.</td>
+                </tr>`;
+        }
+        
+        // Tabloyu güncelle
+        $('#menusTableBody').html(menusTableHTML);
+
+        totalPages = response.totalPages;
+        totalItems = response.totalItems;
+
+        // Sayfa bilgisini güncelle
+        $('#menuPageInfo').text(`Sayfa ${currentPage} / ${totalPages}`);
+        $('#menuTotalItemsInfo').text(`Toplam Kayıt: ${totalItems}`);
+
+        // Sayfalama butonlarının durumunu güncelle
+        $('#prevMenuPage').prop('disabled', !response.hasPrevious); // İlk sayfada geri butonu devre dışı
+        $('#nextMenuPage').prop('disabled', !response.hasNext); // Son sayfada ileri butonu devre dışı
+    }
+
 
     // Menüleri getiren fonksiyon
-    function getMenus() {
+    function getMenus(page = 1) {
         const token = localStorage.getItem('token');
         
         $.ajax({
-            url: 'https://eatwell-api.azurewebsites.net/api/mealCategories/getAllForAdmin',
+            url: `${baseUrl}mealCategories/getAllForAdmin?pageNumber=1&pageSize=10`,
             type: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -603,6 +666,8 @@
                 // Dashboard içeriğini temizle
                 $('.dashboard-content').empty();
                 
+                currentPage = page;
+
                 // Menüler için HTML yapısı
                 let menusHTML = `
                 <div class="menus-container">
@@ -626,107 +691,16 @@
                             <tbody id="menusTableBody">
                             </tbody>
                         </table>
-                        <!-- Sayfalama kontrolleri -->
-                        <div class="pagination-container">
-                            <div class="pagination">
-                                <button id="prevMenuPage" class="pagination-btn" disabled><i class="fas fa-chevron-left"></i></button>
-                                <span id="menuPageInfo">Sayfa 1</span>
-                                <button id="nextMenuPage" class="pagination-btn"><i class="fas fa-chevron-right"></i></button>
-                            </div>
-                        </div>
                     </div>
                 </div>`;
                 
                 // Menüleri dashboard'a ekle
                 $('.dashboard-content').append(menusHTML);
                 
-                // Sayfalama için gerekli değişkenler
-                let currentPage = 1; // Mevcut sayfa numarası
-                const itemsPerPage = 10; // Her sayfada gösterilecek menü sayısı
-                const totalMenus = response.data.length; // Toplam menü sayısı
-                const totalPages = Math.ceil(totalMenus / itemsPerPage) ? Math.ceil(totalMenus / itemsPerPage) : 1 ; // Toplam sayfa sayısı
-
-                // Menüleri sayfalara böl ve göster
-                function displayMenus(page) {
-                    // Gösterilecek menülerin başlangıç ve bitiş indekslerini hesapla
-                    const startIndex = (page - 1) * itemsPerPage;
-                    const endIndex = startIndex + itemsPerPage;
-                    // İlgili sayfadaki menüleri seç
-                    const menusToShow = response.data.slice(startIndex, endIndex);
-                    
-                    let menusTableHTML = '';
-                    
-                    // Seçilen menüleri tabloya ekle
-                    if (menusToShow.length > 0) {
-                        menusToShow.forEach(menu => {
-                            // Tarihi formatla (gün.ay.yıl şeklinde)
-                            const date = new Date(menu.createDate);
-                            const formattedDate = `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`;
-                            
-                            menusTableHTML += `
-                                <tr class="menu-row" data-menu-id="${menu.id}">
-                                    <td>
-                                        <label class="toggle-switch menu-toggle-switch">
-                                            <input type="checkbox" ${menu.isActive ? 'checked' : ''} data-menu-id="${menu.id}">
-                                            <span class="toggle-slider"></span>
-                                        </label>
-                                    </td>
-                                    <td>${menu.name}</td>
-                                    <td>${formattedDate}</td>
-                                    <td>
-                                        <div class="table-actions-scroll">
-                                            <button class="btn-delete-menu" data-menu-id="${menu.id}">
-                                                <i class="fa-solid fa-trash"></i>
-                                                Sil
-                                            </button>
-                                            <button class="btn-edit-menu" data-menu-id="${menu.id}">
-                                                <i class="fa-solid fa-pen-to-square"></i>
-                                                Düzenle
-                                            </button>
-                                            <button class="btn-products-menu" data-menu-id="${menu.id}" data-menu-name="${menu.name}">
-                                                <i class="fa-solid fa-list"></i>
-                                                Ürünleri Gör
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>`;
-                        });
-                    } else {
-                        // Menü yoksa bilgi mesajı göster
-                        menusTableHTML = `
-                            <tr>
-                                <td colspan="5" class="empty-table-row">Henüz menü bulunmamaktadır.</td>
-                            </tr>`;
-                    }
-                    
-                    // Tabloyu güncelle
-                    $('#menusTableBody').html(menusTableHTML);
-                    // Sayfa bilgisini güncelle
-                    $('#menuPageInfo').text(`Sayfa ${page} / ${totalPages}`);
-                    
-                    // Sayfalama butonlarının durumunu güncelle
-                    $('#prevMenuPage').prop('disabled', page === 1); // İlk sayfada geri butonu devre dışı
-                    $('#nextMenuPage').prop('disabled', page === totalPages); // Son sayfada ileri butonu devre dışı
-                }
+                paginationTemplate("menus-container", "prevMenuPage", "nextMenuPage", "menuPageInfo", "menuTotalItemsInfo");
                 
-                // İlk sayfayı göster
-                displayMenus(currentPage);
-                
-                // Önceki sayfa butonuna tıklama olayı
-                $('#prevMenuPage').click(function() {
-                    if (currentPage > 1) {
-                        currentPage--;
-                        displayMenus(currentPage);
-                    }
-                });
-                
-                // Sonraki sayfa butonuna tıklama olayı
-                $('#nextMenuPage').click(function() {
-                    if (currentPage < totalPages) {
-                        currentPage++;
-                        displayMenus(currentPage);
-                    }
-                });
+                // Menüleri göster
+                displayMenus(response);
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
@@ -734,6 +708,48 @@
             }
         });
     }
+
+
+    function fetchMenus() {
+        let baseRequest = `${baseUrl}mealCategories/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`;
+
+        $.ajax({
+            url: baseRequest,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                $('#menusTableBody').empty();
+
+                displayMenus(response);
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Menüler alınırken hata oluştu!");
+            }
+        });
+    }
+
+
+    // Menüler sayfasında önceki sayfa butonuna tıklama olayı
+    $(document).on('click', '#prevMenuPage', function() {
+        if (currentPage > 1) {
+            currentPage--;
+            fetchMenus();
+        }
+    });
+    
+    
+    // Menüler sayfasında sonraki sayfa butonuna tıklama olayı
+    $(document).on('click', '#nextMenuPage', function() {
+        if (currentPage < totalPages) {
+            currentPage++;
+            fetchMenus();
+        }
+    });
+
+
 
     // Navbar'daki "Menüler" seçeneğine tıklandığında
     $('.sidenav a:contains("Menüler")').click(function(e) {
@@ -775,6 +791,7 @@
         });
     }
 
+
     // Menü durumunu değiştirme olayı
     $(document).on('change', '.menu-toggle-switch input', function(e) {
         e.stopPropagation(); // Event'in yayılmasını durduruyoruz yani menü detayının gelmesini engelliyoruz.
@@ -782,6 +799,7 @@
         deleteOrRestoreMenu(menuId);
     });
 
+    
     // Toggle switch'e tıklama olayını engelle
     $(document).on('click', '.menu-toggle-switch', function(e) {
         e.stopPropagation();
