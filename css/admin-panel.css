@@ -682,11 +682,9 @@ td, th {
   cursor: not-allowed;
 }
 
-#pageInfo, 
 #cityPageInfo,
 #branchPageInfo,
-.pagination span,
-#productPageInfo {
+.pagination span {
   color: #000;
   font-size: 14px;
   min-width: 100px;

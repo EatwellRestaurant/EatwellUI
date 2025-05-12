@@ -711,10 +711,8 @@
 
 
     function fetchMenus() {
-        let baseRequest = `${baseUrl}mealCategories/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`;
-
         $.ajax({
-            url: baseRequest,
+            url: `${baseUrl}mealCategories/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`,
             type: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -1300,6 +1298,71 @@
 
 
 
+    function displayProducts(response, showGoToMenuButton) {
+    
+        let tableHTML = '';
+
+        if (response.data.length > 0) {
+            response.data.forEach(product => {
+                // Tarihi formatla (gün.ay.yıl şeklinde)
+                const date = new Date(product.createDate);
+                const formattedDate = `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`;
+                
+                tableHTML += `
+                <tr class="product-row" data-product-id="${product.id}">
+                    <td>
+                        <label class="toggle-switch product-toggle-switch">
+                            <input type="checkbox" ${product.isActive ? 'checked' : ''} data-product-id="${product.id}">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </td>
+                    <td>${product.name}</td>
+                    ${showGoToMenuButton ? `<td>${product.mealCategoryName}</td>` : '' }
+                    <td>${formatPriceInputLive(product.price.toFixed(2).replace('.', ','))}₺</td>
+                    <td>${formattedDate}</td>
+                    <td>
+                        <div class="table-actions-scroll">
+                            <button class="btn-delete-product" data-product-id="${product.id}">
+                                <i class="fa-solid fa-trash"></i>
+                                Sil
+                            </button>
+                            <button class="btn-edit-product" data-product-id="${product.id}">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                                Düzenle
+                            </button>
+                            ${showGoToMenuButton ? `
+                                <button class="btn-menu" data-menu-id="${product.mealCategoryId}" data-menu-name="${product.mealCategoryName}">
+                                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                    Menüye Git
+                                </button>` : ''
+                            }
+                        </div>
+                    </td>
+                </tr>`;
+            });
+        } else {
+            // Ürün yoksa bilgi mesajı göster
+            tableHTML = `
+                <tr>
+                    <td colspan="6" class="empty-table-row">Henüz ürün bulunmamaktadır.</td>
+                </tr>`;
+        }
+
+        // Tabloyu güncelle
+        $('#productsTableBody').html(tableHTML);
+        
+        totalPages = response.totalPages;
+        totalItems = response.totalItems;
+        
+        // Sayfa bilgisini güncelle
+        $('#productPageInfo').text(`Sayfa ${currentPage} / ${totalPages}`);
+        $('#productTotalItemsInfo').text(`Toplam Kayıt: ${totalItems}`);
+
+        // Sayfalama butonlarının durumunu güncelle
+        $('#prevProductPage').prop('disabled', !response.hasPrevious); // İlk sayfada geri butonu devre dışı
+        $('#nextProductPage').prop('disabled', !response.hasNext); // Son sayfada ileri butonu devre dışı
+    }
+
 
     // Ürünleri getiren ortak fonksiyon
     function renderProductsList(data, options = {}) {
@@ -1310,6 +1373,9 @@
     
         // Ortak HTML yapısı
         $('.dashboard-content').empty();
+
+        currentPage = 1;
+
         let html = `
         <div class="products-container">
             <div class="products-header">
@@ -1324,8 +1390,8 @@
                     <thead>
                         <tr>
                             <th>Durum</th>
-                            ${showGoToMenuButton ? `<th>Menü Adı</th>` : '' }
                             <th>Ürün Adı</th>
+                            ${showGoToMenuButton ? `<th>Menü Adı</th>` : '' }
                             <th>Fiyatı</th>
                             <th>Kayıt Tarihi</th>
                             <th>İşlemler</th>
@@ -1333,99 +1399,92 @@
                     </thead>
                     <tbody id="productsTableBody"></tbody>
                 </table>
-                <div class="pagination-container">
-                    <div class="pagination">
-                        <button id="prevProductPage" class="pagination-btn" disabled><i class="fas fa-chevron-left"></i></button>
-                        <span id="productPageInfo">Sayfa 1</span>
-                        <button id="nextProductPage" class="pagination-btn"><i class="fas fa-chevron-right"></i></button>
-                    </div>
-                </div>
             </div>
         </div>`;
+
+        // Ürünleri dashboard'a ekle
         $('.dashboard-content').append(html);
-    
-        let currentPage = 1;
-        const itemsPerPage = 10;
-        const totalProducts = data.length;
-        const totalPages = Math.ceil(totalProducts / itemsPerPage) || 1;
-    
-        function displayProducts(page) {
-            const start = (page - 1) * itemsPerPage;
-            const end = start + itemsPerPage;
-            const productsToShow = data.slice(start, end);
-    
-            let tableHTML = '';
-            if (productsToShow.length > 0) {
-                productsToShow.forEach(product => {
-                    const date = new Date(product.createDate);
-                    const formattedDate = `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`;
-                    tableHTML += `
-                    <tr class="product-row" data-product-id="${product.id}">
-                        <td>
-                            <label class="toggle-switch product-toggle-switch">
-                                <input type="checkbox" ${product.isActive ? 'checked' : ''} data-product-id="${product.id}">
-                                <span class="toggle-slider"></span>
-                            </label>
-                        </td>
-                        ${showGoToMenuButton ? `<td>${product.mealCategoryName}</td>` : '' }
-                        <td>${product.name}</td>
-                        <td>${formatPriceInputLive(product.price.toFixed(2).replace('.', ','))}₺</td>
-                        <td>${formattedDate}</td>
-                        <td>
-                            <div class="table-actions-scroll">
-                                <button class="btn-delete-product" data-product-id="${product.id}">
-                                    <i class="fa-solid fa-trash"></i>
-                                    Sil
-                                </button>
-                                <button class="btn-edit-product" data-product-id="${product.id}">
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                    Düzenle
-                                </button>
-                                ${showGoToMenuButton ? `
-                                    <button class="btn-menu" data-menu-id="${product.mealCategoryId}" data-menu-name="${product.mealCategoryName}">
-                                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                                        Menüye Git
-                                    </button>` : ''
-                                }
-                            </div>
-                        </td>
-                    </tr>`;
-                });
-            } else {
-                tableHTML = `<tr><td colspan="6" class="empty-table-row">Henüz ürün bulunmamaktadır.</td></tr>`;
-            }
-    
-            $('#productsTableBody').html(tableHTML);
-            $('#productPageInfo').text(`Sayfa ${page} / ${totalPages}`);
-            $('#prevProductPage').prop('disabled', page === 1);
-            $('#nextProductPage').prop('disabled', page === totalPages);
-        }
-    
-        displayProducts(currentPage);
-    
-        $('#prevProductPage').click(() => {
-            if (currentPage > 1) {
-                currentPage--;
-                displayProducts(currentPage);
-            }
-        });
-    
-        $('#nextProductPage').click(() => {
-            if (currentPage < totalPages) {
-                currentPage++;
-                displayProducts(currentPage);
+
+        paginationTemplate("products-container", "prevProductPage", "nextProductPage", "productPageInfo", "productTotalItemsInfo");
+
+        // Ürünleri göster
+        displayProducts(data, showGoToMenuButton);
+    }
+
+
+    function fetchProducts(request, showGoToMenuButton) {
+        $.ajax({
+            url: request,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                $('#productsTableBody').empty();
+
+                displayProducts(response, showGoToMenuButton);
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Ürünler alınırken hata oluştu!");
             }
         });
     }
 
 
+    // Ürünler sayfasında önceki sayfa butonuna tıklama olayı
+    $(document).on('click', '#prevProductPage', function() {
+        if (currentPage > 1) {
+            currentPage--;
+
+            const params = new URLSearchParams(window.location.search);
+            const menuId = params.get('menuId');
+            let request;
+            let showGoToMenuButton;
+
+            if (menuId === null) {
+                request = `${baseUrl}products/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`;
+                showGoToMenuButton = true;
+            } else {
+                request = `${baseUrl}products/getAllForAdminByMealCategoryId?mealCategoryId=${menuId}&pageNumber=${currentPage}&pageSize=${pageItems}`;
+                showGoToMenuButton = false;
+            }
+
+            fetchProducts(request, showGoToMenuButton);
+        }
+    });
+    
+    
+    // Ürünler sayfasında sonraki sayfa butonuna tıklama olayı
+    $(document).on('click', '#nextProductPage', function() {
+        if (currentPage < totalPages) {
+            currentPage++;
+
+            const params = new URLSearchParams(window.location.search);
+            const menuId = params.get('menuId');
+            let request;
+            let showGoToMenuButton;
+
+            if (menuId === null) {
+                request = `${baseUrl}products/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`;
+                showGoToMenuButton = true;
+            } else {
+                request = `${baseUrl}products/getAllForAdminByMealCategoryId?mealCategoryId=${menuId}&pageNumber=${currentPage}&pageSize=${pageItems}`;
+                showGoToMenuButton = false;
+            }
+            
+            fetchProducts(request, showGoToMenuButton);
+        }
+    });
+
+
     function getProductsByMenu(menuId, menuName) {
         const token = localStorage.getItem('token');
         $.ajax({
-            url: `https://eatwell-api.azurewebsites.net/api/products/getAllForAdminByMealCategoryId?mealCategoryId=${menuId}`,
+            url: `${baseUrl}products/getAllForAdminByMealCategoryId?mealCategoryId=${menuId}&pageNumber=1&pageSize=10`,
             type: 'GET',
             headers: { 'Authorization': `Bearer ${token}` },
-            success: (response) => renderProductsList(response.data, { title: menuName, showGoToMenuButton: false }),
+            success: (response) => renderProductsList(response, { title: menuName, showGoToMenuButton: false }),
             error: (xhr) => showToast('error', 'Hata', xhr.responseJSON?.Message || 'Ürünler getirilirken hata oluştu!')
         });
     }
@@ -1452,10 +1511,10 @@
         const token = localStorage.getItem('token');
 
         $.ajax({
-            url: 'https://eatwell-api.azurewebsites.net/api/products/getAllForAdmin',
+            url: `${baseUrl}products/getAllForAdmin?pageNumber=1&pageSize=10`,
             type: 'GET',
             headers: { 'Authorization': `Bearer ${token}` },
-            success: (response) => renderProductsList(response.data, { title: 'Ürün Listesi', showGoToMenuButton: true }),
+            success: (response) => renderProductsList(response, { title: 'Ürün Listesi', showGoToMenuButton: true }),
             error: (xhr) => showToast('error', 'Hata', xhr.responseJSON?.Message || 'Ürünler alınırken hata oluştu!')
         });
     }
@@ -1817,6 +1876,7 @@
         const formData = new FormData();
         formData.append('name', productName);
         formData.append('price', productPrice);
+        
         if (productImage) {
             formData.append('image', productImage);
         }
@@ -1935,7 +1995,7 @@
 
         if ($('#menuSelect option').length === 0) {
             $.ajax({
-                url: 'https://eatwell-api.azurewebsites.net/api/mealCategories/getAllForAdmin',
+                url: `${baseUrl}mealCategories/getAllForAdmin`,
                 type: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`
