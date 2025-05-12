@@ -1472,7 +1472,7 @@
                 request = `${baseUrl}products/getAllForAdminByMealCategoryId?mealCategoryId=${menuId}&pageNumber=${currentPage}&pageSize=${pageItems}`;
                 showGoToMenuButton = false;
             }
-            
+
             fetchProducts(request, showGoToMenuButton);
         }
     });
@@ -2254,13 +2254,50 @@
 
 
 
+    function displayCities(response) {
+                    
+        let citiesTableHTML = '';
+        
+        // Şehirleri tabloya ekle
+        if (response.data.length > 0) {
+            response.data.forEach(city => {
+                citiesTableHTML += `
+                    <tr class="city-row" data-city-id="${city.id}">
+                        <td>${city.id}</td>
+                        <td>${city.name}</td>
+                        <td>${city.branchCount}</td>
+                        <td>
+                            <button class="btn-branches-city" data-city-id="${city.id}" data-city-name="${city.name}">
+                                <i class="fa-solid fa-list"></i>
+                                Şubeleri Gör
+                            </button>
+                        </td>
+                    </tr>`;
+            });
+        } 
+        
+        // Tabloyu güncelle
+        $('#citiesTableBody').html(citiesTableHTML);
+
+        totalPages = response.totalPages;
+        totalItems = response.totalItems;
+
+        // Sayfa bilgisini güncelle
+        $('#cityPageInfo').text(`Sayfa ${currentPage} / ${totalPages}`);
+        $('#cityTotalItemsInfo').text(`Toplam Kayıt: ${totalItems}`);
+
+        // Sayfalama butonlarının durumunu güncelle
+        $('#prevCityPage').prop('disabled', !response.hasPrevious); // İlk sayfada geri butonu devre dışı
+        $('#nextCityPage').prop('disabled', !response.hasNext); // Son sayfada ileri butonu devre dışı
+    }
+
 
     // Şehirleri getiren fonksiyon
-    function getCities() {
+    function getCities(page = 1) {
         const token = localStorage.getItem('token');
         
         $.ajax({
-            url: 'https://eatwell-api.azurewebsites.net/api/cities/getAll',
+            url: `${baseUrl}cities?pageNumber=1&pageSize=10`,
             type: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -2269,6 +2306,8 @@
                 // Dashboard içeriğini temizle
                 $('.dashboard-content').empty();
                 
+                currentPage = page;
+
                 // Şehirler için HTML yapısı
                 let citiesHTML = `
                 <div class="cities-container">
@@ -2292,82 +2331,16 @@
                             <tbody id="citiesTableBody">
                             </tbody>
                         </table>
-                        <!-- Sayfalama kontrolleri -->
-                        <div class="pagination-container">
-                            <div class="pagination">
-                                <button id="prevCityPage" class="pagination-btn" disabled><i class="fas fa-chevron-left"></i></button>
-                                <span id="cityPageInfo">Sayfa 1</span>
-                                <button id="nextCityPage" class="pagination-btn"><i class="fas fa-chevron-right"></i></button>
-                            </div>
-                        </div>
                     </div>
                 </div>`;
                 
                 // Şehirleri dashboard'a ekle
                 $('.dashboard-content').append(citiesHTML);
                 
-                // Sayfalama için gerekli değişkenler
-                let currentPage = 1; // Mevcut sayfa numarası
-                const itemsPerPage = 10; // Her sayfada gösterilecek şehir sayısı
-                const totalCities = response.data.length; // Toplam şehir sayısı
-                const totalPages = Math.ceil(totalCities / itemsPerPage) ? Math.ceil(totalCities / itemsPerPage) : 1 ; // Toplam sayfa sayısı
+                paginationTemplate("cities-container", "prevCityPage", "nextCityPage", "cityPageInfo", "cityTotalItemsInfo");
 
-                // Şehirleri sayfalara böl ve göster
-                function displayCities(page) {
-                    // Gösterilecek şehirlerin başlangıç ve bitiş indekslerini hesapla
-                    const startIndex = (page - 1) * itemsPerPage;
-                    const endIndex = startIndex + itemsPerPage;
-                    // İlgili sayfadaki şehirleri seç
-                    const citiesToShow = response.data.slice(startIndex, endIndex);
-                    
-                    let citiesTableHTML = '';
-                    
-                    // Seçilen şehirleri tabloya ekle
-                    if (citiesToShow.length > 0) {
-                        citiesToShow.forEach(city => {
-                            citiesTableHTML += `
-                                <tr class="city-row" data-city-id="${city.id}">
-                                    <td>${city.id}</td>
-                                    <td>${city.name}</td>
-                                    <td>${city.branchCount}</td>
-                                    <td>
-                                        <button class="btn-branches-city" data-city-id="${city.id}" data-city-name="${city.name}">
-                                            <i class="fa-solid fa-list"></i>
-                                            Şubeleri Gör
-                                        </button>
-                                    </td>
-                                </tr>`;
-                        });
-                    } 
-                    
-                    // Tabloyu güncelle
-                    $('#citiesTableBody').html(citiesTableHTML);
-                    // Sayfa bilgisini güncelle
-                    $('#cityPageInfo').text(`Sayfa ${page} / ${totalPages}`);
-                    
-                    // Sayfalama butonlarının durumunu güncelle
-                    $('#prevCityPage').prop('disabled', page === 1); // İlk sayfada geri butonu devre dışı
-                    $('#nextCityPage').prop('disabled', page === totalPages); // Son sayfada ileri butonu devre dışı
-                }
-                
-                // İlk sayfayı göster
-                displayCities(currentPage);
-                
-                // Önceki sayfa butonuna tıklama olayı
-                $('#prevCityPage').click(function() {
-                    if (currentPage > 1) {
-                        currentPage--;
-                        displayCities(currentPage);
-                    }
-                });
-                
-                // Sonraki sayfa butonuna tıklama olayı
-                $('#nextCityPage').click(function() {
-                    if (currentPage < totalPages) {
-                        currentPage++;
-                        displayCities(currentPage);
-                    }
-                });
+                // Şehirleri göster
+                displayCities(response);
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
@@ -2376,6 +2349,44 @@
         });
     }
     
+
+    function fetchCities() {
+        $.ajax({
+            url: `${baseUrl}cities?pageNumber=${currentPage}&pageSize=${pageItems}`,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                $('#citiesTableBody').empty();
+
+                displayCities(response);
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Şehirler alınırken hata oluştu!");
+            }
+        });
+    }
+
+
+    // Şehirler sayfasında önceki sayfa butonuna tıklama olayı
+    $(document).on('click', '#prevCityPage', function() {
+        if (currentPage > 1) {
+            currentPage--;
+            fetchCities();
+        }
+    });
+    
+    
+    // Şehirler sayfasında sonraki sayfa butonuna tıklama olayı
+    $(document).on('click', '#nextCityPage', function() {
+        if (currentPage < totalPages) {
+            currentPage++;
+            fetchCities();
+        }
+    });
+
 
     // Navbar'daki "Şehir ve Şubeler" seçeneğine tıklandığında
     $('.sidenav a:contains("Şehir ve Şubeler")').click(function(e) {
@@ -2389,6 +2400,73 @@
 
 
 
+    function displayBranches(response, showGoToCityButton, showGoToReservationsButton) {
+    
+        let tableHTML = '';
+
+        if (response.data.length > 0) {
+            response.data.forEach(branch => {
+
+                tableHTML += `
+                <tr class="branch-row" data-branch-id="${branch.id}">
+                    ${showGoToCityButton || showGoToReservationsButton ? `<td>${branch.cityName}</td>` : '' }
+                    <td>${branch.name}</td>
+                    <td>
+                        <span class="truncate">${branch.address}</span>
+                    </td>
+                    <td>${branch.email}</td>
+                    <td>
+                        <div class="table-actions-scroll">
+                            ${!showGoToReservationsButton ? `
+                            <button class="btn-delete-branch" data-branch-id="${branch.id}">
+                                <i class="fa-solid fa-trash"></i>
+                                Sil
+                            </button>
+                            <button class="btn-edit-branch" data-branch-id="${branch.id}">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                                Düzenle
+                            </button>` : ''
+                            }
+                            ${showGoToCityButton ? `
+                                <button class="btn-city" data-city-id="${branch.cityId}" data-city-name="${branch.cityName}">
+                                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                    Şehre Git
+                                </button>` : ''
+                            }
+                            ${showGoToReservationsButton ? `
+                                <button class="btn-reservation" data-branch-id="${branch.id}" data-branch-name="${branch.name}">
+                                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                    Rezervasyonlara Git
+                                </button>` : ''
+                            }
+                        </div>
+                    </td>
+                </tr>`;
+            });
+        } else {
+            // Şube yoksa bilgi mesajı göster
+            tableHTML = `
+                <tr>
+                    <td colspan="5" class="empty-table-row">Henüz şube bulunmamaktadır.</td>
+                </tr>`;
+        }
+
+        // Tabloyu güncelle
+        $('#branchesTableBody').html(tableHTML);
+
+        totalPages = response.totalPages;
+        totalItems = response.totalItems;
+
+        // Sayfa bilgisini güncelle
+        $('#branchPageInfo').text(`Sayfa ${currentPage} / ${totalPages}`);
+        $('#branchTotalItemsInfo').text(`Toplam Kayıt: ${totalItems}`);
+
+        // Sayfalama butonlarının durumunu güncelle
+        $('#prevBranchPage').prop('disabled', !response.hasPrevious); // İlk sayfada geri butonu devre dışı
+        $('#nextBranchPage').prop('disabled', !response.hasNext); // Son sayfada ileri butonu devre dışı
+    }
+
+
     // Şubeleri getiren ortak fonksiyon
     function renderBranchesList(data, options = {}) {
         const {
@@ -2399,6 +2477,8 @@
     
         // Ortak HTML yapısı
         $('.dashboard-content').empty();
+
+        currentPage = 1;
 
         let html = `
         <div class="branches-container">
@@ -2424,95 +2504,89 @@
                     </thead>
                     <tbody id="branchesTableBody"></tbody>
                 </table>
-                <div class="pagination-container">
-                    <div class="pagination">
-                        <button id="prevBranchPage" class="pagination-btn" disabled><i class="fas fa-chevron-left"></i></button>
-                        <span id="branchPageInfo">Sayfa 1</span>
-                        <button id="nextBranchPage" class="pagination-btn"><i class="fas fa-chevron-right"></i></button>
-                    </div>
-                </div>
             </div>
         </div>`;
 
+        // Şubeleri dashboard'a ekle
         $('.dashboard-content').append(html);
     
-        let currentPage = 1;
-        const itemsPerPage = 10;
-        const totalBranches = data.length;
-        const totalPages = Math.ceil(totalBranches / itemsPerPage) || 1;
+        paginationTemplate("branches-container", "prevBranchPage", "nextBranchPage", "branchPageInfo", "branchTotalItemsInfo");
     
-        function displayBranches(page) {
-            const start = (page - 1) * itemsPerPage;
-            const end = start + itemsPerPage;
-            const branchesToShow = data.slice(start, end);
-    
-            let tableHTML = '';
-            if (branchesToShow.length > 0) {
+        // Şubeleri göster
+        displayBranches(data, showGoToCityButton, showGoToReservationsButton);
+    }
 
-                branchesToShow.forEach(branch => {
 
-                    tableHTML += `
-                    <tr class="branch-row" data-branch-id="${branch.id}">
-                        ${showGoToCityButton || showGoToReservationsButton ? `<td>${branch.cityName}</td>` : '' }
-                        <td>${branch.name}</td>
-                        <td>
-                            <span class="truncate">${branch.address}</span>
-                        </td>
-                        <td>${branch.email}</td>
-                        <td>
-                            <div class="table-actions-scroll">
-                                ${!showGoToReservationsButton ? `
-                                <button class="btn-delete-branch" data-branch-id="${branch.id}">
-                                    <i class="fa-solid fa-trash"></i>
-                                    Sil
-                                </button>
-                                <button class="btn-edit-branch" data-branch-id="${branch.id}">
-                                    <i class="fa-solid fa-pen-to-square"></i>
-                                    Düzenle
-                                </button>` : ''
-                                }
-                                ${showGoToCityButton ? `
-                                    <button class="btn-city" data-city-id="${branch.cityId}" data-city-name="${branch.cityName}">
-                                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                                        Şehre Git
-                                    </button>` : ''
-                                }
-                                ${showGoToReservationsButton ? `
-                                    <button class="btn-reservation" data-branch-id="${branch.id}" data-branch-name="${branch.name}">
-                                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                                        Rezervasyonlara Git
-                                    </button>` : ''
-                                }
-                            </div>
-                        </td>
-                    </tr>`;
-                });
-            } else {
-                tableHTML = `<tr><td colspan="5" class="empty-table-row">Henüz şube bulunmamaktadır.</td></tr>`;
-            }
-    
-            $('#branchesTableBody').html(tableHTML);
-            $('#branchPageInfo').text(`Sayfa ${page} / ${totalPages}`);
-            $('#prevBranchPage').prop('disabled', page === 1);
-            $('#nextBranchPage').prop('disabled', page === totalPages);
-        }
-    
-        displayBranches(currentPage);
-    
-        $('#prevBranchPage').click(() => {
-            if (currentPage > 1) {
-                currentPage--;
-                displayBranches(currentPage);
-            }
-        });
-    
-        $('#nextBranchPage').click(() => {
-            if (currentPage < totalPages) {
-                currentPage++;
-                displayBranches(currentPage);
+    function fetchBranches(request, showGoToCityButton, showGoToReservationsButton) {
+        $.ajax({
+            url: request,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                $('#branchesTableBody').empty();
+
+                displayBranches(response, showGoToCityButton, showGoToReservationsButton);
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Ürünler alınırken hata oluştu!");
             }
         });
     }
+
+
+    // Şubeler sayfasında önceki sayfa butonuna tıklama olayı
+    $(document).on('click', '#prevBranchPage', function() {
+        if (currentPage > 1) {
+            currentPage--;
+
+            const params = new URLSearchParams(window.location.search);
+            const cityId = params.get('cityId');
+            let request;
+            let showGoToCityButton;
+            let showGoToReservationsButton;
+
+            if (cityId === null) {
+                request = `${baseUrl}branches/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`;
+                showGoToCityButton = false;
+                showGoToReservationsButton = false;
+            } else {
+                request = `${baseUrl}branches/getAllForAdminByCityId?cityId=${cityId}&pageNumber=${currentPage}&pageSize=${pageItems}`;
+                showGoToCityButton = true;
+                showGoToReservationsButton = false;
+            }
+
+            fetchBranches(request, showGoToCityButton, showGoToReservationsButton);
+        }
+    });
+    
+    
+    // Şubeler sayfasında sonraki sayfa butonuna tıklama olayı
+    $(document).on('click', '#nextBranchPage', function() {
+        if (currentPage < totalPages) {
+            currentPage++;
+
+            const params = new URLSearchParams(window.location.search);
+            const cityId = params.get('cityId');
+            let request;
+            let showGoToCityButton;
+            let showGoToReservationsButton;
+
+            if (cityId === null) {
+                request = `${baseUrl}branches/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`;
+                showGoToCityButton = false;
+                showGoToReservationsButton = false;
+            } else {
+                request = `${baseUrl}branches/getAllForAdminByCityId?cityId=${cityId}&pageNumber=${currentPage}&pageSize=${pageItems}`;
+                showGoToCityButton = true;
+                showGoToReservationsButton = false;
+            }
+
+            fetchBranches(request, showGoToCityButton, showGoToReservationsButton);
+        }
+    });
 
 
     // Şehirlerin şubelerini getiren fonksiyon
@@ -2520,10 +2594,10 @@
         const token = localStorage.getItem('token');
         
         $.ajax({
-            url: `https://eatwell-api.azurewebsites.net/api/branches/getAllForAdminByCityId?cityId=${cityId}`,
+            url: `${baseUrl}branches/getAllForAdminByCityId?cityId=${cityId}&pageNumber=1&pageSize=10`,
             type: 'GET',
             headers: { 'Authorization': `Bearer ${token}` },
-            success: (response) => renderBranchesList(response.data, { title: cityName, showGoToCityButton: false, showGoToReservationsButton: false }),
+            success: (response) => renderBranchesList(response, { title: cityName, showGoToCityButton: false, showGoToReservationsButton: false }),
             error: (xhr) => showToast('error', 'Hata', xhr.responseJSON?.Message || 'Şubeler getirilirken hata oluştu!')
         });
     }
@@ -2551,10 +2625,10 @@
         const token = localStorage.getItem('token');
 
         $.ajax({
-            url: 'https://eatwell-api.azurewebsites.net/api/branches/getAllForAdmin',
+            url: `${baseUrl}branches/getAllForAdmin?pageNumber=1&pageSize=10`,
             type: 'GET',
             headers: { 'Authorization': `Bearer ${token}` },
-            success: (response) => renderBranchesList(response.data, { title: 'Şube Listesi', showGoToCityButton: true, showGoToReservationsButton: false }),
+            success: (response) => renderBranchesList(response, { title: 'Şube Listesi', showGoToCityButton: true, showGoToReservationsButton: false }),
             error: (xhr) => showToast('error', 'Hata', xhr.responseJSON?.Message || 'Şubeler alınırken hata oluştu!')
         });
     }
@@ -3211,7 +3285,7 @@
 
         if ($('#citySelect option').length === 0) {
             $.ajax({
-                url: 'https://eatwell-api.azurewebsites.net/api/cities/getAll',
+                url: `${baseUrl}cities`,
                 type: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -3363,10 +3437,10 @@
         const token = localStorage.getItem('token');
 
         $.ajax({
-            url: 'https://eatwell-api.azurewebsites.net/api/branches/getAllForAdmin',
+            url: `${baseUrl}branches/getAllForAdmin?pageNumber=1&pageSize=10`,
             type: 'GET',
             headers: { 'Authorization': `Bearer ${token}` },
-            success: (response) => renderBranchesList(response.data, { title: 'Şube Seçiniz...', showGoToCityButton: false, showGoToReservationsButton: true }),
+            success: (response) => renderBranchesList(response, { title: 'Şube Seçiniz...', showGoToCityButton: false, showGoToReservationsButton: true }),
             error: (xhr) => showToast('error', 'Hata', xhr.responseJSON?.Message || 'Şubeler alınırken hata oluştu!')
         });
     }

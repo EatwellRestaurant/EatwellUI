@@ -682,8 +682,6 @@ td, th {
   cursor: not-allowed;
 }
 
-#cityPageInfo,
-#branchPageInfo,
 .pagination span {
   color: #000;
   font-size: 14px;
