@@ -65,9 +65,6 @@
 
         // Kullanıcı adını göster
         $('#userNameDisplay').text(userName);
-
-        // Admin içeriğini göster
-        $('#adminContent').show();
     } catch (error) {
         console.error('Token decode hatası:', error);
         localStorage.removeItem('token');
@@ -316,10 +313,6 @@
             }
         });
     }
-
-    
-    // Her 10 dakikada bir istatistikleri güncelle
-    setInterval(getStatistics, 600000);
 
 
     // Kullanıcıları göster
@@ -3501,6 +3494,47 @@
     }
 
 
+    // Masaları göster
+    function displayTables() { 
+        $('.table-box').empty();
+
+        let tablesHTML = '';
+
+        if (tables.length > 0) {
+
+            // Masaları ekle
+            tables.forEach(table => {
+                tablesHTML += `
+                <div class="table-item">
+                    <span>${table.no}</span>
+                    <div class="tooltip-text">
+                        <span class="tooltip-label">
+                            <strong>Masa Adı</strong> 
+                            <span>:</span>
+                            ${table.name}
+                        </span>
+                        </br>
+                        <span class="tooltip-label">
+                            <strong>Kapasite</strong> 
+                            <span>:</span>
+                            ${table.capacity}
+                        </span>
+                    </div>
+                </div>`;
+            })
+        } else {
+            tablesHTML = `
+                <h3 class="empty-table-row">Henüz masa bulunmamaktadır.</h3>
+            `;
+        }
+
+        $('.table-box').html(tablesHTML);
+    }
+
+
+    let tables = null;
+    
+
     // Rezervasyonlar sayfasının taslağını getiren fonksiyon
     function getReservationTemplate(branchId, branchName, page = 1) {
         const token = localStorage.getItem('token');
@@ -3508,7 +3542,7 @@
         // Bugünün tarihi
         const today = new Date();
         const todayStr = today.toISOString().split('T')[0];
-
+        
         $.ajax({
             url: `${baseUrl}reservations/getAdminDashboardReservationData?pageNumber=1&pageSize=10&branchId=${branchId}&DateRangeFilter.StartDate=${todayStr}&DateRangeFilter.EndDate=${todayStr}`,
             type: 'GET',
@@ -3518,10 +3552,11 @@
             success: function(response) {
                 // Dashboard içeriğini temizle
                 $('.dashboard-content').empty();
-
+                
                 const tableResponse = response.tableResponse.data;
+                tables = response.tableResponse.data;
                 currentPage = page;
-
+                
                 // Rezervasyonlar için temel HTML yapısı
                 let reservationsHTML = `
                 <div class="reservations-container">
@@ -3536,13 +3571,17 @@
                                 <button class="btn-create-table table-manage-button">
                                     Ekle
                                 </button>
-                                <button class="btn-update-table table-manage-button">
-                                    Güncelle
+                                <button class="btn-edit-table table-manage-button">
+                                    Düzenle
                                 </button>
                                 <button class="btn-delete-table table-manage-button">
                                     Sil
                                 </button>
                             </div>
+                        </div>
+                        <div class="exit-table-update">
+                            Düzenlemeden Çık
+                            <i class="fa-solid fa-xmark"></i>
                         </div>
                     </div>
                     <div class="reservations-body">
@@ -3628,42 +3667,6 @@
                 $('#filter-start-date').val(todayStr);
                 $('#filter-end-date').val(todayStr);
 
-
-                // Masaları göster
-                function displayTables() { 
-                    $('.table-box').empty();
-
-                    let tablesHTML = '';
-
-                    if (tableResponse.length > 0) {
-                        // Masaları ekle
-                        tableResponse.forEach(table => {
-                            tablesHTML += `
-                            <div class="table-item">
-                                <span>${table.no}</span>
-                                <div class="tooltip-text">
-                                    <span class="tooltip-label">
-                                        <strong>Masa Adı</strong> 
-                                        <span>:</span>
-                                        ${table.name}
-                                    </span>
-                                    </br>
-                                    <span class="tooltip-label">
-                                        <strong>Kapasite</strong> 
-                                        <span>:</span>
-                                        ${table.capacity}
-                                    </span>
-                                </div>
-                            </div>`;
-                        })
-                    } else {
-                        tablesHTML = `
-                            <h3 class="empty-table-row">Henüz masa bulunmamaktadır.</h3>
-                        `;
-                    }
-
-                    $('.table-box').html(tablesHTML);
-                }
 
                 displayTables();
 
@@ -4090,6 +4093,275 @@
         });
     });
 
+
+    // Düzenleme için masaları göster
+    function displayTablesForUpdate() { 
+        $('.exit-table-update').css({
+            'display': 'flex',
+            'justify-content': 'space-between',
+            'align-items': 'flex-end'
+        }).animate({
+            opacity: 1
+        }, 110);
+        
+        $('.table-management').css({
+            'display': 'none'
+        }).animate({
+            opacity: 0
+        }, 50)
+        
+        $('.table-box').empty()
+
+        let tablesHTML = '';
+
+        if (tables.length > 0) {
+            // Masaları ekle
+            tables.forEach(table => {
+                tablesHTML += `
+                <div class="table-item">
+                   <i class="fa-solid fa-pen-to-square" data-table-id="${table.id}"></i>
+                   <div class="table-number">
+                        <span>${table.no}</span>
+                    </div>
+                        <div class="tooltip-text">
+                            <span class="tooltip-label">
+                                <strong>Masa Adı</strong> 
+                                <span>:</span>
+                                ${table.name}
+                            </span>
+                            </br>
+                            <span class="tooltip-label">
+                                <strong>Kapasite</strong> 
+                                <span>:</span>
+                                ${table.capacity}
+                            </span>
+                        </div>
+                </div>`;
+            })
+        } else {
+            tablesHTML = `
+                <h3 class="empty-table-row">Henüz masa bulunmamaktadır.</h3>
+            `;
+        }
+
+        $('.table-box').html(tablesHTML);
+    }
+    
+
+    function updateTable(tableId) {
+        const token = localStorage.getItem('token');
+        
+        $.ajax({
+            url: `${baseUrl}tables/getForAdmin?tableId=${tableId}`,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                if (response.success && response.data) {
+                    const table = response.data;
+                              
+                    let tableUpdateHTML = `
+                        <div class="table-update-modal" data-table-id="${table.id}">
+                            <div class="table-update-content">
+                                <div class="table-update-header">
+                                    <h2>Masa Güncelleme</h2>
+                                    <span class="close-table-update">&times;</span>
+                                </div>
+                                <div class="table-update-body">
+                                    <div class="table-info">
+                                        <div class="table-info-item">
+                                            <div class="table-label">
+                                                <strong>Masa Adı</strong> 
+                                                <span>:</span>
+                                            </div>
+                                            <input type="text" class="table-value table-name" value="${table.name}">
+                                        </div>
+                                        <div class="table-info-item">
+                                            <div class="table-label">
+                                                <strong>Masa No</strong> 
+                                                <span>:</span>
+                                            </div>
+                                            <input type="text" class="table-value table-no" value="${table.no}">
+                                        </div>
+                                        <div class="table-info-item">
+                                            <div class="table-label">
+                                                <strong>Kapasite</strong> 
+                                                <span>:</span>
+                                            </div>
+                                            <input type="text" class="table-value table-capacity" value="${table.capacity}">
+                                        </div>
+                                    </div>
+
+                                    <button class="btn-update-table">Güncelle</button>
+                                </div>
+                            </div>
+                        </div>`;
+                    
+                    // Eğer detay modülü zaten varsa kaldır
+                    $('.table-update-modal').remove();
+                    
+                    // Detay modülünü ekle
+                    $('body').append(tableUpdateHTML);
+                    
+                    // Detay modülünü göster
+                    $('.table-update-modal').fadeIn(300);
+                    
+                    // Kapatma butonuna tıklandığında
+                    $('.close-table-update').click(function() {
+                        $('.table-update-modal').fadeOut(300, function() {
+                            $(this).remove();
+                        });
+                    });
+                    
+                    // Modül dışına tıklandığında kapat
+                    $('.table-update-modal').click(function(e) {
+                        if ($(e.target).hasClass('table-update-modal')) {
+                            $('.table-update-modal').fadeOut(300, function() {
+                                $(this).remove();
+                            });
+                        }
+                    });
+                } else {
+                    showToast('error', 'Hata', 'Masa bilgileri alınırken hata oluştu!');
+                }
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : 'Masa bilgileri alınırken hata oluştu!');
+            }
+        });
+    }
+
+
+    // Masada "Düzenle" butonuna tıklandığında düzenleme ikonunun görüntülenmesi için...
+    $(document).on('click', '.btn-edit-table', function(e) {
+        e.stopPropagation();
+
+        displayTablesForUpdate();
+    });
+    
+    
+    // Masada "Düzenle" ikonuna tıklandığında
+    $(document).on('click', '.table-item i', function(e) {
+        e.stopPropagation();
+        
+        const tableId = $(this).data('table-id');
+    
+        updateTable(tableId)
+    });
+
+
+    function showTableManagement(){
+        $('.table-management').css({
+            'display': 'block'  
+        }).animate({
+            opacity: 1  
+        }, 400);
+        
+        $('.exit-table-update').animate({
+            opacity: 0
+        }, 50, function () {
+            $(this).css('display', 'none');
+        });
+    }
+
+
+    function fetchTables() {
+    
+        const branchId = localStorage.getItem('selectedBranchId');
+    
+        $.ajax({
+            url: `${baseUrl}tables/getAllForAdmin?branchId=${branchId}`,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                tables = response.data;
+
+                displayTables();
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Masalar alınırken hata oluştu!");
+            }
+        });
+    }
+
+
+    // Masada "Güncelle" butonuna tıklandığında
+    $(document).on('click', '.btn-update-table', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const updateModal = $(this).closest('.table-update-modal');
+        
+        const tableId = updateModal.data('table-id');
+        const tableName = updateModal.find('.table-name').val();
+        const tableNo = updateModal.find('.table-no').val();
+        const tableCapacity = updateModal.find('.table-capacity').val();
+        
+        if (tableName.trim() === '') {
+            showToast('error', 'Hata', 'Lütfen masa adını giriniz!');
+            return;
+        }
+
+        if (tableNo.trim() === '') {
+            showToast('error', 'Hata', 'Lütfen masa numarasını giriniz!');
+            return;
+        }
+
+        if (tableCapacity.trim() === '') {
+            showToast('error', 'Hata', 'Lütfen masa kapasitesini giriniz!');
+            return;
+        }
+
+        const token = localStorage.getItem('token');
+
+        $.ajax({
+            url: `${baseUrl}tables/update?tableId=${tableId}`,
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify({
+                name: tableName,
+                no: tableNo,
+                capacity: tableCapacity
+            }),
+            success: function(response) {
+                if (response.success) {
+                    showToast('success', 'Başarılı', 'Masa başarıyla güncellendi!');
+                    
+                    $('.table-update-modal').fadeOut(300, function() {
+                        $(this).remove();
+                    });
+
+                    showTableManagement();
+
+                    fetchTables();
+                } else {
+                    showToast('error', 'Hata', 'Masa güncellenirken hata oluştu!');
+                }
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : 'Masa güncellenirken hata oluştu!');
+            }
+        });
+    });
+
+
+    // Masada "Düzenlemeden Çık" butonuna tıklandığında
+    $(document).on('click', '.exit-table-update', function(e) {
+        e.stopPropagation();
+
+        showTableManagement();
+
+        displayTables();
+    });
     
 
     // Sayfa ilk açıldığında, yüklendiğinde

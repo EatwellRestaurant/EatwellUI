@@ -513,7 +513,8 @@ td, th {
 .menu-create-modal,
 .product-create-modal,
 .branch-create-modal,
-.table-create-modal {
+.table-create-modal,
+.table-update-modal {
   display: none;
   position: fixed;
   z-index: 1001;
@@ -535,7 +536,8 @@ td, th {
 .menu-create-content,
 .product-create-content,
 .branch-create-content,
-.table-create-content {
+.table-create-content,
+.table-update-content {
   background-color: #edece1;
   margin: 5% auto;
   padding: 20px;
@@ -568,7 +570,8 @@ td, th {
 .menu-create-header,
 .product-create-header,
 .branch-create-header,
-.table-create-header {
+.table-create-header,
+.table-update-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -587,7 +590,8 @@ td, th {
 .menu-create-header h2,
 .product-create-header h2,
 .branch-create-header h2,
-.table-create-header h2 {
+.table-create-header h2,
+.table-update-header h2 {
   color: #000;
   margin: 0;
   font-size: 24px;
@@ -603,7 +607,8 @@ td, th {
 .close-menu-create,
 .close-product-create,
 .close-branch-create,
-.close-table-create {
+.close-table-create,
+.close-table-update {
   color: #3a3a3a;
   font-size: 28px;
   font-weight: bold;
@@ -621,7 +626,8 @@ td, th {
 .close-menu-create:hover,
 .close-product-create:hover,
 .close-branch-create:hover,
-.close-table-create:hover {
+.close-table-create:hover,
+.close-table-update:hover {
   color: #ffc515;
 }
 
@@ -776,7 +782,8 @@ td, th {
 .menu-create-body,
 .product-create-body,
 .branch-create-body,
-.table-create-body {
+.table-create-body,
+.table-update-body {
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -808,6 +815,7 @@ td, th {
 .btn-update-product,
 .btn-add-menu,
 .btn-add-table,
+.btn-update-table,
 .btn-add-product{
   margin-top: 15px;
   border: none;
@@ -839,6 +847,7 @@ td, th {
 .btn-update-branch,
 .btn-add-branch,
 .btn-add-table,
+.btn-update-table,
 .btn-add-menu,
 .btn-add-product{
   display: inline-block;
@@ -856,6 +865,7 @@ td, th {
 .btn-update-branch:hover,
 .btn-add-branch:hover,
 .btn-add-table:hover,
+.btn-update-table:hover,
 .btn-add-menu:hover,
 .btn-add-product:hover{
   background-color: #ffd760;;
@@ -968,7 +978,8 @@ td, th {
 .menu-create-body .menu-value,
 .product-create-body .product-value,
 .branch-create-body .branch-value,
-.table-create-body .table-value {
+.table-create-body .table-value,
+.table-update-body .table-value {
   border: 1px solid #ddd;
   padding: 5px 8px;
   border-radius: 6px;
@@ -1093,7 +1104,12 @@ td, th {
 }
 
 .table-management {
-  position: relative;
+  position: absolute;
+  top: 0;
+  right: 0%;
+  display: block;
+  opacity: 1;
+  transition: all 0.3s;
 }
 
 .table-options {
@@ -1137,6 +1153,31 @@ td, th {
 .table-manage-show {
   opacity: 1;
   visibility: visible;
+}
+
+.exit-table-update {
+  position: absolute;
+  top: 0;
+  right: 0%;
+  font-size: 15px;
+  font-family: "Mulish", sans-serif;
+  font-weight: 700;
+  width: 175px;
+  opacity: 0;
+  display: none;
+  cursor: pointer;
+  padding: 9px 12px;
+  transition: all .3s ease-in-out;
+}
+
+.exit-table-update i {
+  font-size: 17px;
+  transition: color .3s ease-in-out;
+}
+
+.exit-table-update:hover i,
+.exit-table-update:hover {
+  color: #ff0000;
 }
 
 .btn-edit-menu i,
@@ -1204,6 +1245,7 @@ td, th {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
 }
 
 .menus-header h2,
@@ -1215,6 +1257,10 @@ td, th {
   color: #000;
   margin: 0;
   font-size: 24px;
+}
+
+.reservations-header h2 {
+  margin-bottom: 5px;
 }
 
 .menus-body,
@@ -1273,9 +1319,41 @@ td, th {
   cursor: pointer;
 }
 
-.table-item:hover .tooltip-text {
+.table-item:hover .tooltip-text,
+.table-item i:hover + .tooltip-text {
   visibility: visible;
   opacity: 1;
+}
+
+.table-item i {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  font-size: 18px;
+  background-color: #fff;
+  color: #ffc515;
+  transition: all .3s ease-in-out;
+}
+
+.table-item i::before {
+  position: relative;
+  top: 31%;
+}
+
+.table-item:hover i {
+  opacity: 1;
+}
+
+.table-item:hover .table-number {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.table-number {
+  position: absolute;
+  opacity: 1;
+  transition: all .2s ease-in-out;
 }
 
 .tooltip-text {
@@ -1288,7 +1366,7 @@ td, th {
   padding: 5px;
   border-radius: 6px;
   position: absolute;
-  z-index: 1000;
+  z-index: 100;
   bottom: 125%;
   left: 50%;
   transform: translateX(-50%);
@@ -1884,7 +1962,8 @@ input:not(:checked) + .toggle-slider:after {
   .menu-create-header h2,
   .product-create-header h2,
   .branch-create-header h2,
-  .table-create-header h2 {
+  .table-create-header h2,
+  .table-update-header h2 {
     font-size: 20px;
   }
    
@@ -1920,7 +1999,8 @@ input:not(:checked) + .toggle-slider:after {
   .menu-create-content,
   .product-create-content,
   .branch-create-content,
-  .table-create-content {
+  .table-create-content,
+  .table-update-content {
     margin: 10% auto;
     width: 95%;
     padding: 15px;
@@ -1945,6 +2025,7 @@ input:not(:checked) + .toggle-slider:after {
   .btn-update-branch,
   .btn-add-branch,
   .btn-add-table,
+  .btn-update-table,
   .btn-add-menu,
   .btn-add-product{
     padding: 12px 14px;
@@ -2102,7 +2183,8 @@ input:not(:checked) + .toggle-slider:after {
   .menu-create-body,
   .product-create-body,
   .branch-create-body,
-  .table-create-body {
+  .table-create-body,
+  .table-update-body {
     align-items: center;
   }
 
@@ -2157,7 +2239,8 @@ input:not(:checked) + .toggle-slider:after {
   .menu-create-header h2,
   .product-create-header h2,
   .branch-create-header h2,
-  .table-create-header h2 {
+  .table-create-header h2,
+  .table-update-header h2 {
     font-size: 18px;
   }
   
@@ -2191,7 +2274,8 @@ input:not(:checked) + .toggle-slider:after {
   .menu-create-content,
   .product-create-content,
   .branch-create-content,
-  .table-create-content {
+  .table-create-content,
+  .table-update-content {
     margin: 15% auto;
     padding: 10px;
   }
@@ -2224,6 +2308,7 @@ input:not(:checked) + .toggle-slider:after {
   .btn-update-branch,
   .btn-add-branch,
   .btn-add-table,
+  .btn-update-table,
   .btn-add-menu,
   .btn-add-product{
     padding: 11px 13px;
