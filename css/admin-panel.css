@@ -1256,6 +1256,7 @@ td, th {
 .products-header h2 {
   color: #000;
   margin: 0;
+  max-width: 200px;
   font-size: 24px;
 }
 
@@ -1534,7 +1535,7 @@ td, th {
 }
 
 .input-wrapper .calendar {
-  top: 52%;
+  top: 51%;
 }
 
 #filter-start-date,
@@ -2343,6 +2344,15 @@ input:not(:checked) + .toggle-slider:after {
   .table-options {
     width: 160px;
     left: 41%;
+  }
+
+  .exit-table-update {
+    font-size: 14px;
+    width: 165px;
+  }
+
+  .exit-table-update i {
+    font-size: 16px;
   }
 }
 
