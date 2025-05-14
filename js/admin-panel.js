@@ -3579,9 +3579,9 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="exit-table-update">
-                            Düzenlemeden Çık
-                            <i class="fa-solid fa-xmark"></i>
+                        <div class="table-exit-button">
+                            <i class="fa-solid fa-arrow-left"></i>
+                            Geri Dön
                         </div>
                     </div>
                     <div class="reservations-body">
@@ -3670,7 +3670,7 @@
 
                 displayTables();
 
-
+                
                 function updateTableList(){
                     $('.dropdown-menu').empty();
 
@@ -4014,6 +4014,7 @@
         $(".btn-manage-table i").toggleClass("rotated-90");
     });
 
+
     // table-options içindeki butonlardan herhangi birine tıklandığında table-options kutusunu kapat
     $(document).on('click', '.table-manage-button', function () {
         $('.table-options').removeClass('table-manage-show');
@@ -4096,21 +4097,9 @@
 
     // Düzenleme için masaları göster
     function displayTablesForUpdate() { 
-        $('.exit-table-update').css({
-            'display': 'flex',
-            'justify-content': 'space-between',
-            'align-items': 'flex-end'
-        }).animate({
-            opacity: 1
-        }, 110);
+        hideTableManagement();
         
-        $('.table-management').css({
-            'display': 'none'
-        }).animate({
-            opacity: 0
-        }, 50)
-        
-        $('.table-box').empty()
+        $('.table-box').empty();
 
         let tablesHTML = '';
 
@@ -4243,13 +4232,30 @@
     
     
     // Masada "Düzenle" ikonuna tıklandığında
-    $(document).on('click', '.table-item i', function(e) {
+    $(document).on('click', '.table-item i.fa-pen-to-square', function(e) {
         e.stopPropagation();
         
         const tableId = $(this).data('table-id');
     
-        updateTable(tableId)
+        updateTable(tableId);
     });
+
+    
+    function hideTableManagement(){
+        $('.table-exit-button').css({
+            'display': 'flex',
+            'justify-content': 'space-between',
+            'align-items': 'flex-end'
+        }).animate({
+            opacity: 1
+        }, 110);
+        
+        $('.table-management').css({
+            'display': 'none'
+        }).animate({
+            opacity: 0
+        }, 50)
+    }
 
 
     function showTableManagement(){
@@ -4259,7 +4265,7 @@
             opacity: 1  
         }, 400);
         
-        $('.exit-table-update').animate({
+        $('.table-exit-button').animate({
             opacity: 0
         }, 50, function () {
             $(this).css('display', 'none');
@@ -4354,15 +4360,126 @@
     });
 
 
-    // Masada "Düzenlemeden Çık" butonuna tıklandığında
-    $(document).on('click', '.exit-table-update', function(e) {
+    // Masada "Geri Dön" butonuna tıklandığında
+    $(document).on('click', '.table-exit-button', function(e) {
         e.stopPropagation();
 
         showTableManagement();
 
         displayTables();
     });
+
+
+    // Silme için masaları göster
+    function displayTablesForDelete() { 
+        hideTableManagement()
+        
+        $('.table-box').empty();
+
+        let tablesHTML = '';
+
+        if (tables.length > 0) {
+            // Masaları ekle
+            tables.forEach(table => {
+                tablesHTML += `
+                <div class="table-item">
+                    <i class="fa-solid fa-trash" data-table-id="${table.id}"></i>
+                    <div class="table-number">
+                        <span>${table.no}</span>
+                    </div>
+                    <div class="tooltip-text">
+                        <span class="tooltip-label">
+                            <strong>Masa Adı</strong> 
+                            <span>:</span>
+                            ${table.name}
+                        </span>
+                        </br>
+                        <span class="tooltip-label">
+                            <strong>Kapasite</strong> 
+                            <span>:</span>
+                            ${table.capacity}
+                        </span>
+                    </div>
+                </div>`;
+            })
+        } else {
+            tablesHTML = `
+                <h3 class="empty-table-row">Henüz masa bulunmamaktadır.</h3>
+            `;
+        }
+
+        $('.table-box').html(tablesHTML);
+    }
+
+
+    // Masada "Sil" butonuna tıklandığında silme ikonunun görüntülenmesi için...
+    $(document).on('click', '.btn-delete-table', function(e) {
+        e.stopPropagation();
+
+        displayTablesForDelete();
+    });
+
+
+    // Masada "Sil" ikonuna tıklandığında
+    $(document).on('click', '.table-item i.fa-trash', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const tableId = $(this).data('table-id');
+        
+        // SweetAlert2 ile özelleştirilmiş onay kutusu
+        Swal.fire({
+            title: 'Emin misiniz?',
+            text: "Bu masayı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Evet, Sil!',
+            cancelButtonText: 'İptal',
+            customClass: {
+                popup: 'swal2-popup-custom',
+                icon: 'swal2-icon-custom',
+                title: 'swal2-title-custom',
+                htmlContainer: 'swal2-content-custom',
+                confirmButton: 'swal2-confirm-custom',
+                cancelButton: 'swal2-cancel-custom'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const token = localStorage.getItem('token');
+                
+                $.ajax({
+                    url: `${baseUrl}tables/delete?tableId=${tableId}`,
+                    type: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            showToast('success', 'Başarılı', 'Masa başarıyla silindi!');
+
+                            $('.table-update-modal').fadeOut(300, function() {
+                                $(this).remove();
+                            });
+
+                            showTableManagement();
+
+                            fetchTables();
+                        } else {
+                            showToast('error', 'Hata', 'Masa silinirken hata oluştu!');
+                        }
+                    },
+                    error: function(xhr) {
+                        const errorMessage = xhr.responseJSON?.Message;
+                        showToast('error', 'Hata', errorMessage ? errorMessage : 'Masa silinirken hata oluştu!');
+                    }
+                });
+            }
+        });
+    });
     
+
 
     // Sayfa ilk açıldığında, yüklendiğinde
     window.addEventListener('load', function() {

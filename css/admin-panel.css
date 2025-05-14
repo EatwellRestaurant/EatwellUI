@@ -1105,7 +1105,7 @@ td, th {
 
 .table-management {
   position: absolute;
-  top: 0;
+  bottom: 21%;
   right: 0%;
   display: block;
   opacity: 1;
@@ -1155,14 +1155,14 @@ td, th {
   visibility: visible;
 }
 
-.exit-table-update {
+.table-exit-button {
   position: absolute;
-  top: 0;
+  bottom: 21%;
   right: 0%;
   font-size: 15px;
   font-family: "Mulish", sans-serif;
   font-weight: 700;
-  width: 175px;
+  width: 108px;
   opacity: 0;
   display: none;
   cursor: pointer;
@@ -1170,13 +1170,13 @@ td, th {
   transition: all .3s ease-in-out;
 }
 
-.exit-table-update i {
+.table-exit-button i {
   font-size: 17px;
   transition: color .3s ease-in-out;
 }
 
-.exit-table-update:hover i,
-.exit-table-update:hover {
+.table-exit-button:hover i,
+.table-exit-button:hover {
   color: #ff0000;
 }
 
@@ -1256,7 +1256,6 @@ td, th {
 .products-header h2 {
   color: #000;
   margin: 0;
-  max-width: 200px;
   font-size: 24px;
 }
 
@@ -2135,6 +2134,18 @@ input:not(:checked) + .toggle-slider:after {
 }
 
 
+@media screen and (max-width: 500px) {
+  .menus-header h2, 
+  .reservations-header h2, 
+  .cities-header h2, 
+  .branches-header h2, 
+  .users-header h2, 
+  .products-header h2 {
+    max-width: 200px;
+  }
+}
+
+
 @media screen and (max-width: 480px) {
   .sidenav {
     width: 215px;
@@ -2346,13 +2357,13 @@ input:not(:checked) + .toggle-slider:after {
     left: 41%;
   }
 
-  .exit-table-update {
+  .table-exit-button {
     font-size: 14px;
-    width: 165px;
+    width: 102px;
   }
 
-  .exit-table-update i {
-    font-size: 16px;
+  .table-exit-button i {
+    font-size: 15px;
   }
 }
 
