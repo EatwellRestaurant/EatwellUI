@@ -3532,6 +3532,32 @@
     }
 
 
+    function updateTableList(){
+        $('.dropdown-menu').empty();
+
+        let tablesHTML = '';
+
+        if (tables.length > 0) {
+            tablesHTML += `
+                <div class="dropdown-option" data-table-id="">Tüm masaları göster</div>
+            `;
+
+            // Masaları ekle
+            tables.forEach(table => {
+                tablesHTML += `
+                    <div class="dropdown-option" data-table-id="${table.id}">${table.no}</div>
+                `;
+            })
+        } else {
+            tablesHTML = `
+                <h3 class="empty-table-row">Henüz masa bulunmamaktadır.</h3>
+            `;
+        }
+
+        $('.dropdown-menu').html(tablesHTML);
+    }
+
+
     let tables = null;
     
 
@@ -3669,32 +3695,6 @@
 
 
                 displayTables();
-
-                
-                function updateTableList(){
-                    $('.dropdown-menu').empty();
-
-                    let tablesHTML = '';
-
-                    if (tableResponse.length > 0) {
-                        tablesHTML += `
-                        <div class="dropdown-option" data-table-id="">Tüm masaları göster</div>
-                        `;
-
-                        // Masaları ekle
-                        tableResponse.forEach(table => {
-                            tablesHTML += `
-                            <div class="dropdown-option" data-table-id="${table.id}">${table.no}</div>
-                            `;
-                        })
-                    } else {
-                        tablesHTML = `
-                            <h3 class="empty-table-row">Henüz masa bulunmamaktadır.</h3>
-                        `;
-                    }
-
-                    $('.dropdown-menu').html(tablesHTML);
-                }
 
                 updateTableList();
                 
@@ -4058,12 +4058,11 @@
         }
         
         const token = localStorage.getItem('token');
-        const branchName = localStorage.getItem('selectedBranchName');
         const params = new URLSearchParams(window.location.search);
         const branchId = params.get('branchId');
         
         $.ajax({
-            url: `https://eatwell-api.azurewebsites.net/api/tables`,
+            url: `${baseUrl}tables/add`,
             type: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -4078,11 +4077,12 @@
             success: function(response) {
                 if (response.success) {
                     showToast('success', 'Başarılı', 'Masa başarıyla eklendi!');
+                    
                     $('.table-create-modal').fadeOut(300, function() {
                         $(this).remove();
                     });
-
-                    getReservationTemplate(branchId, branchName)
+                    
+                    fetchTables();
                 } else {
                     showToast('error', 'Hata', response.message);
                 }
@@ -4287,6 +4287,8 @@
                 tables = response.data;
 
                 displayTables();
+
+                updateTableList();
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
