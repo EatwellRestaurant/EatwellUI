@@ -505,6 +505,7 @@ td, th {
 
 .user-details-modal,
 .menu-details-modal,
+.reservation-details-modal,
 .branch-details-modal,
 .product-details-modal,
 .menu-update-modal,
@@ -529,6 +530,7 @@ td, th {
 .user-details-content,
 .menu-details-content,
 .branch-details-content,
+.reservation-details-content,
 .product-details-content,
 .menu-update-content,
 .product-update-content,
@@ -551,6 +553,7 @@ td, th {
 
 .branch-update-content,
 .branch-details-content,
+.reservation-details-content,
 .branch-create-content {
   max-width: 800px;
 }
@@ -563,6 +566,7 @@ td, th {
 .user-details-header,
 .menu-details-header,
 .branch-details-header,
+.reservation-details-header,
 .product-details-header,
 .menu-update-header,
 .product-update-header,
@@ -583,6 +587,7 @@ td, th {
 .user-details-header h2,
 .menu-details-header h2,
 .branch-details-header h2,
+.reservation-details-header h2,
 .product-details-header h2,
 .menu-update-header h2,
 .product-update-header h2,
@@ -599,6 +604,7 @@ td, th {
 
 .close-menu-details,
 .close-branch-details,
+.close-reservation-details,
 .close-user-details,
 .close-product-details,
 .close-menu-update,
@@ -618,6 +624,7 @@ td, th {
 
 .close-menu-details:hover,
 .close-branch-details:hover,
+.close-reservation-details:hover,
 .close-user-details:hover,
 .close-product-details:hover,
 .close-menu-update:hover,
@@ -774,6 +781,7 @@ td, th {
 
 .menu-details-body,
 .branch-details-body,
+.reservation-details-body,
 .user-details-body,
 .product-details-body,
 .menu-update-body,
@@ -889,13 +897,15 @@ td, th {
 .user-info,
 .product-info,
 .branch-info,
+.reservation-info,
 .table-info {
   color: #000;
   border: 1px solid #81818140;
   width: 100%;
 }
 
-.branch-info {
+.branch-info,
+.reservation-info {
   display: flex;
   flex-wrap: wrap;              
   gap: 6px;                    
@@ -912,6 +922,7 @@ td, th {
 .user-info-item,
 .product-info-item,
 .branch-info-item,
+.reservation-info-item,
 .table-info-item {
   display: flex;
   align-items: center;
@@ -919,7 +930,8 @@ td, th {
   border-bottom: 1px solid #81818140;
 }
 
-.branch-info-item {
+.branch-info-item,
+.reservation-info-item {
   flex: 0 0 auto;    /* Her eleman genişliğin yaklaşık %50'sini kaplasın */
   width: 45%;
 }
@@ -933,6 +945,7 @@ td, th {
 .user-info-item:last-child,
 .product-info-item:last-child,
 .branch-info-item:last-child,
+.reservation-info-item:last-child,
 .table-info-item:last-child {
   border-bottom: none;
 } 
@@ -941,6 +954,7 @@ td, th {
 .user-label,
 .product-label,
 .branch-label,
+.reservation-label,
 .table-label {
   display: flex;
   align-items: center;
@@ -949,7 +963,8 @@ td, th {
   width: 40%;
 }
 
-.branch-label {
+.branch-label,
+.reservation-label {
   width: 27%;
 }
 
@@ -957,6 +972,7 @@ td, th {
 .user-label strong,
 .product-label strong,
 .branch-label strong,
+.reservation-label strong,
 .table-label strong {
   color: #000;
   margin-right: 10px;
@@ -968,6 +984,7 @@ td, th {
 .user-label span,
 .product-label span,
 .branch-label span,
+.reservation-label span,
 .table-label span {
   font-weight: bold;
 }
@@ -988,6 +1005,7 @@ td, th {
 }
 
 .branch-value:focus-visible,
+.reservation-value:focus-visible,
 .table-value:focus-visible,
 .menu-update-body .menu-value:focus-visible,
 .product-update-body .product-value:focus-visible,
@@ -1001,6 +1019,7 @@ td, th {
 .user-value,
 .product-value,
 .branch-value,
+.reservation-value,
 .table-value {
   margin: 10px 0;
   margin-left: 15px;
@@ -1009,7 +1028,8 @@ td, th {
   padding: 5px 10px;
 }
 
-.branch-value {
+.branch-value,
+.reservation-value {
   width: 73% !important;
 }
 
@@ -1850,18 +1870,21 @@ input:not(:checked) + .toggle-slider:after {
 
   .branch-update-content,
   .branch-details-content,
+  .reservation-details-content,
   .branch-create-content {
     max-width: 500px;
   }
 
-  .branch-info {
+  .branch-info,
+  .reservation-info {
     flex-wrap: nowrap;
     justify-content: space-between;
     align-items: center;
     flex-direction: column;
   }
 
-  .branch-info-item {
+  .branch-info-item,
+  .reservation-info-item {
     width: 93%;
   }
 
@@ -1954,6 +1977,7 @@ input:not(:checked) + .toggle-slider:after {
   
   .menu-details-header h2,
   .branch-details-header h2,
+  .reservation-details-header h2,
   .user-details-header h2,
   .product-details-header h2,
   .menu-update-header h2,
@@ -1992,6 +2016,7 @@ input:not(:checked) + .toggle-slider:after {
   .user-details-content,
   .menu-details-content,
   .branch-details-content,
+  .reservation-details-content,
   .product-details-content,
   .menu-update-content,
   .product-update-content,
@@ -2037,6 +2062,7 @@ input:not(:checked) + .toggle-slider:after {
   .user-info,
   .product-info,
   .branch-info,
+  .reservation-info,
   .table-info {
     width: 95%;
   }
@@ -2165,7 +2191,8 @@ input:not(:checked) + .toggle-slider:after {
     margin-top: 0px;
   }
 
-  .users, .menu{
+  .users, 
+  .menu{
     margin-top: 8px;
   }
 
@@ -2173,6 +2200,7 @@ input:not(:checked) + .toggle-slider:after {
   .user-label,
   .product-label,
   .branch-label,
+  .reservation-label,
   .table-label {
     font-size: 14px;
   }
@@ -2180,13 +2208,15 @@ input:not(:checked) + .toggle-slider:after {
   .menu-value, 
   .user-value,
   .product-value,
-  .branch-value
+  .branch-value,
+  .reservation-value,
   .table-value {
     font-size: 14px;
   }
   
   .menu-details-body, 
   .branch-details-body,
+  .reservation-details-body,
   .user-details-body,
   .product-details-body, 
   .menu-update-body, 
@@ -2243,6 +2273,7 @@ input:not(:checked) + .toggle-slider:after {
   
   .menu-details-header h2,
   .branch-details-header h2,
+  .reservation-details-header h2,
   .user-details-header h2
   .product-details-header h2,
   .menu-update-header h2,
@@ -2278,6 +2309,7 @@ input:not(:checked) + .toggle-slider:after {
 
   .menu-details-content,
   .branch-details-content,
+  .reservation-details-content,
   .user-details-content
   .product-details-content,
   .menu-update-content,

@@ -3708,6 +3708,132 @@
     }
 
 
+    // Rezervasyon detaylarını getiren fonksiyon
+    function getReservationDetails(reservationId) {
+        const token = localStorage.getItem('token');
+        
+        $.ajax({
+            url: `${baseUrl}reservations/get?reservationId=${reservationId}`,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                if (response.success && response.data) {
+                    const reservation = response.data;
+                    const reservationDate = new Date(reservation.reservationDate);
+                    
+                    // Tarihleri formatla
+                    const formattedReservationDate = `${reservationDate.getDate().toString().padStart(2, '0')}.${(reservationDate.getMonth() + 1).toString().padStart(2, '0')}.${reservationDate.getFullYear()}`;
+                    
+                    let reservationDetailsHTML = `
+                    <div class="reservation-details-modal">
+                        <div class="reservation-details-content">
+                            <div class="reservation-details-header">
+                                <h2>Rezervasyon Detayı</h2>
+                                <span class="close-reservation-details">&times;</span>
+                            </div>
+                            <div class="reservation-details-body">
+                                <div class="reservation-info">
+                                    <div class="reservation-info-item">
+                                        <div class="reservation-label">
+                                            <strong>Müşteri Adı</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <p class="reservation-value">${reservation.fullName}</p>
+                                    </div>
+                                    <div class="reservation-info-item">
+                                        <div class="reservation-label">
+                                            <strong>E-posta</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <p class="reservation-value">${reservation.email}</p>
+                                    </div>
+                                    <div class="reservation-info-item">
+                                        <div class="reservation-label">
+                                            <strong>Rezervasyon Tarihi</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <p class="reservation-value">${formattedReservationDate}</p>
+                                    </div>
+                                    <div class="reservation-info-item">
+                                        <div class="reservation-label">
+                                            <strong>Telefon</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <p class="reservation-value">${reservation.phone}</p>
+                                    </div>
+                                    <div class="reservation-info-item">
+                                        <div class="reservation-label">
+                                            <strong>Masa No</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <p class="reservation-value">${reservation.tableNo}</p>
+                                    </div>
+                                    <div class="reservation-info-item">
+                                        <div class="reservation-label">
+                                            <strong>Kişi Sayısı</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <p class="reservation-value">${reservation.personCount}</p>
+                                    </div>
+                                    <div class="reservation-info-item">
+                                        <div class="reservation-label">
+                                            <strong>Not</strong> 
+                                            <span>:</span>
+                                        </div>
+                                        <p class="reservation-value">${reservation.note || '<span style="color: gray;">—</span>'}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                    
+                    // Eğer detay modülü zaten varsa kaldır
+                    $('.reservation-details-modal').remove();
+                    
+                    // Detay modülünü ekle
+                    $('body').append(reservationDetailsHTML);
+                    
+                    // Detay modülünü göster
+                    $('.reservation-details-modal').fadeIn(300);
+                    
+                    // Kapatma butonuna tıklandığında
+                    $('.close-reservation-details').click(function() {
+                        $('.reservation-details-modal').fadeOut(300, function() {
+                            $(this).remove();
+                        });
+                    });
+                    
+                    // Modül dışına tıklandığında kapat
+                    $('.reservation-details-modal').click(function(e) {
+                        if ($(e.target).hasClass('reservation-details-modal')) {
+                            $('.reservation-details-modal').fadeOut(300, function() {
+                                $(this).remove();
+                            });
+                        }
+                    });
+                } else {
+                    showToast('error', 'Hata', 'Rezervasyon detayı alınırken hata oluştu!');
+                }
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : 'Rezervasyon detayı alınırken hata oluştu!');
+            }
+        });
+    }
+
+    // Rezervasyon satırına tıklama olayı
+    $(document).on('click', '.reservation-row', function(e) {
+        const reservationId = $(this).data('reservation-id');
+
+        getReservationDetails(reservationId);
+    });
+
+
+
+
     function fetchReservations() {
         const reservationBody = $('.reservations-body');
     
