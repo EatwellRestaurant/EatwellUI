@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 
 <head>
     <meta charset="UTF-8">
@@ -11,66 +11,110 @@
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://kit.fontawesome.com/437bb43714.js" crossorigin="anonymous"></script>
-    <title>Menü</title>
-    <link rel="shortcut icon" href="../icons/favicon.png" type="image/x-icon">
-    <link rel="stylesheet" href="../css/style.css">
-    <link rel="stylesheet" href="../css/menu.css">
-
+    <title>Hakkımızda</title>
+    <link rel="shortcut icon" href="../../icons/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/about.css">
 </head>
 
 <body>
-
     <div id="progress">
         <span id="progress-value">&#x1F815</span>
     </div>
 
-    <header>
+    <header class="curtain">
         <div class="site_navbar site-navbar-light">
             <div class="container flex">
 
                 <div class="logo flex">
-                    <a href="https://eatwell.somee.com" class="logo-title">EATWELL</a>
+                    <a href="https://eatwellui.netlify.app" class="logo-title">EATWELL</a>
                 </div>
 
                 <nav class="flex">
                     <ul class="flex">
-                        <li><a href="https://eatwell.somee.com" class="nav-link">ANA SAYFA</a></li>
+                        <li><a href="https://eatwellui.netlify.app" class="nav-link">ANA SAYFA</a></li>
                         <li><a href="about.html" class="nav-link">HAKKIMIZDA</a></li>
                         <li><a href="menu.html" class="nav-link">MENÜ</a></li>
                         <li><a href="gallery.html" class="nav-link">GALERİ</a></li>
                         <li><a href="reservation.html" class="nav-link">REZERVASYON</a></li>
                     </ul>
                 </nav>
+
             </div>
         </div>
         <div class="header-main">
-            <span class="header-text">Menü<span style="color:#FFC515">.</span></span>
+            <span class="header-text">Hakkımızda<span style="color:#FFC515">.</span></span>
         </div>
     </header>
 
-
     <main>
-        <section class="main">
 
+        <!-- About -->
+        <section class="main">
             <div class="container">
                 <div class="title-striped flex">
-                    <img src="../icons/menus.png" width="65" height="65">
-                    <h2>Menümüz</h2>
+                    <img src="../../icons/pizza.png" width="65" height="65">
+                    <h2>Hakkımızda</h2>
                 </div>
 
-                <div class="menus">
-                    <div class="row">
-                       
-                    </div>
+                <div class="text flex">
+                    <p>
+                        Eatwell, tarihiyle, kültürüyle ve trendleriyle özdeşleşmiş olan İstanbul'un en seçkin noktalarında
+                        bulunur. Şehrin enerjisi, Eatwell'in zarif atmosferinde buluşup sizlere 
+                        unutulmaz bir mekân deneyimi yaşatır. <br> <br>
+                        Menümüz, damak zevkinizin sınırlarını zorlayacak özel tatlar içerir. Sabah kahvaltılarından, 
+                        nefis et yemeklerine, benzersiz salatalar ve dürümlerden, zengin kebap ve ızgaralara kadar geniş 
+                        bir yelpazede seçenekler sunar.
+                    </p>
+
+                    <p>
+                        Her tabak, aşçılarımızın özenle seçtiği en kaliteli malzemelerle hazırlanır ve özel olarak tasarlanmış 
+                        menümüzdeki her yemek, sizi lezzetin muhteşem dünyasına çıkarır.
+                        <br> <br>
+                        Biz, konuklarımıza sadece bir yemek değil, bir anı sunarız. 
+                        Bizim için her bir müşteri, aile üyesidir. Eatwell'e adım attığınızda, yemekten çok daha 
+                        fazlasını paylaşırız ve sizi bu samimi atmosferde ağırlamaktan mutluluk duyarız. 
+                        Gelin, birlikte estetik bir lezzet yolculuğuna çıkalım!
+                    </p>
                 </div>
             </div>
-
         </section>
+
+        
+        <!-- Chefs -->
+        <section class="main chefs curtain">
+            <div class="container">
+
+                <div class="title-striped flex">
+                    <img src="../../icons/icons8-chef-hat-100.png" width="65" height="65">
+                    <h2>Şeflerimiz</h2>
+                </div>
+
+                <div class="box flex"></div>
+
+            </div>
+        </section>
+
+
+        <!-- Testimonials -->
+        <section class="main">
+            <div class="container">
+
+                <div class="title-striped flex">
+                    <img src="../../icons/icons8-cocktail-100.png" width="65" height="65">
+                    <h2>Görüşler</h2>
+                </div>
+
+                <div class="case flex">    
+                </div>
+
+            </div>
+        </section>
+
     </main>
 
 
     <footer>
-
         <!-- Contact -->
         <section class="main contact">
             <div class="container">
@@ -141,10 +185,9 @@
         </section>
     </footer>
 
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-    <script src="../js/main.js"></script>
-    <script src="../js/menu.js"></script>
+    <script src="../../js/main.js"></script>
+    <script src="../../js/about.js"></script>
 </body>
 
 </html>
