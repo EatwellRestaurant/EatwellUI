@@ -3459,8 +3459,8 @@
             response.data.forEach(reservation => {
                 // Tarihi formatla (gün.ay.yıl şeklinde)
                 const date = new Date(reservation.reservationDate);
-                const formattedDate = `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`;
-                
+                const formattedDate = `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}\t${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+                                                
                 reservationsTableHTML += `
                     <tr class="reservation-row" data-reservation-id="${reservation.id}">
                         <td>${reservation.tableNo}</td>
@@ -3721,11 +3721,12 @@
             success: function(response) {
                 if (response.success && response.data) {
                     const reservation = response.data;
-                    const reservationDate = new Date(reservation.reservationDate);
+                    const date = new Date(reservation.reservationDate);
                     
                     // Tarihleri formatla
-                    const formattedReservationDate = `${reservationDate.getDate().toString().padStart(2, '0')}.${(reservationDate.getMonth() + 1).toString().padStart(2, '0')}.${reservationDate.getFullYear()}`;
-                    
+                    const formattedReservationDate = `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}\t${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+
+
                     let reservationDetailsHTML = `
                     <div class="reservation-details-modal">
                         <div class="reservation-details-content">
@@ -3824,6 +3825,7 @@
         });
     }
 
+    
     // Rezervasyon satırına tıklama olayı
     $(document).on('click', '.reservation-row', function(e) {
         const reservationId = $(this).data('reservation-id');
@@ -4607,6 +4609,84 @@
         });
     });
     
+
+    // Rezervasyonda "Göster" option kutusunda bir seçenek seçildiğinde
+    $(document).on('click', '.reservations-container.subdivision  .dropdown-pagination-option', function() {
+        fetchReservations();
+    });
+
+
+
+    // Navbar'daki "Sayfalar" seçeneğine tıklandığında
+    $('.sidenav a:contains("Sayfalar")').click(function(e) {
+        e.preventDefault();
+
+        //URL'ye sahte bir adım ekliyoruz
+        history.pushState({ page: 'pages' }, 'Sayfalar', '?page=pages'); 
+
+        getPages();
+    });
+
+
+    // Sayfaları getiren fonksiyon
+    function getPages() {
+        // Dashboard içeriğini temizle
+        $('.dashboard-content').empty();
+
+        // Sayfalar için HTML yapısı
+        let pagesHTML = `
+        <div class="pages-container">
+            <div class="pages-header">
+                <h2>Sayfa Seçiniz...</h2>
+            </div>
+            <div class="pages-body">
+                <a href="#" class="page-box">
+                    <div class="page-img">
+                        <img src="../images/home-admin.jpg" alt="anasayfa"/>
+                    </div>
+                    <div class="page-action">
+                        <button class="btn-home">
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </a>
+                <a href="#" class="page-box">
+                    <div class="page-img">
+                        <img src="../images/about-admin.jpg" alt="anasayfa"/>
+                    </div>
+                    <div class="page-action">
+                        <button class="btn-home">
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </a>
+                <a href="#" class="page-box">
+                    <div class="page-img">
+                        <img src="../images/menu-admin.jpg" alt="anasayfa"/>
+                    </div>
+                    <div class="page-action">
+                        <button class="btn-home">
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </a>
+                <a href="#" class="page-box">
+                    <div class="page-img">
+                        <img src="../images/gallery-admin.jpg" alt="anasayfa"/>
+                    </div>
+                    <div class="page-action">
+                        <button class="btn-home">
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </a>
+            </div>
+        </div>`;
+        
+        // Sayfaları dashboard'a ekle
+        $('.dashboard-content').append(pagesHTML);
+    }
+
 
 
     // Sayfa ilk açıldığında, yüklendiğinde
