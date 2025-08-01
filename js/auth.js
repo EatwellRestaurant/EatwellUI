@@ -58,7 +58,7 @@ $(document).ready(function() {
                 localStorage.setItem('pendingVerificationEmail', email);
                 localStorage.setItem('userId', response.dataId);
                 setTimeout(() => {
-                    window.location.href = 'verify-email.html';
+                    window.location.href = '../html/auth/verify-email.html';
                 }, 1500);
             },
             error: function(xhr) {

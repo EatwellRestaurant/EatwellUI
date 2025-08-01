@@ -157,7 +157,7 @@ textarea{
     align-items: center;
 }
 
-button{
+#reservation-btn{
     padding: 12px 20px;
     font-size: 1.5rem;
     color: #605959;
@@ -168,7 +168,7 @@ button{
     transition: all 0.35s ease-in-out;
 }
 
-button:hover{
+#reservation-btn:hover{
     background-color: #f0a500;
     color: #fff;
     border: 1px solid #f0a500;

@@ -57,6 +57,48 @@ a{
     color: #262323;
 }
 
+.navbar-toggler {
+    font-size: 27px;
+    border: none;
+    color: #fff;
+    background-color: transparent;
+    cursor: pointer;
+    display: none;
+}
+
+.navbar-body {
+    z-index: 16;
+    display: flex;
+}
+
+.nav-title {
+    display: none;
+    margin-top: 20px;
+    margin-left: 15px;
+    color: #000;
+    font-weight: 600;
+    font-size: 27px;
+    font-family: "Montserrat", sans-serif;
+}
+
+.navbar-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 15;
+    width: 100vw;
+    height: 100vh;
+    background-color: #000;
+}
+
+.navbar-backdrop.fade {
+    opacity: 0;
+}
+
+.navbar-backdrop.show {
+    opacity: .5;
+}
+
 .title-striped{
     flex-direction: column;
     align-items: center;
@@ -176,33 +218,22 @@ header .container{
 
 header .site-navbar-light{
     background: transparent !important;
-    position: absolute;
+    position: fixed;
+    transition: all .3s ease-in-out;
     left: 0;
     right: 0;
+    top: 0;
     z-index: 10;
     padding: 1.6rem 0;
 }
 
 header .site-navbar-light.scrolled {
-    position: fixed;
-    right: 0;
-    left: 0;
-    top: 0;
-    margin-top: -130px;
     background: #fff !important;
 }
 
-header .site-navbar-light.scrolled.sleep {
-    transition: .3s all ease-out;
-}
-
-header .site-navbar-light.scrolled.awake {
-    margin-top: 0px;
-    transition: .3s all ease-out;
-}
-
 header .site-navbar-light.scrolled .logo-title,
-header .site-navbar-light.scrolled .nav-link{
+header .site-navbar-light.scrolled .nav-link,
+header .site-navbar-light.scrolled .navbar-toggler{
     color: black;
     transition: color .4s;
 }
@@ -241,15 +272,17 @@ header nav ul li{
     font-size: 1.5rem;
 }
 
-header nav ul li a{
+header nav ul .nav-link{
     padding: .5rem 1.5rem;
     font-weight: 600;
     font-family: 'Rajdhani', sans-serif;
     letter-spacing: .1rem;
     transition: color .4s;
+    text-align: center;
+    text-transform: uppercase;
 }
 
-header nav ul li a:hover{
+header nav ul .nav-link:hover{
     color: #FFC515;
 }
 
@@ -411,4 +444,50 @@ a[href="http://somee.com"] {
     display: none !important;
 }
 
+@media screen and (max-width: 992px) {
+    header .site-navbar-light {
+        padding: 0;
+    }
 
+    header .logo {
+        padding: 1.6rem 0;
+    }
+    
+    .navbar-toggler {
+        padding: 1.6rem 0;
+        display: inline-block;
+    }
+
+    .navbar-body {
+        height: 100vh;
+        width: 250px;
+        background-color: #fff;
+        display: inline-block;
+        align-items: flex-start;
+        position: fixed;
+        right: 0;
+        transform: translateX(100%);
+        transition: all .3s ease-in-out;
+    }
+
+    .navbar-body.menu-open {
+        right: 0;
+        transform: none;
+    }
+    
+    .navbar-nav {
+        margin-top: 30px;
+        flex-direction: column;
+        gap: 20px;
+        width: 100%;
+    }
+
+    .nav-link {
+        color: #000;
+        width: 100%;
+    }
+
+    .nav-title {
+        display: inline-block;
+    }
+}

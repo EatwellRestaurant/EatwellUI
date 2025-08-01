@@ -40,48 +40,85 @@ $.get( "https://eatwellapi.somee.com/api/branchs/getall", function( data) {
 // navbar - scroll
 $(document).ready(function($) {
 
-	"use strict";
+	var navbar = $('.site_navbar');
 
-    var scrollWindow = function() {
-        $(window).scroll(function(){
-            var $w = $(this),
-                    st = $w.scrollTop(),
-                    navbar = $('.site_navbar'),
-                    sd = $('.js-scroll-wrap');
+    function handleSticky() {
+        navbar.toggleClass('scrolled', $(window).scrollTop() > 0);
+    }
 
-            if (st > 150) {
-                if ( !navbar.hasClass('scrolled') ) {
-                    navbar.addClass('scrolled');	
-                }
-            } 
-            if (st < 150) {
-                if ( navbar.hasClass('scrolled') ) {
-                    navbar.removeClass('scrolled sleep');
-                }
-            } 
-            if ( st > 350 ) {
-                if ( !navbar.hasClass('awake') ) {
-                    navbar.addClass('awake');	
-                }
-                
-                if(sd.length > 0) {
-                    sd.addClass('sleep');
-                }
-            }
-            if ( st < 350 ) {
-                if ( navbar.hasClass('awake') ) {
-                    navbar.removeClass('awake');
-                    navbar.addClass('sleep');
-                }
-                if(sd.length > 0) {
-                    sd.removeClass('sleep');
-                }
-            }
-        });
-    };
-    scrollWindow();
+    $(window).on('scroll', handleSticky);
 
+    handleSticky(); 
+
+
+    $('.navbar-toggler').on('click', function() {
+        var navbar = $('.navbar-body');
+        var siteNavbar = $('.site_navbar .container');
     
+        if (!navbar.hasClass('menu-open')) {
+            navbar.addClass('menu-open');
+
+            // Eğer daha önce eklenmemişse ekliyoruz
+            if (siteNavbar.find('.navbar-backdrop').length === 0) {
+                siteNavbar.append('<div class="navbar-backdrop show"></div>');
+            }
+        }
+    });
+
+
+    $('.nav-link').on('click', function() {
+        var navbar = $('.navbar-body');
+        var siteNavbar = $('.site_navbar .container');
+    
+        if (navbar.hasClass('menu-open')) {
+            navbar.removeClass('menu-open');
+
+            // Eğer daha önce eklenmemişse ekliyoruz
+            if (siteNavbar.find('.navbar-backdrop').length === 0) {
+                siteNavbar.append('<div class="navbar-backdrop show"></div>');
+            }else{
+                siteNavbar.find('.navbar-backdrop').remove();
+            }
+        }
+    });
+
+
+    function checkScreenSize() {
+
+        // Sayfa yüklendiğinde ve ekran boyutu 992px ve üzerindeyse sidenav'ı aç
+        if ($(window).width() >= 992) {
+            
+            var navbar = $('.navbar-body');
+            var siteNavbar = $('.site_navbar .container');
+                
+            if (navbar.hasClass('menu-open')) {
+                navbar.removeClass('menu-open');
+                siteNavbar.find('.navbar-backdrop').remove();
+            }
+        }
+    }
+
+
+    // Sayfa yüklendiğinde çalıştır
+    checkScreenSize();
+    
+
+    // Ekran boyutu değiştiğinde tekrar kontrol et
+    $(window).resize(function() {
+        checkScreenSize();
+    });
+    
+});
+
+
+$(document).on('click', '.navbar-backdrop', function() { 
+    var navbar = $('.navbar-body');
+    var siteNavbar = $('.site_navbar .container');
+
+    if (navbar.hasClass('menu-open')) {
+        navbar.removeClass('menu-open');
+        siteNavbar.find('.navbar-backdrop').remove();
+    }
 });
 
 
@@ -89,7 +126,7 @@ $(document).ready(function($) {
 //scroll-up
 let calcScrollValue = () =>{
     let scrollProgress = document.getElementById("progress");
-    let progressValue = document.getElementById("progress-value");
+
     let pos = document.documentElement.scrollTop;
     let calcHeight = 
         document.documentElement.scrollHeight -

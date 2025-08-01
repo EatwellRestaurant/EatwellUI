@@ -4640,9 +4640,9 @@
                 <h2>Sayfa Seçiniz...</h2>
             </div>
             <div class="pages-body">
-                <a href="#" class="page-box">
+                <a href="../admin/pages/home-preview.html" class="page-box" target="_blank">
                     <div class="page-img">
-                        <img src="../images/home-admin.jpg" alt="anasayfa"/>
+                        <img src="../../images/home-admin.jpg" alt="anasayfa"/>
                     </div>
                     <div class="page-action">
                         <button class="btn-home">
@@ -4652,7 +4652,7 @@
                 </a>
                 <a href="#" class="page-box">
                     <div class="page-img">
-                        <img src="../images/about-admin.jpg" alt="anasayfa"/>
+                        <img src="../../images/about-admin.jpg" alt="hakkımızda"/>
                     </div>
                     <div class="page-action">
                         <button class="btn-home">
@@ -4662,7 +4662,7 @@
                 </a>
                 <a href="#" class="page-box">
                     <div class="page-img">
-                        <img src="../images/menu-admin.jpg" alt="anasayfa"/>
+                        <img src="../../images/menu-admin.jpg" alt="menü"/>
                     </div>
                     <div class="page-action">
                         <button class="btn-home">
@@ -4672,7 +4672,7 @@
                 </a>
                 <a href="#" class="page-box">
                     <div class="page-img">
-                        <img src="../images/gallery-admin.jpg" alt="anasayfa"/>
+                        <img src="../../images/gallery-admin.jpg" alt="galeri"/>
                     </div>
                     <div class="page-action">
                         <button class="btn-home">
@@ -4757,6 +4757,11 @@
             history.replaceState({ page: 'reservationsByBranch' }, 'Rezervasyonlar', `?page=reservationsByBranch&branchId=${branchId}`);
 
             getReservationTemplate(branchId, branchName, 1);
+
+        }else if (page === 'pages') {
+            history.replaceState({ page: 'pages' }, 'Şehirler', '?page=pages'); 
+
+            getPages();
 
         }else {
             // Hiç page değeri yoksa dashboard'u yükle.
@@ -5088,6 +5093,10 @@
                     
                 case 'branchesForReservation':
                     getAllBranchesForReservations();
+                    break;
+
+                case 'pages':
+                    getPages();
                     break;
 
                 case 'dashboard':
