@@ -1,0 +1,131 @@
+.preview.btn-outline-info,
+.preview.btn-outline-warning,
+.preview.btn-outline-dark {
+    cursor: pointer;
+}
+
+.preview-info-box {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translate(-50%, 0);
+    padding: 10px 30px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    border-top-left-radius: 7px;
+    border-top-right-radius: 7px;
+    background-color: #ffc515;
+    z-index: 10;
+}
+
+.preview-info-box p {
+    font-size: 17px;
+    font-weight: 600;
+    width: 200px;
+    text-align: center;
+}
+
+.preview-info-box i {
+    font-size: 16px;
+}
+
+.image-upload-wrapper {
+    cursor: pointer;
+    position: absolute;
+    z-index: 5;
+    top: 90px;
+    right: 30px;
+    font-size: 14px;
+    background-color: #ffc515;
+    color: #000;
+    border: none;
+    border-radius: 10px;
+    transition: all .3s ease-in-out;
+}
+
+.image-upload-wrapper:hover {
+    background-color: #edbf36;
+    transform: translateY(-15%);
+}
+
+.custom-upload-button {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 13px 25px;
+    cursor: pointer;
+}
+
+.about-image .image-upload-wrapper {
+    top: 50px;
+    right: 20px;
+}
+
+
+.menu .image-upload-wrapper {
+    top: 50px;
+}
+
+.image-input {
+    display: none;
+}
+
+textarea.about-text {
+    height: 240px;
+    padding: 12px;
+    font-family: 'Open Sans', sans-serif;
+    border: 3px solid #bdb6b6;
+    transition: border .3s ease-in-out;
+}
+
+textarea.about-text:focus {
+    border: 3px solid #ffc515;
+}
+
+textarea.about-text:focus-visible {
+    outline: none;
+}
+
+
+@media screen and (max-width: 992px) { 
+    
+}
+
+
+@media screen and (max-width: 768px) { 
+    .preview-info-box p {
+        font-size: 16px;
+        width: 180px;
+    }
+    
+    .preview-info-box i {
+        font-size: 15px;
+    }
+
+    .custom-upload-button {
+        gap: 8px;
+        padding: 11px 23px;
+    }
+}
+
+
+@media screen and (max-width: 480px) { 
+    .preview-info-box p {
+        font-size: 15px;
+        width: 170px;
+    }
+    
+    .preview-info-box i {
+        font-size: 14px;
+    }
+
+    .image-upload-wrapper {
+        font-size: 13px;
+    }
+
+    .custom-upload-button {
+        gap: 6px;
+        padding: 11px 20px;
+    }
+}

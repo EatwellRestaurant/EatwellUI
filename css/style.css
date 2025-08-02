@@ -32,7 +32,7 @@ a{
 }
 
 #progress{
-    z-index: 5;
+    z-index: 10;
     position: fixed;
     bottom: 20px;
     right: 20px;
@@ -297,9 +297,11 @@ header .header-main{
     padding-top: 50px;
 }
 
-header .header-text{
+.header-text{
     font-size: 7.5rem;
     font-weight: 600;
+    text-align: center;
+    width: 90%;
 }
 
 .main{
@@ -317,7 +319,8 @@ header .header-text{
     padding-right: 2rem;
 }
 
-.text p{
+.text p, 
+textarea.about-text {
     font-size: 1.8rem;
     font-weight: 400;
     color: #646060;
@@ -490,4 +493,24 @@ a[href="http://somee.com"] {
     .nav-title {
         display: inline-block;
     }
+
+    .header-text {
+        font-size: 6.5rem;
+    }
 }
+
+
+@media screen and (max-width: 768px) { 
+    .header-text {
+        font-size: 5.5rem;
+    }
+}
+
+
+@media screen and (max-width: 480px) {
+    .header-text {
+        font-size: 4rem;
+    }
+ }
+
+

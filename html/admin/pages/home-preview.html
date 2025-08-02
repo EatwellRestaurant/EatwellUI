@@ -16,14 +16,20 @@
     <link rel="shortcut icon" href="../../../icons/favicon.png" type="image/x-icon">
     <link rel="stylesheet" href="../../../css/style.css">
     <link rel="stylesheet" href="../../../css/index.css">
+    <link rel="stylesheet" href="../../../css/preview.css">
 </head>
 
 <body>
+    <div class="preview-info-box">
+        <i class="fa-solid fa-user"></i>
+        <p>Admin Önizleme Modu</p>
+    </div>
+
     <div id="progress">
         <span id="progress-value">&#x1F815</span>
     </div>
 
-    <header class="curtain">
+    <header class="curtain" id="previewHomeImage">
         <div class="site_navbar site-navbar-light">
             <div class="container flex">
                 <div class="logo flex">
@@ -46,42 +52,64 @@
                 </nav>
             </div>
         </div>
+
+        <div class="image-upload-wrapper">
+            <label for="homeImage" class="custom-upload-button">
+                <i class="fa-solid fa-pencil"></i>
+                Resmi Değiştir
+            </label>
+            <input type="file" id="homeImage" accept="image/*" class="image-input">
+        </div>
+
         <div class="header-main">
             <span class="header-text">Yemek ve daha fazlası<span style="color:#FFC515">.</span></span>
         </div>
+
     </header>
 
     <main>
 
         <!-- About -->
         <section class="main">
-            <div class="container flex">
 
+            <div class="container flex">
                 <div class="text flex">
                     <h2 class="title-unlined">Hakkımızda</h2>
-                    <p class="about-text">
-                        Eatwell, sadece bir restoran değil, bir yaşam tarzıdır. Her bir detayımız, 
-                        İstanbul'un güzelliklerini ve trendlerini yansıtmak için seçildi.
-                    </p>
-                    <p class="about-text">
-                        Estetik, minimalist, modern ve elegan atmosferimizle sizleri karşılamak; Eatwell'in sizlere sunduğu ayrıcalıklardan sadece biridir. 
-                        Eatwell ailesi olarak; sadece yemek sunmuyoruz, sizleri bir yaşam tarzına davet ediyoruz.
-                    </p>
+                    <textarea class="about-text">Eatwell, sadece bir restoran değil, bir yaşam tarzıdır. Her bir detayımız, İstanbul'un güzelliklerini ve trendlerini yansıtmak için seçildi. 
 
-                    <a href="#" class="btn btn-outline-info">Hakkımızda Daha Fazla Bilgi Edin</a>
+Estetik, minimalist, modern ve elegan atmosferimizle sizleri karşılamak; Eatwell'in sizlere sunduğu ayrıcalıklardan sadece biridir. Eatwell ailesi olarak; sadece yemek sunmuyoruz, sizleri bir yaşam tarzına davet ediyoruz.
+                    </textarea>
+                
+                    <button class="btn btn-outline-info preview">Hakkımızda Daha Fazla Bilgi Edin</button>
                 </div>
 
                 <div class="about-image">
-                    <img src="../../../images/chef1.jpg" alt="">
-                </div>
+                    <div class="image-upload-wrapper">
+                        <label for="aboutImage" class="custom-upload-button">
+                            <i class="fa-solid fa-pencil"></i>
+                            Resmi Değiştir
+                        </label>
+                        <input type="file" id="aboutImage" accept="image/*" class="image-input">
+                    </div>
 
+                    <img src="../../../images/chef1.jpg" alt="hakkımızda" id="previewAboutImage">
+                </div>
             </div>
+
         </section>
 
         <!-- Menu -->
-        <section class="main menu curtain">
-            <div class="container">
+        <section class="main menu curtain" id="previewMenuImage">
 
+            <div class="image-upload-wrapper">
+                <label for="menuImage" class="custom-upload-button">
+                    <i class="fa-solid fa-pencil"></i>
+                    Resmi Değiştir
+                </label>
+                <input type="file" id="menuImage" accept="image/*" class="image-input">
+            </div>
+
+            <div class="container">
                 <div class="title-striped flex">
                     <img src="../../../icons/icons8-menu-64.png" width="65" height="65">
                     <h2>Menümüz</h2>
@@ -91,7 +119,7 @@
                 </div>
 
                 <div class="btn-frame flex">
-                    <a href="#" class="btn btn-outline-warning">Daha Fazla</a>
+                    <button class="btn btn-outline-warning preview">Daha Fazla</button>
                 </div>
 
             </div>
@@ -111,7 +139,7 @@
                 </div>
 
                 <div class="btn-frame flex">
-                    <a href="#" class="btn btn-outline-dark">Daha Fazla</a>
+                    <button class="btn btn-outline-dark preview">Daha Fazla</button>
                 </div>
 
             </div>
@@ -189,11 +217,13 @@
                 <p class="copyright">© 2023 EATWELL Her hakkı saklıdır.</p>
             </div>
         </section>
+
     </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>    
     <script src="../../../js/main.js"></script>
     <script src="../../../js/index.js"></script>
+    <script src="../../../js/preview.js"></script>
     <script src="../../../js/bootstrap/bootstrap.bundle.min.js"></script>
 </body>
 
