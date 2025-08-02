@@ -89,7 +89,10 @@ textarea.about-text:focus-visible {
 
 
 @media screen and (max-width: 992px) { 
-    
+    .about-image .image-upload-wrapper {
+        top: 470px;
+        right: 68px;
+    }
 }
 
 
@@ -108,6 +111,13 @@ textarea.about-text:focus-visible {
         padding: 11px 23px;
     }
 }
+
+@media screen and (max-width: 600px) {
+    .about-image .image-upload-wrapper {
+        top: 450px;
+        right: 45px;
+    }
+ }
 
 
 @media screen and (max-width: 480px) { 
