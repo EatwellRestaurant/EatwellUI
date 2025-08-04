@@ -27,7 +27,8 @@ $(document).ready(function() {
 
     //Global değişkenler
     const baseUrl = 'https://eatwell-api.azurewebsites.net/api/';
-
+    let productsOfMenu = '';
+    let selectedProductIds = []; // Menüler bölümüne eklenmiş olan ürünlerin id değerlerini tuttuğumuz dizi 
 
     // Token kontrolü
     const token = localStorage.getItem('token');
@@ -135,7 +136,7 @@ $(document).ready(function() {
                         
                         // Ürünler için HTML yapısı
                         productHtml = `
-                        <div class="product">
+                        <div class="product" data-product-id="${product.id}">
                             <div class="col flex">
                                 <i class="fa-solid fa-circle-xmark"></i>
                                 <img src=${product.imagePath} alt=${product.name}>
@@ -156,7 +157,8 @@ $(document).ready(function() {
                                 <div class="food-information flex">
                                     <span class="new-food">Yeni Ürün Seç</span>
                                     <div class="dropdown" id="customDropdown">
-                                        <div class="dropdown-toggle" id="selectedId" data-selected-id="" style="border-color: rgb(255, 197, 21);">Seçiniz...</div>
+                                        <div class="dropdown-toggle" id="selectedId" data-selected-id="">Seçiniz...</div>
+                                        <div class="dropdown-product"></div>
                                     </div>
                                 </div>
                             </div>
@@ -209,7 +211,161 @@ $(document).ready(function() {
         });
     }
 
+    
+
+    function getSelectableProductsHtml(){
+        let productsHTML = '';
+
+        // Ürünleri ekle
+        productsOfMenu.forEach(product => {
+
+            // Eğer ilgili product.id, selectedProductIds listesinin içerisinde yoksa "Yeni Ürün Seç" listesine ekliyoruz.
+            if (!selectedProductIds.includes(product.id)) {
+                productsHTML += `
+                <div class="dropdown-option" data-product-id="${product.id}" data-product-price="${product.price}" data-product-image-path="${product.imagePath}">${product.name}</div>
+                `;
+            }
+        });
+
+        return productsHTML;
+    }
+
+    
+    
+    function updateUnselectedProductList(){
+        $.ajax({
+            url: `${baseUrl}products/getAll`,
+            type: 'GET',
+            success: function(response) {
+                productsOfMenu = response.data;
+                
+                // "Yeni Ürün Seç" listesini temizle
+                $('.dropdown-product').empty();
+
+                let productsHTML = '';
+                
+                if (productsOfMenu.length > 0) {
+
+                    // Menüler bölümüne eklenmiş olan ürünlerin, "Yeni Ürün Seç" listesine eklenmemesi için id bilgilerini alıyoruz.
+                    // .product:not(.no-drag) --> Listedeki son ögeyi bu seçime dahil etmiyoruz. 
+                    $('.products .product:not(.no-drag)').each(function () {
+                        selectedProductIds.push($(this).data('product-id'));
+                    });
+
+                    productsHTML = getSelectableProductsHtml();
+
+                } else {
+                    productsHTML = `
+                    <h3 class="empty-list">Henüz ürün bulunmamaktadır.</h3>
+                    `;
+                }
+                
+                $('.dropdown-product').html(productsHTML);
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : 'Ürünler alınırken hata oluştu!');
+            }
+        });
+    }
+    
+    
+    // "Yeni Ürün Seç" listesine tıklandığında listenin açılması...
+    $(document).on('click', '.dropdown-toggle', function(e) {
+        e.stopPropagation(); 
+        
+        const product = $("#customDropdown").find(".dropdown-product");
+        product.toggleClass("active");
+        
+        if (product.hasClass("active")) {
+            $(".dropdown-toggle").css("border-color", "#ffc515"); 
+        } else {
+            $(".dropdown-toggle").css("border-color", "#dedbdb"); 
+        }
+    });
+
+
+
+    // "Yeni Ürün Seç" listesinde ürünlerin üzerine gelindiğinde resimlerinin görüntülenmesi için...
+    $(document).on('mouseenter', '.dropdown-option', function () {
+        const imagePath = $(this).data('productImagePath'); 
+        const previewImage = $(".product.no-drag").find("img");
+        previewImage.attr('src', imagePath);
+    });
+
+
+
+    // "Yeni Ürün Seç" listesinde bir seçenek (ürün) seçildiğinde listeyi kapat ve ürünü menüler bölümüne ekle.
+    $(document).on('click', '.dropdown-option', function() {
+        const label = $(this).text();
+        const selectedId = $(this).data('product-id');
+        const selectedImagePath = $(this).data('product-image-path');
+        const selectedPrice = $(this).data('product-price');
+
+        let productHtml = `
+            <div class="product" data-product-id="${selectedId}">
+                <div class="col flex">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                    <img src=${selectedImagePath} alt=${label}>
+                    <div class="food-information flex">
+                        <span class="food-name">${label}</span>
+                        <span class="food-price">${selectedPrice} ₺</span>
+                    </div>
+                </div>
+            </div>`;
+
+        
+        const lastDraggableProduct = $('.products .product:not(.no-drag)').last();
+        // Seçtiğimiz son ürünün sonuna yeni oluşturduğumuz productHtml elemanını ekliyoruz.
+        lastDraggableProduct.after(productHtml);
+
+
+        // Yeni ürün eklemek için oluşturduğumuz div elemanının resmini eski haline getiriyoruz.
+        const previewImage = $(".product.no-drag").find("img");
+        previewImage.attr('src', '../../../icons/selected-products.png');
+
+
+        // Eklenen ürünün id bilgisini selectedProductIds listesine ekliyoruz. 
+        selectedProductIds.push(selectedId);
+        // Eklenen ürünü, "Yeni Ürün Seç" listesinden kaldırıyoruz.
+        $(this).remove();
+
+        
+        // dropdown'ı kapatıp rengini soluklaştırıyoruz.
+        $("#customDropdown").find(".dropdown-product").removeClass("active");
+        $(".dropdown-toggle").css("border-color", "#dedbdb"); 
+    });
+
+
+    
+    // Dışarı tıklanınca ilgili menüleri kapat
+    $(document).on("click", function (e) {
+
+        // Eğer tıklanan yer "Yeni Ürün Seç" listesi veya içindeki seçenekler değilse
+        if (!$("#customDropdown").is(e.target) && $("#customDropdown").has(e.target).length === 0) {
+            $("#customDropdown").find(".dropdown-product").removeClass("active");
+            $(".dropdown-toggle").css("border-color", "#dedbdb"); 
+
+
+            // "Yeni Ürün Seç" listesinde eğer bir ürün seçilmezse küçük resmi eski haline getiriyoruz.
+            const previewImage = $(".product.no-drag").find("img");
+            const selectedId = $('#selectedId').data('selected-id');
+            
+            if (!selectedId) {
+                // Seçili ürün yoksa varsayılan resmi yükle
+                previewImage.attr('src', '../../../icons/selected-products.png');
+            }
+        }
+    });
+
+
+    // Backend'de üst üste atılan isteklerden dolayı hata almamak için updateUnselectedProductList() metodunu 1sn sonra çağırıyoruz. 
     getProducts();
+    
+    setTimeout(function () {
+        updateUnselectedProductList(); 
+    }, 1000);
+
 });
 
 

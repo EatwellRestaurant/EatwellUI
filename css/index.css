@@ -97,10 +97,10 @@ header{
 
 .product .col i {
     position: absolute;
-    font-size: 30px;
+    font-size: 36px;
     color: #ffc515;
-    top: 10px;
-    left: 10px;
+    top: 6px;
+    left: 6px;
 }
 
 .product .col img{

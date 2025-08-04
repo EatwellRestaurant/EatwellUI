@@ -118,12 +118,12 @@ textarea.about-text:focus-visible {
   
 .new-food {
     font-size: 18px;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 .dropdown {
     position: relative;
-    width: 180px;
+    width: 240px;
 }
 
 .dropdown-toggle {
@@ -132,12 +132,12 @@ textarea.about-text:focus-visible {
 
 .dropdown-toggle {
     width: 100%;
-    height: 40px;
-    padding: 8px 40px 8px 7px;
+    height: 45px;
+    padding: 10px 40px 10px 7px;
     font-size: 1.6rem;
     letter-spacing: .03rem;
     border-radius: 5px;
-    border: 2px solid #dedbdb;
+    border: 3px solid #dedbdb;
     background: #fff;
     font-family: "Mulish", sans-serif;
     appearance: none;
@@ -147,7 +147,43 @@ textarea.about-text:focus-visible {
     transition: all 0.2s ease-in;
 }
 
+.dropdown-product {
+    position: absolute;
+    top: 112%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 2px solid #dedbdb;
+    display: none;
+    z-index: 10;
+    border-radius: 4px;
+    max-height: 160px;
+    overflow-x: auto;
+    color: #000;
+}
 
+.dropdown-product.active {
+    display: block;
+}
+
+.dropdown-option {
+    padding: 10px;
+    cursor: pointer;
+    font-size: 1.6rem;
+    font-family: "Mulish", sans-serif;
+}
+
+.dropdown-option:hover {
+    background: #f0f0f0;
+}
+
+.empty-list {
+    text-align: center;
+    padding: 20px 0;
+    color: #888; 
+    font-style: italic;
+    padding: 20px !important;
+  }
 
 
 @media screen and (max-width: 1200px) {
