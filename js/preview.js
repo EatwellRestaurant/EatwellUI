@@ -25,6 +25,9 @@ $(document).ready(function() {
     }
 
 
+    //Global değişkenler
+    const baseUrl = 'https://eatwell-api.azurewebsites.net/api/';
+
 
     // Token kontrolü
     const token = localStorage.getItem('token');
@@ -104,7 +107,7 @@ $(document).ready(function() {
             
             reader.onload = function(e) {
                 // Önizleme resmini güncelliyoruz
-                $('#previewMenuImage').css('background-image', `url(${e.target.result})`);
+                $('#previewMenu').css('background-image', `url(${e.target.result})`);
             }
             
             // Dosyayı base64 formatında okuyoruz    
@@ -112,6 +115,101 @@ $(document).ready(function() {
         }
     });
 
+
+
+    // Ürünleri getiren fonksiyon
+    function getProducts() {
+        $.ajax({
+            url: `${baseUrl}products/getSelectedProducts`,
+            type: 'GET',
+            success: function(response) {
+                // Products içeriğini temizle
+                $('.products').empty();
+
+                let box = '';
+                let productHtml = '';
+                                
+                // Ürünleri göster
+                if (response.data.length > 0) {
+                    response.data.forEach(product => {                        
+                        
+                        // Ürünler için HTML yapısı
+                        productHtml = `
+                        <div class="product">
+                            <div class="col flex">
+                                <i class="fa-solid fa-circle-xmark"></i>
+                                <img src=${product.imagePath} alt=${product.name}>
+                                <div class="food-information flex">
+                                    <span class="food-name">${product.name}</span>
+                                    <span class="food-price">${product.price} ₺</span>
+                                </div>
+                            </div>
+                        </div>`;
+
+                        box += productHtml;
+                    });
+
+                    box += `
+                        <div class="product">
+                            <div class="col flex">
+                                <img src="../../../icons/selected-products.png" alt="ürün">
+                                <div class="food-information flex">
+                                    <span class="new-food">Yeni Ürün Seç</span>
+                                    <div class="dropdown" id="customDropdown">
+                                        <div class="dropdown-toggle" id="selectedId" data-selected-id="" style="border-color: rgb(255, 197, 21);">Seçiniz...</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;                    
+
+
+
+                    // Yalnızca seçilen iki ürünün birbirleriyle yer değiştirmesini sağlıyoruz.
+                    let $firstSelected = null;
+
+                    $('.products').on('click', '.product:not(.no-drag)', function () {
+                        
+                        // 1. tıklama. Yani seçim yapılıyor.
+                        if (!$firstSelected) {
+                            $firstSelected = $(this); // $(this) ile tıklanan öğe alınıp $firstSelected olarak kaydediliyor.
+                            $firstSelected.addClass('selected'); // Görsel olarak seçildiğini göstermek için selected sınıfını ekliyoruz.
+                            return;
+                        }
+
+                        // 2. kez aynı öğeye tıklandıysa seçim iptal ediliyor.
+                        if ($firstSelected.is($(this))) {
+                            $firstSelected.removeClass('selected');
+                            $firstSelected = null;
+                            return;
+                        }
+
+                        // 2. öğe seçildi. Yani yerleri değiştiriliyor.
+                        const $secondSelected = $(this);
+                        
+                        const $clone1 = $firstSelected.clone(true); // Her iki öğe de .clone(true) ile tüm event handler'larıyla birlikte klonlanıyor.
+                        const $clone2 = $secondSelected.clone(true);
+                    
+                        $firstSelected.replaceWith($clone2); //replaceWith ile birbirlerinin yerine geçmeleri sağlanıyor.
+                        $secondSelected.replaceWith($clone1);
+                    
+                        $('.product').removeClass('selected');
+                        $firstSelected = null;
+                    });
+                } 
+                
+                // Ürünleri dashboard'a ekle
+                $('.products').append(box);
+                $('.product:last-child').addClass('no-drag');
+
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : 'Ürünler alınırken hata oluştu!');
+            }
+        });
+    }
+
+    getProducts();
 });
 
 

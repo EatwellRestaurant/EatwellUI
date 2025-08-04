@@ -104,6 +104,11 @@ a{
     align-items: center;
 }
 
+.title-striped img {
+    width: 65px;
+    height: 65px;
+}
+
 .title-striped h2{
     margin-top: 8px;
     font-size: 5.2rem;
@@ -147,7 +152,6 @@ a{
 }
 
 .btn-frame{
-    margin-top: 20px;
     align-items: center;
     justify-content: center;
 }
@@ -477,6 +481,15 @@ a[href="http://somee.com"] {
     .container {
         width: 90%;
     }
+
+    .title-striped h2 {
+        font-size: 5rem;
+    }
+
+    .title-striped h2:after, 
+    .title-striped h2:before {
+        width: 260px;
+    }
 }
 
 
@@ -550,6 +563,16 @@ a[href="http://somee.com"] {
     #about .btn {
         margin-top: 5px;
     }
+
+    .title-striped h2 {
+        font-size: 4.7rem;
+    }
+
+    .title-striped h2:after, 
+    .title-striped h2:before {
+        width: 215px;
+        top: 32px;
+    }
 }
 
 
@@ -566,9 +589,40 @@ a[href="http://somee.com"] {
     textarea.about-text {
         font-size: 1.7rem;
     }
+
+    .title-striped img {
+        width: 60px;
+        height: 60px;
+    }
+
+    .title-striped h2 {
+        font-size: 4.2rem;
+    }
+
+    .title-striped h2:after, 
+    .title-striped h2:before {
+        width: 165px;
+        top: 28px;
+    }
 }
 
 
+@media screen and (max-width: 600px) { 
+    .title-striped img {
+        width: 55px;
+        height: 55px;
+    }
+
+    .title-striped h2 {
+        font-size: 3.8rem;
+    }
+
+    .title-striped h2:after, 
+    .title-striped h2:before {
+        width: 125px;
+        top: 27px;
+    }
+}
 
 
 @media screen and (max-width: 480px) {
@@ -579,6 +633,21 @@ a[href="http://somee.com"] {
     .text, 
     .about-image {
         width: 97% !important;
+    }
+
+    .title-striped img {
+        width: 50px;
+        height: 50px;
+    }
+
+    .title-striped h2 {
+        font-size: 3.4rem;
+    }
+
+    .title-striped h2:after, 
+    .title-striped h2:before {
+        width: 95px;
+        top: 27px;
     }
  }
 

@@ -87,11 +87,84 @@ textarea.about-text:focus-visible {
     outline: none;
 }
 
+.menu p {
+    text-align: center;
+    font-size: 14px;
+}
+
+.menu p a {
+    color: #ffc515;
+}
+
+.swap-info-box {
+    display: flex;
+    align-items: center;
+    background-color: #fff8e1;
+    border: 1px solid #ffc107;
+    padding: 10px 14px;
+    border-radius: 8px;
+    color: #7a5d00;
+    font-weight: 500;
+    font-size: 14px;
+    gap: 8px;
+    margin: 25px auto;
+    width: 40%;
+    justify-content: center;
+}
+
+.swap-info-box i {
+  color: #ffc107;
+}
+  
+.new-food {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+.dropdown {
+    position: relative;
+    width: 180px;
+}
+
+.dropdown-toggle {
+    cursor: pointer;
+}
+
+.dropdown-toggle {
+    width: 100%;
+    height: 40px;
+    padding: 8px 40px 8px 7px;
+    font-size: 1.6rem;
+    letter-spacing: .03rem;
+    border-radius: 5px;
+    border: 2px solid #dedbdb;
+    background: #fff;
+    font-family: "Mulish", sans-serif;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    color: #797878;
+    transition: all 0.2s ease-in;
+}
+
+
+
+
+@media screen and (max-width: 1200px) {
+    .swap-info-box {
+        width: 50%;
+    }
+}
+
 
 @media screen and (max-width: 992px) { 
     .about-image .image-upload-wrapper {
         top: 470px;
         right: 68px;
+    }
+
+    .swap-info-box {
+        width: 60%;
     }
 }
 
@@ -110,12 +183,20 @@ textarea.about-text:focus-visible {
         gap: 8px;
         padding: 11px 23px;
     }
+
+    .swap-info-box {
+        width: 70%;
+    }
 }
 
 @media screen and (max-width: 600px) {
     .about-image .image-upload-wrapper {
         top: 450px;
         right: 45px;
+    }
+
+    .swap-info-box {
+        width: 80%;
     }
  }
 
@@ -133,9 +214,24 @@ textarea.about-text:focus-visible {
     .image-upload-wrapper {
         font-size: 13px;
     }
+    
+    .menu .image-upload-wrapper {
+        top: 30px;
+        right: 22px;
+    }
 
     .custom-upload-button {
         gap: 6px;
         padding: 11px 20px;
+    }
+
+    .about-image .image-upload-wrapper {
+        top: 450px;
+        right: 25px;
+    }
+
+    .swap-info-box {
+        width: 85%;
+        font-size: 13px;
     }
 }
