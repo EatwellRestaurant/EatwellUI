@@ -121,6 +121,22 @@ textarea.about-text:focus-visible {
     margin-bottom: 15px;
 }
 
+.admin-btn-delete-product {
+    position: absolute;
+    font-size: 36px;
+    color: #ffc515;
+    top: 6px;
+    left: 6px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    transition: color .3s ease-in-out;
+}
+
+.admin-btn-delete-product:hover {
+    color: #f61717;
+}
+
 .dropdown {
     position: relative;
     width: 240px;

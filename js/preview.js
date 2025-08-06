@@ -27,7 +27,7 @@ $(document).ready(function() {
 
     //Global değişkenler
     const baseUrl = 'https://eatwell-api.azurewebsites.net/api/';
-    let productsOfMenu = '';
+    let incomingProducts = '';
     let selectedProductIds = []; // Menüler bölümüne eklenmiş olan ürünlerin id değerlerini tuttuğumuz dizi 
 
     // Token kontrolü
@@ -138,7 +138,9 @@ $(document).ready(function() {
                         productHtml = `
                         <div class="product" data-product-id="${product.id}">
                             <div class="col flex">
-                                <i class="fa-solid fa-circle-xmark"></i>
+                                <button class="admin-btn-delete-product" data-product-id="${product.id}">
+                                    <i class="fa-solid fa-circle-xmark"></i>
+                                </button>
                                 <img src=${product.imagePath} alt=${product.name}>
                                 <div class="food-information flex">
                                     <span class="food-name">${product.name}</span>
@@ -169,8 +171,12 @@ $(document).ready(function() {
                     // Yalnızca seçilen iki ürünün birbirleriyle yer değiştirmesini sağlıyoruz.
                     let $firstSelected = null;
 
-                    $('.products').on('click', '.product:not(.no-drag)', function () {
-                        
+                    $('.products').on('click', '.product:not(.no-drag)', function (e) {
+                        // Eğer tıklanan element silme butonu ise işlemi durdur...
+                        if ($(e.target).closest('.admin-btn-delete-product').length) {
+                            return;
+                        }
+
                         // 1. tıklama. Yani seçim yapılıyor.
                         if (!$firstSelected) {
                             $firstSelected = $(this); // $(this) ile tıklanan öğe alınıp $firstSelected olarak kaydediliyor.
@@ -211,13 +217,35 @@ $(document).ready(function() {
         });
     }
 
+
+
+    $(document).on('click', '.product .admin-btn-delete-product', function(e) {
+        e.stopPropagation();
+
+        const product = $(this).closest('.product');
+        const productId = product.data('product-id');
+        const productPrice = product.find('.food-price').text();
+        const productName = product.find('.food-name').text();
+        const productImagePath = product.find('img').attr('src');
+
+        selectedProductIds = selectedProductIds.filter(p => p !== productId);
+
+        let productHTML = `
+        <div class="dropdown-option" data-product-id="${productId}" data-product-price="${productPrice}" data-product-image-path="${productImagePath}">${productName}</div>
+        `;
+        
+        $('.dropdown-product').append(productHTML);
+        
+        product.remove();
+    });
+
     
 
     function getSelectableProductsHtml(){
         let productsHTML = '';
 
         // Ürünleri ekle
-        productsOfMenu.forEach(product => {
+        incomingProducts.forEach(product => {
 
             // Eğer ilgili product.id, selectedProductIds listesinin içerisinde yoksa "Yeni Ürün Seç" listesine ekliyoruz.
             if (!selectedProductIds.includes(product.id)) {
@@ -237,14 +265,14 @@ $(document).ready(function() {
             url: `${baseUrl}products/getAll`,
             type: 'GET',
             success: function(response) {
-                productsOfMenu = response.data;
+                incomingProducts = response.data;
                 
                 // "Yeni Ürün Seç" listesini temizle
                 $('.dropdown-product').empty();
 
                 let productsHTML = '';
                 
-                if (productsOfMenu.length > 0) {
+                if (incomingProducts.length > 0) {
 
                     // Menüler bölümüne eklenmiş olan ürünlerin, "Yeni Ürün Seç" listesine eklenmemesi için id bilgilerini alıyoruz.
                     // .product:not(.no-drag) --> Listedeki son ögeyi bu seçime dahil etmiyoruz. 
@@ -305,7 +333,9 @@ $(document).ready(function() {
         let productHtml = `
             <div class="product" data-product-id="${selectedId}">
                 <div class="col flex">
-                    <i class="fa-solid fa-circle-xmark"></i>
+                    <button class="admin-btn-delete-product" data-product-id="${selectedId}">
+                        <i class="fa-solid fa-circle-xmark"></i>
+                    </button>
                     <img src=${selectedImagePath} alt=${label}>
                     <div class="food-information flex">
                         <span class="food-name">${label}</span>

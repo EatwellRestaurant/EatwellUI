@@ -95,14 +95,6 @@ header{
     cursor: auto !important;
 }
 
-.product .col i {
-    position: absolute;
-    font-size: 36px;
-    color: #ffc515;
-    top: 6px;
-    left: 6px;
-}
-
 .product .col img{
     width: 105px;
     height: 105px;
