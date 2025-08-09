@@ -24,12 +24,25 @@
         }, 5000);
     }
 
-    // Token kontrolü
+    //Global değişkenler
     const token = localStorage.getItem('token');
+    const expiration = localStorage.getItem('expiration');
     const userName = localStorage.getItem('userName');
     
-
-    try {
+    
+    if (expiration < Date.now()){
+        localStorage.removeItem('token');
+        localStorage.removeItem('expiration');
+        localStorage.removeItem('userName');
+        localStorage.removeItem('adminRemembered');
+        
+        window.location.href = 'admin-login.html';
+    }
+    
+    
+    
+    // Token kontrolü
+    try {    
         // Token'ı decode et
         const tokenPayload = JSON.parse(atob(token.split('.')[1]));
         
@@ -39,6 +52,7 @@
         // Eğer kullanıcının yetkisi admin değilse
         if (userRole !== 'Admin') {
             localStorage.removeItem('token');
+            localStorage.removeItem('expiration');
             localStorage.removeItem('userName');
             localStorage.removeItem('adminRemembered');
 
@@ -68,6 +82,7 @@
     } catch (error) {
         console.error('Token decode hatası:', error);
         localStorage.removeItem('token');
+        localStorage.removeItem('expiration');
         localStorage.removeItem('userName');
         localStorage.removeItem('adminRemembered');
         
@@ -98,6 +113,7 @@
         
         setTimeout(() => {
             localStorage.removeItem('token');
+            localStorage.removeItem('expiration');
             localStorage.removeItem('userName');
             localStorage.removeItem('adminRemembered');
 
@@ -5107,6 +5123,7 @@
                 default:
                     // Eğer hiç tanımlamadığımız bir page değeri gelirse token'ı silip ve login sayfasına yönlendiriyoruz.
                     localStorage.removeItem('token');
+                    localStorage.removeItem('expiration');
                     localStorage.removeItem('userName');
                     localStorage.removeItem('adminRemembered');
 

@@ -27,12 +27,29 @@ $(document).ready(function() {
 
     //Global değişkenler
     const baseUrl = 'https://eatwell-api.azurewebsites.net/api/';
+    let firstHomeHeroImagePath = null;
     let incomingProducts = '';
     let selectedProductIds = []; // Menüler bölümüne eklenmiş olan ürünlerin id değerlerini tuttuğumuz dizi 
+    const pageContentIds = {
+        HomeHero: 1 ,
+        HomeAboutSection: 2, 
+        HomeMenuSection: 3
+    };
+    const token = localStorage.getItem('token');
+    const expiration = localStorage.getItem('expiration');
+    
+    
+    if (expiration < Date.now()){
+        localStorage.removeItem('token');
+        localStorage.removeItem('expiration');
+        localStorage.removeItem('userName');
+        localStorage.removeItem('adminRemembered');
+        
+        window.location.href = '../admin-login.html';
+    }
+    
 
     // Token kontrolü
-    const token = localStorage.getItem('token');
-
     try {
         // Token'ı decode et
         const tokenPayload = JSON.parse(atob(token.split('.')[1]));
@@ -58,7 +75,33 @@ $(document).ready(function() {
 
 
 
-    // Resim seçildiğinde önizleme gösterme (Anasaydaki ilk karşılama resmi için)
+    // Sayfanın içeriğini (değiştirilebilen resimleri ve hakkımda metnini) getiren fonksiyon
+    function getPageContents() {
+        $.ajax({
+            url: `${baseUrl}pageContents?page=1`,
+            type: 'GET',
+            success: function(response) {
+
+                response.data.forEach(pageContent => {
+                        
+                    // Anasayfa - Hero
+                    if (pageContent.id == pageContentIds.HomeHero) {
+                        $('#previewHomeImage').css('background-image', `url(${pageContent.imagePath})`);
+                        firstHomeHeroImagePath = pageContent.imagePath;
+                    }
+                });
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : 'Sayfa içerikleri alınırken hata oluştu!');
+            }
+        });
+    }
+
+
+
+
+    // Resim seçildiğinde önizleme gösterme (Anasayfadaki ilk karşılama resmi için)
     $(document).on('change', '#homeImage', function(e) {
         const file = e.target.files[0];
         
@@ -73,12 +116,69 @@ $(document).ready(function() {
             
             // Dosyayı base64 formatında okuyoruz    
             reader.readAsDataURL(file); 
+
+            $('.btn-save-image').css('display','flex');
+            $('.btn-undo-image').css('display','flex');
         }
     });
 
 
 
-    // Resim seçildiğinde önizleme gösterme (Anasaydaki hakkımızda resmi için)
+    $(document).on('click', '.btn-save-image', function() {
+        $('.save-loader').css('display','inline-block');
+        $('.btn-save-image i').css('display','none');
+        
+        const file = $('#homeImage')[0].files[0];
+        
+        const formData = new FormData();
+        formData.append('image', file);
+        formData.append('id', 1);
+        
+        $.ajax({
+            url: `${baseUrl}pageContents`,
+            type: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                if (response.success) {
+                    showToast('success', 'Başarılı', 'Resim başarıyla güncellendi!');
+                    
+                    $('.btn-save-image').css('display','none');
+                    $('.btn-undo-image').css('display','none');
+                    $('.save-loader').css('display','none');
+                    
+                    firstHomeHeroImagePath = response.data;
+                    
+                } else {
+                    showToast('error', 'Hata', 'Resim güncellenirken hata oluştu!');
+                }
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : 'Resim güncellenirken hata oluştu!');
+            }
+        });
+    });
+    
+
+
+    $(document).on('click', '.btn-undo-image', function(){
+        $('#previewHomeImage').css('background-image', `url(${firstHomeHeroImagePath})`);
+        
+        // Aynı dosyayı tekrar seçebilmek için input'u sıfırlıyoruz.
+        $('#homeImage').val('');
+
+        $('.btn-save-image').css('display','none');
+        $('.btn-undo-image').css('display','none');
+    });
+
+
+
+    // Resim seçildiğinde önizleme gösterme (Anasayfadaki hakkımızda resmi için)
     $(document).on('change', '#aboutImage', function(e) {
         const file = e.target.files[0];
         
@@ -98,7 +198,7 @@ $(document).ready(function() {
 
 
 
-    // Resim seçildiğinde önizleme gösterme (Anasaydaki menü resmi için)
+    // Resim seçildiğinde önizleme gösterme (Anasayfadaki menü resmi için)
     $(document).on('change', '#menuImage', function(e) {
         const file = e.target.files[0];
         
@@ -151,60 +251,60 @@ $(document).ready(function() {
 
                         box += productHtml;
                     });
-
-                    box += `
-                        <div class="product">
-                            <div class="col flex">
-                                <img src="../../../icons/selected-products.png" alt="ürün">
-                                <div class="food-information flex">
-                                    <span class="new-food">Yeni Ürün Seç</span>
-                                    <div class="dropdown" id="customDropdown">
-                                        <div class="dropdown-toggle" id="selectedId" data-selected-id="">Seçiniz...</div>
-                                        <div class="dropdown-product"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>`;                    
-
-
-
-                    // Yalnızca seçilen iki ürünün birbirleriyle yer değiştirmesini sağlıyoruz.
-                    let $firstSelected = null;
-
-                    $('.products').on('click', '.product:not(.no-drag)', function (e) {
-                        // Eğer tıklanan element silme butonu ise işlemi durdur...
-                        if ($(e.target).closest('.admin-btn-delete-product').length) {
-                            return;
-                        }
-
-                        // 1. tıklama. Yani seçim yapılıyor.
-                        if (!$firstSelected) {
-                            $firstSelected = $(this); // $(this) ile tıklanan öğe alınıp $firstSelected olarak kaydediliyor.
-                            $firstSelected.addClass('selected'); // Görsel olarak seçildiğini göstermek için selected sınıfını ekliyoruz.
-                            return;
-                        }
-
-                        // 2. kez aynı öğeye tıklandıysa seçim iptal ediliyor.
-                        if ($firstSelected.is($(this))) {
-                            $firstSelected.removeClass('selected');
-                            $firstSelected = null;
-                            return;
-                        }
-
-                        // 2. öğe seçildi. Yani yerleri değiştiriliyor.
-                        const $secondSelected = $(this);
-                        
-                        const $clone1 = $firstSelected.clone(true); // Her iki öğe de .clone(true) ile tüm event handler'larıyla birlikte klonlanıyor.
-                        const $clone2 = $secondSelected.clone(true);
-                    
-                        $firstSelected.replaceWith($clone2); //replaceWith ile birbirlerinin yerine geçmeleri sağlanıyor.
-                        $secondSelected.replaceWith($clone1);
-                    
-                        $('.product').removeClass('selected');
-                        $firstSelected = null;
-                    });
                 } 
                 
+                box += `
+                    <div class="product">
+                        <div class="col flex">
+                            <img src="../../../icons/selected-products.png" alt="ürün">
+                            <div class="food-information flex">
+                                <span class="new-food">Yeni Ürün Seç</span>
+                                <div class="dropdown" id="customDropdown">
+                                    <div class="dropdown-toggle" id="selectedId" data-selected-id="">Seçiniz...</div>
+                                    <div class="dropdown-product"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;                    
+
+
+                // Yalnızca seçilen iki ürünün birbirleriyle yer değiştirmesini sağlıyoruz.
+                let $firstSelected = null;
+
+                $('.products').on('click', '.product:not(.no-drag)', function (e) {
+                    // Eğer tıklanan element silme butonu ise işlemi durdur...
+                    if ($(e.target).closest('.admin-btn-delete-product').length) {
+                        return;
+                    }
+
+                    // 1. tıklama. Yani seçim yapılıyor.
+                    if (!$firstSelected) {
+                        $firstSelected = $(this); // $(this) ile tıklanan öğe alınıp $firstSelected olarak kaydediliyor.
+                        $firstSelected.addClass('selected'); // Görsel olarak seçildiğini göstermek için selected sınıfını ekliyoruz.
+                        return;
+                    }
+
+                    // 2. kez aynı öğeye tıklandıysa seçim iptal ediliyor.
+                    if ($firstSelected.is($(this))) {
+                        $firstSelected.removeClass('selected');
+                        $firstSelected = null;
+                        return;
+                    }
+
+                    // 2. öğe seçildi. Yani yerleri değiştiriliyor.
+                    const $secondSelected = $(this);
+                    
+                    const $clone1 = $firstSelected.clone(true); // Her iki öğe de .clone(true) ile tüm event handler'larıyla birlikte klonlanıyor.
+                    const $clone2 = $secondSelected.clone(true);
+                
+                    $firstSelected.replaceWith($clone2); //replaceWith ile birbirlerinin yerine geçmeleri sağlanıyor.
+                    $secondSelected.replaceWith($clone1);
+                
+                    $('.product').removeClass('selected');
+
+                    $firstSelected = null;
+                });
+
                 // Ürünleri dashboard'a ekle
                 $('.products').append(box);
                 $('.product:last-child').addClass('no-drag');
@@ -345,9 +445,18 @@ $(document).ready(function() {
             </div>`;
 
         
-        const lastDraggableProduct = $('.products .product:not(.no-drag)').last();
-        // Seçtiğimiz son ürünün sonuna yeni oluşturduğumuz productHtml elemanını ekliyoruz.
-        lastDraggableProduct.after(productHtml);
+        let lastDraggableProduct = $('.products .product:not(.no-drag)').last();
+        
+        if (lastDraggableProduct.length == 0){
+            // Eğer menüde hiç ürün yoksa direkt içeriğe ekliyoruz.
+            $('.products .product').before(productHtml);
+
+        }else{
+            // Seçtiğimiz ürünü, menüdeki son ürünün sonuna ekliyoruz.
+            lastDraggableProduct.after(productHtml);
+        }
+
+        
 
 
         // Yeni ürün eklemek için oluşturduğumuz div elemanının resmini eski haline getiriyoruz.
@@ -390,11 +499,26 @@ $(document).ready(function() {
 
 
     // Backend'de üst üste atılan isteklerden dolayı hata almamak için updateUnselectedProductList() metodunu 1sn sonra çağırıyoruz. 
-    getProducts();
+    function delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
     
-    setTimeout(function () {
-        updateUnselectedProductList(); 
-    }, 1000);
+    async function runMethods() {
+        $('#overlay').css('display','flex');
+
+        await delay(500);
+        getPageContents();
+        
+        await delay(500);
+        getProducts();
+        
+        await delay(500);
+        updateUnselectedProductList();
+        
+        $('#overlay').fadeOut(900);
+    }
+    
+    runMethods();
 
 });
 

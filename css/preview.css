@@ -30,28 +30,85 @@
     font-size: 16px;
 }
 
-.image-upload-wrapper {
+.image-upload-wrapper,
+.btn-save-image,
+.btn-undo-image {
     cursor: pointer;
     position: absolute;
     z-index: 5;
-    top: 90px;
     right: 30px;
-    font-size: 14px;
-    background-color: #ffc515;
-    color: #000;
+    font-size: 16px;
     border: none;
     border-radius: 10px;
     transition: all .3s ease-in-out;
 }
 
-.image-upload-wrapper:hover {
-    background-color: #edbf36;
+.image-upload-wrapper {
+    color: #000;
+    top: 90px;
+    background-color: #ffc515;
+}
+
+.btn-save-image,
+.btn-undo-image {
+    color: #fff;
+    gap: 8px;
+    align-items: center;
+    display: none;
+    padding: 13px 25px;
+}
+
+.btn-save-image {
+    background-color: #3c930a;
+    top: 155px;
+}
+
+.btn-undo-image {
+    background-color: #930a0a;
+    top: 215px;
+}
+
+.save-loader {
+    width: 15px;
+    height: 15px;
+    display: none;
+    border: 3px solid #FFF;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+} 
+
+.image-upload-wrapper:hover,
+.btn-save-image:hover,
+.btn-undo-image:hover {
     transform: translateY(-15%);
+}
+
+.image-upload-wrapper:hover {
+    background-color: #eebf32;
+}
+
+.btn-save-image:hover {
+    background-color: #4ebc0e;
+}
+
+.btn-undo-image:hover {
+    background-color: #bc0e0e;
 }
 
 .custom-upload-button {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     align-items: center;
     padding: 13px 25px;
     cursor: pointer;

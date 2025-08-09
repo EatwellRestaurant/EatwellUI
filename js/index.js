@@ -101,7 +101,40 @@ $.get( "https://eatwellapi.somee.com/api/branchimages/getall", function( data ) 
 });
 
 
+$(document).ready(function() { 
 
+    //Global değişkenler
+    const baseUrl = 'https://eatwell-api.azurewebsites.net/api/';
+    const pageContentIds = {
+        HomeHero: 1 ,
+        HomeAboutSection: 2, 
+        HomeMenuSection: 3
+    };
+
+    // Sayfanın içeriğini getiren fonksiyon
+    function getPageContents() {
+        $.ajax({
+            url: `${baseUrl}pageContents?page=1`,
+            type: 'GET',
+            success: function(response) {
+
+                response.data.forEach(pageContent => {
+                        
+                    // Anasayfa - Hero
+                    if (pageContent.id == pageContentIds.HomeHero) {
+                        $('#previewHomeImage').css('background-image', `url(${pageContent.imagePath})`);
+                    }
+                });
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : 'Sayfa içerikleri alınırken hata oluştu!');
+            }
+        });
+    }
+
+    getPageContents();
+});
 
 
 

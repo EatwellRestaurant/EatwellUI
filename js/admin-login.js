@@ -44,9 +44,6 @@ $(document).ready(function() {
                 password: password
             }),
             success: function(response) {
-                // Token'ı localStorage'a kaydet
-                localStorage.setItem('token', response.data.token);
-
                 // Token'ı decode et ve yetki bilgisini kontrol et
                 const tokenPayload = JSON.parse(atob(response.data.token.split('.')[1]));
                 
@@ -62,9 +59,15 @@ $(document).ready(function() {
                     if (rememberMe) {
                         localStorage.setItem('adminRemembered', 'true');
                     }
+                    
                     localStorage.setItem('userName', decodedUserName);
+                    localStorage.setItem('expiration', response.data.expiration);
+                    
+                    // Token'ı localStorage'a kaydet
+                    localStorage.setItem('token', response.data.token);
                     
                     showToast('success', 'Başarılı', 'Admin paneline giriş yapılıyor...');
+                    
                     setTimeout(() => {
                         window.location.href = 'admin-panel.html';
                     }, 2000);

@@ -30,6 +30,7 @@
     </div>
 
     <header class="curtain" id="previewHomeImage">
+        <input type="file" id="fileInput" style="display: none;">
         <div class="site_navbar site-navbar-light">
             <div class="container flex">
                 <div class="logo flex">
@@ -60,6 +61,17 @@
             </label>
             <input type="file" id="homeImage" accept="image/*" class="image-input">
         </div>
+
+        <button class="btn-save-image">
+            <i class="fa-solid fa-check"></i>
+            <span class="save-loader"></span>
+            Kaydet
+        </button>
+
+        <button class="btn-undo-image">
+            <i class="fa-solid fa-rotate-left"></i>
+            Geri Al
+        </button>
 
         <div class="header-main">
             <span class="header-text">Yemek ve daha fazlası<span style="color:#FFC515">.</span></span>
@@ -92,7 +104,7 @@ Estetik, minimalist, modern ve elegan atmosferimizle sizleri karşılamak; Eatwe
                         <input type="file" id="aboutImage" accept="image/*" class="image-input">
                     </div>
 
-                    <img src="../../../images/chef1.jpg" alt="hakkımızda" id="previewAboutImage">
+                    <img src="../../../images/home-about-section.jpg" alt="hakkımızda" id="previewAboutImage">
                 </div>
             </div>
 
@@ -228,6 +240,10 @@ Estetik, minimalist, modern ve elegan atmosferimizle sizleri karşılamak; Eatwe
         </section>
 
     </footer>
+
+    <div id="overlay">
+        <span class="loader"></span>
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script src="../../../js/main.js"></script>
