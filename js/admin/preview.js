@@ -38,8 +38,8 @@ $(document).ready(function() {
     const token = localStorage.getItem('token');
     const expiration = localStorage.getItem('expiration');
     
-    
-    if (expiration < Date.now()){
+
+    if (new Date(expiration) < new Date()){
         localStorage.removeItem('token');
         localStorage.removeItem('expiration');
         localStorage.removeItem('userName');
@@ -506,7 +506,6 @@ $(document).ready(function() {
     async function runMethods() {
         $('#overlay').css('display','flex');
 
-        await delay(500);
         getPageContents();
         
         await delay(500);

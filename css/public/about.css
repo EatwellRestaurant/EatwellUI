@@ -1,7 +1,7 @@
 @import "../css/fontawesome.min.css";
 
 header{
-    background-image: url(../images/about-hero.jpeg);
+    background-image: url(../../images/about-hero.jpeg);
 }
 
 .text{
@@ -18,7 +18,7 @@ header{
 }
 
 .chefs{
-    background-image: url(../images/about-chef-section.jpg);
+    background-image: url(../../images/about-chef-section.jpg);
     color: #fff;
 }
 

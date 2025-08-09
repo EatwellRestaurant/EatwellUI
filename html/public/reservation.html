@@ -5,78 +5,76 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rezervasyon</title>
+  <link href="../../icons/favicon.png" type="image/x-icon" rel="shortcut icon">
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://kit.fontawesome.com/437bb43714.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <title>Rezervasyon</title>
-  <link rel="shortcut icon" href="../../icons/favicon.png" type="image/x-icon">
-  <link rel="stylesheet" href="../../css/style.css">
-  <link rel="stylesheet" href="../../css/reservation.css">
+  <link href="../../css/style.css" rel="stylesheet">
+  <link href="../../css/public/reservation.css" rel="stylesheet">
 </head>
 
 <body>
   <div id="progress">
     <span id="progress-value">&#x1F815</span>
   </div>
-
+  
   <header class="curtain">
     <div class="site_navbar site-navbar-light">
-        <div class="container flex">
-            <div class="logo flex">
-                <a href="https://eatwellui.netlify.app" class="logo-title">EATWELL</a>
-            </div>
-
-            <button type="button" class="navbar-toggler">
-                <i class="fa-solid fa-bars"></i>
-            </button>
-
-            <nav class="navbar-body">
-                <p><a href="#" class="nav-title">Menü</a></p>
-                <ul class="flex navbar-nav">
-                    <li><a href="https://eatwellui.netlify.app" class="nav-link">Ana Sayfa</a></li>
-                    <li><a href="about.html" class="nav-link">Hakkımızda</a></li>
-                    <li><a href="menu.html" class="nav-link">Menü</a></li>
-                    <li><a href="gallery.html" class="nav-link">Galerİ</a></li>
-                    <li><a href="reservation.html" class="nav-link">Rezervasyon</a></li>
-                </ul>
-            </nav>
+      <div class="container flex">
+        <div class="logo flex">
+          <a href="https://eatwellui.netlify.app" class="logo-title">EATWELL</a>
         </div>
+        
+        <button type="button" class="navbar-toggler">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        
+        <nav class="navbar-body">
+          <p><a href="#" class="nav-title">Menü</a></p>
+          <ul class="flex navbar-nav">
+            <li><a href="https://eatwellui.netlify.app" class="nav-link">Ana Sayfa</a></li>
+            <li><a href="about.html" class="nav-link">Hakkımızda</a></li>
+            <li><a href="menu.html" class="nav-link">Menü</a></li>
+            <li><a href="gallery.html" class="nav-link">Galerİ</a></li>
+            <li><a href="reservation.html" class="nav-link">Rezervasyon</a></li>
+          </ul>
+        </nav>
+      </div>
     </div>
     <div class="header-main">
       <span class="header-text">Rezervasyon<span style="color:#FFC515">.</span></span>
     </div>
   </header>
-
+  
   <main>
-
+    
     <section class="main reservation">
       <div class="container flex">
         <div class="form-box">
           <h2 class="title">Şimdi Deneyimleyin</h2>
-
+          
           <form id="reservation-form">
             <div class="reservation-box">
               <input id="full-name" type="text" placeholder="Ad Soyad" required>
               <i class="fa-solid fa-user fa-2xl"></i>
               <div id="warn-name"></div>
             </div>
-
+            
             <div class="reservation-box">
               <input id="email" type="email" placeholder="E-posta" required>
               <i class="fa-solid fa-envelope fa-2xl"></i>
             </div>
-
+            
             <div class="reservation-box">
               <input id="phone" type="tel" placeholder="Telefon" maxlength="14" required>
               <i class="fa-solid fa-phone fa-2xl"></i>
               <div id="warn-phone"></div>
             </div>
-
+            
             <div class="reservation-box">
               <select id="branch" name="branches">
                 <option>Şubeler</option>
@@ -86,7 +84,7 @@
               </select>
               <i class="fa-solid fa-location-dot fa-2xl"></i>
             </div>
-
+            
             <div class="reservation-box datetime">
               <div class="relative">
                 <input id="datePicker" type="date" class="title-change date" required>
@@ -95,67 +93,67 @@
                   <option value="09:15">09:15</option>
                   <option value="09:30">09:30</option>
                   <option value="09:45">09:45</option>
-
+                  
                   <option value="10:00">10:00</option>
                   <option value="10:15">10:15</option>
                   <option value="10:30">10:30</option>
                   <option value="10:45">10:45</option>
-
+                  
                   <option value="11:00">11:00</option>
                   <option value="11:15">11:15</option>
                   <option value="11:30">11:30</option>
                   <option value="11:45">11:45</option>
-
+                  
                   <option value="12:00">12:00</option>
                   <option value="12:15">12:15</option>
                   <option value="12:30">12:30</option>
                   <option value="12:45">12:45</option>
-
+                  
                   <option value="13:00">13:00</option>
                   <option value="13:15">13:15</option>
                   <option value="13:30">13:30</option>
                   <option value="13:45">13:45</option>
-
+                  
                   <option value="14:00">14:00</option>
                   <option value="14:15">14:15</option>
                   <option value="14:30">14:30</option>
                   <option value="14:45">14:45</option>
-
+                  
                   <option value="15:00">15:00</option>
                   <option value="15:15">15:15</option>
                   <option value="15:30">15:30</option>
                   <option value="15:45">15:45</option>
-
+                  
                   <option value="16:00">16:00</option>
                   <option value="16:15">16:15</option>
                   <option value="16:30">16:30</option>
                   <option value="16:45">16:45</option>
-
+                  
                   <option value="17:00">17:00</option>
                   <option value="17:15">17:15</option>
                   <option value="17:30">17:30</option>
                   <option value="17:45">17:45</option>
-
+                  
                   <option value="18:00">18:00</option>
                   <option value="18:15">18:15</option>
                   <option value="18:30">18:30</option>
                   <option value="18:45">18:45</option>
-
+                  
                   <option value="19:00">19:00</option>
                   <option value="19:15">19:15</option>
                   <option value="19:30">19:30</option>
                   <option value="19:45">19:45</option>
-
+                  
                   <option value="20:00">20:00</option>
                   <option value="20:15">20:15</option>
                   <option value="20:30">20:30</option>
                   <option value="20:45">20:45</option>
-
+                  
                   <option value="21:00">21:00</option>
                   <option value="21:15">21:15</option>
                   <option value="21:30">21:30</option>
                   <option value="21:45">21:45</option>
-
+                  
                   <option value="22:00">22:00</option>
                   <option value="22:15">22:15</option>
                   <option value="22:30">22:30</option>
@@ -163,7 +161,7 @@
                 <h3>Tarih Seçin</h3>
               </div>
             </div>
-
+            
             <div class="reservation-box">
               <div class="relative">
                 <select id="guest" class="title-change" name="guests" required>
@@ -185,7 +183,7 @@
                 <h3>Mesajınız</h3>
               </div>
             </div>
-
+            
             <div class="reservation-box btn">
               <button id="reservation-btn" type="submit">Rezervasyon Oluştur</button>
               <span id="reservation-info"></span>
@@ -194,15 +192,15 @@
         </div>
       </div>
     </section>
-
+    
   </main>
-
+  
   <footer>
-
+    
     <!-- Contact -->
     <section class="main contact">
       <div class="container">
-
+        
         <div class="contact-contents flex">
           <div class="content flex">
             <h5>Bize Ulaşın</h5>
@@ -218,7 +216,7 @@
               </div>
             </div>
           </div>
-
+          
           <div class="content flex">
             <h5>Çalışma Saatlerimiz</h5>
             <p>
@@ -228,7 +226,7 @@
               11:00 – 24:00 <br>
             </p>
           </div>
-
+          
           <div class="content flex">
             <h5>Hemen Arayın</h5>
             <p>
@@ -240,7 +238,7 @@
             </p>
           </div>
         </div>
-
+        
         <ul class="social flex">
           <li>
             <a href="#" class="frame facebook">
@@ -263,15 +261,17 @@
             </a>
           </li>
         </ul>
-
+        
         <p class="copyright">© 2023 EATWELL Her hakkı saklıdır.</p>
       </div>
     </section>
   </footer>
-
+  
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-  <script src="../../js/main.js"></script>
-  <script src="../../js/reservation.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://kit.fontawesome.com/437bb43714.js" crossorigin="anonymous"></script>
+  <script src="../../js/public/main.js"></script>
+  <script src="../../js/public/reservation.js"></script>
 </body>
 
 </html>

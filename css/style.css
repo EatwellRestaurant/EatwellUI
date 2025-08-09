@@ -64,13 +64,15 @@ a{
     top: 20px;
     right: 20px;
     z-index: 1002;
+    will-change: transform; /* Tarayıcıya "Bu elemanda transform özelliği değişecek, şimdiden buna göre hazırlık yap" demiş oluyoruz ki toast 
+    eklenip kaybolurken transform animasyonu ve pozisyon değişimi sırasında yanıp sönme sorunu olmasın.*/
 }
 
 .toast {
     background: white;
     padding: 15px 25px;
     border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px 4px rgba(0, 0, 0, 0.2);
     margin-bottom: 10px;
     display: flex;
     align-items: center;

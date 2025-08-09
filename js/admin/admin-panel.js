@@ -1,4 +1,4 @@
-    $(document).ready(function() {
+$(document).ready(function() {
     // Toast container'ı oluştur
     $('body').append('<div class="toast-container"></div>');
 
@@ -30,7 +30,7 @@
     const userName = localStorage.getItem('userName');
     
     
-    if (expiration < Date.now()){
+    if (new Date(expiration) < new Date()){
         localStorage.removeItem('token');
         localStorage.removeItem('expiration');
         localStorage.removeItem('userName');
