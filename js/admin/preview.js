@@ -28,6 +28,7 @@ $(document).ready(function() {
     //Global değişkenler
     const baseUrl = 'https://eatwell-api.azurewebsites.net/api/';
     let firstHomeHeroImagePath = null;
+    let firstHomeAboutSectionImagePath = null;
     let incomingProducts = '';
     let selectedProductIds = []; // Menüler bölümüne eklenmiş olan ürünlerin id değerlerini tuttuğumuz dizi 
     const pageContentIds = {
@@ -89,6 +90,15 @@ $(document).ready(function() {
                         $('#previewHomeImage').css('background-image', `url(${pageContent.imagePath})`);
                         firstHomeHeroImagePath = pageContent.imagePath;
                     }
+                    
+                    // Anasayfa - About Section
+                    if (pageContent.id == pageContentIds.HomeAboutSection) {
+                        let plainText = pageContent.description.replace(/<[^>]*>/g, '');
+                        $('.about-text').val(plainText);
+
+                        $('#previewAboutImage').attr('src', pageContent.imagePath);
+                        firstHomeAboutSectionImagePath = pageContent.imagePath;
+                    }
                 });
             },
             error: function(xhr) {
@@ -117,22 +127,24 @@ $(document).ready(function() {
             // Dosyayı base64 formatında okuyoruz    
             reader.readAsDataURL(file); 
 
-            $('.btn-save-image').css('display','flex');
-            $('.btn-undo-image').css('display','flex');
+            $('#previewHomeImage .btn-save-image').css('display','flex');
+            $('#previewHomeImage .btn-undo-image').css('display','flex');
         }
     });
 
 
 
-    $(document).on('click', '.btn-save-image', function() {
-        $('.save-loader').css('display','inline-block');
-        $('.btn-save-image i').css('display','none');
+    // Değiştirilen anasayfa hero resmini kaydetme (güncelleme)
+    $(document).on('click', '#previewHomeImage .btn-save-image', function() {
+        let btn = $(this);
+        btn.find('.save-loader').css('display','inline-block');
+        btn.find('i').css('display','none');
         
         const file = $('#homeImage')[0].files[0];
         
         const formData = new FormData();
         formData.append('image', file);
-        formData.append('id', 1);
+        formData.append('id', pageContentIds.HomeHero);
         
         $.ajax({
             url: `${baseUrl}pageContents`,
@@ -147,10 +159,11 @@ $(document).ready(function() {
                 if (response.success) {
                     showToast('success', 'Başarılı', 'Resim başarıyla güncellendi!');
                     
-                    $('.btn-save-image').css('display','none');
-                    $('.btn-undo-image').css('display','none');
-                    $('.save-loader').css('display','none');
-                    
+                    btn.css('display','none');
+                    $('#previewHomeImage .btn-undo-image').css('display','none');
+                    btn.find('.save-loader').css('display','none');
+                    btn.find('i').css('display','block');
+
                     firstHomeHeroImagePath = response.data;
                     
                 } else {
@@ -166,14 +179,15 @@ $(document).ready(function() {
     
 
 
-    $(document).on('click', '.btn-undo-image', function(){
+    // Değiştirilen anasayfa hero resmini geri alma
+    $(document).on('click', '#previewHomeImage .btn-undo-image', function(){
         $('#previewHomeImage').css('background-image', `url(${firstHomeHeroImagePath})`);
         
         // Aynı dosyayı tekrar seçebilmek için input'u sıfırlıyoruz.
         $('#homeImage').val('');
 
-        $('.btn-save-image').css('display','none');
-        $('.btn-undo-image').css('display','none');
+        $('#previewHomeImage .btn-save-image').css('display','none');
+        $(this).css('display','none');
     });
 
 
@@ -193,7 +207,68 @@ $(document).ready(function() {
             
             // Dosyayı base64 formatında okuyoruz    
             reader.readAsDataURL(file); 
+
+            $('.about-image .btn-save-image').css('display','flex');
+            $('.about-image .btn-undo-image').css('display','flex');
         }
+    });
+
+
+
+    // Değiştirilen anasayfa hakkımızda resmini kaydetme (güncelleme)
+    $(document).on('click', '.about-image .btn-save-image', function() {
+        let btn = $(this);
+        btn.find('.save-loader').css('display','inline-block');
+        btn.find('i').css('display','none');
+        
+        const file = $('#aboutImage')[0].files[0];
+        
+        const formData = new FormData();
+        formData.append('image', file);
+        formData.append('id', pageContentIds.HomeAboutSection);
+        
+        $.ajax({
+            url: `${baseUrl}pageContents`,
+            type: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                if (response.success) {
+                    showToast('success', 'Başarılı', 'Resim başarıyla güncellendi!');
+                    
+                    btn.css('display','none');
+                    $('.about-image .btn-undo-image').css('display','none');
+                    btn.find('.save-loader').css('display','none');
+                    btn.find('i').css('display','block');
+
+                    firstHomeAboutSectionImagePath = response.data;
+                    
+                } else {
+                    showToast('error', 'Hata', 'Resim güncellenirken hata oluştu!');
+                }
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : 'Resim güncellenirken hata oluştu!');
+            }
+        });
+    });
+
+
+
+    // Değiştirilen anasayfa hakkımızda resmini geri alma
+    $(document).on('click', '.about-image .btn-undo-image', function(){
+        $('#previewAboutImage').attr('src', `${firstHomeAboutSectionImagePath}`);
+
+        // Aynı dosyayı tekrar seçebilmek için input'u sıfırlıyoruz.
+        $('#aboutImage').val('');
+
+        $('.about-image .btn-save-image').css('display','none');
+        $(this).css('display','none');
     });
 
 

@@ -60,12 +60,28 @@
 
 .btn-save-image {
     background-color: #3c930a;
+}
+
+#previewHomeImage .btn-save-image {
     top: 155px;
+}
+
+.about-image .btn-save-image {
+    top: 115px;
+    right: 20px;
 }
 
 .btn-undo-image {
     background-color: #930a0a;
+}
+
+#previewHomeImage .btn-undo-image {
     top: 215px;
+}
+
+.about-image .btn-undo-image {
+    top: 175px;
+    right: 20px;
 }
 
 .save-loader {
