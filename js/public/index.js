@@ -126,13 +126,18 @@ $(document).ready(function() {
                     }
 
                     // Anasayfa - About Section
-                    if (pageContent.id == pageContentIds.HomeAboutSection) {
+                    else if (pageContent.id == pageContentIds.HomeAboutSection) {
                         let plainText = pageContent.description
                         .replace(/<[^>]*>/g, '') // HTML etiketlerini siliyoruz.
                         .replace(/\n\s*\n/g, '<br><br>'); // Boş satırları <br><br> ile değiştiriyoruz.
                 
                         $('.about-text').html(plainText); 
                         $('#aboutImage').attr('src', pageContent.imagePath);
+                    }
+
+                    // Anasayfa - Menu Section
+                    else if (pageContent.id == pageContentIds.HomeMenuSection) {
+                        $('#menuImage').css('background-image', `url(${pageContent.imagePath})`);
                     }
                 });
             },

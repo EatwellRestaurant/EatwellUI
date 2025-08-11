@@ -29,6 +29,7 @@ $(document).ready(function() {
     const baseUrl = 'https://eatwell-api.azurewebsites.net/api/';
     let firstHomeHeroImagePath = null;
     let firstHomeAboutSectionImagePath = null;
+    let firstHomeMenuSectionImagePath = null;
     let firstHomeAboutSectionText = null;
     let incomingProducts = '';
     let selectedProductIds = []; // Menüler bölümüne eklenmiş olan ürünlerin id değerlerini tuttuğumuz dizi 
@@ -93,7 +94,7 @@ $(document).ready(function() {
                     }
                     
                     // Anasayfa - About Section
-                    if (pageContent.id == pageContentIds.HomeAboutSection) {
+                    else if (pageContent.id == pageContentIds.HomeAboutSection) {
                         let plainText = pageContent.description.replace(/<[^>]*>/g, '');
                         $('.about-text').val(plainText);
 
@@ -101,6 +102,12 @@ $(document).ready(function() {
 
                         $('#previewAboutImage').attr('src', pageContent.imagePath);
                         firstHomeAboutSectionImagePath = pageContent.imagePath;
+                    }
+
+                    // Anasayfa - Menu Section
+                    else if (pageContent.id == pageContentIds.HomeMenuSection) {
+                        $('#previewMenuImage').css('background-image', `url(${pageContent.imagePath})`);
+                        firstHomeMenuSectionImagePath = pageContent.imagePath;
                     }
                 });
             },
@@ -169,11 +176,17 @@ $(document).ready(function() {
                     
                 } else {
                     showToast('error', 'Hata', 'Resim güncellenirken hata oluştu!');
+
+                    btn.find('.save-loader').css('display','none');
+                    btn.find('i').css('display','inline-block');
                 }
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
                 showToast('error', 'Hata', errorMessage ? errorMessage : 'Resim güncellenirken hata oluştu!');
+            
+                btn.find('.save-loader').css('display','none');
+                btn.find('i').css('display','inline-block');
             }
         });
     });
@@ -247,6 +260,9 @@ $(document).ready(function() {
                     
                 } else {
                     showToast('error', 'Hata', 'Resim güncellenirken hata oluştu!');
+
+                    btn.find('.save-loader').css('display','none');
+                    btn.find('i').css('display','inline-block');
                 }
             },
             error: function(xhr) {
@@ -348,12 +364,76 @@ $(document).ready(function() {
             
             reader.onload = function(e) {
                 // Önizleme resmini güncelliyoruz
-                $('#previewMenu').css('background-image', `url(${e.target.result})`);
+                $('#previewMenuImage').css('background-image', `url(${e.target.result})`);
             }
             
             // Dosyayı base64 formatında okuyoruz    
             reader.readAsDataURL(file); 
+
+            $('.menu .image-editor-actions').css('display', 'flex');
         }
+    });
+
+
+
+    // Değiştirilen anasayfa menü resmini kaydetme (güncelleme)
+    $(document).on('click', '.menu .btn-save', function() {
+        let btn = $(this);
+        btn.find('.save-loader').css('display','inline-block');
+        btn.find('i').css('display','none');
+        
+        const file = $('#menuImage')[0].files[0];
+        
+        const formData = new FormData();
+        formData.append('image', file);
+        formData.append('id', pageContentIds.HomeMenuSection);
+        
+        $.ajax({
+            url: `${baseUrl}pageContents`,
+            type: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                if (response.success) {
+                    showToast('success', 'Başarılı', 'Resim başarıyla güncellendi!');
+                    
+                    $('.menu .image-editor-actions').css('display','none');
+                    btn.find('.save-loader').css('display','none');
+                    btn.find('i').css('display','inline-block');
+
+                    firstHomeMenuSectionImagePath = response.data;
+                    
+                } else {
+                    showToast('error', 'Hata', 'Resim güncellenirken hata oluştu!');
+
+                    btn.find('.save-loader').css('display','none');
+                    btn.find('i').css('display','inline-block');
+                }
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : 'Resim güncellenirken hata oluştu!');
+            
+                btn.find('.save-loader').css('display','none');
+                btn.find('i').css('display','inline-block');
+            }
+        });
+    });
+
+
+
+    // Değiştirilen anasayfa menü resmini geri alma
+    $(document).on('click', '.menu .btn-undo', function(){
+        $('#previewMenuImage').css('background-image', `url(${firstHomeMenuSectionImagePath}`);
+        
+        // Aynı dosyayı tekrar seçebilmek için input'u sıfırlıyoruz.
+        $('#menuImage').val('');
+        
+        $('.menu .image-editor-actions').css('display','none');
     });
 
 

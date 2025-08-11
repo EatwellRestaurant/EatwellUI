@@ -414,6 +414,10 @@ textarea.about-text:focus-visible {
         line-height: 23px;
     }
 
+    .dropdown {
+        width: 180px;
+    }
+
     .swap-info-box {
         width: 85%;
         font-size: 13px;

@@ -145,7 +145,7 @@
         </section>
 
         <!-- Menu -->
-        <section class="main menu curtain" id="previewMenu">
+        <section class="main menu curtain" id="previewMenuImage">
             <div class="image-editor">
                 <div class="image-upload-wrapper">
                     <label for="menuImage" class="custom-upload-button">
@@ -153,6 +153,19 @@
                         Resmi Değiştir
                     </label>
                     <input type="file" id="menuImage" accept="image/*" class="image-input">
+                </div>
+
+                <div class="image-editor-actions">
+                    <button class="btn-save">
+                        <i class="fa-solid fa-check"></i>
+                        <span class="save-loader"></span>
+                        Kaydet
+                    </button>
+            
+                    <button class="btn-undo">
+                        <i class="fa-solid fa-rotate-left"></i>
+                        Geri Al
+                    </button>
                 </div>
             </div>
 
@@ -283,7 +296,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script src="https://kit.fontawesome.com/437bb43714.js" crossorigin="anonymous"></script>
     <script src="../../../js/public/main.js"></script>
-    <script src="../../../js/public/index.js"></script>
     <script src="../../../js/admin/preview.js"></script>
 </body>
 
