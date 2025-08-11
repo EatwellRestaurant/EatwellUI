@@ -423,3 +423,11 @@ textarea.about-text:focus-visible {
         font-size: 13px;
     }
 }
+
+
+@media screen and (max-width: 360px) {
+    .admin-btn-delete-product {
+        top: -4px;
+        left: -4px;
+    }
+}

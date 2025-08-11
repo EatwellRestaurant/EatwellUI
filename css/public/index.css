@@ -242,3 +242,11 @@
         font-size: 1.7rem;
     }
 }
+
+
+@media screen and (max-width: 360px) {
+    .product {
+        width: 95%;
+        padding: 5px;
+    }
+}

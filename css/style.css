@@ -7,6 +7,7 @@
 html{
     font-size: 10px;
     scroll-behavior: smooth;
+    min-width: 350px;
 }
 
 body{
@@ -706,6 +707,10 @@ a[href="http://somee.com"] {
         width: 215px;
         top: 32px;
     }
+
+    .content { 
+        padding: 50px 40px;
+    }
 }
 
 
@@ -736,6 +741,21 @@ a[href="http://somee.com"] {
     .title-striped h2:before {
         width: 165px;
         top: 28px;
+    }
+
+    .contact-contents {
+        flex-direction: column;
+        width: 75%;
+        margin: auto;
+    }
+
+    .content {
+        border-right: none;
+        border-bottom: 2px solid #ffc515;
+    }
+
+    .content:last-child {
+        border-bottom: none;
     }
 }
 
@@ -781,6 +801,10 @@ a[href="http://somee.com"] {
     .title-striped h2:before {
         width: 95px;
         top: 27px;
+    }
+
+    .contact-contents {
+        width: 85%;
     }
  }
 
