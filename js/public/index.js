@@ -122,7 +122,17 @@ $(document).ready(function() {
                         
                     // Anasayfa - Hero
                     if (pageContent.id == pageContentIds.HomeHero) {
-                        $('#previewHomeImage').css('background-image', `url(${pageContent.imagePath})`);
+                        $('#homeImage').css('background-image', `url(${pageContent.imagePath})`);
+                    }
+
+                    // Anasayfa - About Section
+                    if (pageContent.id == pageContentIds.HomeAboutSection) {
+                        let plainText = pageContent.description
+                        .replace(/<[^>]*>/g, '') // HTML etiketlerini siliyoruz.
+                        .replace(/\n\s*\n/g, '<br><br>'); // Boş satırları <br><br> ile değiştiriyoruz.
+                
+                        $('.about-text').html(plainText); 
+                        $('#aboutImage').attr('src', pageContent.imagePath);
                     }
                 });
             },
@@ -133,7 +143,9 @@ $(document).ready(function() {
         });
     }
 
+    $('#overlay').css('display','flex');
     getPageContents();
+    $('#overlay').fadeOut(900);
 });
 
 

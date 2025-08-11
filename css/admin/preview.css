@@ -30,58 +30,64 @@
     font-size: 16px;
 }
 
-.image-upload-wrapper,
-.btn-save-image,
-.btn-undo-image {
-    cursor: pointer;
+.image-editor{
     position: absolute;
-    z-index: 5;
-    right: 30px;
-    font-size: 16px;
-    border: none;
-    border-radius: 10px;
-    transition: all .3s ease-in-out;
+}
+
+.about-image .image-editor {
+    top: 30px;
+    right: 20px;
+}
+
+#previewHomeImage .image-editor {
+    top: 95px;
+    right: 40px;
 }
 
 .image-upload-wrapper {
+    border: none;
+    border-radius: 10px;
     color: #000;
-    top: 90px;
     background-color: #ffc515;
+    font-size: 16px;
+    transition: all .3s ease-in-out;
 }
 
-.btn-save-image,
-.btn-undo-image {
+.image-editor,
+.image-editor-actions,
+.text-editor-actions {
+    align-items: flex-end;
+    display: flex;
+    flex-direction: column;
+    z-index: 5;
+    gap: 15px;
+}
+
+.image-editor-actions {
+    display: none;
+}
+
+.btn-save,
+.btn-undo {
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 10px;
+    transition: all .3s ease-in-out;
     color: #fff;
+    padding: 13px 25px;
+    display: flex;
     gap: 8px;
     align-items: center;
-    display: none;
-    padding: 13px 25px;
 }
 
-.btn-save-image {
+.btn-save,
+.btn-save-text {
     background-color: #3c930a;
 }
 
-#previewHomeImage .btn-save-image {
-    top: 155px;
-}
-
-.about-image .btn-save-image {
-    top: 115px;
-    right: 20px;
-}
-
-.btn-undo-image {
+.btn-undo {
     background-color: #930a0a;
-}
-
-#previewHomeImage .btn-undo-image {
-    top: 215px;
-}
-
-.about-image .btn-undo-image {
-    top: 175px;
-    right: 20px;
 }
 
 .save-loader {
@@ -105,8 +111,8 @@
 } 
 
 .image-upload-wrapper:hover,
-.btn-save-image:hover,
-.btn-undo-image:hover {
+.btn-save:hover,
+.btn-undo:hover {
     transform: translateY(-15%);
 }
 
@@ -114,11 +120,11 @@
     background-color: #eebf32;
 }
 
-.btn-save-image:hover {
+.btn-save:hover {
     background-color: #4ebc0e;
 }
 
-.btn-undo-image:hover {
+.btn-undo:hover {
     background-color: #bc0e0e;
 }
 
@@ -130,14 +136,26 @@
     cursor: pointer;
 }
 
-.about-image .image-upload-wrapper {
-    top: 50px;
-    right: 20px;
+.about-section-actions {
+    display: flex;
+    width: 95%;
+    justify-content: space-between;
+    margin-top: 15px;
+    height: 105px;
 }
 
+.about-section-actions .btn{
+    height: 42px;
+    margin: 0 !important;
+}
 
-.menu .image-upload-wrapper {
-    top: 50px;
+.text-editor {
+    display: none;
+}
+
+.menu .image-editor {
+    top: 40px;
+    right: 40px;
 }
 
 .image-input {
@@ -272,7 +290,13 @@ textarea.about-text:focus-visible {
     color: #888; 
     font-style: italic;
     padding: 20px !important;
-  }
+}
+
+@media screen and (max-width: 1450px) { 
+    .about-section-actions {
+        width: 100%;
+    }
+}
 
 
 @media screen and (max-width: 1200px) {
@@ -283,9 +307,9 @@ textarea.about-text:focus-visible {
 
 
 @media screen and (max-width: 992px) { 
-    .about-image .image-upload-wrapper {
-        top: 470px;
-        right: 68px;
+    .about-image .image-editor {
+        top: 530px;
+        right: 60px;
     }
 
     .swap-info-box {
@@ -304,9 +328,31 @@ textarea.about-text:focus-visible {
         font-size: 15px;
     }
 
+    #previewHomeImage .image-editor {
+        right: 30px;
+    }
+
+    .about-image .image-editor {
+        top: 525px;
+        right: 50px;
+    }
+
+    .menu .image-editor {
+        top: 30px;
+        right: 30px;
+    }
+
+    .image-upload-wrapper { 
+        font-size: 15px;
+    }
+
     .custom-upload-button {
-        gap: 8px;
         padding: 11px 23px;
+    }
+
+    .btn-save, .btn-undo {
+        padding: 10px 22px;
+        font-size: 15px;
     }
 
     .swap-info-box {
@@ -315,8 +361,7 @@ textarea.about-text:focus-visible {
 }
 
 @media screen and (max-width: 600px) {
-    .about-image .image-upload-wrapper {
-        top: 450px;
+    .about-image .image-editor {
         right: 45px;
     }
 
@@ -336,23 +381,37 @@ textarea.about-text:focus-visible {
         font-size: 14px;
     }
 
-    .image-upload-wrapper {
-        font-size: 13px;
+    #previewHomeImage .image-editor {
+        right: 20px;
     }
-    
-    .menu .image-upload-wrapper {
-        top: 30px;
-        right: 22px;
+
+    .about-image .image-editor {
+        right: 23px;
+    }
+
+    .menu .image-editor {
+        top: 25px;
+        right: 20px;
+    }
+
+    .image-upload-wrapper {
+        font-size: 14px;
     }
 
     .custom-upload-button {
         gap: 6px;
-        padding: 11px 20px;
+        padding: 10px 18px;
     }
 
-    .about-image .image-upload-wrapper {
-        top: 450px;
-        right: 25px;
+    .btn-save, .btn-undo {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+
+    .about-section-actions .btn {
+        width: 170px;
+        height: 65px;
+        line-height: 23px;
     }
 
     .swap-info-box {

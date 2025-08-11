@@ -53,24 +53,29 @@
             </div>
         </div>
 
-        <div class="image-upload-wrapper">
-            <label for="homeImage" class="custom-upload-button">
-                <i class="fa-solid fa-pencil"></i>
-                Resmi Değiştir
-            </label>
-            <input type="file" id="homeImage" accept="image/*" class="image-input">
+        <div class="image-editor">
+            <div class="image-upload-wrapper">
+                <label for="homeImage" class="custom-upload-button">
+                    <i class="fa-solid fa-pencil"></i>
+                    Resmi Değiştir
+                </label>
+                <input type="file" id="homeImage" accept="image/*" class="image-input">
+            </div>
+
+            <div class="image-editor-actions">
+                <button class="btn-save">
+                    <i class="fa-solid fa-check"></i>
+                    <span class="save-loader"></span>
+                    Kaydet
+                </button>
+        
+                <button class="btn-undo">
+                    <i class="fa-solid fa-rotate-left"></i>
+                    Geri Al
+                </button>
+            </div>
         </div>
-
-        <button class="btn-save-image">
-            <i class="fa-solid fa-check"></i>
-            <span class="save-loader"></span>
-            Kaydet
-        </button>
-
-        <button class="btn-undo-image">
-            <i class="fa-solid fa-rotate-left"></i>
-            Geri Al
-        </button>
+        
 
         <div class="header-main">
             <span class="header-text">Yemek ve daha fazlası<span style="color:#FFC515">.</span></span>
@@ -86,35 +91,54 @@
             <div class="container flex">
                 <div class="text flex">
                     <h2 class="title-unlined">Hakkımızda</h2>
-                    <textarea class="about-text">Eatwell, sadece bir restoran değil, bir yaşam tarzıdır. Her bir detayımız, İstanbul'un güzelliklerini ve trendlerini yansıtmak için seçildi. 
-
-Estetik, minimalist, modern ve elegan atmosferimizle sizleri karşılamak; Eatwell'in sizlere sunduğu ayrıcalıklardan sadece biridir. Eatwell ailesi olarak; sadece yemek sunmuyoruz, sizleri bir yaşam tarzına davet ediyoruz.
+                    <textarea class="about-text">
                     </textarea>
                 
-                    <button class="btn btn-outline-info preview">Hakkımızda Daha Fazla Bilgi Edin</button>
+                    <div class="about-section-actions">
+                        <button class="btn btn-outline-info preview">Hakkımızda Daha Fazla Bilgi Edin</button>
+
+                        <div class="text-editor">
+                            <div class="text-editor-actions">
+                                <button class="btn-save">
+                                    <i class="fa-solid fa-check"></i>
+                                    <span class="save-loader"></span>
+                                    Kaydet
+                                </button>
+                        
+                                <button class="btn-undo">
+                                    <i class="fa-solid fa-rotate-left"></i>
+                                    Geri Al
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="about-image">
-                    <img src="../../../images/home-about-section.jpg" alt="hakkımızda" id="previewAboutImage">
+                    <img src="" alt="hakkımızda" id="previewAboutImage">
                     
-                    <div class="image-upload-wrapper">
-                        <label for="aboutImage" class="custom-upload-button">
-                            <i class="fa-solid fa-pencil"></i>
-                            Resmi Değiştir
-                        </label>
-                        <input type="file" id="aboutImage" accept="image/*" class="image-input">
-                    </div>
+                    <div class="image-editor">
+                        <div class="image-upload-wrapper">
+                            <label for="aboutImage" class="custom-upload-button">
+                                <i class="fa-solid fa-pencil"></i>
+                                Resmi Değiştir
+                            </label>
+                            <input type="file" id="aboutImage" accept="image/*" class="image-input">
+                        </div>
 
-                    <button class="btn-save-image">
-                        <i class="fa-solid fa-check"></i>
-                        <span class="save-loader"></span>
-                        Kaydet
-                    </button>
-            
-                    <button class="btn-undo-image">
-                        <i class="fa-solid fa-rotate-left"></i>
-                        Geri Al
-                    </button>
+                        <div class="image-editor-actions">
+                            <button class="btn-save">
+                                <i class="fa-solid fa-check"></i>
+                                <span class="save-loader"></span>
+                                Kaydet
+                            </button>
+                    
+                            <button class="btn-undo">
+                                <i class="fa-solid fa-rotate-left"></i>
+                                Geri Al
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -122,13 +146,14 @@ Estetik, minimalist, modern ve elegan atmosferimizle sizleri karşılamak; Eatwe
 
         <!-- Menu -->
         <section class="main menu curtain" id="previewMenu">
-
-            <div class="image-upload-wrapper">
-                <label for="menuImage" class="custom-upload-button">
-                    <i class="fa-solid fa-pencil"></i>
-                    Resmi Değiştir
-                </label>
-                <input type="file" id="menuImage" accept="image/*" class="image-input">
+            <div class="image-editor">
+                <div class="image-upload-wrapper">
+                    <label for="menuImage" class="custom-upload-button">
+                        <i class="fa-solid fa-pencil"></i>
+                        Resmi Değiştir
+                    </label>
+                    <input type="file" id="menuImage" accept="image/*" class="image-input">
+                </div>
             </div>
 
             <div class="container">

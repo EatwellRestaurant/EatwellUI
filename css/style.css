@@ -406,6 +406,7 @@ header .header-main{
     align-items: flex-start;
     font-family: 'Open Sans', sans-serif;
     padding-right: 2rem;
+    position: relative;
 }
 
 .text p, 
