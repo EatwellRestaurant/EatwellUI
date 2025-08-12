@@ -673,10 +673,6 @@ a[href="http://somee.com"] {
     .nav-title {
         display: inline-block;
     }
-
-    .header-text {
-        font-size: 6.5rem;
-    }
     
     .main {
         padding: 70px 0;
@@ -716,7 +712,7 @@ a[href="http://somee.com"] {
 
 @media screen and (max-width: 768px) { 
     .header-text {
-        font-size: 5.5rem;
+        font-size: 6.5rem;
     }
 
     .title-unlined {
@@ -780,7 +776,7 @@ a[href="http://somee.com"] {
 
 @media screen and (max-width: 480px) {
     .header-text {
-        font-size: 4rem;
+        font-size: 5.2rem;
     }
 
     .text, 

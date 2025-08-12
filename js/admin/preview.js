@@ -80,41 +80,47 @@ $(document).ready(function() {
 
     // Sayfanın içeriğini (değiştirilebilen resimleri ve hakkımda metnini) getiren fonksiyon
     function getPageContents() {
-        $.ajax({
-            url: `${baseUrl}pageContents?page=1`,
-            type: 'GET',
-            success: function(response) {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: `${baseUrl}pageContents?page=1`,
+                type: 'GET',
+                success: function(response) {
 
-                response.data.forEach(pageContent => {
+                    response.data.forEach(pageContent => {
+                            
+                        // Anasayfa - Hero
+                        if (pageContent.id == pageContentIds.HomeHero) {
+                            $('#previewHomeImage').css('background-image', `url(${pageContent.imagePath})`);
+                            firstHomeHeroImagePath = pageContent.imagePath;
+                        }
                         
-                    // Anasayfa - Hero
-                    if (pageContent.id == pageContentIds.HomeHero) {
-                        $('#previewHomeImage').css('background-image', `url(${pageContent.imagePath})`);
-                        firstHomeHeroImagePath = pageContent.imagePath;
-                    }
+                        // Anasayfa - About Section
+                        else if (pageContent.id == pageContentIds.HomeAboutSection) {
+                            let plainText = pageContent.description.replace(/<[^>]*>/g, '');
+                            $('.about-text').val(plainText);
+
+                            firstHomeAboutSectionText = plainText;
+
+                            $('#previewAboutImage').attr('src', pageContent.imagePath);
+                            firstHomeAboutSectionImagePath = pageContent.imagePath;
+                        }
+
+                        // Anasayfa - Menu Section
+                        else if (pageContent.id == pageContentIds.HomeMenuSection) {
+                            $('#previewMenuImage').css('background-image', `url(${pageContent.imagePath})`);
+                            firstHomeMenuSectionImagePath = pageContent.imagePath;
+                        }
+                    });
+
+                    resolve();
+                },
+                error: function(xhr) {
+                    const errorMessage = xhr.responseJSON?.Message;
+                    showToast('error', 'Hata', errorMessage ? errorMessage : 'Sayfa içerikleri alınırken hata oluştu!');
                     
-                    // Anasayfa - About Section
-                    else if (pageContent.id == pageContentIds.HomeAboutSection) {
-                        let plainText = pageContent.description.replace(/<[^>]*>/g, '');
-                        $('.about-text').val(plainText);
-
-                        firstHomeAboutSectionText = plainText;
-
-                        $('#previewAboutImage').attr('src', pageContent.imagePath);
-                        firstHomeAboutSectionImagePath = pageContent.imagePath;
-                    }
-
-                    // Anasayfa - Menu Section
-                    else if (pageContent.id == pageContentIds.HomeMenuSection) {
-                        $('#previewMenuImage').css('background-image', `url(${pageContent.imagePath})`);
-                        firstHomeMenuSectionImagePath = pageContent.imagePath;
-                    }
-                });
-            },
-            error: function(xhr) {
-                const errorMessage = xhr.responseJSON?.Message;
-                showToast('error', 'Hata', errorMessage ? errorMessage : 'Sayfa içerikleri alınırken hata oluştu!');
-            }
+                    reject(errorMessage);
+                }
+            })
         });
     }
 
@@ -440,100 +446,105 @@ $(document).ready(function() {
 
     // Ürünleri getiren fonksiyon
     function getProducts() {
-        $.ajax({
-            url: `${baseUrl}products/getSelectedProducts`,
-            type: 'GET',
-            success: function(response) {
-                // Products içeriğini temizle
-                $('.products').empty();
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: `${baseUrl}products/getSelectedProducts`,
+                type: 'GET',
+                success: function(response) {
+                    // Products içeriğini temizle
+                    $('.products').empty();
 
-                let box = '';
-                let productHtml = '';
-                                
-                // Ürünleri göster
-                if (response.data.length > 0) {
-                    response.data.forEach(product => {                        
-                        
-                        // Ürünler için HTML yapısı
-                        productHtml = `
-                        <div class="product" data-product-id="${product.id}">
-                            <div class="col flex">
-                                <button class="admin-btn-delete-product" data-product-id="${product.id}">
-                                    <i class="fa-solid fa-circle-xmark"></i>
-                                </button>
-                                <img src=${product.imagePath} alt=${product.name}>
-                                <div class="food-information flex">
-                                    <span class="food-name">${product.name}</span>
-                                    <span class="food-price">${product.price} ₺</span>
+                    let box = '';
+                    let productHtml = '';
+                                    
+                    // Ürünleri göster
+                    if (response.data.length > 0) {
+                        response.data.forEach(product => {                        
+                            
+                            // Ürünler için HTML yapısı
+                            productHtml = `
+                            <div class="product" data-product-id="${product.id}">
+                                <div class="col flex">
+                                    <button class="admin-btn-delete-product" data-product-id="${product.id}">
+                                        <i class="fa-solid fa-circle-xmark"></i>
+                                    </button>
+                                    <img src=${product.imagePath} alt=${product.name}>
+                                    <div class="food-information flex">
+                                        <span class="food-name">${product.name}</span>
+                                        <span class="food-price">${product.price} ₺</span>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>`;
+                            </div>`;
 
-                        box += productHtml;
-                    });
-                } 
-                
-                box += `
-                    <div class="product">
-                        <div class="col flex">
-                            <img src="../../../icons/selected-products.png" alt="ürün">
-                            <div class="food-information flex">
-                                <span class="new-food">Yeni Ürün Seç</span>
-                                <div class="dropdown" id="customDropdown">
-                                    <div class="dropdown-toggle" id="selectedId" data-selected-id="">Seçiniz...</div>
-                                    <div class="dropdown-product"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>`;                    
-
-
-                // Yalnızca seçilen iki ürünün birbirleriyle yer değiştirmesini sağlıyoruz.
-                let $firstSelected = null;
-
-                $('.products').on('click', '.product:not(.no-drag)', function (e) {
-                    // Eğer tıklanan element silme butonu ise işlemi durdur...
-                    if ($(e.target).closest('.admin-btn-delete-product').length) {
-                        return;
-                    }
-
-                    // 1. tıklama. Yani seçim yapılıyor.
-                    if (!$firstSelected) {
-                        $firstSelected = $(this); // $(this) ile tıklanan öğe alınıp $firstSelected olarak kaydediliyor.
-                        $firstSelected.addClass('selected'); // Görsel olarak seçildiğini göstermek için selected sınıfını ekliyoruz.
-                        return;
-                    }
-
-                    // 2. kez aynı öğeye tıklandıysa seçim iptal ediliyor.
-                    if ($firstSelected.is($(this))) {
-                        $firstSelected.removeClass('selected');
-                        $firstSelected = null;
-                        return;
-                    }
-
-                    // 2. öğe seçildi. Yani yerleri değiştiriliyor.
-                    const $secondSelected = $(this);
+                            box += productHtml;
+                        });
+                    } 
                     
-                    const $clone1 = $firstSelected.clone(true); // Her iki öğe de .clone(true) ile tüm event handler'larıyla birlikte klonlanıyor.
-                    const $clone2 = $secondSelected.clone(true);
-                
-                    $firstSelected.replaceWith($clone2); //replaceWith ile birbirlerinin yerine geçmeleri sağlanıyor.
-                    $secondSelected.replaceWith($clone1);
-                
-                    $('.product').removeClass('selected');
+                    box += `
+                        <div class="product">
+                            <div class="col flex">
+                                <img src="../../../icons/selected-products.png" alt="ürün">
+                                <div class="food-information flex">
+                                    <span class="new-food">Yeni Ürün Seç</span>
+                                    <div class="dropdown" id="customDropdown">
+                                        <div class="dropdown-toggle" id="selectedId" data-selected-id="">Seçiniz...</div>
+                                        <div class="dropdown-product"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;                    
 
-                    $firstSelected = null;
-                });
 
-                // Ürünleri dashboard'a ekle
-                $('.products').append(box);
-                $('.product:last-child').addClass('no-drag');
+                    // Yalnızca seçilen iki ürünün birbirleriyle yer değiştirmesini sağlıyoruz.
+                    let $firstSelected = null;
 
-            },
-            error: function(xhr) {
-                const errorMessage = xhr.responseJSON?.Message;
-                showToast('error', 'Hata', errorMessage ? errorMessage : 'Ürünler alınırken hata oluştu!');
-            }
+                    $('.products').on('click', '.product:not(.no-drag)', function (e) {
+                        // Eğer tıklanan element silme butonu ise işlemi durdur...
+                        if ($(e.target).closest('.admin-btn-delete-product').length) {
+                            return;
+                        }
+
+                        // 1. tıklama. Yani seçim yapılıyor.
+                        if (!$firstSelected) {
+                            $firstSelected = $(this); // $(this) ile tıklanan öğe alınıp $firstSelected olarak kaydediliyor.
+                            $firstSelected.addClass('selected'); // Görsel olarak seçildiğini göstermek için selected sınıfını ekliyoruz.
+                            return;
+                        }
+
+                        // 2. kez aynı öğeye tıklandıysa seçim iptal ediliyor.
+                        if ($firstSelected.is($(this))) {
+                            $firstSelected.removeClass('selected');
+                            $firstSelected = null;
+                            return;
+                        }
+
+                        // 2. öğe seçildi. Yani yerleri değiştiriliyor.
+                        const $secondSelected = $(this);
+                        
+                        const $clone1 = $firstSelected.clone(true); // Her iki öğe de .clone(true) ile tüm event handler'larıyla birlikte klonlanıyor.
+                        const $clone2 = $secondSelected.clone(true);
+                    
+                        $firstSelected.replaceWith($clone2); //replaceWith ile birbirlerinin yerine geçmeleri sağlanıyor.
+                        $secondSelected.replaceWith($clone1);
+                    
+                        $('.product').removeClass('selected');
+
+                        $firstSelected = null;
+                    });
+
+                    // Ürünleri dashboard'a ekle
+                    $('.products').append(box);
+                    $('.product:last-child').addClass('no-drag');
+
+                    resolve();
+
+                },
+                error: function(xhr) {
+                    const errorMessage = xhr.responseJSON?.Message;
+                    showToast('error', 'Hata', errorMessage ? errorMessage : 'Ürünler alınırken hata oluştu!');
+                    reject(errorMessage);
+                }
+            });
         });
     }
 
@@ -581,39 +592,44 @@ $(document).ready(function() {
     
     
     function updateUnselectedProductList(){
-        $.ajax({
-            url: `${baseUrl}products/getAll`,
-            type: 'GET',
-            success: function(response) {
-                incomingProducts = response.data;
-                
-                // "Yeni Ürün Seç" listesini temizle
-                $('.dropdown-product').empty();
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: `${baseUrl}products/getAll`,
+                type: 'GET',
+                success: function(response) {
+                    incomingProducts = response.data;
+                    
+                    // "Yeni Ürün Seç" listesini temizle
+                    $('.dropdown-product').empty();
 
-                let productsHTML = '';
-                
-                if (incomingProducts.length > 0) {
+                    let productsHTML = '';
+                    
+                    if (incomingProducts.length > 0) {
 
-                    // Menüler bölümüne eklenmiş olan ürünlerin, "Yeni Ürün Seç" listesine eklenmemesi için id bilgilerini alıyoruz.
-                    // .product:not(.no-drag) --> Listedeki son ögeyi bu seçime dahil etmiyoruz. 
-                    $('.products .product:not(.no-drag)').each(function () {
-                        selectedProductIds.push($(this).data('product-id'));
-                    });
+                        // Menüler bölümüne eklenmiş olan ürünlerin, "Yeni Ürün Seç" listesine eklenmemesi için id bilgilerini alıyoruz.
+                        // .product:not(.no-drag) --> Listedeki son ögeyi bu seçime dahil etmiyoruz. 
+                        $('.products .product:not(.no-drag)').each(function () {
+                            selectedProductIds.push($(this).data('product-id'));
+                        });
 
-                    productsHTML = getSelectableProductsHtml();
+                        productsHTML = getSelectableProductsHtml();
 
-                } else {
-                    productsHTML = `
-                    <h3 class="empty-list">Henüz ürün bulunmamaktadır.</h3>
-                    `;
+                    } else {
+                        productsHTML = `
+                        <h3 class="empty-list">Henüz ürün bulunmamaktadır.</h3>
+                        `;
+                    }
+                    
+                    $('.dropdown-product').html(productsHTML);
+                    
+                    resolve();
+                },
+                error: function(xhr) {
+                    const errorMessage = xhr.responseJSON?.Message;
+                    showToast('error', 'Hata', errorMessage ? errorMessage : 'Ürünler alınırken hata oluştu!');
+                    reject(errorMessage);
                 }
-                
-                $('.dropdown-product').html(productsHTML);
-            },
-            error: function(xhr) {
-                const errorMessage = xhr.responseJSON?.Message;
-                showToast('error', 'Hata', errorMessage ? errorMessage : 'Ürünler alınırken hata oluştu!');
-            }
+            });
         });
     }
     
@@ -718,27 +734,19 @@ $(document).ready(function() {
     });
 
 
-    // Backend'de üst üste atılan isteklerden dolayı hata almamak için updateUnselectedProductList() metodunu 1sn sonra çağırıyoruz. 
-    function delay(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
-    
     async function runMethods() {
         $('#overlay').css('display','flex');
 
-        getPageContents();
+        await getPageContents();
         
-        await delay(500);
-        getProducts();
+        await getProducts();
         
-        await delay(500);
-        updateUnselectedProductList();
+        await updateUnselectedProductList();
         
         $('#overlay').fadeOut(900);
     }
     
     runMethods();
-
 });
 
 
