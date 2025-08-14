@@ -40,11 +40,11 @@ body{
   z-index: 101;
   top: 0;
   left: 0;
-  background-color: #ffc515;
+  background-color: #fee00a;
   visibility: hidden;
   transform: translateX(-100%); /* İlk durumda gizle */
   transition: transform 0.5s ease-in-out, visibility 0.5s ease-in-out;
-  padding-top: 30px;
+  padding-top: 15px;
 }
 
 .sidenav 
@@ -67,15 +67,16 @@ body{
 .sidenav a {
   padding: 15px 8px 15px 32px;
   text-decoration: none;
-  font-size: 22px;
+  font-size: 19px;
   color: #000;
   display: block;
   position: relative;
   transition: all 0.4s ease-in-out;
+  font-family: 'Poppins', sans-serif;
 }
 
 .sidenav a:hover {
-  color: #f1f1f1;
+  color: #fff;
 }
 
 .sidenav-img,
@@ -1051,7 +1052,8 @@ td, th {
 .btn-manage-table,
 .btn-create-product,
 .btn-create-branch,
-.btn-all-branches {
+.btn-all-branches,
+.btn-head-office {
   padding: 10px 12px;
   font-size: 14px;
 }
@@ -1079,12 +1081,18 @@ td, th {
   margin-left: 8px;
 }
 
+.btn-head-office {
+  margin-right: 13px;
+}
+
 .btn-edit-menu,
 .btn-create-menu,
 .btn-manage-table,
 .btn-create-product,
 .btn-create-branch,
+.btn-save-head-office,
 .btn-all-branches,
+.btn-head-office,
 .btn-edit-product,
 .btn-edit-branch,
 .btn-delete-menu,
@@ -1095,7 +1103,7 @@ td, th {
 .btn-menu,
 .btn-city,
 .btn-reservation {
-  background-color: #ffc515;
+  background-color: #FEE00A;
   color: #1b203d;
   border: none;
   border-radius: 4px;
@@ -1115,12 +1123,13 @@ td, th {
 .btn-create-product:hover,
 .btn-create-branch:hover,
 .btn-all-branches:hover,
+.btn-head-office:hover,
 .btn-products-menu:hover,
 .btn-branches-city:hover,
 .btn-menu:hover,
 .btn-city:hover,
 .btn-reservation:hover {
-  background-color: #ffd760;
+  background-color: #fdfd5f;
 }
 
 .table-management {
@@ -1210,7 +1219,9 @@ td, th {
 .btn-delete-branch i,
 .btn-create-product i,
 .btn-create-branch i,
+.btn-save-head-office i,
 .btn-all-branches i,
+.btn-head-office i,
 .btn-products-menu i,
 .btn-branches-city i,
 .btn-menu i,
@@ -1235,6 +1246,7 @@ td, th {
 
 /* Menüler Container Stili */
 .menus-container,
+.head-office-container,
 .pages-container,
 .reservations-container,
 .cities-container,
@@ -1255,6 +1267,7 @@ td, th {
 }
 
 .menus-header,
+.head-office-header,
 .pages-header,
 .reservations-header,
 .cities-header,
@@ -1271,6 +1284,7 @@ td, th {
 }
 
 .menus-header h2,
+.head-office-header h2,
 .pages-header h2,
 .reservations-header h2,
 .cities-header h2,
@@ -1287,6 +1301,7 @@ td, th {
 }
 
 .menus-body,
+.head-office-body,
 .pages-body,
 .reservations-body,
 .cities-body,
@@ -1295,6 +1310,123 @@ td, th {
 .products-body {
   color: #000;
   overflow-x: auto;
+}
+
+.head-office-empty {
+  display: flex;
+  width: 80%;
+  gap: 14px;
+  margin-bottom: 20px;
+  background-color: #fffac2;
+  border: 3px solid #fff15a;
+  padding: 15px;
+  align-items: center;
+}
+
+.head-office-empty .icon {
+  font-size: 40px;
+  color: #ffc515;
+}
+
+.head-office-text {
+  font-family: 'Poppins', sans-serif;
+}
+
+.head-office-title {
+  font-weight: 500;
+  font-size: 17px;
+} 
+
+.head-office-description {
+  font-size: 12px;
+  margin-top: 3px;
+}
+
+.branches {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  justify-items: start;
+}
+
+.branch-item {
+  width: 200px;
+  padding: 13px;
+  border: 2px solid #e8e8e8;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.head-office__branch-city {
+  padding: 15px;
+  font-size: 16px;
+  background-color: #FEE00A;
+  border-radius: 12px;
+  text-align: center;
+  font-weight: 500;
+}
+
+.head-office__branch-details {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+
+.head-office__branch-name {
+  font-weight: 500;
+  font-size: 17px;
+}
+
+.head-office__branch-email {
+  font-size: 13px;
+}
+
+.branch-select {
+  margin-top: 20px;
+  font-size: 17px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}
+
+.branch-select input {
+  width: 15px;
+  height: 15px;
+}
+
+.head-office-actions {
+  margin: 30px auto 20px auto;
+  display: flex;
+  justify-content: center;
+}
+
+.btn-save-head-office {
+  background-color: #28a745;
+  color: #fff;
+  padding: 12px 16px;
+  font-size: 18px;
+}
+
+.btn-save-head-office:hover {
+  background-color: #27c84d;
+}
+
+.branches-empty {
+  font-size: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  align-items: center;
+  margin: 20px auto;
+}
+
+.branches-empty i {
+  font-size:40px; 
+  color:#ccc; 
+  margin-bottom:10px;
 }
 
 .reservations-body,
@@ -1358,7 +1490,7 @@ td, th {
 .btn-home {
   font-size: 26px;
   padding: 17px 19px;
-  background-color: #ffc515;
+  background-color: #fee00a;
   border: none;
   border-radius: 50%;
   opacity: 0;
@@ -1530,7 +1662,7 @@ td, th {
 .btn-filter-table {
   width: 18%;
   min-width: 72px;
-  background-color: #ffc515;
+  background-color: #fee00a;
   color: #fff;
   padding: 10px 12px;
   font-size: 14px;
@@ -1541,7 +1673,7 @@ td, th {
 }
 
 .btn-filter-table:hover{
-  background-color: #ffd760;
+  background-color: #edd00a;
 }
 
 .dropdown-menu {
@@ -1606,9 +1738,9 @@ td, th {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-left: 1px solid #ffc515;
+  border-left: 1px solid #fee00a;
   transition: all .2s ease-in;
-  background-color: #ffc515;
+  background-color: #fee00a;
 }
 
 .input-wrapper .location{
@@ -1968,6 +2100,10 @@ input:not(:checked) + .toggle-slider:after {
   .page-box {
     width: 47%;
   }
+
+  .head-office-empty {
+    width: 100%;
+  }
 }
 
 
@@ -2247,6 +2383,7 @@ input:not(:checked) + .toggle-slider:after {
 
 @media screen and (max-width: 500px) {
   .menus-header h2, 
+  .head-office-header h2,
   .pages-header h2,
   .reservations-header h2, 
   .cities-header h2, 
@@ -2262,6 +2399,18 @@ input:not(:checked) + .toggle-slider:after {
 
   .pages-body {
     row-gap: 32px;
+  }
+}
+
+
+@media screen and (max-width: 487px) {
+  .branches {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    justify-items: center;
+  }
+
+  .branch-item {
+    width: 280px;
   }
 }
 
@@ -2437,7 +2586,8 @@ input:not(:checked) + .toggle-slider:after {
   .btn-manage-table,
   .btn-create-product,
   .btn-create-branch,
-  .btn-all-branches {
+  .btn-all-branches,
+  .btn-head-office {
     padding: 8px 10px;
   }
   
@@ -2470,6 +2620,7 @@ input:not(:checked) + .toggle-slider:after {
   }
 
   .menus-header h2, 
+  .head-office-header h2,
   .pages-header h2,
   .reservations-header h2, 
   .cities-header h2, 
@@ -2491,6 +2642,23 @@ input:not(:checked) + .toggle-slider:after {
 
   .table-exit-button i {
     font-size: 15px;
+  }
+
+  .head-office-empty {
+    padding: 12px;
+  }
+
+  .head-office-empty .icon {
+    font-size: 36px;
+  }
+
+  .head-office-title {
+    font-size: 16px;
+  }
+
+  .head-office-description {
+    font-size: 11px;
+    margin-top: 0;
   }
 }
 
@@ -2518,7 +2686,8 @@ input:not(:checked) + .toggle-slider:after {
   .btn-manage-table,
   .btn-create-product,
   .btn-create-branch,
-  .btn-all-branches {
+  .btn-all-branches,
+  .btn-head-office {
     padding: 8px 9px;
     font-size: 13px;
   }

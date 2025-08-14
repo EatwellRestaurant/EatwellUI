@@ -2322,10 +2322,16 @@ $(document).ready(function() {
                 <div class="cities-container">
                     <div class="cities-header">
                         <h2>Şehir Listesi</h2>
-                        <button class="btn-all-branches">
-                             <i class="fa-solid fa-building"></i>
-                            Tüm Şubeler
-                        </button>
+                        <div>
+                            <button class="btn-head-office">
+                                <i class="fa-solid fa-landmark"></i>
+                                Genel Merkez
+                            </button>
+                            <button class="btn-all-branches">
+                                <i class="fa-solid fa-building"></i>
+                                Tüm Şubeler
+                            </button>
+                        </div>
                     </div>
                     <div class="cities-body">
                         <table class="cities-table">
@@ -2600,8 +2606,6 @@ $(document).ready(function() {
 
     // Şehirlerin şubelerini getiren fonksiyon
     function getBranchesByCity(cityId, cityName) {
-        const token = localStorage.getItem('token');
-        
         $.ajax({
             url: `${baseUrl}branches/getAllForAdminByCityId?cityId=${cityId}&pageNumber=1&pageSize=10`,
             type: 'GET',
@@ -2631,8 +2635,6 @@ $(document).ready(function() {
 
 
     function getAllBranches() {
-        const token = localStorage.getItem('token');
-
         $.ajax({
             url: `${baseUrl}branches/getAllForAdmin?pageNumber=1&pageSize=10`,
             type: 'GET',
@@ -2643,6 +2645,7 @@ $(document).ready(function() {
     }
 
 
+
     // Şehir listesindeki "Tüm Şubeler" butonuna tıklandığında
     $(document).on('click', '.btn-all-branches', function(e) {
         e.preventDefault();
@@ -2651,6 +2654,231 @@ $(document).ready(function() {
         history.pushState({ page: 'branches' }, 'Şubeler', '?page=branches'); 
 
         getAllBranches();
+    });
+
+
+
+    // Genel Merkezi göster
+    function displayHeadOffice(response) {
+
+        let headOfficeHTML = '';
+
+        headOfficeHTML 
+        
+        // İçeriği güncelle
+        $('#head-office-body').html(headOfficeHTML);
+    }
+
+
+    function displayBranchesForHeadOffice(response){
+        $('.branches').empty();
+
+        let branchesTableHTML = '';
+        let saveButton = '';
+
+        // Şubeleri tabloya ekle
+        if (response.data.length > 0) {
+            response.data.forEach(branch => {
+                branchesTableHTML += `
+                <label for="branch-${branch.id}">
+                    <div class="branch-item">
+                        <p class="head-office__branch-city">${branch.cityName}</p>
+
+                        <div class="head-office__branch-details">
+                            <p class="head-office__branch-name">${branch.name}</p>
+                            <p class="head-office__branch-email">${branch.email}</p>
+                        </div>
+
+                        <div class="branch-select">
+                            <input type="radio" id="branch-${branch.id}" name="selectedBranch" value="${branch.id}">
+                            Seç
+                        </div>
+                    </div>
+                </label>`;
+            });
+
+            saveButton = `
+                <div class="head-office-actions">
+                    <button class="btn-save-head-office">
+                        <i class="fa-solid fa-check"></i>
+                        Onayla
+                    </button>
+                </div>`;
+        } else {
+            // Şube yoksa bilgi mesajı göster
+            branchesTableHTML = `
+                <div class="branches-empty">
+                    <i class="fa-solid fa-store-slash"></i>
+                    <p>Henüz şube bulunmamaktadır.</p>
+                    <p>Şube ekleyerek genel merkezi belirleyebilirsiniz.</p>
+                </div>`;
+        }
+
+        $('.branches').append(branchesTableHTML);
+
+        if ($('.head-office-actions').length === 0) {
+            $('.head-office-body').append(saveButton);
+        }
+        
+        totalPages = response.totalPages;
+        totalItems = response.totalItems;
+
+        // Sayfa bilgisini güncelle
+        $('#headOfficePageInfo').text(`Sayfa ${currentPage} / ${totalPages}`);
+        $('#headOfficeTotalItemsInfo').text(`Toplam Kayıt: ${totalItems}`);
+
+        // Sayfalama butonlarının durumunu güncelle
+        $('#prevHeadOfficePage').prop('disabled', !response.hasPrevious); // İlk sayfada geri butonu devre dışı
+        $('#nextHeadOfficePage').prop('disabled', !response.hasNext); // Son sayfada ileri butonu devre dışı
+    }
+
+
+
+    // Genel Merkez sayfasında önceki sayfa butonuna tıklama olayı
+    $(document).on('click', '#prevHeadOfficePage', function() {
+        if (currentPage > 1) {
+            currentPage--;
+
+            getBranchesForHeadOffice();
+        }
+    });
+
+
+
+    // Genel Merkez sayfasında sonraki sayfa butonuna tıklama olayı
+    $(document).on('click', '#nextHeadOfficePage', function() {
+        if (currentPage < totalPages) {
+            currentPage++;
+
+            getBranchesForHeadOffice();
+        }
+    });
+
+
+
+    function getBranchesForHeadOffice() {
+        $.ajax({
+            url: `${baseUrl}branches/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function (branches) {
+                displayBranchesForHeadOffice(branches);
+            },
+            error: function (err) {
+                const errorMessage = err.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Şubeler alınırken hata oluştu!");
+            }
+        });
+    }
+
+
+    // Genel Merkezi getiren fonksiyon
+    function getHeadOffice() {
+
+        // Dashboard içeriğini temizle
+        $('.dashboard-content').empty();
+                
+        // Genel Merkez için HTML yapısı
+        let headOfficeSectionHTML = `
+        <div class="head-office-container">
+            <div class="head-office-header">
+                <h2>Genel Merkez</h2>
+                <button class="btn-create-branch">
+                    <i class="fa-solid fa-plus"></i>
+                    Şube Ekle
+                </button>
+            </div>
+            <div class="head-office-body">
+                <div class="branches">
+                </div>
+            </div>
+        </div>`;
+
+        // Genel Merkezi dashboard'a ekle
+        $('.dashboard-content').append(headOfficeSectionHTML);
+
+        fetchHeadOffice();
+    }
+
+
+    function fetchHeadOffice() {
+        $.ajax({
+            url: `${baseUrl}branches/getHeadOffice`,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                
+                displayHeadOffice(response);
+            },
+            error: function() {
+                currentPage = 1;
+                let noHeadOfficeMessageHTML  = `
+                    <div class="head-office-empty">
+                        <div class="icon">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </div>
+                        <div class="head-office-text">
+                            <p class="head-office-title">Genel Merkez henüz belirlenmedi.</p>
+                            <p class="head-office-description">Mevcut şubelerden birini seçerek belirleyebilirsiniz.</p>
+                        </div>
+                    </div>`;
+                $('.branches').before(noHeadOfficeMessageHTML);
+                
+                paginationTemplate("head-office-container", "prevHeadOfficePage", "nextHeadOfficePage", "headOfficePageInfo", "headOfficeTotalItemsInfo");
+
+                getBranchesForHeadOffice();
+            }
+        });
+    }
+
+
+    // Şehir listesindeki "Genel Merkez" butonuna tıklandığında
+    $(document).on('click', '.btn-head-office', function(e) {
+        e.preventDefault();
+
+        //URL'ye sahte bir adım ekliyoruz
+        history.pushState({ page: 'headOffice' }, 'Genel Merkez', '?page=headOffice'); 
+
+        getHeadOffice();
+    });
+
+
+
+    // Genel Merkezde "Onayla" butonuna tıklandığında
+    $(document).on('click', '.btn-save-head-office', function(e) {
+        e.stopPropagation();
+
+        let selectedBranch = $('input[name="selectedBranch"]:checked').val();
+
+        if (!selectedBranch){
+            showToast('error', 'Hata', "Lütfen bir şube seçiniz!");
+            return;
+        }
+
+        $.ajax({
+            url: `${baseUrl}branches/setBranchAsHeadOffice?branchId=${selectedBranch}`,
+            type: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            success: function(response) {
+                if (response.success) {
+                    showToast('success', 'Başarılı', 'Genel Merkez başarıyla kaydedildi!');
+                    
+                } else {
+                    showToast('error', 'Hata', response.message);
+                }
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Genel Merkez kaydedilirken hata oluştu!");
+            }
+        });
     });
 
 
@@ -3423,7 +3651,13 @@ $(document).ready(function() {
                         $(this).remove();
                     });
 
-                    if (cityName === null){
+                    // "page" parametresinin değeri
+                    const pageValue = params.get("page");
+
+                    if (pageValue == "headOffice"){
+                        getBranchesForHeadOffice();
+                    }
+                    else if (cityName === null){
                         getAllBranches();
                     }else{
                         getBranchesByCity(cityId, cityName); 
@@ -4775,9 +5009,14 @@ $(document).ready(function() {
             getReservationTemplate(branchId, branchName, 1);
 
         }else if (page === 'pages') {
-            history.replaceState({ page: 'pages' }, 'Şehirler', '?page=pages'); 
+            history.replaceState({ page: 'pages' }, 'Sayfalar', '?page=pages'); 
 
             getPages();
+
+        }else if (page === 'headOffice') {
+            history.replaceState({ page: 'headOffice' }, 'Genel Merkez', '?page=headOffice'); 
+
+            getHeadOffice();
 
         }else {
             // Hiç page değeri yoksa dashboard'u yükle.
@@ -5113,6 +5352,10 @@ $(document).ready(function() {
 
                 case 'pages':
                     getPages();
+                    break;
+
+                case 'headOffice':
+                    getHeadOffice();
                     break;
 
                 case 'dashboard':
