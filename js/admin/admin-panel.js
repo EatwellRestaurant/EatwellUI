@@ -180,11 +180,18 @@ $(document).ready(function() {
             $('#mySidenav').css({'transform': 'translateX(0)', 'visibility': 'visible'});
             $('.sidenav .sidenav-header .logo ').css({'opacity': '1', 'cursor': 'pointer'});
 
-            if($(window).width() < 992){
+            if ($(window).width() < 992) {
                 $('body').append('<div class="overlay"></div>');
                 $('.overlay').addClass('active');
+            }
+
+            if($(window).width() < 480){
+                $('.sidenav a span').css({'margin-left': '30px', 'opacity': '1'});
+                $('.sidenav a img').css('left', '14%');
+            } else if ($(window).width() < 992) {
                 $('.sidenav a span').css({'margin-left': '40px', 'opacity': '1'});
-            } else {
+            }
+             else {
                 openSidenavStyles();
             }
 
@@ -2322,7 +2329,7 @@ $(document).ready(function() {
                 <div class="cities-container">
                     <div class="cities-header">
                         <h2>Şehir Listesi</h2>
-                        <div>
+                        <div class="branch-controls">
                             <button class="btn-head-office">
                                 <i class="fa-solid fa-landmark"></i>
                                 Genel Merkez
