@@ -2667,13 +2667,59 @@ $(document).ready(function() {
 
     // Genel Merkezi göster
     function displayHeadOffice(response) {
+        $('.btn-create-branch').remove();
+        $('.head-office-container .pagination-container').remove();
+        
+        let headOffice = response.data;
 
-        let headOfficeHTML = '';
+        $('.head-office-header h2').text(`Genel Merkez : ${headOffice.name}`);
 
-        headOfficeHTML 
+        let headOfficeHTML = `
+            <div class="head-office-branch-location">
+                <i class="fa-solid fa-location-dot"></i>
+                <p class="head-office-branch-city-name">${headOffice.cityName}</p>
+            </div>
+                
+            <div class="head-office-cards">
+                <div class="stat-card order-card">
+                    <div class="stat-card-icon">
+                        <img src="../../icons/shopping-cart.png" alt="siparişler">
+                    </div>
+                    
+                    <div class="stat-card-content">
+                        <p class="stat-card-label">Toplam Siparişler</p>
+                        <p class="stat-card-value">1.235</p>
+                    </div>
+                </div>
+
+                <div class="stat-card reservation-card">
+                    <div class="stat-card-icon">
+                        <img src="../../icons/restaurant-table.png" alt="rezervasyonlar">
+                    </div>
+                    
+                    <div class="stat-card-content">
+                        <p class="stat-card-label">Toplam Rezervasyonlar</p>
+                        <p class="stat-card-value">567</p>
+                    </div>
+                </div>
+
+                <div class="stat-card sales-card">
+                    <div class="stat-card-icon">
+                        <img src="../../icons/money.png" alt="rezervasyonlar">
+                    </div>
+                    
+                    <div class="stat-card-content">
+                        <p class="stat-card-label">Toplam Satışlar</p>
+                        <p class="stat-card-value">
+                            <i class="fa-solid fa-turkish-lira-sign"></i>12.402
+                        </p>
+                    </div>
+                </div>
+            </div>
+        `;
         
         // İçeriği güncelle
-        $('#head-office-body').html(headOfficeHTML);
+        $('.head-office-body').html(headOfficeHTML);
     }
 
 
@@ -2689,11 +2735,11 @@ $(document).ready(function() {
                 branchesTableHTML += `
                 <label for="branch-${branch.id}">
                     <div class="branch-item">
-                        <p class="head-office__branch-city">${branch.cityName}</p>
+                        <p class="branch-city">${branch.cityName}</p>
 
-                        <div class="head-office__branch-details">
-                            <p class="head-office__branch-name">${branch.name}</p>
-                            <p class="head-office__branch-email">${branch.email}</p>
+                        <div class="branch-details">
+                            <p class="branch-name">${branch.name}</p>
+                            <p class="branch-email">${branch.email}</p>
                         </div>
 
                         <div class="branch-select">
@@ -2798,8 +2844,7 @@ $(document).ready(function() {
                 </button>
             </div>
             <div class="head-office-body">
-                <div class="branches">
-                </div>
+                
             </div>
         </div>`;
 
@@ -2823,6 +2868,11 @@ $(document).ready(function() {
             },
             error: function() {
                 currentPage = 1;
+
+                $('.head-office-body').empty();
+
+                $('.head-office-body').html('<div class="branches"></div>');
+
                 let noHeadOfficeMessageHTML  = `
                     <div class="head-office-empty">
                         <div class="icon">
@@ -2877,6 +2927,11 @@ $(document).ready(function() {
                 if (response.success) {
                     showToast('success', 'Başarılı', 'Genel Merkez başarıyla kaydedildi!');
                     
+                    // Genel Merkez içeriğini temizle
+                    $('.head-office-body').empty();
+
+                    displayHeadOffice(response);
+
                 } else {
                     showToast('error', 'Hata', response.message);
                 }

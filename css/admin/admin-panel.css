@@ -1316,6 +1316,73 @@ td, th {
   overflow-x: auto;
 }
 
+.head-office-branch-location {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  color: #515151;
+}
+
+.head-office-branch-location i {
+  font-size: 18px;
+}
+
+.head-office-branch-city-name {
+  font-size: 24px;
+}
+
+.head-office-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  justify-content: space-between;
+  margin-top: 20px;
+  justify-items: start;
+}
+
+.stat-card {
+  display: flex;
+  justify-content: flex-start;
+  padding: 23px;
+  gap: 15px;
+  border: 2px solid #ebe9e9;
+  border-radius: 8px;
+  width: 100%;
+}
+
+.stat-card-icon {
+  padding: 17px;
+  background-color: #fffe7c;
+  border-radius: 8px;
+  color: #051b30;
+  display: flex;
+  align-items: center;
+}
+
+.stat-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  justify-content: center;
+  width: 100%;
+}
+
+.stat-card-label {
+  font-size: 18px;
+  font-weight: 500;
+  font-family: 'Poppins', sans-serif;
+}
+
+.stat-card-value {
+  font-size: 32px;
+  font-weight: 500;
+}
+
+.stat-card-value i {
+  font-size: 24px;
+  margin-right: 3px;
+}
+
 .head-office-empty {
   display: flex;
   width: 80%;
@@ -1361,7 +1428,7 @@ td, th {
   cursor: pointer;
 }
 
-.head-office__branch-city {
+.branch-city {
   padding: 15px;
   font-size: 16px;
   background-color: #FEE00A;
@@ -1370,7 +1437,7 @@ td, th {
   font-weight: 500;
 }
 
-.head-office__branch-details {
+.branch-details {
   margin-top: 20px;
   display: flex;
   flex-direction: column;
@@ -1378,12 +1445,12 @@ td, th {
   align-items: center;
 }
 
-.head-office__branch-name {
+.branch-name {
   font-weight: 500;
   font-size: 17px;
 }
 
-.head-office__branch-email {
+.branch-email {
   font-size: 13px;
 }
 
@@ -1925,6 +1992,31 @@ input:not(:checked) + .toggle-slider:after {
 }
 
 /* Responsive Tasarım Media Queries */
+@media screen and (max-width: 1834px){
+  .head{
+    padding: 10px 25px;
+  }
+  
+  .products-table td:nth-child(6){
+    width: 10%;
+  }
+
+  .products-table td:nth-child(2),
+  .products-table td:nth-child(3){
+    width: 15%;
+  }
+  
+  .products-table td:nth-child(4),
+  .products-table td:nth-child(5){
+    width: 15%;
+  }
+  
+  .products-table td:nth-child(6){
+    width: 30%;
+  }
+}
+
+
 @media screen and (max-width: 1200px) {
   .col-div-3 {
     width: 50%;
@@ -1954,30 +2046,18 @@ input:not(:checked) + .toggle-slider:after {
   .menus-table td:nth-child(4){
     width: 45%;
   }
-}
 
-
-@media screen and (max-width: 1834px){
-  .head{
-    padding: 10px 25px;
-  }
-  
-  .products-table td:nth-child(6){
-    width: 10%;
+  .head-office-cards {
+    display: flex;
+    flex-wrap: wrap;
   }
 
-  .products-table td:nth-child(2),
-  .products-table td:nth-child(3){
-    width: 15%;
+  .stat-card {
+    width: 45%;
   }
-  
-  .products-table td:nth-child(4),
-  .products-table td:nth-child(5){
-    width: 15%;
-  }
-  
-  .products-table td:nth-child(6){
-    width: 30%;
+
+  .stat-card:last-child {
+    margin: 0 auto;
   }
 }
 
@@ -2340,6 +2420,15 @@ input:not(:checked) + .toggle-slider:after {
   .page-box {
     width: 80%;
   }
+
+  .stat-card {
+    width: 48%;
+    padding: 19px;
+  }
+
+  .stat-card-icon {
+    padding: 14px;
+  }
 }
 
 
@@ -2381,6 +2470,18 @@ input:not(:checked) + .toggle-slider:after {
   
   .pagination-total-info {
     font-size: 14px;
+  }
+
+  .head-office-cards {
+    justify-content: center;
+  }
+
+  .stat-card {
+    width: 90%;
+  }
+
+  .stat-card:last-child {
+    margin: 0;
   }
 }
 
@@ -2664,6 +2765,31 @@ input:not(:checked) + .toggle-slider:after {
   .head-office-description {
     font-size: 11px;
     margin-top: 0;
+  }
+
+  .stat-card {
+    width: 100%;
+  }
+
+  .stat-card-icon img {
+    width: 40px;
+    height: 40px;
+  }
+
+  .stat-card-label {
+    font-size: 17px;
+  }
+
+  .stat-card-value {
+    font-size: 29px;
+  }
+
+  .head-office-branch-location i {
+    font-size: 16px;
+  }
+
+  .head-office-branch-city-name {
+    font-size: 22px;
   }
 }
 
