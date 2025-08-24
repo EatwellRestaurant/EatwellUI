@@ -2666,20 +2666,9 @@ $(document).ready(function() {
 
 
     // Genel Merkezi göster
-    function displayHeadOffice(response) {
-        $('.btn-create-branch').remove();
-        $('.head-office-container .pagination-container').remove();
+    function displayHeadOffice() {
         
-        let headOffice = response.data;
-
-        $('.head-office-header h2').text(`Genel Merkez : ${headOffice.name}`);
-
         let headOfficeHTML = `
-            <div class="head-office-branch-location">
-                <i class="fa-solid fa-location-dot"></i>
-                <p class="head-office-branch-city-name">${headOffice.cityName}</p>
-            </div>
-                
             <div class="head-office-cards">
                 <div class="stat-card order-card">
                     <div class="stat-card-icon">
@@ -2716,114 +2705,23 @@ $(document).ready(function() {
                     </div>
                 </div>
             </div>
+
+             <div class="head-office-personnel">
+                <table class="head-office-personnel__table">
+                    <thead>
+                        <tr>
+                            <th class="head-office-personnel-name-col">Personel</th>
+                            <th class="head-office-personnel-job-col">Görevi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="headOfficeTableBody"></tbody>
+                </table>
+            </div>
+
         `;
         
         // İçeriği güncelle
         $('.head-office-body').html(headOfficeHTML);
-    }
-
-
-    function displayBranchesForHeadOffice(response){
-        $('.branches').empty();
-
-        let branchesTableHTML = '';
-        let saveButton = '';
-
-        // Şubeleri tabloya ekle
-        if (response.data.length > 0) {
-            response.data.forEach(branch => {
-                branchesTableHTML += `
-                <label for="branch-${branch.id}">
-                    <div class="branch-item">
-                        <p class="branch-city">${branch.cityName}</p>
-
-                        <div class="branch-details">
-                            <p class="branch-name">${branch.name}</p>
-                            <p class="branch-email">${branch.email}</p>
-                        </div>
-
-                        <div class="branch-select">
-                            <input type="radio" id="branch-${branch.id}" name="selectedBranch" value="${branch.id}">
-                            Seç
-                        </div>
-                    </div>
-                </label>`;
-            });
-
-            saveButton = `
-                <div class="head-office-actions">
-                    <button class="btn-save-head-office">
-                        <i class="fa-solid fa-check"></i>
-                        Onayla
-                    </button>
-                </div>`;
-        } else {
-            // Şube yoksa bilgi mesajı göster
-            branchesTableHTML = `
-                <div class="branches-empty">
-                    <i class="fa-solid fa-store-slash"></i>
-                    <p>Henüz şube bulunmamaktadır.</p>
-                    <p>Şube ekleyerek genel merkezi belirleyebilirsiniz.</p>
-                </div>`;
-        }
-
-        $('.branches').append(branchesTableHTML);
-
-        if ($('.head-office-actions').length === 0) {
-            $('.head-office-body').append(saveButton);
-        }
-        
-        totalPages = response.totalPages;
-        totalItems = response.totalItems;
-
-        // Sayfa bilgisini güncelle
-        $('#headOfficePageInfo').text(`Sayfa ${currentPage} / ${totalPages}`);
-        $('#headOfficeTotalItemsInfo').text(`Toplam Kayıt: ${totalItems}`);
-
-        // Sayfalama butonlarının durumunu güncelle
-        $('#prevHeadOfficePage').prop('disabled', !response.hasPrevious); // İlk sayfada geri butonu devre dışı
-        $('#nextHeadOfficePage').prop('disabled', !response.hasNext); // Son sayfada ileri butonu devre dışı
-    }
-
-
-
-    // Genel Merkez sayfasında önceki sayfa butonuna tıklama olayı
-    $(document).on('click', '#prevHeadOfficePage', function() {
-        if (currentPage > 1) {
-            currentPage--;
-
-            getBranchesForHeadOffice();
-        }
-    });
-
-
-
-    // Genel Merkez sayfasında sonraki sayfa butonuna tıklama olayı
-    $(document).on('click', '#nextHeadOfficePage', function() {
-        if (currentPage < totalPages) {
-            currentPage++;
-
-            getBranchesForHeadOffice();
-        }
-    });
-
-
-
-    function getBranchesForHeadOffice() {
-        $.ajax({
-            url: `${baseUrl}branches/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`,
-            type: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            },
-            success: function (branches) {
-                displayBranchesForHeadOffice(branches);
-            },
-            error: function (err) {
-                const errorMessage = err.responseJSON?.Message;
-                showToast('error', 'Hata', errorMessage ? errorMessage : "Şubeler alınırken hata oluştu!");
-            }
-        });
     }
 
 
@@ -2838,10 +2736,6 @@ $(document).ready(function() {
         <div class="head-office-container">
             <div class="head-office-header">
                 <h2>Genel Merkez</h2>
-                <button class="btn-create-branch">
-                    <i class="fa-solid fa-plus"></i>
-                    Şube Ekle
-                </button>
             </div>
             <div class="head-office-body">
                 
@@ -2851,46 +2745,9 @@ $(document).ready(function() {
         // Genel Merkezi dashboard'a ekle
         $('.dashboard-content').append(headOfficeSectionHTML);
 
-        fetchHeadOffice();
+        displayHeadOffice();
     }
 
-
-    function fetchHeadOffice() {
-        $.ajax({
-            url: `${baseUrl}branches/getHeadOffice`,
-            type: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            },
-            success: function(response) {
-                
-                displayHeadOffice(response);
-            },
-            error: function() {
-                currentPage = 1;
-
-                $('.head-office-body').empty();
-
-                $('.head-office-body').html('<div class="branches"></div>');
-
-                let noHeadOfficeMessageHTML  = `
-                    <div class="head-office-empty">
-                        <div class="icon">
-                            <i class="fa-solid fa-triangle-exclamation"></i>
-                        </div>
-                        <div class="head-office-text">
-                            <p class="head-office-title">Genel Merkez henüz belirlenmedi.</p>
-                            <p class="head-office-description">Mevcut şubelerden birini seçerek belirleyebilirsiniz.</p>
-                        </div>
-                    </div>`;
-                $('.branches').before(noHeadOfficeMessageHTML);
-                
-                paginationTemplate("head-office-container", "prevHeadOfficePage", "nextHeadOfficePage", "headOfficePageInfo", "headOfficeTotalItemsInfo");
-
-                getBranchesForHeadOffice();
-            }
-        });
-    }
 
 
     // Şehir listesindeki "Genel Merkez" butonuna tıklandığında
@@ -2901,46 +2758,6 @@ $(document).ready(function() {
         history.pushState({ page: 'headOffice' }, 'Genel Merkez', '?page=headOffice'); 
 
         getHeadOffice();
-    });
-
-
-
-    // Genel Merkezde "Onayla" butonuna tıklandığında
-    $(document).on('click', '.btn-save-head-office', function(e) {
-        e.stopPropagation();
-
-        let selectedBranch = $('input[name="selectedBranch"]:checked').val();
-
-        if (!selectedBranch){
-            showToast('error', 'Hata', "Lütfen bir şube seçiniz!");
-            return;
-        }
-
-        $.ajax({
-            url: `${baseUrl}branches/setBranchAsHeadOffice?branchId=${selectedBranch}`,
-            type: 'PUT',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            },
-            success: function(response) {
-                if (response.success) {
-                    showToast('success', 'Başarılı', 'Genel Merkez başarıyla kaydedildi!');
-                    
-                    // Genel Merkez içeriğini temizle
-                    $('.head-office-body').empty();
-
-                    displayHeadOffice(response);
-
-                } else {
-                    showToast('error', 'Hata', response.message);
-                }
-            },
-            error: function(xhr) {
-                const errorMessage = xhr.responseJSON?.Message;
-                showToast('error', 'Hata', errorMessage ? errorMessage : "Genel Merkez kaydedilirken hata oluştu!");
-            }
-        });
     });
 
 
