@@ -2664,10 +2664,89 @@ $(document).ready(function() {
     });
 
 
+    
+
+    function brachChart() {
+        var ctx = $('#branchPerformance')[0].getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['1 Ay', '2 Ay', '3 Ay', '4 Ay', '5 Ay'],
+                datasets: [
+                    {
+                        label: 'Haliliye Şubesi',
+                        data: [800, 2000, 700, 1350, 2500],
+                        borderColor: '#FFD700',
+                        fill: false
+                    },
+                    {
+                        label: 'Karaköprü Şubesi',
+                        data: [400, 900, 1200, 1000, 1400],
+                        borderColor: '#000000',
+                        fill: false
+                    },
+                    {
+                        label: 'Siverek Şubesi',
+                        data: [200, 500, 700, 650, 1000],
+                        borderColor: '#A9A9A9',
+                        fill: false
+                    },
+                    {
+                        label: 'Harran Şubesi',
+                        data: [100, 300, 400, 550, 600],
+                        borderColor: '#808080',
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 25,
+                            // Grafik altındaki başlıkların stili
+                            font: {
+                                weight: 'bold',  
+                                size: 14         
+                            },
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        ticks: {
+                            // Y eksenindeki sayıların stili
+                            font: {
+                                weight: 'bold', 
+                                size: 12
+                            }
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            // X eksenindeki sayıların stili
+                            font: {
+                                weight: 'bold', 
+                                size: 12
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    };
+
+
+
 
     // Genel Merkezi göster
-    function displayHeadOffice() {
+    function displayHeadOffice(response) {
         
+        const data = response.data;
+
         let headOfficeHTML = `
             <div class="head-office-cards">
                 <div class="stat-card order-card">
@@ -2677,7 +2756,7 @@ $(document).ready(function() {
                     
                     <div class="stat-card-content">
                         <p class="stat-card-label">Toplam Siparişler</p>
-                        <p class="stat-card-value">1.235</p>
+                        <p class="stat-card-value">${data.orderCount}</p>
                     </div>
                 </div>
 
@@ -2688,7 +2767,7 @@ $(document).ready(function() {
                     
                     <div class="stat-card-content">
                         <p class="stat-card-label">Toplam Rezervasyonlar</p>
-                        <p class="stat-card-value">567</p>
+                        <p class="stat-card-value">${data.reservationCount}</p>
                     </div>
                 </div>
 
@@ -2700,13 +2779,20 @@ $(document).ready(function() {
                     <div class="stat-card-content">
                         <p class="stat-card-label">Toplam Satışlar</p>
                         <p class="stat-card-value">
-                            <i class="fa-solid fa-turkish-lira-sign"></i>12.402
+                            <i class="fa-solid fa-turkish-lira-sign"></i>${data.totalSales}
                         </p>
                     </div>
                 </div>
             </div>
 
-             <div class="head-office-personnel">
+            <div class="branch-chart">
+                <h3>Şubelere Göre Satışlar</h3>
+                <canvas id="branchPerformance">
+                    Tarayıcınız canvas öğesini desteklemiyor.
+                </canvas>
+            </div>
+
+            <div class="head-office-personnel">
                 <table class="head-office-personnel__table">
                     <thead>
                         <tr>
@@ -2722,7 +2808,33 @@ $(document).ready(function() {
         
         // İçeriği güncelle
         $('.head-office-body').html(headOfficeHTML);
+        brachChart();
     }
+
+
+    
+
+
+    function fetchAllBranchStatistics() {
+        $.ajax({
+            url: `${baseUrl}BranchStatistics`,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                $('.head-office-body').empty();
+
+                displayHeadOffice(response);
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Şube istatistikleri alınırken hata oluştu!");
+            }
+        });
+    }
+
+
 
 
     // Genel Merkezi getiren fonksiyon
@@ -2745,8 +2857,9 @@ $(document).ready(function() {
         // Genel Merkezi dashboard'a ekle
         $('.dashboard-content').append(headOfficeSectionHTML);
 
-        displayHeadOffice();
+        fetchAllBranchStatistics();
     }
+
 
 
 
