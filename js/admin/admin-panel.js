@@ -28,6 +28,11 @@ $(document).ready(function() {
     const token = localStorage.getItem('token');
     const expiration = localStorage.getItem('expiration');
     const userName = localStorage.getItem('userName');
+
+    const monthNames = [
+        "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
+        "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"
+    ];
     
     
     if (new Date(expiration) < new Date()){
@@ -1149,7 +1154,7 @@ $(document).ready(function() {
                 </div>
                 <div class="menu-create-body">
                     <div class="menu-image-container">
-                        <img src="../icons/default-menu-image-placeholder.png" alt="default-menu-image" class="menu-create-image" id="previewImage">
+                        <img src="../../icons/default-menu-image-placeholder.png" alt="default-menu-image" class="menu-create-image" id="previewImage">
                         <label for="menuImage" class="custom-upload-button">Resim Seç</label>
                         <input type="file" id="menuImage" accept="image/*" class="image-input">
                     </div>
@@ -1945,7 +1950,7 @@ $(document).ready(function() {
                 </div>
                 <div class="product-create-body">
                     <div class="product-image-container">
-                        <img src="../icons/default-menu-image-placeholder.png" alt="default-product-image" class="product-create-image" id="previewImage">
+                        <img src="../../icons/default-menu-image-placeholder.png" alt="default-product-image" class="product-create-image" id="previewImage">
                         <label for="productImage" class="custom-upload-button">Resim Seç</label>
                         <input type="file" id="productImage" accept="image/*" class="image-input">
                     </div>
@@ -2666,38 +2671,14 @@ $(document).ready(function() {
 
     
 
-    function brachChart() {
+    function branchChart(data) {
+
         var ctx = $('#branchPerformance')[0].getContext('2d');
-        new Chart(ctx, {
+        var branchChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: ['1 Ay', '2 Ay', '3 Ay', '4 Ay', '5 Ay'],
-                datasets: [
-                    {
-                        label: 'Haliliye Şubesi',
-                        data: [800, 2000, 700, 1350, 2500],
-                        borderColor: '#FFD700',
-                        fill: false
-                    },
-                    {
-                        label: 'Karaköprü Şubesi',
-                        data: [400, 900, 1200, 1000, 1400],
-                        borderColor: '#000000',
-                        fill: false
-                    },
-                    {
-                        label: 'Siverek Şubesi',
-                        data: [200, 500, 700, 650, 1000],
-                        borderColor: '#A9A9A9',
-                        fill: false
-                    },
-                    {
-                        label: 'Harran Şubesi',
-                        data: [100, 300, 400, 550, 600],
-                        borderColor: '#808080',
-                        fill: false
-                    }
-                ]
+                labels: [],
+                datasets: []
             },
             options: {
                 responsive: true,
@@ -2737,8 +2718,227 @@ $(document).ready(function() {
                 }
             }
         });
+
+
+        branchChart.data.labels = monthNames; 
+
+        let branchSalesDtos = data.branchSalesDtos;
+
+        // Şubeleri grafiğe ekle
+        branchChart.data.datasets = branchSalesDtos.map((branch, index) => {
+                
+            let salesByMonth = monthNames.map(monthName => {
+                let monthData = branch.sales.find(s => s.monthName === monthName);
+                return monthData ? monthData.sales : 0;
+            });
+
+            return {
+                label: branch.name,
+                data: salesByMonth,
+                borderColor: getColor(index),
+                fill: false
+            };
+        });
+
+        // Grafiği güncelle
+        branchChart.update();
+
+        function getColor(index) {
+            const colors = ["#FFD700", "#000000", "#A9A9A9", "#808080", "#FF5733", "#33FF57"];
+            return colors[index % colors.length];
+        }
     };
 
+
+
+    const BranchStatusEnum = {
+        Opened: 1,
+        AwaitingApproval: 2,
+        Planning: 3,
+        Installation: 4
+    };
+
+    
+    // Şubenin Status enum değerine göre gösterilecek yazılar
+    const statusTextMap = {
+        [BranchStatusEnum.Opened]: "Açıldı",
+        [BranchStatusEnum.AwaitingApproval]: "Onay Bekliyor",
+        [BranchStatusEnum.Planning]: "Planlama Aşamasında",
+        [BranchStatusEnum.Installation]: "Kurulum Aşamasında"
+    };
+
+
+    // Status enum değerine göre CSS sınıfları
+    const statusClassMap = {
+        [BranchStatusEnum.Opened]: "status-opened",
+        [BranchStatusEnum.AwaitingApproval]: "status-permission",
+        [BranchStatusEnum.Planning]: "status-planning",
+        [BranchStatusEnum.Installation]: "status-setup"
+    };
+
+
+    function pendingBranches(pendingBranchDtos){
+        $('#pending-shops').empty();
+
+        let branchHTML = '';
+
+        if (pendingBranchDtos.length > 0) {
+            
+            // Şubeleri ekle
+            pendingBranchDtos.forEach(branch => {
+
+                const date = new Date(branch.estimatedOpeningDate);
+                const formattedDate = `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
+
+                branchHTML += `
+                    <div class="shop-item pending-shop">
+                        <div class="shop-item-header">
+                            <div class="status-dot pending"></div>
+                            <span class="shop-name">${branch.name}</span>
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        
+                        <div class="shop-status ${statusClassMap[branch.status]}">${statusTextMap[branch.status]}</div>
+                        <div class="expected-date">Tahmini açılış: ${formattedDate}</div>
+                    </div>
+                `;
+            })
+        } else {
+            branchHTML = `
+                <div class="no-branches">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Henüz bekleyen şube bulunmamaktadır.</span>
+                </div>`;
+        }
+
+        $('#pending-shops').html(branchHTML);
+    }
+
+
+
+    function activeBranches(activeBranchDtos){
+        $('#active-shops').empty();
+
+        let branchHTML = '';
+
+        if (activeBranchDtos.length > 0) {
+            // Şubeleri ekle
+            activeBranchDtos.forEach(branch => {
+                branchHTML += `
+                    <div class="shop-item active-shop">
+                        <div class="shop-item-header">
+                            <div class="status-dot active"></div>
+                            <span class="shop-name">${branch.name}</span>
+                        </div>
+                    </div>`;
+            })
+        } else {
+            branchHTML = `
+                <div class="no-branches">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Henüz aktif şube bulunmamaktadır.</span>
+                </div>`;
+        }
+
+        $('#active-shops').html(branchHTML);
+    }
+
+
+
+    function sidebarBranches(data){
+
+        let activeBranchDtos = data.activeBranchDtos;
+        let pendingBranchDtos = data.pendingBranchDtos;
+
+        $('.sidebar-branches').empty();
+
+        let pendingBranchCount = pendingBranchDtos.length;
+
+        let sidebarHtml = `
+            <div class="tab-navigation">
+                <button class="tab-button active" data-tab="active" style="transform: scale(1);">
+                    <i class="fas fa-building"></i>
+                    Aktif Şubeler
+                </button>
+                <button class="tab-button" data-tab="pending" style="transform: scale(1);">
+                    <i class="fas fa-clock"></i>
+                    Bekleyen <span id="pending-count">(${pendingBranchCount})</span>
+                </button>
+            </div>
+
+            
+            <div class="tab-content">
+                    
+                <!-- Aktif Şubeler Panel -->
+                <div class="tab-panel active" id="active-panel">
+
+                    <div class="panel-header">
+                        <h3>Satış Yapan Şubeler</h3>
+                        <span class="badge badge-green" id="active-count">${activeBranchDtos.length} Aktif</span>
+                    </div>
+                
+                    <div class="shop-list" id="active-shops">
+                    </div>
+                </div>
+
+
+                <!-- Bekleyen Şubeler Panel -->
+                <div class="tab-panel" id="pending-panel">
+                
+                    <div class="panel-header">
+                        <h3>Kurulum Aşamasında</h3>
+                        <span class="badge badge-yellow" id="pending-badge">${pendingBranchCount} Şube</span>
+                    </div>
+                
+                    <div class="shop-list" id="pending-shops">
+                    </div>
+                </div>
+            </div>`;
+
+        $('.sidebar-branches').html(sidebarHtml);
+
+        pendingBranches(pendingBranchDtos);
+        activeBranches(activeBranchDtos);
+    }
+
+
+
+    $(document).on('click', '.tab-button', function() {
+        const targetTab = $(this).data('tab');
+
+        // Remove active class from all tabs and panels
+        $('.tab-button').removeClass('active');
+        $('.tab-panel').removeClass('active');
+        
+        // Add active class to clicked tab
+        $(this).addClass('active');
+        
+        // Show corresponding panel with animation
+        $(`#${targetTab}-panel`).addClass('active');
+        
+        // Optional: Add click feedback
+        $(this).css('transform', 'scale(0.98)');
+        setTimeout(() => {
+            $(this).css('transform', 'scale(1)');
+        }, 100);
+    });
+    
+
+
+    $(document).on('mouseenter', '.shop-item', function() {
+        $(this).css({
+            'transform': 'translateY(-2px)',
+            'box-shadow': '0 4px 12px rgba(0,0,0,0.15)'
+        });
+    });
+
+
+    $(document).on('mouseleave', '.shop-item', function() {
+        $(this).css({
+            'transform': 'translateY(0)',
+            'box-shadow': 'none'
+        });
+    });
 
 
 
@@ -2785,12 +2985,23 @@ $(document).ready(function() {
                 </div>
             </div>
 
-            <div class="branch-chart">
-                <h3>Şubelere Göre Satışlar</h3>
-                <canvas id="branchPerformance">
-                    Tarayıcınız canvas öğesini desteklemiyor.
-                </canvas>
+            <div class="branch-wrapper">
+
+                <div class="branch-chart">
+                    <h3>Şubelere göre satışlar</h3>
+                    <div class="chart-info">
+                        <i class="fa-solid fa-chart-line"></i> 
+                        <span>Son 12 Ay</span>
+                    </div>
+                    <canvas id="branchPerformance">
+                        Tarayıcınız canvas öğesini desteklemiyor.
+                    </canvas>
+                </div>
+
+                <div class="sidebar-branches">
+                </div>
             </div>
+            
 
             <div class="head-office-personnel">
                 <table class="head-office-personnel__table">
@@ -2808,7 +3019,8 @@ $(document).ready(function() {
         
         // İçeriği güncelle
         $('.head-office-body').html(headOfficeHTML);
-        brachChart();
+        branchChart(data);
+        sidebarBranches(data.branchOverviewDto);
     }
 
 
