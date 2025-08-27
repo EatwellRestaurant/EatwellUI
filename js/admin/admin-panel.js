@@ -2666,10 +2666,10 @@ $(document).ready(function() {
         history.pushState({ page: 'branches' }, 'Şubeler', '?page=branches'); 
 
         getAllBranches();
-    });
-
+    });    
 
     
+
 
     function branchChart(data) {
 
@@ -2681,7 +2681,7 @@ $(document).ready(function() {
                 datasets: []
             },
             options: {
-                responsive: false,
+                responsive: true,
                 plugins: {
                     legend: {
                         position: 'bottom',

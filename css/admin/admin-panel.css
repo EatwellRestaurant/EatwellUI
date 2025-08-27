@@ -2164,9 +2164,9 @@ input:not(:checked) + .toggle-slider:after {
 
 @media screen and (max-width: 1600px) {
   .branch-wrapper {
-    height: auto;
+    height: 520px;
     max-height: none;
-    flex-direction: column;
+    min-height: 500px;
   }
 
   .branch-chart {
@@ -2174,8 +2174,8 @@ input:not(:checked) + .toggle-slider:after {
   }
 
   #branchPerformance {
-    width: 1005px !important;
-    height: 545px !important;
+    width: 720px !important;
+    height: 360px !important;
   }
 }
 
@@ -2221,6 +2221,17 @@ input:not(:checked) + .toggle-slider:after {
 
   .stat-card:last-child {
     margin: 0 auto;
+  }
+
+  .branch-wrapper {
+    height: auto;
+    max-height: none;
+    min-height: 500px;
+    flex-direction: column;
+  }
+
+  .sidebar-branches {
+    max-height: 470px;
   }
 }
 
