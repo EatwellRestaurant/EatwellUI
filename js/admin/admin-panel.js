@@ -2681,7 +2681,7 @@ $(document).ready(function() {
                 datasets: []
             },
             options: {
-                responsive: true,
+                responsive: false,
                 plugins: {
                     legend: {
                         position: 'bottom',
