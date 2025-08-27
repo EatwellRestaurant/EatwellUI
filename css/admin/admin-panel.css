@@ -1508,6 +1508,11 @@ td, th {
   color: #92400e;
 }
 
+.badge-purple {
+  background-color: #f3f4f6; 
+  color: #a767e2;            
+}
+
 .shop-list {
   display: flex;
   flex-direction: column;
@@ -1536,6 +1541,11 @@ td, th {
   border-color: #eab308;
 }
 
+.non-sales-shop {
+  background-color: #f3e8ff; 
+  border-color: #9333ea;
+}
+
 .shop-item-header {
   display: flex;
   align-items: center;
@@ -1561,6 +1571,10 @@ td, th {
 
 .status-dot.pending {
   background-color: #f59e0b;
+}
+
+.status-dot.non-sales {
+  background-color: #a767e2;
 }
 
 .shop-name {

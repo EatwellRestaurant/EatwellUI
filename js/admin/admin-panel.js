@@ -2668,7 +2668,7 @@ $(document).ready(function() {
         getAllBranches();
     });    
 
-    
+
 
 
     function branchChart(data) {
@@ -2816,15 +2816,16 @@ $(document).ready(function() {
 
 
 
-    function activeBranches(activeBranchDtos){
-        $('#active-shops').empty();
+    function activeBranches(salesBranchDtos, nonSalesBranchDtos){
+        
+        $('#active-sales-shops').empty();
 
-        let branchHTML = '';
+        let salesBranchHTML = '';
 
-        if (activeBranchDtos.length > 0) {
-            // Şubeleri ekle
-            activeBranchDtos.forEach(branch => {
-                branchHTML += `
+        // Şubeleri ekle
+        if (salesBranchDtos.length > 0) {
+            salesBranchDtos.forEach(branch => {
+                salesBranchHTML += `
                     <div class="shop-item active-shop">
                         <div class="shop-item-header">
                             <div class="status-dot active"></div>
@@ -2833,21 +2834,70 @@ $(document).ready(function() {
                     </div>`;
             })
         } else {
-            branchHTML = `
+            salesBranchHTML = `
+                <div class="no-branches">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Henüz satış yapan şube bulunmamaktadır.</span>
+                </div>`;
+        }
+
+        
+
+
+        $('#active-non-sales-shops').empty();
+
+        let nonSalesBranchHTML = '';
+
+        // Şubeleri ekle
+        if (nonSalesBranchDtos.length > 0) {
+            nonSalesBranchDtos.forEach(branch => {
+                nonSalesBranchHTML += `
+                    <div class="shop-item non-sales-shop">
+                        <div class="shop-item-header">
+                            <div class="status-dot non-sales"></div>
+                            <span class="shop-name">${branch.name}</span>
+                        </div>
+                    </div>`;
+            })
+        } else {
+
+            if (salesBranchDtos.length > 0){
+                nonSalesBranchHTML = `
+                    <div class="no-branches">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Tüm şubelerde satış yapılmaktadır.</span>
+                    </div>`;
+
+            } else {
+                salesBranchHTML = `
                 <div class="no-branches">
                     <i class="fas fa-info-circle"></i>
                     <span>Henüz aktif şube bulunmamaktadır.</span>
                 </div>`;
+
+
+                nonSalesBranchHTML = `
+                    <div class="no-branches">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Henüz aktif şube bulunmamaktadır.</span>
+                    </div>`;
+            }
         }
 
-        $('#active-shops').html(branchHTML);
+
+        $('#active-sales-shops').html(salesBranchHTML);
+        $('#active-non-sales-shops').html(nonSalesBranchHTML);
+
     }
 
 
 
     function sidebarBranches(data){
 
-        let activeBranchDtos = data.activeBranchDtos;
+        let activeBranchDto = data.activeBranchDto;
+        let salesBranchDtos = activeBranchDto.salesBranchDtos;
+        let nonSalesBranchDtos = activeBranchDto.nonSalesBranchDtos;
+
         let pendingBranchDtos = data.pendingBranchDtos;
 
         $('.sidebar-branches').empty();
@@ -2874,10 +2924,18 @@ $(document).ready(function() {
 
                     <div class="panel-header">
                         <h3>Satış Yapan Şubeler</h3>
-                        <span class="badge badge-green" id="active-count">${activeBranchDtos.length} Aktif</span>
+                        <span class="badge badge-green" id="active-count">${salesBranchDtos.length} Aktif</span>
                     </div>
                 
-                    <div class="shop-list" id="active-shops">
+                    <div class="shop-list" id="active-sales-shops">
+                    </div>
+
+                    <div class="panel-header" style="margin-top: 16px">
+                        <h3>Satış Yapmamış Şubeler</h3>
+                        <span class="badge badge-purple" id="active-count">${nonSalesBranchDtos.length} Aktif</span>
+                    </div>
+
+                    <div class="shop-list" id="active-non-sales-shops">
                     </div>
                 </div>
 
@@ -2898,7 +2956,7 @@ $(document).ready(function() {
         $('.sidebar-branches').html(sidebarHtml);
 
         pendingBranches(pendingBranchDtos);
-        activeBranches(activeBranchDtos);
+        activeBranches(salesBranchDtos, nonSalesBranchDtos);
     }
 
 
