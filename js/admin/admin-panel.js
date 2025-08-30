@@ -2887,7 +2887,6 @@ $(document).ready(function() {
 
         $('#active-sales-shops').html(salesBranchHTML);
         $('#active-non-sales-shops').html(nonSalesBranchHTML);
-
     }
 
 
@@ -2964,17 +2963,15 @@ $(document).ready(function() {
     $(document).on('click', '.tab-button', function() {
         const targetTab = $(this).data('tab');
 
-        // Remove active class from all tabs and panels
         $('.tab-button').removeClass('active');
         $('.tab-panel').removeClass('active');
         
-        // Add active class to clicked tab
+
         $(this).addClass('active');
         
-        // Show corresponding panel with animation
         $(`#${targetTab}-panel`).addClass('active');
         
-        // Optional: Add click feedback
+        
         $(this).css('transform', 'scale(0.98)');
         setTimeout(() => {
             $(this).css('transform', 'scale(1)');
@@ -3043,8 +3040,8 @@ $(document).ready(function() {
                 </div>
             </div>
 
-            <div class="branch-wrapper">
 
+            <div class="branch-wrapper">
                 <div class="branch-chart">
                     <h3>Şubelere göre satışlar</h3>
                     <div class="chart-info">
@@ -3059,8 +3056,100 @@ $(document).ready(function() {
                 <div class="sidebar-branches">
                 </div>
             </div>
+
+
+            <div class="company-settings">
+                <h3 class="company-settings__title">Şirket ayarları - footer bilgileri</h3>
+                
+                <div class="company-settings__form">
+
+                    <h4 class="company-settings__subtitle">
+                        <i class="fa-solid fa-share-nodes"></i></i>Sosyal Medya
+                    </h4>
+                    <div class="company-settings__box">
+                        <div class="company-settings__field">
+                            <label class="form-label">Instagram</label>
+                            <input id="company-instagram" type="url" placeholder="Instagram profil linki" required>
+                        </div>
+                        
+                        <div class="company-settings__field">
+                            <label class="form-label">Facebook</label>
+                            <input id="company-facebook" type="url" placeholder="Facebook sayfa linki" required>
+                        </div>
+                        
+                        <div class="company-settings__field">
+                            <label class="form-label">X</label>
+                            <input id="company-x" type="url" placeholder="X sayfa linki" required>
+                        </div>
+                        
+                        <div class="company-settings__field">
+                            <label class="form-label">Google</label>
+                            <input id="company-google" type="url" placeholder="Google business linki" required>
+                        </div>
+                    </div>
+
+
+                    <h4 class="company-settings__subtitle">
+                        <i class="fa-regular fa-clock"></i>Çalışma Saatleri
+                    </h4>
+                    <div class="company-settings__box">
+                        <div class="company-settings__field">
+                            <label class="form-label">Hafta içi başlangıç</label>
+                            <input type="time" id="weekdayStart" value="09:00">
+                        </div>
+                        
+                        <div class="company-settings__field">
+                            <label class="form-label">Hafta içi bitiş</label>
+                            <input type="time" id="weekdayEnd" value="23:00">
+                        </div>
+                        
+                        <div class="company-settings__field">
+                            <label class="form-label">Hafta sonu başlangıç</label>
+                            <input type="time" id="weekendStart" value="11:00">
+                        </div>
+                        
+                        <div class="company-settings__field">
+                            <label class="form-label">Hafta sonu bitiş</label>
+                            <input type="time" id="weekendEnd" value="00:00">
+                        </div>
+
+                        <div class="company-settings__field">
+                            <label class="form-label">Özet not</label>
+                            <input id="company-hours-note" type="text" placeholder="Çalışma saatleri için not">
+                        </div>
+                    </div>
+
+
+                    <h4 class="company-settings__subtitle">
+                        <i class="fa-regular fa-file-lines"></i>Diğer Bilgiler
+                    </h4>
+                    <div class="company-settings__box">
+                        <div class="company-settings__field">
+                            <label class="form-label">Ana telefon</label>
+                            <input id="company-phone" type="tel" placeholder="Ana telefon numarası" required>
+                        </div>
+                        
+                        <div class="company-settings__field">
+                            <label class="form-label">Kurumsal e-posta</label>
+                            <input id="company-email" type="email" placeholder="info@sirketiniz.com" required>
+                        </div>
+                            
+                        <div class="company-settings__field">
+                            <label class="form-label">Şirket adresi</label>
+                            <textarea id="company-address" placeholder="Tam adres bilgisi"></textarea>
+                        </div>
+                        
+                        <div class="company-settings__button">
+                            <button class="btn-update-branch-settings">
+                                Güncelle
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             
 
+            <!--
             <div class="head-office-personnel">
                 <table class="head-office-personnel__table">
                     <thead>
@@ -3072,7 +3161,7 @@ $(document).ready(function() {
                     <tbody id="headOfficeTableBody"></tbody>
                 </table>
             </div>
-
+            -->
         `;
         
         // İçeriği güncelle

@@ -825,12 +825,18 @@ td, th {
 .btn-add-menu,
 .btn-add-table,
 .btn-update-table,
+.btn-update-branch-settings,
 .btn-add-product{
   margin-top: 15px;
   border: none;
   padding: 13px 16px;
   width: 150px;
   font-size: 17px;
+}
+
+.btn-update-branch-settings {
+  height: 50px;
+  width: 120px;
 }
 
 .btn-update-branch,
@@ -857,13 +863,15 @@ td, th {
 .btn-add-branch,
 .btn-add-table,
 .btn-update-table,
+.btn-update-branch-settings,
 .btn-add-menu,
-.btn-add-product{
+.btn-add-product {
+  font-family: 'Poppins', sans-serif;
   display: inline-block;
   background-color: #ffc515;
   color: #000;
   border-radius: 6px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   transition: background-color 0.3s;
 }
@@ -875,6 +883,7 @@ td, th {
 .btn-add-branch:hover,
 .btn-add-table:hover,
 .btn-update-table:hover,
+.btn-update-branch-settings:hover,
 .btn-add-menu:hover,
 .btn-add-product:hover{
   background-color: #ffd760;;
@@ -1113,6 +1122,7 @@ td, th {
   cursor: pointer;
   white-space: nowrap;
   transition: background-color 0.3s;
+  font-family: 'Poppins', sans-serif;
 }
 
 .btn-edit-menu:hover,
@@ -1378,22 +1388,34 @@ td, th {
   max-height: 695px; 
 }
 
-.branch-chart{
-  flex: 2;
+.branch-chart, 
+.company-settings {
   border: 2px solid #ebe9e9;
   border-radius: 8px;
   padding: 23px;
 }
 
+.branch-chart {
+  flex: 2;
+}
+
 .branch-chart h3,
+.company-settings h3,
 .noSalesBranches h4 {
   font-weight: 500;
   text-transform: capitalize;
   font-family: 'Poppins', sans-serif;
 }
 
-.branch-chart h3 {
+.branch-chart h3,
+.company-settings h3 {
   font-size: 22px;
+}
+
+.company-settings h3 {
+  padding-bottom: 7px;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #f8d700;;
 }
 
 .chart-info {
@@ -1623,6 +1645,71 @@ td, th {
 
 .no-branches span {
   font-size: 15px;
+}
+
+.company-settings__box {
+  display: grid;
+  justify-items: stretch;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin-bottom: 35px;
+}
+
+.company-settings__field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.company-settings__field .form-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: #495057;
+  text-transform: capitalize;
+}
+
+.company-settings__subtitle {
+  font-size: 19px;
+  font-weight: 500;
+  color: #dbc329;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 15px;
+}
+
+.company-settings__subtitle i {
+  font-size: 16px;
+}
+
+.company-settings__field input,
+.company-settings__field textarea {
+  width: 75%;
+  outline: none;
+  padding: 12px;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.2s ease-in-out;
+}
+
+.company-settings__field textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.company-settings__field input:focus,
+.company-settings__field textarea:focus {
+  outline: none;
+  border-color: #f8d700;
+  box-shadow: 0 0 0 2px rgba(248, 215, 0, 0.2);
+}
+
+.company-settings__button {
+  width: 75%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
 }
 
 .head-office-personnel {
@@ -2530,6 +2617,7 @@ input:not(:checked) + .toggle-slider:after {
   .btn-add-branch,
   .btn-add-table,
   .btn-update-table,
+  .btn-update-branch-settings,
   .btn-add-menu,
   .btn-add-product{
     padding: 12px 14px;
@@ -2875,6 +2963,7 @@ input:not(:checked) + .toggle-slider:after {
   .btn-add-branch,
   .btn-add-table,
   .btn-update-table,
+  .btn-update-branch-settings,
   .btn-add-menu,
   .btn-add-product{
     padding: 11px 13px;
