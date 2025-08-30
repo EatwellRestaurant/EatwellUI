@@ -2997,11 +2997,43 @@ $(document).ready(function() {
 
 
 
+    let firstInstagramInfo = null;
+    let firstFacebookInfo = null;
+    let firstTwitterInfo = null;
+    let firstGoogleInfo = null;
+
+    let firstWeekdayStartInfo = null;
+    let firstWeekdayEndInfo = null;
+    let firstWeekendStartInfo = null;
+    let firstWeekendEndInfo = null;
+    let firstSpecialNoteInfo = null;
+
+    let firstPhoneInfo = null;
+    let firstEmailInfo = null;
+    let firstAddressInfo = null;
+
+
+
     // Genel Merkezi göster
     function displayHeadOffice(response) {
         
         const data = response.data;
         const headOfficeDto = data.headOfficeDto;
+
+        firstInstagramInfo = headOfficeDto.instagram;
+        firstFacebookInfo = headOfficeDto.facebook;
+        firstTwitterInfo = headOfficeDto.twitter;
+        firstGoogleInfo = headOfficeDto.gmail;
+
+        firstWeekdayStartInfo = headOfficeDto.midWeekWorkingHours.split('-')[0].trim();
+        firstWeekdayEndInfo = headOfficeDto.midWeekWorkingHours.split('-')[1].trim();
+        firstWeekendStartInfo = headOfficeDto.weekendWorkingHours.split('-')[0].trim();
+        firstWeekendEndInfo = headOfficeDto.weekendWorkingHours.split('-')[1].trim();
+        firstSpecialNoteInfo = headOfficeDto.specialNote;
+
+        firstPhoneInfo = headOfficeDto.phone;
+        firstEmailInfo = headOfficeDto.email;
+        firstAddressInfo = headOfficeDto.address;
 
         let headOfficeHTML = `
             <div class="head-office-cards">
@@ -3069,23 +3101,23 @@ $(document).ready(function() {
                     </h4>
                     <div class="company-settings__box">
                         <div class="company-settings__field">
-                            <label class="form-label">Instagram</label>
-                            <input id="company-instagram" type="url" placeholder="Instagram profil linki" value="${headOfficeDto.instagram}">
+                            <label for="company-instagram" class="form-label">Instagram</label>
+                            <input id="company-instagram" type="url" placeholder="Instagram profil linki" value="${firstInstagramInfo}">
                         </div>
                         
                         <div class="company-settings__field">
-                            <label class="form-label">Facebook</label>
-                            <input id="company-facebook" type="url" placeholder="Facebook sayfa linki" value="${headOfficeDto.facebook}">
+                            <label for="company-facebook" class="form-label">Facebook</label>
+                            <input id="company-facebook" type="url" placeholder="Facebook sayfa linki" value="${firstFacebookInfo}">
                         </div>
                         
                         <div class="company-settings__field">
-                            <label class="form-label">X</label>
-                            <input id="company-x" type="url" placeholder="X sayfa linki" value="${headOfficeDto.twitter}">
+                            <label for="company-x" class="form-label">X</label>
+                            <input id="company-x" type="url" placeholder="X sayfa linki" value="${firstTwitterInfo}">
                         </div>
                         
                         <div class="company-settings__field">
-                            <label class="form-label">Google</label>
-                            <input id="company-google" type="url" placeholder="Google business linki" value="${headOfficeDto.gmail}">
+                            <label for="company-google" class="form-label">Google</label>
+                            <input id="company-google" type="url" placeholder="Google business linki" value="${firstGoogleInfo}">
                         </div>
                     </div>
 
@@ -3095,28 +3127,28 @@ $(document).ready(function() {
                     </h4>
                     <div class="company-settings__box">
                         <div class="company-settings__field">
-                            <label class="form-label">Hafta içi başlangıç</label>
-                            <input type="time" id="weekdayStart" value="${headOfficeDto.midWeekWorkingHours.split('-')[0].trim()}">
+                            <label for="weekdayStart" class="form-label">Hafta içi başlangıç</label>
+                            <input type="time" id="weekdayStart" value="${firstWeekdayStartInfo}">
                         </div>
                         
                         <div class="company-settings__field">
-                            <label class="form-label">Hafta içi bitiş</label>
-                            <input type="time" id="weekdayEnd" value="${headOfficeDto.midWeekWorkingHours.split('-')[1].trim()}">
+                            <label for="weekdayEnd" class="form-label">Hafta içi bitiş</label>
+                            <input type="time" id="weekdayEnd" value="${firstWeekdayEndInfo}">
                         </div>
                         
                         <div class="company-settings__field">
-                            <label class="form-label">Hafta sonu başlangıç</label>
-                            <input type="time" id="weekendStart" value="${headOfficeDto.weekendWorkingHours.split('-')[0].trim()}">
+                            <label for="weekendStart" class="form-label">Hafta sonu başlangıç</label>
+                            <input type="time" id="weekendStart" value="${firstWeekendStartInfo}">
                         </div>
                         
                         <div class="company-settings__field">
-                            <label class="form-label">Hafta sonu bitiş</label>
-                            <input type="time" id="weekendEnd" value="${headOfficeDto.weekendWorkingHours.split('-')[1].trim()}">
+                            <label for="weekendEnd" class="form-label">Hafta sonu bitiş</label>
+                            <input type="time" id="weekendEnd" value="${firstWeekendEndInfo}">
                         </div>
 
                         <div class="company-settings__field">
-                            <label class="form-label">Özet not</label>
-                            <input id="company-hours-note" type="text" placeholder="Çalışma saatleri için not" value="${headOfficeDto.specialNote}">
+                            <label for="company-hours-note" class="form-label">Özet not</label>
+                            <input id="company-hours-note" type="text" placeholder="Çalışma saatleri için not" value="${firstSpecialNoteInfo}">
                         </div>
                     </div>
 
@@ -3126,21 +3158,24 @@ $(document).ready(function() {
                     </h4>
                     <div class="company-settings__box">
                         <div class="company-settings__field">
-                            <label class="form-label">Ana telefon</label>
-                            <input id="company-phone" type="tel" placeholder="Ana telefon numarası" required value="${headOfficeDto.phone}">
+                            <label for="company-phone" class="form-label">Ana telefon</label>
+                            <input id="company-phone" type="tel" placeholder="Ana telefon numarası" value="${firstPhoneInfo}">
                         </div>
                         
                         <div class="company-settings__field">
-                            <label class="form-label">Kurumsal e-posta</label>
-                            <input id="company-email" type="email" placeholder="info@sirketiniz.com" required value="${headOfficeDto.email}">
+                            <label for="company-email" class="form-label">Kurumsal e-posta</label>
+                            <input id="company-email" type="email" placeholder="info@sirketiniz.com" value="${firstEmailInfo}">
                         </div>
                             
                         <div class="company-settings__field">
-                            <label class="form-label">Şirket adresi</label>
-                            <textarea id="company-address" placeholder="Tam adres bilgisi">${headOfficeDto.address}</textarea>
+                            <label for="company-address" class="form-label">Şirket adresi</label>
+                            <textarea id="company-address" placeholder="Tam adres bilgisi">${firstAddressInfo}</textarea>
                         </div>
                         
                         <div class="company-settings__button">
+                            <button class="btn-undo">
+                                Geri Al
+                            </button>
                             <button class="btn-update-branch-settings">
                                 Güncelle
                             </button>
@@ -3174,7 +3209,6 @@ $(document).ready(function() {
 
     
 
-
     function fetchAllBranchStatistics() {
         $.ajax({
             url: `${baseUrl}BranchStatistics`,
@@ -3194,6 +3228,107 @@ $(document).ready(function() {
         });
     }
 
+
+
+    // Genel Merkezde "Geri Al" butonuna tıklandığında
+    $(document).on('click', '.company-settings__button .btn-undo', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const form = $(this).closest('.company-settings__form');
+
+        form.find('#company-instagram').val(firstInstagramInfo);
+        form.find('#company-facebook').val(firstFacebookInfo);
+        form.find('#company-x').val(firstTwitterInfo);
+        form.find('#company-google').val(firstGoogleInfo);
+
+        form.find('#weekdayStart').val(firstWeekdayStartInfo);
+        form.find('#weekdayEnd').val(firstWeekdayEndInfo);
+        form.find('#weekendStart').val(firstWeekendStartInfo);
+        form.find('#weekendEnd').val(firstWeekendEndInfo);
+        form.find('#company-hours-note').val(firstSpecialNoteInfo);
+
+        form.find('#company-phone').val(firstPhoneInfo);
+        form.find('#company-email').val(firstEmailInfo);
+        form.find('#company-address').val(firstAddressInfo);
+    });
+
+
+
+    // Genel Merkezde "Güncelle" butonuna tıklandığında
+    $(document).on('click', '.btn-update-branch-settings', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const form = $(this).closest('.company-settings__form');
+
+        const instagram = form.find('#company-instagram').val();
+        const facebook = form.find('#company-facebook').val();
+        const twitter = form.find('#company-x').val();
+        const google = form.find('#company-google').val();
+
+        const weekdayStart = form.find('#weekdayStart').val();
+        const weekdayEnd = form.find('#weekdayEnd').val();
+        const weekendStart = form.find('#weekendStart').val();
+        const weekendEnd = form.find('#weekendEnd').val();
+        const specialNote = form.find('#company-hours-note').val();
+
+        const phone = form.find('#company-phone').val();
+        const email = form.find('#company-email').val();
+        const address = form.find('#company-address').val();
+
+
+        if (phone.trim() === '') {
+            showToast('error', 'Hata', 'Lütfen ana telefon numarasını giriniz!');
+            return;
+        }
+        
+        
+        if (email.trim() === '') {
+            showToast('error', 'Hata', 'Lütfen kurumsal e-posta bilgisini giriniz!');
+            return;
+        }
+        
+        
+        if (address.trim() === '') {
+            showToast('error', 'Hata', 'Lütfen şirket adresini giriniz!');
+            return;
+        }
+
+        
+        $.ajax({
+            url: `${baseUrl}headOffices`,
+            type: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify({
+                address: address,
+                email: email,
+                phone: phone,
+                specialNote: specialNote,
+                facebook: facebook,
+                instagram: instagram,
+                twitter: twitter,
+                gmail: google,
+                midWeekWorkingHours: `${weekdayStart} - ${weekdayEnd}`,
+                weekendWorkingHours: `${weekendStart} - ${weekendEnd}`,
+            }),
+            success: function(response) {
+                if (response.success) {
+                    showToast('success', 'Başarılı', 'Şirket ayarları başarıyla güncellendi!');
+                    
+                } else {
+                    showToast('error', 'Hata', 'Şirket ayarları güncellenirken hata oluştu!');
+                }
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : 'Şirket ayarları güncellenirken hata oluştu!');
+            }
+        });
+    });
 
 
 

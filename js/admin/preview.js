@@ -82,7 +82,7 @@ $(document).ready(function() {
     function getPageContents() {
         return new Promise((resolve, reject) => {
             $.ajax({
-                url: `${baseUrl}pageContents?page=1`,
+                url: `${baseUrl}pageContents?pageEnum=1`,
                 type: 'GET',
                 success: function(response) {
 

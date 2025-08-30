@@ -824,7 +824,6 @@ td, th {
 .btn-add-menu,
 .btn-add-table,
 .btn-update-table,
-.btn-update-branch-settings,
 .btn-add-product{
   margin-top: 15px;
   border: none;
@@ -833,9 +832,33 @@ td, th {
   font-size: 17px;
 }
 
+.btn-undo,
 .btn-update-branch-settings {
-  height: 50px;
-  width: 120px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Poppins', sans-serif;
+  padding: 13px 25px;
+  transition: all .3s ease-in-out;
+}
+
+.btn-undo {
+  color: #fff;
+  background-color: #930a0a;
+}
+
+.btn-update-branch-settings {
+  color: #000 ;
+  background-color: #ffc515;
+}
+
+.btn-undo:hover {
+  background-color: #bc0e0e;
+}
+
+.btn-update-branch-settings:hover {
+  background-color: #ffd760;
 }
 
 .btn-update-branch,
@@ -862,7 +885,6 @@ td, th {
 .btn-add-branch,
 .btn-add-table,
 .btn-update-table,
-.btn-update-branch-settings,
 .btn-add-menu,
 .btn-add-product {
   font-family: 'Poppins', sans-serif;
@@ -1709,6 +1731,7 @@ td, th {
   display: flex;
   justify-content: flex-end;
   align-items: flex-end;
+  gap: 30px;
 }
 
 .company-settings__box:last-child {
@@ -2638,13 +2661,18 @@ input:not(:checked) + .toggle-slider:after {
   .btn-add-branch,
   .btn-add-table,
   .btn-update-table,
-  .btn-update-branch-settings,
   .btn-add-menu,
   .btn-add-product{
     padding: 12px 14px;
     width: 140px;
     font-size: 15px;
   }
+
+  .btn-update-branch-settings,
+  .btn-undo {
+    padding: 10px 22px;
+    font-size: 15px;
+  } 
 
   .menu-info,
   .user-info,
@@ -2988,7 +3016,6 @@ input:not(:checked) + .toggle-slider:after {
   .btn-add-branch,
   .btn-add-table,
   .btn-update-table,
-  .btn-update-branch-settings,
   .btn-add-menu,
   .btn-add-product{
     padding: 11px 13px;
@@ -3058,9 +3085,14 @@ input:not(:checked) + .toggle-slider:after {
     font-size: 19px;
   }
 
-  .btn-update-branch-settings {
-    height: 45px;
-    width: 110px;
+  .company-settings__button {
+    gap: 20px;
+  }
+
+  .btn-update-branch-settings, 
+  .btn-undo {
+    padding: 10px 20px;
+    font-size: 14px;
   }
 }
 
