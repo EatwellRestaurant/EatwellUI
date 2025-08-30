@@ -3001,6 +3001,7 @@ $(document).ready(function() {
     function displayHeadOffice(response) {
         
         const data = response.data;
+        const headOfficeDto = data.headOfficeDto;
 
         let headOfficeHTML = `
             <div class="head-office-cards">
@@ -3069,22 +3070,22 @@ $(document).ready(function() {
                     <div class="company-settings__box">
                         <div class="company-settings__field">
                             <label class="form-label">Instagram</label>
-                            <input id="company-instagram" type="url" placeholder="Instagram profil linki" required>
+                            <input id="company-instagram" type="url" placeholder="Instagram profil linki" value="${headOfficeDto.instagram}">
                         </div>
                         
                         <div class="company-settings__field">
                             <label class="form-label">Facebook</label>
-                            <input id="company-facebook" type="url" placeholder="Facebook sayfa linki" required>
+                            <input id="company-facebook" type="url" placeholder="Facebook sayfa linki" value="${headOfficeDto.facebook}">
                         </div>
                         
                         <div class="company-settings__field">
                             <label class="form-label">X</label>
-                            <input id="company-x" type="url" placeholder="X sayfa linki" required>
+                            <input id="company-x" type="url" placeholder="X sayfa linki" value="${headOfficeDto.twitter}">
                         </div>
                         
                         <div class="company-settings__field">
                             <label class="form-label">Google</label>
-                            <input id="company-google" type="url" placeholder="Google business linki" required>
+                            <input id="company-google" type="url" placeholder="Google business linki" value="${headOfficeDto.gmail}">
                         </div>
                     </div>
 
@@ -3095,27 +3096,27 @@ $(document).ready(function() {
                     <div class="company-settings__box">
                         <div class="company-settings__field">
                             <label class="form-label">Hafta içi başlangıç</label>
-                            <input type="time" id="weekdayStart" value="09:00">
+                            <input type="time" id="weekdayStart" value="${headOfficeDto.midWeekWorkingHours.split('-')[0].trim()}">
                         </div>
                         
                         <div class="company-settings__field">
                             <label class="form-label">Hafta içi bitiş</label>
-                            <input type="time" id="weekdayEnd" value="23:00">
+                            <input type="time" id="weekdayEnd" value="${headOfficeDto.midWeekWorkingHours.split('-')[1].trim()}">
                         </div>
                         
                         <div class="company-settings__field">
                             <label class="form-label">Hafta sonu başlangıç</label>
-                            <input type="time" id="weekendStart" value="11:00">
+                            <input type="time" id="weekendStart" value="${headOfficeDto.weekendWorkingHours.split('-')[0].trim()}">
                         </div>
                         
                         <div class="company-settings__field">
                             <label class="form-label">Hafta sonu bitiş</label>
-                            <input type="time" id="weekendEnd" value="00:00">
+                            <input type="time" id="weekendEnd" value="${headOfficeDto.weekendWorkingHours.split('-')[1].trim()}">
                         </div>
 
                         <div class="company-settings__field">
                             <label class="form-label">Özet not</label>
-                            <input id="company-hours-note" type="text" placeholder="Çalışma saatleri için not">
+                            <input id="company-hours-note" type="text" placeholder="Çalışma saatleri için not" value="${headOfficeDto.specialNote}">
                         </div>
                     </div>
 
@@ -3126,17 +3127,17 @@ $(document).ready(function() {
                     <div class="company-settings__box">
                         <div class="company-settings__field">
                             <label class="form-label">Ana telefon</label>
-                            <input id="company-phone" type="tel" placeholder="Ana telefon numarası" required>
+                            <input id="company-phone" type="tel" placeholder="Ana telefon numarası" required value="${headOfficeDto.phone}">
                         </div>
                         
                         <div class="company-settings__field">
                             <label class="form-label">Kurumsal e-posta</label>
-                            <input id="company-email" type="email" placeholder="info@sirketiniz.com" required>
+                            <input id="company-email" type="email" placeholder="info@sirketiniz.com" required value="${headOfficeDto.email}">
                         </div>
                             
                         <div class="company-settings__field">
                             <label class="form-label">Şirket adresi</label>
-                            <textarea id="company-address" placeholder="Tam adres bilgisi"></textarea>
+                            <textarea id="company-address" placeholder="Tam adres bilgisi">${headOfficeDto.address}</textarea>
                         </div>
                         
                         <div class="company-settings__button">
