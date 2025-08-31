@@ -1,39 +1,73 @@
-$.ajax({
-    url: "https://eatwellapi.somee.com/api/branchs/getall",
-    dataType: "json",
-    error:  function (jqXHR, textStatus, errorThrown) {
-        console.log(`Veri alınırken bir hata oluştu: ${textStatus} ${errorThrown}`);
 
-        let result = jqXHR.responseJSON;
+const baseUrl = 'https://eatwell-api.azurewebsites.net/api/';
 
-        for(let key in result) {
-            console.log(key + ":", result[key]);
-        }
-    }
-});
 
-$.get( "https://eatwellapi.somee.com/api/branchs/getall", function( data) {
-    
-    let incomingData = data.data;
+// Toast container'ı oluştur
+$('body').append('<div class="toast-container"></div>');
 
-    for(let i=0; i < incomingData.length; i++){
+// Toast gösterme fonksiyonu
+function showToast(type, title, message) {
+    const icon = type === 'error' ? 'fa-circle-xmark' : 'fa-circle-check';
+    const toast = $(`
+        <div class="toast ${type}">
+            <i class="fa-solid ${icon}"></i>
+            <div class="toast-content">
+                <div class="toast-title">${title}</div>
+                <div class="toast-message">${message}</div>
+            </div>
+        </div>
+    `);
 
-        let branch = "";
-        if(incomingData[i].id == 1){
-            
-            branch = incomingData[i];
-            $('#footer-address').append(branch.address)
-            $('#footer-email').append(branch.email)
-            $('#footer-phone').append(branch.phone)
-            $('.facebook').attr("href", branch.facebook);
-            $('.instagram').attr("href", branch.instagram);
-            $('.twitter').attr("href", branch.twitter);
-            $('.google').attr("href", branch.gmail);
-        }
-    }
+    $('.toast-container').append(toast);
 
-    console.log( "Veriler Getirildi");
-});
+    // 5 saniye sonra toast'ı kaldır
+    setTimeout(() => {
+        toast.addClass('hide');
+        setTimeout(() => toast.remove(), 300);
+    }, 5000);
+}
+
+
+
+function fetchAllBranchStatistics() {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: `${baseUrl}headOffices`,
+            type: 'GET',
+            success: function(response) {
+                const data = response.data;
+
+                $('#footer-address').html(data.address);
+                $('#footer-email').html(data.email);
+                $('#footer-phone').html(data.phone);
+
+                $('.weekday-hours').html(data.midWeekWorkingHours);
+                $('.weekend-hours').html(data.weekendWorkingHours);
+                $('.special-note').html(data.specialNote);
+
+                $('.facebook').attr("href", data.facebook);
+                $('.instagram').attr("href", data.instagram);
+                $('.twitter').attr("href", data.twitter);
+                $('.google').attr("href", data.gmail);
+
+                resolve();
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Genel merkez bilgileri alınırken hata oluştu!");
+
+                reject(errorMessage);
+            }
+        });
+    });
+}
+
+
+async function runMethods() {
+    await fetchAllBranchStatistics();
+}
+
+runMethods();
 
 
 

@@ -522,6 +522,15 @@ textarea.about-text {
     margin-bottom: 5px;
 }
 
+.working-hours {
+    flex-direction: column;
+    gap: 6px;
+}
+
+.special-note {
+    font-size: 1.3rem;
+}
+
 .social{
     margin-top: 50px;
     justify-content: center;

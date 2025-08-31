@@ -3277,7 +3277,7 @@ $(document).ready(function() {
         const email = form.find('#company-email').val();
         const address = form.find('#company-address').val();
 
-
+        
         if (phone.trim() === '') {
             showToast('error', 'Hata', 'Lütfen ana telefon numarasını giriniz!');
             return;
@@ -3318,6 +3318,21 @@ $(document).ready(function() {
             success: function(response) {
                 if (response.success) {
                     showToast('success', 'Başarılı', 'Şirket ayarları başarıyla güncellendi!');
+
+                    firstInstagramInfo = instagram;
+                    firstFacebookInfo = facebook;
+                    firstTwitterInfo = twitter;
+                    firstGoogleInfo = google;
+
+                    firstWeekdayStartInfo = weekdayStart;
+                    firstWeekdayEndInfo = weekdayEnd;
+                    firstWeekendStartInfo = weekendStart;
+                    firstWeekendEndInfo = weekendEnd;
+                    firstSpecialNoteInfo = specialNote;
+
+                    firstPhoneInfo = phone;
+                    firstEmailInfo = email;
+                    firstAddressInfo = address;
                     
                 } else {
                     showToast('error', 'Hata', 'Şirket ayarları güncellenirken hata oluştu!');
