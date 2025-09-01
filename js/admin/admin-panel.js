@@ -2558,10 +2558,41 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
-                showToast('error', 'Hata', errorMessage ? errorMessage : "Ürünler alınırken hata oluştu!");
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Şubeler alınırken hata oluştu!");
             }
         });
     }
+
+
+    function getBranchRequestData() {
+        const params = new URLSearchParams(window.location.search);
+        const cityId = params.get('cityId');
+    
+        let request;
+        let showGoToCityButton;
+        let showGoToReservationsButton;
+    
+        if (cityId === null) {
+            request = `${baseUrl}branches/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`;
+    
+            const page = params.get('page');
+    
+            if (page === 'branchesForReservation') {
+                showGoToCityButton = false;
+                showGoToReservationsButton = true;
+            } else {
+                showGoToCityButton = true;
+                showGoToReservationsButton = false;
+            }
+        } else {
+            request = `${baseUrl}branches/getAllForAdminByCityId?cityId=${cityId}&pageNumber=${currentPage}&pageSize=${pageItems}`;
+            showGoToCityButton = false;
+            showGoToReservationsButton = false;
+        }
+    
+        return { request, showGoToCityButton, showGoToReservationsButton };
+    }
+    
 
 
     // Şubeler sayfasında önceki sayfa butonuna tıklama olayı
@@ -2569,21 +2600,8 @@ $(document).ready(function() {
         if (currentPage > 1) {
             currentPage--;
 
-            const params = new URLSearchParams(window.location.search);
-            const cityId = params.get('cityId');
-            let request;
-            let showGoToCityButton;
-            let showGoToReservationsButton;
-
-            if (cityId === null) {
-                request = `${baseUrl}branches/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`;
-                showGoToCityButton = false;
-                showGoToReservationsButton = false;
-            } else {
-                request = `${baseUrl}branches/getAllForAdminByCityId?cityId=${cityId}&pageNumber=${currentPage}&pageSize=${pageItems}`;
-                showGoToCityButton = true;
-                showGoToReservationsButton = false;
-            }
+            const { request, showGoToCityButton, showGoToReservationsButton } = 
+                getBranchRequestData(currentPage, pageItems, baseUrl);
 
             fetchBranches(request, showGoToCityButton, showGoToReservationsButton);
         }
@@ -2595,21 +2613,8 @@ $(document).ready(function() {
         if (currentPage < totalPages) {
             currentPage++;
 
-            const params = new URLSearchParams(window.location.search);
-            const cityId = params.get('cityId');
-            let request;
-            let showGoToCityButton;
-            let showGoToReservationsButton;
-
-            if (cityId === null) {
-                request = `${baseUrl}branches/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`;
-                showGoToCityButton = false;
-                showGoToReservationsButton = false;
-            } else {
-                request = `${baseUrl}branches/getAllForAdminByCityId?cityId=${cityId}&pageNumber=${currentPage}&pageSize=${pageItems}`;
-                showGoToCityButton = true;
-                showGoToReservationsButton = false;
-            }
+            const { request, showGoToCityButton, showGoToReservationsButton } = 
+                getBranchRequestData(currentPage, pageItems, baseUrl);
 
             fetchBranches(request, showGoToCityButton, showGoToReservationsButton);
         }
@@ -2619,7 +2624,7 @@ $(document).ready(function() {
     // Şehirlerin şubelerini getiren fonksiyon
     function getBranchesByCity(cityId, cityName) {
         $.ajax({
-            url: `${baseUrl}branches/getAllForAdminByCityId?cityId=${cityId}&pageNumber=1&pageSize=10`,
+            url: `${baseUrl}branches/getAllForAdminByCityId?cityId=${cityId}&pageNumber=${currentPage}&pageSize=${pageItems}`,
             type: 'GET',
             headers: { 'Authorization': `Bearer ${token}` },
             success: (response) => renderBranchesList(response, { title: cityName, showGoToCityButton: false, showGoToReservationsButton: false }),
@@ -2647,8 +2652,10 @@ $(document).ready(function() {
 
 
     function getAllBranches() {
+        currentPage = 1;
+
         $.ajax({
-            url: `${baseUrl}branches/getAllForAdmin?pageNumber=1&pageSize=10`,
+            url: `${baseUrl}branches/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`,
             type: 'GET',
             headers: { 'Authorization': `Bearer ${token}` },
             success: (response) => renderBranchesList(response, { title: 'Şube Listesi', showGoToCityButton: true, showGoToReservationsButton: false }),
@@ -4179,10 +4186,9 @@ $(document).ready(function() {
 
 
     function getAllBranchesForReservations() {
-        const token = localStorage.getItem('token');
-
+        currentPage = 1;
         $.ajax({
-            url: `${baseUrl}branches/getAllForAdmin?pageNumber=1&pageSize=10`,
+            url: `${baseUrl}branches/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`,
             type: 'GET',
             headers: { 'Authorization': `Bearer ${token}` },
             success: (response) => renderBranchesList(response, { title: 'Şube Seçiniz...', showGoToCityButton: false, showGoToReservationsButton: true }),
@@ -4339,7 +4345,7 @@ $(document).ready(function() {
                 let reservationsHTML = `
                 <div class="reservations-container">
                     <div class="reservations-header">
-                        <h2>${branchName} Şubesi</h2>
+                        <h2>${branchName}</h2>
                         <div class="table-management">
                             <button class="btn-manage-table">
                                 <i class="fa-solid fa-gear"></i>

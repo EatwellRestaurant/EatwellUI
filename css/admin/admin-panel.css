@@ -555,7 +555,7 @@ td, th {
 .branch-details-content,
 .reservation-details-content,
 .branch-create-content {
-  max-width: 800px;
+  max-width: 950px;
 }
 
 @keyframes modalFadeIn {
@@ -1053,7 +1053,7 @@ td, th {
 .reservation-value,
 .table-value {
   margin: 10px 0;
-  margin-left: 15px;
+  margin-left: 5px;
   font-size: 16px;
   line-height: 1.5;
   padding: 5px 10px;
@@ -1062,6 +1062,9 @@ td, th {
 .branch-value,
 .reservation-value {
   width: 73% !important;
+  word-wrap: break-word;    
+  overflow-wrap: break-word; 
+  white-space: normal;   
 }
 
 .empty-table-row {
@@ -2343,6 +2346,11 @@ input:not(:checked) + .toggle-slider:after {
     width: 45%;
   }
 
+  .btn-home {
+    font-size: 23px;
+    padding: 15px 17px;
+  }
+
   .head-office-cards {
     display: flex;
     flex-wrap: wrap;
@@ -2474,7 +2482,7 @@ input:not(:checked) + .toggle-slider:after {
   .branch-details-content,
   .reservation-details-content,
   .branch-create-content {
-    max-width: 500px;
+    max-width: 570px;
   }
 
   .branch-info,
@@ -2818,14 +2826,6 @@ input:not(:checked) + .toggle-slider:after {
   .products-header h2 {
     max-width: 200px;
   }
-
-  .page-box {
-    width: 87%;
-  }
-
-  .pages-body {
-    row-gap: 32px;
-  }
 }
 
 
@@ -3049,6 +3049,14 @@ input:not(:checked) + .toggle-slider:after {
     font-size: 20px;
   }
 
+  .page-box {
+    width: 100%;
+  }
+
+  .pages-body {
+    row-gap: 32px;
+  }
+
   .table-options {
     width: 160px;
     left: 41%;
@@ -3093,6 +3101,11 @@ input:not(:checked) + .toggle-slider:after {
   .btn-undo {
     padding: 10px 20px;
     font-size: 14px;
+  }
+
+  .btn-home {
+    font-size: 21px;
+    padding: 13px 15px;
   }
 }
 

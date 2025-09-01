@@ -358,7 +358,7 @@ $(document).ready(function() {
 
 
     // Değiştirilen anasayfa menü resmini kaydetme (güncelleme)
-    $(document).on('click', '.menu .image-editor-actions .btn-save', function(e) {
+    $(document).on('click', '.menu .image-editor-actions .btn-save', function() {
         let btn = $(this);
         btn.find('.save-loader').css('display','inline-block');
         btn.find('i').css('display','none');
@@ -460,9 +460,10 @@ $(document).ready(function() {
                             <div class="col flex">
                                 <img src="../../../icons/selected-products.png" alt="ürün">
                                 <div class="food-information flex">
-                                    <span class="new-food">Yeni ürün seç...</span>
+                                    <span class="new-food">Ürün Ekle</span>
                                     <div class="dropdown" id="customDropdown">
-                                        <div class="dropdown-toggle" id="selectedId" data-selected-id="">Seçiniz...</div>
+                                        <i class="fa-solid fa-caret-down"></i>
+                                        <div class="dropdown-toggle" id="selectedId" data-selected-id="">Bir ürün seçin...</div>
                                         <div class="dropdown-product"></div>
                                     </div>
                                 </div>
@@ -606,8 +607,10 @@ $(document).ready(function() {
         
         if (product.hasClass("active")) {
             $(".dropdown-toggle").css("border-color", "#ffc515"); 
+            $('.food-information .dropdown i').addClass('rotated-180');
         } else {
             $(".dropdown-toggle").css("border-color", "#dedbdb"); 
+            $('.food-information .dropdown i').removeClass('rotated-180');
         }
     });
 
@@ -643,7 +646,7 @@ $(document).ready(function() {
                 </div>
             </div>`;
 
-        
+        $('.food-information .dropdown i').removeClass('rotated-180');
         let lastDraggableProduct = $('.products .product:not(.no-drag)').last();
         
         if (lastDraggableProduct.length == 0){
@@ -678,6 +681,59 @@ $(document).ready(function() {
     });
 
 
+
+    // Menü listesinde değiştirilen ürünleri kaydetme (güncelleme)
+    $(document).on('click', '.menu .btn-save.menu-list', function() {
+        let btn = $(this);
+        btn.find('.save-loader').css('display','inline-block');
+        btn.find('i').css('display','none');
+
+        let productsArray = [];
+
+        $('.products .product:not(.no-drag)').each(function(index) {
+            var productId = $(this).data('product-id');
+        
+            productsArray.push({
+                id: productId,
+                order: index
+            });
+        });
+        
+        $.ajax({
+            url: `${baseUrl}products/saveSelectedProducts`,
+            type: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify(productsArray),
+            success: function(response) {
+                if (response.success) {
+                    showToast('success', 'Başarılı', 'Liste başarıyla güncellendi!');
+                    
+                    $('.btn-save.menu-list').css('display','none');
+                        
+                } else {
+                    showToast('error', 'Hata', 'Liste güncellenirken hata oluştu!');
+                    
+                    getProducts();
+                }
+                
+                btn.find('.save-loader').css('display','none');
+                btn.find('i').css('display','inline-block');
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : 'Liste güncellenirken hata oluştu!');
+                
+                getProducts();
+                btn.find('.save-loader').css('display','none');
+                btn.find('i').css('display','inline-block');
+            }
+        });
+    });
+
+
     
     // Dışarı tıklanınca ilgili menüleri kapat
     $(document).on("click", function (e) {
@@ -686,6 +742,7 @@ $(document).ready(function() {
         if (!$("#customDropdown").is(e.target) && $("#customDropdown").has(e.target).length === 0) {
             $("#customDropdown").find(".dropdown-product").removeClass("active");
             $(".dropdown-toggle").css("border-color", "#dedbdb"); 
+            $('.food-information .dropdown i').removeClass('rotated-180');
 
 
             // "Yeni Ürün Seç" listesinde eğer bir ürün seçilmezse küçük resmi eski haline getiriyoruz.
