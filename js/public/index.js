@@ -56,7 +56,7 @@ $(document).ready(function() {
     function getProducts() {
         return new Promise((resolve, reject) => {
             $.ajax({
-                url: `${baseUrl}products/getSelectedProducts`,
+                url: `${baseUrl}products/getProductsBySelectionStatus?isSelected=true`,
                 type: 'GET',
                 success: function(response) {
                     // Products içeriğini temizle

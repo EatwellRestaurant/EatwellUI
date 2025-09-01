@@ -81,6 +81,12 @@
     align-items: center;
 }
 
+.btn-save.menu-list {
+    justify-self: center;
+    margin-bottom: 25px;
+    display: none;
+}
+
 .btn-save,
 .btn-save-text {
     background-color: #3c930a;
