@@ -146,10 +146,10 @@ $(document).ready(function() {
     
 
     function openSidenavStyles() {
-        $('#main').css('margin-left', '245px');
+        $('#main').css('margin-left', '235px');
         $('.head').css({
-            'margin-left': '245px',
-            'width': 'calc(100% - 245px)'
+            'margin-left': '235px',
+            'width': 'calc(100% - 235px)'
         });
         $('.sidenav a span').css({
             'margin-left': '36px',

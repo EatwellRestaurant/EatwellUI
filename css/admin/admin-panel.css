@@ -35,7 +35,7 @@ body{
 
 .sidenav {
   height: 100%;
-  width: 250px;
+  width: 235px;
   position: fixed;
   z-index: 101;
   top: 0;
@@ -2365,6 +2365,14 @@ input:not(:checked) + .toggle-slider:after {
 }
 
 
+@media screen and (max-width: 1353px) {
+  .count-box {
+    padding: 15px;
+    gap: 0;
+}
+}
+
+
 @media screen and (max-width: 1200px) {
   .col-div-3 {
     width: 50%;
@@ -2422,6 +2430,15 @@ input:not(:checked) + .toggle-slider:after {
 
   .sidebar-branches {
     max-height: 470px;
+  }
+
+  .employee-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .count-box {
+    padding: 20px;
+    gap: 15px;
   }
 }
 
@@ -2860,6 +2877,10 @@ input:not(:checked) + .toggle-slider:after {
 
   .stat-card:last-child {
     margin: 0;
+  }
+
+  .employee-cards {
+    grid-template-columns: repeat(1, 1fr);
   }
 }
 
