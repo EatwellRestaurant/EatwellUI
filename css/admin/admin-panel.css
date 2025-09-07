@@ -67,11 +67,11 @@ body{
 .sidenav a {
   padding: 15px 8px 15px 32px;
   text-decoration: none;
-  font-size: 19px;
+  font-size: 17px;
   color: #000;
   display: block;
   position: relative;
-  transition: all 0.4s ease-in-out;
+  transition: all 0.3s ease-in-out;
   font-family: 'Poppins', sans-serif;
 }
 
@@ -82,8 +82,8 @@ body{
 .sidenav-img,
 .sidenav-img-hover {
   position: absolute;
-  width: 25px;
-  height: 25px;
+  width: 22px;
+  height: 22px;
   top: 50%;
   left: 17%;
   transform: translate(-50%, -50%);
@@ -1283,6 +1283,7 @@ td, th {
 /* Menüler Container Stili */
 .menus-container,
 .head-office-container,
+.employee-container,
 .pages-container,
 .reservations-container,
 .cities-container,
@@ -1304,6 +1305,7 @@ td, th {
 
 .menus-header,
 .head-office-header,
+.employee-header,
 .pages-header,
 .reservations-header,
 .cities-header,
@@ -1321,6 +1323,7 @@ td, th {
 
 .menus-header h2,
 .head-office-header h2,
+.employee-header h2,
 .pages-header h2,
 .reservations-header h2,
 .cities-header h2,
@@ -1338,6 +1341,7 @@ td, th {
 
 .menus-body,
 .head-office-body,
+.employee-body,
 .pages-body,
 .reservations-body,
 .cities-body,
@@ -1348,40 +1352,74 @@ td, th {
   overflow-x: auto;
 }
 
-.head-office-body {
+.head-office-body,
+.employee-body {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-.head-office-cards {
+.head-office-cards,
+.employee-cards {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
   justify-content: space-between;
   justify-items: start;
 }
 
-.stat-card {
+.head-office-cards {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.employee-cards {
+  grid-template-columns: repeat(4, 1fr);
+  padding: 7px;
+}
+
+.stat-card,
+.count-box {
   display: flex;
   justify-content: flex-start;
-  padding: 23px;
   gap: 15px;
-  border: 2px solid #ebe9e9;
   border-radius: 8px;
   width: 100%;
 }
 
-.stat-card-icon {
-  padding: 17px;
+.stat-card {
+  padding: 23px;
+  border: 2px solid #ebe9e9;
+}
+
+.count-box {
+  padding: 20px;
+  border-left: 4px solid #fee00a;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card-icon,
+.count-box-icon {
   background-color: #fffe7c;
-  border-radius: 8px;
   color: #051b30;
   display: flex;
   align-items: center;
+  padding: 17px;
 }
 
-.stat-card-content {
+.stat-card-icon {
+  border-radius: 8px;
+}
+
+.count-box-icon {
+  border-radius: 50%;
+}
+
+.count-box-icon img{
+  width: 27px;
+  height: 27px;
+}
+
+.stat-card-content,
+.count-box-content {
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -1395,8 +1433,19 @@ td, th {
   font-family: 'Poppins', sans-serif;
 }
 
+.count-box-label {
+  font-size: 15px;
+  font-weight: 300;
+  font-family: 'Poppins', sans-serif;
+}
+
 .stat-card-value {
   font-size: 32px;
+  font-weight: 500;
+}
+
+.count-box-value {
+  font-size: 28px;
   font-weight: 500;
 }
 
@@ -2818,6 +2867,7 @@ input:not(:checked) + .toggle-slider:after {
 @media screen and (max-width: 500px) {
   .menus-header h2, 
   .head-office-header h2,
+  .employee-header h2,
   .pages-header h2,
   .reservations-header h2, 
   .cities-header h2, 
@@ -3040,6 +3090,7 @@ input:not(:checked) + .toggle-slider:after {
 
   .menus-header h2, 
   .head-office-header h2,
+  .employee-header h2,
   .pages-header h2,
   .reservations-header h2, 
   .cities-header h2, 

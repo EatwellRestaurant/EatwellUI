@@ -152,7 +152,7 @@ $(document).ready(function() {
             'width': 'calc(100% - 245px)'
         });
         $('.sidenav a span').css({
-            'margin-left': '40px',
+            'margin-left': '36px',
             'opacity': '1'
         });
         $('.sidenav a img').css('left', '17%');
@@ -191,10 +191,10 @@ $(document).ready(function() {
             }
 
             if($(window).width() < 480){
-                $('.sidenav a span').css({'margin-left': '30px', 'opacity': '1'});
+                $('.sidenav a span').css({'margin-left': '26px', 'opacity': '1'});
                 $('.sidenav a img').css('left', '14%');
             } else if ($(window).width() < 992) {
-                $('.sidenav a span').css({'margin-left': '40px', 'opacity': '1'});
+                $('.sidenav a span').css({'margin-left': '36px', 'opacity': '1'});
             }
              else {
                 openSidenavStyles();
@@ -5447,6 +5447,129 @@ $(document).ready(function() {
 
 
 
+
+    // Çalışanları göster
+    function displayEmployee(response) {
+        
+        const data = response.data;
+        const employeeListDtos = data.employeeListDtos;
+
+
+        let employeeHTML = `
+            <div class="employee-cards">
+                <div class="count-box employee-card">
+                    <div class="count-box-content">
+                        <p class="count-box-value">${data.employeeCount}</p>
+                        <p class="count-box-label">Toplam Çalışan</p>
+                    </div>
+                    
+                    <div class="count-box-icon">
+                        <img src="../../icons/user.png" alt="Toplam Çalışan">
+                    </div>
+                </div>
+
+                <div class="count-box active-employee-card">
+                    <div class="count-box-content">
+                        <p class="count-box-value">${data.activeEmployeeCount}</p>
+                        <p class="count-box-label">Aktif Çalışan</p>
+                    </div>
+
+                    <div class="count-box-icon">
+                        <img src="../../icons/user-check.png" alt="Aktif Çalışan">
+                    </div>
+                </div>
+
+                <div class="count-box chef-card">
+                    <div class="count-box-content">
+                        <p class="count-box-value">${data.chefCount}</p>
+                        <p class="count-box-label">Şefler</p>
+                    </div>
+
+                    <div class="count-box-icon">
+                        <img src="../../icons/chef-hat.png" alt="Şefler">
+                    </div>
+                </div>
+
+                <div class="count-box waiter-card">
+                    <div class="count-box-content">
+                        <p class="count-box-value">${data.waiterCount}</p>
+                        <p class="count-box-label">Garsonlar</p>
+                    </div>
+
+                    <div class="count-box-icon">
+                        <img src="../../icons/hand-platter.png" alt="Garson">
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // İçeriği güncelle
+        $('.employee-body').html(employeeHTML);
+    }
+
+
+
+    function fetchAllEmployeeStatistics() {
+        $.ajax({
+            url: `${baseUrl}EmployeeStatistics?pageNumber=${currentPage}&pageSize=${pageItems}`,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                $('.employee-body').empty();
+
+                displayEmployee(response);
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Çalışan istatistikleri alınırken hata oluştu!");
+            }
+        });
+    }
+
+
+
+    // Çalışanları getiren fonksiyon
+    function getEmployess() {
+
+        // Dashboard içeriğini temizle
+        $('.dashboard-content').empty();
+                
+        // Çalışanlar için HTML yapısı
+        let employeeSectionHTML = `
+        <div class="employee-container">
+            <div class="employee-header">
+                <h2>Çalışanlar</h2>
+            </div>
+            <div class="employee-body">
+                
+            </div>
+        </div>`;
+
+        // dashboard'a ekle
+        $('.dashboard-content').append(employeeSectionHTML);
+
+        fetchAllEmployeeStatistics();
+    }
+
+
+
+    // Navbar'daki "Çalışanlar" seçeneğine tıklandığında
+    $('.sidenav a:contains("Çalışanlar")').click(function(e) {
+        e.preventDefault();
+
+        //URL'ye sahte bir adım ekliyoruz
+        history.pushState({ page: 'employees' }, 'Çalışanlar', '?page=employees'); 
+
+        getEmployess();
+    });
+
+
+
+
+
+
     // Sayfa ilk açıldığında, yüklendiğinde
     window.addEventListener('load', function() {
 
@@ -5525,6 +5648,11 @@ $(document).ready(function() {
             history.replaceState({ page: 'headOffice' }, 'Genel Merkez', '?page=headOffice'); 
 
             getHeadOffice();
+
+        }else if (page === 'employees') {
+            history.replaceState({ page: 'employees' }, 'Çalışanlar', '?page=employees'); 
+
+            getEmployess();
 
         }else {
             // Hiç page değeri yoksa dashboard'u yükle.
@@ -5864,6 +5992,10 @@ $(document).ready(function() {
 
                 case 'headOffice':
                     getHeadOffice();
+                    break;
+                
+                case 'employees':
+                    getEmployess();
                     break;
 
                 case 'dashboard':
