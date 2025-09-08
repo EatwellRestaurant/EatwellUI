@@ -1356,7 +1356,7 @@ td, th {
 .employee-body {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 30px;
 }
 
 .head-office-cards,
@@ -2297,6 +2297,50 @@ input:not(:checked) + .toggle-slider:after {
   vertical-align: middle; 
 }
 
+.filter-section {
+  width: 70%;
+  display: grid;
+  gap: 25px;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  justify-content: space-between;
+}
+
+.filter-box {
+  width: 100%;
+}
+
+.filter-box .dropdown i {
+  position: absolute;
+  cursor: pointer;
+  font-size: 13px;
+  right: 7%;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: all 0.4s ease-in-out;
+}
+
+.rotated-180 {
+  transform: translateY(-50%) rotate(180deg) !important;
+}
+
+.filter-box .dropdown-toggle,
+.filter-box .dropdown-option {
+  color: #000;
+  font-size: 1.4rem;
+}
+
+.filter-box #filter-name + span {
+  cursor: pointer;
+  border-left: none;  
+  background-color: transparent;
+  color: #666;
+  transition: color 0.2s ease-in;
+}
+
+.filter-box #filter-name + span:hover {
+  color: #a7a2a2;
+}
+
 
 /* Responsive Tasarım Media Queries */
 @media screen and (max-width: 2000px) {
@@ -2369,7 +2413,7 @@ input:not(:checked) + .toggle-slider:after {
   .count-box {
     padding: 15px;
     gap: 0;
-}
+  }
 }
 
 

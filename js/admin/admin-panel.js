@@ -4291,7 +4291,7 @@ $(document).ready(function() {
 
 
     function updateTableList(){
-        $('.dropdown-menu').empty();
+        $('#customDropdown .dropdown-menu').empty();
 
         let tablesHTML = '';
 
@@ -4312,7 +4312,7 @@ $(document).ready(function() {
             `;
         }
 
-        $('.dropdown-menu').html(tablesHTML);
+        $('#customDropdown .dropdown-menu').html(tablesHTML);
     }
 
 
@@ -4724,22 +4724,22 @@ $(document).ready(function() {
 
 
     // Rezervasyonlar sayfasındaki "Masalarda Ara" option'ına tıklandığında
-    $(document).on('click', '.dropdown-toggle', function(e) {
+    $(document).on('click', '#customDropdown .dropdown-toggle', function(e) {
         e.stopPropagation(); 
 
         const menu = $("#customDropdown").find(".dropdown-menu");
         menu.toggleClass("active");
 
         if (menu.hasClass("active")) {
-            $(".dropdown-toggle").css("border-color", "#ffc515"); 
+            $(this).css("border-color", "#ffc515"); 
         } else {
-            $(".dropdown-toggle").css("border-color", "#dedbdb"); 
+            $(this).css("border-color", "#dedbdb"); 
         }
     });
 
 
     // "Masalarda Ara" option kutusunda bir seçenek seçildiğinde
-    $(document).on('click', '.dropdown-option', function() {
+    $(document).on('click', '#customDropdown .dropdown-option', function() {
         const label = $(this).text();
         const selectedId = $(this).data('table-id');
         const dropdownToggle = $("#customDropdown").find(".dropdown-toggle");
@@ -4756,16 +4756,50 @@ $(document).ready(function() {
     // Dışarı tıklanınca ilgili menüleri kapat
     $(document).on("click", function (e) {
 
+        const $customDropdown = $("#customDropdown");
+
         // Eğer tıklanan yer Rezervasyonlar sayfasındaki "Masalarda Ara..." listesi veya içindeki seçenekler değilse
-        if (!$("#customDropdown").is(e.target) && $("#customDropdown").has(e.target).length === 0) {
-            $("#customDropdown").find(".dropdown-menu").removeClass("active");
-            $(".dropdown-toggle").css("border-color", "#dedbdb"); 
+        if (!$customDropdown.is(e.target) && $customDropdown.has(e.target).length === 0) {
+            $customDropdown.find(".dropdown-menu").removeClass("active");
+            $customDropdown.find(".dropdown-toggle").css("border-color", "#dedbdb"); 
+        }
+
+
+        const $statusDropdown = $("#statusDropdown");
+
+        // Eğer tıklanan yer Çalışanlar sayfasındaki "Tüm Durumlar" listesi veya içindeki seçenekler değilse
+        if (!$statusDropdown.is(e.target) && $statusDropdown.has(e.target).length === 0) {
+            $statusDropdown.find(".dropdown-menu").removeClass("active");
+            $statusDropdown.find("i").removeClass("rotated-180");
+            $statusDropdown.find(".dropdown-toggle").css("border-color", "#dedbdb"); 
+        }
+
+
+        const $rolesDropdown = $("#rolesDropdown");
+
+        // Eğer tıklanan yer Çalışanlar sayfasındaki "Tüm Roller" listesi veya içindeki seçenekler değilse
+        if (!$rolesDropdown.is(e.target) && $rolesDropdown.has(e.target).length === 0) {
+            $rolesDropdown.find(".dropdown-menu").removeClass("active");
+            $rolesDropdown.find("i").removeClass("rotated-180");
+            $rolesDropdown.find(".dropdown-toggle").css("border-color", "#dedbdb"); 
+        }
+
+
+        const $branchesDropdown = $("#branchesDropdown");
+
+        // Eğer tıklanan yer Çalışanlar sayfasındaki "Tüm Şubeler" listesi veya içindeki seçenekler değilse
+        if (!$branchesDropdown.is(e.target) && $branchesDropdown.has(e.target).length === 0) {
+            $branchesDropdown.find(".dropdown-menu").removeClass("active");
+            $branchesDropdown.find("i").removeClass("rotated-180");
+            $branchesDropdown.find(".dropdown-toggle").css("border-color", "#dedbdb"); 
         }
         
+        
+        const $customPaginationDropdown = $("#customPaginationDropdown");
 
         // Eğer tıklanan yer pagination bölümündeki "Göster" listesi veya içindeki seçenekler değilse
-        if (!$("#customPaginationDropdown").is(e.target) && $("#customPaginationDropdown").has(e.target).length === 0) {
-            $("#customPaginationDropdown").find(".dropdown-pagination").removeClass("active");
+        if (!$customPaginationDropdown.is(e.target) && $customPaginationDropdown.has(e.target).length === 0) {
+            $customPaginationDropdown.find(".dropdown-pagination").removeClass("active");
             $(".dropdown-pagination-toggle").css("border-color", "#dedbdb"); 
             $('#customPaginationDropdown i').removeClass('rotated-180');
         }
@@ -5448,6 +5482,217 @@ $(document).ready(function() {
 
 
 
+    // Gönderilen dropdown içinden bir seçenek seçildiğinde, seçilen değeri dropdown kutusunda gösterir, ilgili id bilgisini saklar ve menüyü kapatır.
+    function selectDropdownOption(dropdownSelector, optionElement, dataSelector) {
+        const dropdown = $(dropdownSelector);
+        const dropdownToggle = dropdown.find(".dropdown-toggle");
+    
+        const label = $(optionElement).text();
+        const selectedId = $(optionElement).data(dataSelector);
+    
+
+        dropdownToggle.text(label);
+        dropdownToggle.css("color", "#000");
+        dropdownToggle.attr('data-selected-id', selectedId); // seçilen nesnenin id bilgisini saklıyoruz
+    
+
+        dropdown.find(".dropdown-menu").removeClass("active");
+        dropdownToggle.css("border-color", "#dedbdb");
+        dropdown.find('i').removeClass('rotated-180');
+    }
+
+
+
+    // Gönderilen dropdown kutusuna tıklandığında menüyü açıp kapatır, border rengini değiştirir ve ikonun yönünü günceller.
+    function toggleDropdown(dropdownSelector) {
+
+        const dropdown = $(dropdownSelector);
+        const menu = dropdown.find(".dropdown-menu");
+        menu.toggleClass("active");
+    
+        if (menu.hasClass("active")) {
+            dropdown.css("border-color", "#ffc515");
+            dropdown.find('i').addClass('rotated-180');
+        } else {
+            dropdown.css("border-color", "#dedbdb");
+            dropdown.find('i').removeClass('rotated-180');
+        }
+    }
+
+
+
+
+    // "Tüm Durumlar" option'ı için gelen durumları ekle...
+    function updateStatusList(workStatusDtos){
+        let $menu = $('#statusDropdown .dropdown-menu');
+
+        // İlk eleman hariç diğerlerini siliyoruz
+        $menu.children().not(':first').remove();
+
+        let statusHTML = '';
+
+        if (workStatusDtos.length > 0) {
+
+            // Durumları ekle
+            workStatusDtos.forEach(status => {
+                statusHTML += `
+                    <div class="dropdown-option" data-work-status-id="${status.id}">${status.name}</div>
+                `;
+            })
+        } 
+
+        $menu.append(statusHTML);
+    }
+
+
+    // Çalışanlar sayfasındaki "Tüm Durumlar" option'ına tıklandığında
+    $(document).on('click', '#statusDropdown .dropdown-toggle', function(e) {
+        e.stopPropagation(); 
+
+        toggleDropdown("#statusDropdown");
+    });
+
+
+    // Çalışanlar sayfasındaki "Tüm Durumlar" option'ının ikonuna tıklandığında
+    $(document).on('click', '#statusDropdown i', function(e) {
+        e.stopPropagation(); 
+
+        toggleDropdown("#statusDropdown");
+    });
+
+
+    // "Tüm Durumlar" option kutusunda bir seçenek seçildiğinde
+    $(document).on('click', '#statusDropdown .dropdown-option', function() {
+
+        selectDropdownOption("#statusDropdown", this, "work-status-id");
+    });
+
+
+
+
+    // "Tüm Roller" option'ı için gelen rolleri ekle...
+    function updateRoleList(operationClaimListDtos){
+        let $menu = $('#rolesDropdown .dropdown-menu');
+
+        // İlk eleman hariç diğerlerini siliyoruz
+        $menu.children().not(':first').remove();
+
+        let rolesHTML = '';
+
+        if (operationClaimListDtos.length > 0) {
+
+            // Rolleri ekle
+            operationClaimListDtos.forEach(role => {
+                rolesHTML += `
+                    <div class="dropdown-option" data-role-id="${role.id}">${role.name}</div>
+                `;
+            })
+        } 
+
+        $menu.append(rolesHTML);
+    }
+
+
+    // Çalışanlar sayfasındaki "Tüm Roller" option'ına tıklandığında
+    $(document).on('click', '#rolesDropdown .dropdown-toggle', function(e) {
+        e.stopPropagation(); 
+
+        toggleDropdown("#rolesDropdown");
+    });
+
+
+    // Çalışanlar sayfasındaki "Tüm Roller" option'ının ikonuna tıklandığında
+    $(document).on('click', '#rolesDropdown i', function(e) {
+        e.stopPropagation(); 
+
+        toggleDropdown("#rolesDropdown");
+    });
+
+
+    // "Tüm Roller" option kutusunda bir seçenek seçildiğinde
+    $(document).on('click', '#rolesDropdown .dropdown-option', function() {
+        
+        selectDropdownOption("#rolesDropdown", this, "role-id");
+    });
+
+
+
+
+    // "Tüm Şubeler" option'ı için gelen şubeleri ekle...
+    function updateBranchList(branchDtos){
+        let $menu = $('#branchesDropdown .dropdown-menu');
+
+        // İlk eleman hariç diğerlerini siliyoruz
+        $menu.children().not(':first').remove();
+
+        let branchesHTML = '';
+
+        if (branchDtos.length > 0) {
+
+            // Şubeleri ekle
+            branchDtos.forEach(branch => {
+                branchesHTML += `
+                    <div class="dropdown-option" data-branch-id="${branch.id}">${branch.name}</div>
+                `;
+            })
+        } 
+
+        $menu.append(branchesHTML);
+    }
+
+
+    // Çalışanlar sayfasındaki "Tüm Şubeler" option'ına tıklandığında
+    $(document).on('click', '#branchesDropdown .dropdown-toggle', function(e) {
+        e.stopPropagation(); 
+
+        toggleDropdown("#branchesDropdown");
+    });
+
+
+    // Çalışanlar sayfasındaki "Tüm Şubeler" option'ının ikonuna tıklandığında
+    $(document).on('click', '#branchesDropdown i', function(e) {
+        e.stopPropagation(); 
+
+        toggleDropdown("#branchesDropdown");
+    });
+
+
+    // "Tüm Şubeler" option kutusunda bir seçenek seçildiğinde
+    $(document).on('click', '#branchesDropdown .dropdown-option', function() {
+
+        selectDropdownOption("#branchesDropdown", this, "branch-id");
+    });
+    
+
+
+    // Çalışanlar sayfasındaki filtreleme seçenekleri için verileri çekiyoruz
+    function fetchEmployeeFilterOptions() {
+        $.ajax({
+            url: `${baseUrl}EmployeeStatistics/GetEmployeeFilterOptions`,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                
+                let workStatusDtos = response.workStatusDtos;
+                let operationClaimListDtos = response.operationClaimListDtos;
+                let branchDtos = response.branchDtos;
+
+                updateStatusList(workStatusDtos);
+                updateRoleList(operationClaimListDtos);
+                updateBranchList(branchDtos);
+
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Çalışan istatistikleri alınırken hata oluştu!");
+            }
+        });
+    }
+
+
+
     // Çalışanları göster
     function displayEmployee(response) {
         
@@ -5497,21 +5742,78 @@ $(document).ready(function() {
                     </div>
 
                     <div class="count-box-icon">
-                        <img src="../../icons/hand-platter.png" alt="Garson">
+                        <img src="../../icons/hand-platter.png" alt="Garsonlar">
                     </div>
                 </div>
+            </div>
+
+            <div class="filter-section">
+                <div class="filter-box">
+                    <div class="input-wrapper">
+                        <input id="filter-name" type="text" placeholder="Çalışan ara...">
+                        <span class="employee-search">
+                            <i class="fa-solid fa-search" aria-hidden="true"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="filter-box">
+                    <div class="input-wrapper">
+                        <div class="dropdown" id="statusDropdown">
+                            <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
+
+                            <div class="dropdown-toggle" id="selectedId" data-selected-id="">Tüm Durumlar</div>
+                            
+                            <div class="dropdown-menu">
+                                <div class="dropdown-option" data-work-status-id="">Tüm Durumlar</div>    
+                            </div>
+                        </div>        
+                    </div>
+                </div>
+
+                <div class="filter-box">
+                    <div class="input-wrapper">
+                        <div class="dropdown" id="rolesDropdown">
+                            <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
+                            
+                            <div class="dropdown-toggle" id="selectedId" data-selected-id="">Tüm Roller</div>
+                            
+                            <div class="dropdown-menu">
+                                <div class="dropdown-option" data-table-id="">Tüm Roller</div>    
+                            </div>
+                        </div>        
+                    </div>
+                </div>
+
+                <div class="filter-box">
+                    <div class="input-wrapper">
+                        <div class="dropdown" id="branchesDropdown">
+                            <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
+                            
+                            <div class="dropdown-toggle" id="selectedId" data-selected-id="">Tüm Şubeler</div>
+                            
+                            <div class="dropdown-menu">
+                                <div class="dropdown-option" data-table-id="">Tüm Şubeler</div>    
+                            </div>
+                        </div>        
+                    </div>
+                </div>
+
             </div>
         `;
         
         // İçeriği güncelle
         $('.employee-body').html(employeeHTML);
+
+        fetchEmployeeFilterOptions();
     }
 
 
 
+    // Çalışanlar sayfasındaki istatistik verilerini getiriyoruz
     function fetchAllEmployeeStatistics() {
         $.ajax({
-            url: `${baseUrl}EmployeeStatistics?pageNumber=${currentPage}&pageSize=${pageItems}`,
+            url: `${baseUrl}EmployeeStatistics/GetStatistics?pageNumber=${currentPage}&pageSize=${pageItems}`,
             type: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
