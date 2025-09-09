@@ -2300,7 +2300,7 @@ input:not(:checked) + .toggle-slider:after {
 .filter-section {
   width: 70%;
   display: grid;
-  gap: 25px;
+  gap: 17px;
   grid-template-columns: 2fr 1fr 1fr 1fr;
   justify-content: space-between;
 }
@@ -2406,6 +2406,10 @@ input:not(:checked) + .toggle-slider:after {
   .company-settings__button {
     width: 90%;
   }
+
+  .filter-section {
+    width: 80%;
+  }
 }
 
 
@@ -2413,6 +2417,14 @@ input:not(:checked) + .toggle-slider:after {
   .count-box {
     padding: 15px;
     gap: 0;
+  }
+
+  .filter-section {
+    width: 100%;
+  }
+
+  .filter-box .dropdown-toggle {
+    padding: 8px 30px 8px 7px;
   }
 }
 
@@ -2483,6 +2495,19 @@ input:not(:checked) + .toggle-slider:after {
   .count-box {
     padding: 20px;
     gap: 15px;
+  }
+
+  .filter-section {
+    grid-template-columns: repeat(3, 1fr);
+    width: 85%;
+  }
+
+  .filter-box:nth-child(1) {
+    grid-column: 1 / -1; /* tüm satırı kapla */
+  }
+
+  .filter-section .filter-box--search {
+    width: 40%;
   }
 }
 
@@ -2868,6 +2893,19 @@ input:not(:checked) + .toggle-slider:after {
   .stat-card-icon {
     padding: 14px;
   }
+
+  .filter-section {
+    width: 100%;
+    gap: 12px;
+  }
+
+  .filter-section .filter-box--search {
+    width: 60%;
+  }
+  
+  .filter-box .dropdown-toggle {
+    padding: 8px 20px 8px 7px;
+  }
 }
 
 
@@ -3223,6 +3261,23 @@ input:not(:checked) + .toggle-slider:after {
     font-size: 21px;
     padding: 13px 15px;
   }
+
+  .filter-section {
+    grid-template-columns: repeat(1, 1fr);
+    width: 100%;
+  }
+
+  .filter-section .filter-box--search {
+    width: 100%;
+  }
+  
+  .filter-box .dropdown-toggle {
+    padding: 8px 35px 8px 7px;
+  }
+
+  .filter-box .dropdown i {
+    right: 5%;
+  }
 }
 
 
@@ -3317,7 +3372,6 @@ input:not(:checked) + .toggle-slider:after {
 
   .input-wrapper input,
   .dropdown-toggle {
-    font-size: 1.4rem;
     letter-spacing: .04rem;
   }
 

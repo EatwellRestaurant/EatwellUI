@@ -5748,7 +5748,7 @@ $(document).ready(function() {
             </div>
 
             <div class="filter-section">
-                <div class="filter-box">
+                <div class="filter-box filter-box--search">
                     <div class="input-wrapper">
                         <input id="filter-name" type="text" placeholder="Çalışan ara...">
                         <span class="employee-search">
