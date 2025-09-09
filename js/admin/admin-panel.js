@@ -5692,9 +5692,101 @@ $(document).ready(function() {
     }
 
 
+    function displayEmployees(response) {
+                    
+        let employeesTableHTML = '';
+        
+        // Çalışanları tabloya ekle
+        if (response.data.length > 0) {
+            response.data.forEach(employee => {
+
+                // Tarihi formatla (gün.ay.yıl şeklinde)
+                const date = new Date(employee.hireDate);
+                const formattedDate = `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`;
+
+                employeesTableHTML += `
+                    <tr class="employee-row" data-employee-id="${employee.id}">
+                        <td>
+                            <div class="user-card">
+                                <div class="user-avatar-table">
+                                    ${employee.firstName.charAt(0)}${employee.lastName.charAt(0)}
+                                </div>
+                                <div class="user-info-table">
+                                    <div class="user-name">${employee.firstName} ${employee.lastName}</div>
+                                    <div class="user-email">${employee.email}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="role-badge role-${employee.positionName.toLowerCase()}">${employee.positionDisplayName}</span>
+                        </td>
+                        <td>${employee.branchName}</td>
+                        <td>${formattedDate}</td>
+                        <td>₺${Number(employee.salary).toLocaleString('tr-TR')}</td>
+                        <td>
+                            <span class="status-badge status-${employee.workStatusName.toLowerCase()}">${employee.workStatusDisplayName}</span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn btn-view" title="Görüntüle" data-employee-id="${employee.id}" data-employee-name="${employee.name}">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                
+                                <button class="action-btn btn-edit" title="Düzenle" data-employee-id="${employee.id}" data-employee-name="${employee.name}">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                
+                                <button class="action-btn btn-delete" title="Sil" data-employee-id="${employee.id}" data-employee-name="${employee.name}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>`;
+            });
+        } 
+        
+        // Tabloyu güncelle
+        $('#employeesTableBody').html(employeesTableHTML);
+
+        totalPages = response.totalPages;
+        totalItems = response.totalItems;
+
+        // Sayfa bilgisini güncelle
+        $('#employeePageInfo').text(`Sayfa ${currentPage} / ${totalPages}`);
+        $('#employeeTotalItemsInfo').text(`Toplam Kayıt: ${totalItems}`);
+
+        // Sayfalama butonlarının durumunu güncelle
+        $('#prevEmployeePage').prop('disabled', !response.hasPrevious); // İlk sayfada geri butonu devre dışı
+        $('#nextEmployeePage').prop('disabled', !response.hasNext); // Son sayfada ileri butonu devre dışı
+    }
+
+
+
+    function fetchEmployees() {
+        $.ajax({
+            url: `${baseUrl}employees/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                $('#employeesTableBody').empty();
+
+                paginationTemplate("employees-container", "prevEmployeePage", "nextEmployeePage", "employeePageInfo", "employeeTotalItemsInfo");
+
+                displayEmployees(response);
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Çalışanlar alınırken hata oluştu!");
+            }
+        });
+    }
+
+
 
     // Çalışanları göster
-    function displayEmployee(response) {
+    function displayEmployeeStatistics(response) {
         
         const data = response.data;
         const employeeListDtos = data.employeeListDtos;
@@ -5798,14 +5890,32 @@ $(document).ready(function() {
                         </div>        
                     </div>
                 </div>
-
             </div>
+
+            <table class="employees-table">
+                <thead>
+                    <tr>
+                        <th>Çalışan</th>
+                        <th>Pozisyon</th>
+                        <th>Şube</th>
+                        <th>İşe Başlama</th>
+                        <th>Maaş</th>
+                        <th>Durum</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+                
+                <tbody id="employeesTableBody">
+                </tbody>
+            </table>
         `;
         
         // İçeriği güncelle
         $('.employee-body').html(employeeHTML);
 
         fetchEmployeeFilterOptions();
+
+        fetchEmployees();
     }
 
 
@@ -5821,7 +5931,7 @@ $(document).ready(function() {
             success: function(response) {
                 $('.employee-body').empty();
 
-                displayEmployee(response);
+                displayEmployeeStatistics(response);
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
@@ -5833,14 +5943,16 @@ $(document).ready(function() {
 
 
     // Çalışanları getiren fonksiyon
-    function getEmployess() {
+    function getEmployess(page = 1) {
 
         // Dashboard içeriğini temizle
         $('.dashboard-content').empty();
+
+        currentPage = page;
                 
         // Çalışanlar için HTML yapısı
         let employeeSectionHTML = `
-        <div class="employee-container">
+        <div class="employees-container">
             <div class="employee-header">
                 <h2>Çalışanlar</h2>
             </div>
