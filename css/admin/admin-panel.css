@@ -1992,7 +1992,7 @@ td, th {
 .input-wrapper input,
 .dropdown-toggle {
   width: 100%;
-  height: 40px;
+  min-height: 40px; 
   padding: 8px 40px 8px 7px; 
   font-size: 1.6rem;
   letter-spacing: .03rem;

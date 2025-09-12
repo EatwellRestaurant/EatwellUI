@@ -4766,7 +4766,7 @@ $(document).ready(function() {
         $("#customDropdown").find(".dropdown-menu").removeClass("active");
         $(".dropdown-toggle").css("border-color", "#dedbdb"); 
     });
-
+    
 
     // Dışarı tıklanınca ilgili menüleri kapat
     $(document).on("click", function (e) {
@@ -4781,34 +4781,19 @@ $(document).ready(function() {
 
 
         const $statusDropdown = $("#statusDropdown");
-
-        // Eğer tıklanan yer Çalışanlar sayfasındaki "Tüm Durumlar" listesi veya içindeki seçenekler değilse
-        if (!$statusDropdown.is(e.target) && $statusDropdown.has(e.target).length === 0) {
-            $statusDropdown.find(".dropdown-menu").removeClass("active");
-            $statusDropdown.find("i").removeClass("rotated-180");
-            $statusDropdown.find(".dropdown-toggle").css("border-color", "#dedbdb"); 
-        }
-
-
         const $rolesDropdown = $("#rolesDropdown");
-
-        // Eğer tıklanan yer Çalışanlar sayfasındaki "Tüm Roller" listesi veya içindeki seçenekler değilse
-        if (!$rolesDropdown.is(e.target) && $rolesDropdown.has(e.target).length === 0) {
-            $rolesDropdown.find(".dropdown-menu").removeClass("active");
-            $rolesDropdown.find("i").removeClass("rotated-180");
-            $rolesDropdown.find(".dropdown-toggle").css("border-color", "#dedbdb"); 
-        }
-
-
         const $branchesDropdown = $("#branchesDropdown");
 
-        // Eğer tıklanan yer Çalışanlar sayfasındaki "Tüm Şubeler" listesi veya içindeki seçenekler değilse
-        if (!$branchesDropdown.is(e.target) && $branchesDropdown.has(e.target).length === 0) {
-            $branchesDropdown.find(".dropdown-menu").removeClass("active");
-            $branchesDropdown.find("i").removeClass("rotated-180");
-            $branchesDropdown.find(".dropdown-toggle").css("border-color", "#dedbdb"); 
-        }
-        
+        // Eğer tıklanan yer ilgili dropdown’un kendisi veya içindeki bir eleman değilse,
+        // o dropdown kapatılır (menü kapanır, ok simgesi eski haline döner ve border rengi sıfırlanır).        
+        [$statusDropdown, $rolesDropdown, $branchesDropdown].forEach($dd => {
+            if (!$dd.is(e.target) && $dd.has(e.target).length === 0) {
+                $dd.find(".dropdown-menu").removeClass("active");
+                $dd.find("i").removeClass("rotated-180");
+                $dd.find(".dropdown-toggle").css("border-color", "#dedbdb"); 
+            }
+        });
+
         
         const $customPaginationDropdown = $("#customPaginationDropdown");
 
@@ -5522,16 +5507,27 @@ $(document).ready(function() {
     function toggleDropdown(dropdownSelector) {
 
         const dropdown = $(dropdownSelector);
+        const toggle = dropdown.find(".dropdown-toggle");
         const menu = dropdown.find(".dropdown-menu");
         menu.toggleClass("active");
     
         if (menu.hasClass("active")) {
-            dropdown.css("border-color", "#ffc515");
+            toggle.css("border-color", "#ffc515");
             dropdown.find('i').addClass('rotated-180');
         } else {
-            dropdown.css("border-color", "#dedbdb");
+            toggle.css("border-color", "#dedbdb");
             dropdown.find('i').removeClass('rotated-180');
         }
+    }
+
+
+    //Gönderilen dropdown'ı kapatır, border rengini değiştirir ve ikonun yönünü günceller.
+    function closeDropdown(dropdownSelector){
+
+        const dropdown = $(dropdownSelector);
+        dropdown.find(".dropdown-menu").removeClass("active");
+        dropdown.find(".dropdown-toggle").css("border-color", "#dedbdb");
+        dropdown.find("i").removeClass("rotated-180");
     }
 
 
@@ -5565,6 +5561,8 @@ $(document).ready(function() {
         e.stopPropagation(); 
 
         toggleDropdown("#statusDropdown");
+        closeDropdown("#rolesDropdown");
+        closeDropdown("#branchesDropdown");
     });
 
 
@@ -5573,6 +5571,8 @@ $(document).ready(function() {
         e.stopPropagation(); 
 
         toggleDropdown("#statusDropdown");
+        closeDropdown("#rolesDropdown");
+        closeDropdown("#branchesDropdown");
     });
 
 
@@ -5580,6 +5580,8 @@ $(document).ready(function() {
     $(document).on('click', '#statusDropdown .dropdown-option', function() {
 
         selectDropdownOption("#statusDropdown", this, "work-status-id");
+
+        performSearch();
     });
 
 
@@ -5613,6 +5615,8 @@ $(document).ready(function() {
         e.stopPropagation(); 
 
         toggleDropdown("#rolesDropdown");
+        closeDropdown("#statusDropdown");
+        closeDropdown("#branchesDropdown");
     });
 
 
@@ -5621,6 +5625,8 @@ $(document).ready(function() {
         e.stopPropagation(); 
 
         toggleDropdown("#rolesDropdown");
+        closeDropdown("#statusDropdown");
+        closeDropdown("#branchesDropdown");
     });
 
 
@@ -5628,6 +5634,8 @@ $(document).ready(function() {
     $(document).on('click', '#rolesDropdown .dropdown-option', function() {
         
         selectDropdownOption("#rolesDropdown", this, "role-id");
+
+        performSearch();
     });
 
 
@@ -5661,6 +5669,8 @@ $(document).ready(function() {
         e.stopPropagation(); 
 
         toggleDropdown("#branchesDropdown");
+        closeDropdown("#statusDropdown");
+        closeDropdown("#rolesDropdown");
     });
 
 
@@ -5669,6 +5679,8 @@ $(document).ready(function() {
         e.stopPropagation(); 
 
         toggleDropdown("#branchesDropdown");
+        closeDropdown("#statusDropdown");
+        closeDropdown("#rolesDropdown");
     });
 
 
@@ -5676,6 +5688,8 @@ $(document).ready(function() {
     $(document).on('click', '#branchesDropdown .dropdown-option', function() {
 
         selectDropdownOption("#branchesDropdown", this, "branch-id");
+
+        performSearch();
     });
     
 
@@ -5707,10 +5721,12 @@ $(document).ready(function() {
     }
 
 
+    let firstemployeesTableHTML = null;
+    
     function displayEmployees(response) {
-                    
+
         let employeesTableHTML = '';
-        
+
         // Çalışanları tabloya ekle
         if (response.data.length > 0) {
             response.data.forEach(employee => {
@@ -5758,7 +5774,13 @@ $(document).ready(function() {
                         </td>
                     </tr>`;
             });
-        } 
+        } else {
+            // Çalışan yoksa bilgi mesajı göster
+            employeesTableHTML = `
+                <tr>
+                    <td colspan="7" class="empty-table-row">Çalışan bulunmamaktadır.</td>
+                </tr>`;
+        }
         
         // Tabloyu güncelle
         $('#employeesTableBody').html(employeesTableHTML);
@@ -5787,6 +5809,8 @@ $(document).ready(function() {
             success: function(response) {
                 $('#employeesTableBody').empty();
 
+                firstemployeesTableHTML = response;
+
                 displayEmployees(response);
             },
             error: function(xhr) {
@@ -5795,6 +5819,80 @@ $(document).ready(function() {
             }
         });
     }
+
+
+    
+    // Çalışanlar listesini ilk haline getirmek için kullanılır
+    function clearEmployeesTable(){
+        $('#employeesTableBody').empty();
+
+        // Tabloyu güncelle
+        displayEmployees(firstemployeesTableHTML);
+    }
+
+
+    // Çalışanlar listesi için belirtilen kriterlere (isim, durum, rol, şube) göre filtreleme yapıyoruz
+    function searchEmployees(name, statusId, roleId, branchId) {
+
+        let url = `${baseUrl}Employees/getFilteredEmployeesForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`;
+
+        // Sadece dolu parametreleri ekliyoruz
+        if (name && name.trim() !== "") url += `&fullName=${name}`;
+        if (statusId != null) url += `&workStatus=${statusId}`;
+        
+        if (roleId != null) url += `&operationClaimId=${roleId}`;
+        if (branchId != null) url += `&branchId=${branchId}`;
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                $('#employeesTableBody').empty();
+
+                displayEmployees(response);
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Çalışan istatistikleri alınırken hata oluştu!");
+            }
+        });
+    }
+
+
+    // Input ve dropdown'lardan filtre değerlerini alıp "Çalışanlar" listesini filtreliyoruz
+    function performSearch() {
+        let name = $('#filter-name').val().trim();
+    
+        // Dropdown'lardan seçili değerleri alıyoruz
+        let selectedStatusId = $('#statusSelectedId').attr('data-selected-id') || null;
+        let selectedRoleId = $('#rolesSelectedId').attr('data-selected-id') || null;
+        let selectedBranchId = $('#branchesSelectedId').attr('data-selected-id') || null;
+    
+        searchEmployees(name, selectedStatusId, selectedRoleId, selectedBranchId);
+    }
+
+
+
+    let timeout;
+
+    // Çalışanlar listesinde "Çalışan Ara" input'unda debounce ile arama
+    $(document).on('input', '#filter-name', function () {
+        clearTimeout(timeout);
+
+        timeout = setTimeout(function () {
+            performSearch();
+        }, 700);
+    });
+
+
+
+    // Çalışanlar listesinde "Çalışan Ara" input'unun search butonuna tıklandığında arama
+    $(document).on('click', '.employee-search', function () {
+        performSearch();
+    });
 
 
 
@@ -5867,7 +5965,7 @@ $(document).ready(function() {
                         <div class="dropdown" id="statusDropdown">
                             <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
 
-                            <div class="dropdown-toggle" id="selectedId" data-selected-id="">Tüm Durumlar</div>
+                            <div class="dropdown-toggle" id="statusSelectedId" data-selected-id="">Tüm Durumlar</div>
                             
                             <div class="dropdown-menu">
                                 <div class="dropdown-option" data-work-status-id="">Tüm Durumlar</div>    
@@ -5881,10 +5979,10 @@ $(document).ready(function() {
                         <div class="dropdown" id="rolesDropdown">
                             <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
                             
-                            <div class="dropdown-toggle" id="selectedId" data-selected-id="">Tüm Roller</div>
+                            <div class="dropdown-toggle" id="rolesSelectedId" data-selected-id="">Tüm Roller</div>
                             
                             <div class="dropdown-menu">
-                                <div class="dropdown-option" data-table-id="">Tüm Roller</div>    
+                                <div class="dropdown-option" data-role-id="">Tüm Roller</div>    
                             </div>
                         </div>        
                     </div>
@@ -5895,10 +5993,10 @@ $(document).ready(function() {
                         <div class="dropdown" id="branchesDropdown">
                             <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
                             
-                            <div class="dropdown-toggle" id="selectedId" data-selected-id="">Tüm Şubeler</div>
+                            <div class="dropdown-toggle" id="branchesSelectedId" data-selected-id="">Tüm Şubeler</div>
                             
                             <div class="dropdown-menu">
-                                <div class="dropdown-option" data-table-id="">Tüm Şubeler</div>    
+                                <div class="dropdown-option" data-branch-id="">Tüm Şubeler</div>    
                             </div>
                         </div>        
                     </div>
@@ -5931,6 +6029,8 @@ $(document).ready(function() {
         fetchEmployeeFilterOptions();
 
         paginationTemplate("employees-container", "prevEmployeePage", "nextEmployeePage", "employeePageInfo", "employeeTotalItemsInfo");
+
+        firstemployeesTableHTML = employeeListDtos;
 
         displayEmployees(employeeListDtos);
     }
