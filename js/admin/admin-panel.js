@@ -191,7 +191,7 @@ $(document).ready(function() {
             }
 
             if($(window).width() < 480){
-                $('.sidenav a span').css({'margin-left': '26px', 'opacity': '1'});
+                $('.sidenav a span').css({'margin-left': '42px', 'opacity': '1'});
                 $('.sidenav a img').css('left', '14%');
             } else if ($(window).width() < 992) {
                 $('.sidenav a span').css({'margin-left': '36px', 'opacity': '1'});
@@ -247,10 +247,9 @@ $(document).ready(function() {
 
         } else {
             if ($('#mySidenav').hasClass('show')) {
+
                 $('#mySidenav').removeClass('show');
-                $('#main').css('margin-left', '0px');
-                $('.head').css('margin-left', '0px');
-                $('.head').css('width', '100%');
+                
                 $('.sidenav').css({'margin-left': '0px'});
                 closeSidenavStyles();
 
@@ -260,6 +259,10 @@ $(document).ready(function() {
             } else {
                 closeSidenavStyles();
             }
+
+            $('#main').css('margin-left', '0px');
+            $('.head').css('margin-left', '0px');
+            $('.head').css('width', '100%');
         }
     }
     
@@ -411,19 +414,21 @@ $(document).ready(function() {
                         <h2>Kullanıcı Listesi</h2>
                     </div>
                     <div class="users-body">
-                        <table class="users-table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Ad</th>
-                                    <th>Soyad</th>
-                                    <th>E-posta</th>
-                                    <th>Kayıt Tarihi</th>
-                                </tr>
-                            </thead>
-                            <tbody id="usersTableBody">
-                            </tbody>
-                        </table>
+                        <div class="users-table-wrapper px-7">
+                            <table class="users-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Ad</th>
+                                        <th>Soyad</th>
+                                        <th>E-posta</th>
+                                        <th>Kayıt Tarihi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usersTableBody">
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
                 `;
@@ -700,18 +705,20 @@ $(document).ready(function() {
                         </button>
                     </div>
                     <div class="menus-body">
-                        <table class="menus-table">
-                            <thead>
-                                <tr>
-                                    <th>Durum</th>
-                                    <th>Menü Adı</th>
-                                    <th>Kayıt Tarihi</th>
-                                    <th>İşlemler</th>
-                                </tr>
-                            </thead>
-                            <tbody id="menusTableBody">
-                            </tbody>
-                        </table>
+                        <div class="menus-table-wrapper px-7">
+                            <table class="menus-table">
+                                <thead>
+                                    <tr>
+                                        <th>Durum</th>
+                                        <th>Menü Adı</th>
+                                        <th>Kayıt Tarihi</th>
+                                        <th>İşlemler</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="menusTableBody">
+                                </tbody>
+                            </table>
+                        </div>    
                     </div>
                 </div>`;
                 
@@ -1407,19 +1414,21 @@ $(document).ready(function() {
                 </button>
             </div>
             <div class="products-body">
-                <table class="products-table">
-                    <thead>
-                        <tr>
-                            <th>Durum</th>
-                            <th>Ürün Adı</th>
-                            ${showGoToMenuButton ? `<th>Menü Adı</th>` : '' }
-                            <th>Fiyatı</th>
-                            <th>Kayıt Tarihi</th>
-                            <th>İşlemler</th>
-                        </tr>
-                    </thead>
-                    <tbody id="productsTableBody"></tbody>
-                </table>
+                <div class="products-table-wrapper px-7"> 
+                    <table class="products-table">
+                        <thead>
+                            <tr>
+                                <th>Durum</th>
+                                <th>Ürün Adı</th>
+                                ${showGoToMenuButton ? `<th>Menü Adı</th>` : '' }
+                                <th>Fiyatı</th>
+                                <th>Kayıt Tarihi</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productsTableBody"></tbody>
+                    </table>
+                </div>
             </div>
         </div>`;
 
@@ -2346,18 +2355,20 @@ $(document).ready(function() {
                         </div>
                     </div>
                     <div class="cities-body">
-                        <table class="cities-table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Şehir Adı</th>
-                                    <th>Şube Sayısı</th>
-                                    <th>İşlemler</th>
-                                </tr>
-                            </thead>
-                            <tbody id="citiesTableBody">
-                            </tbody>
-                        </table>
+                        <div class="cities-table-wrapper px-7">
+                            <table class="cities-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Şehir Adı</th>
+                                        <th>Şube Sayısı</th>
+                                        <th>İşlemler</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="citiesTableBody">
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>`;
                 
@@ -2519,18 +2530,20 @@ $(document).ready(function() {
                 }
             </div>
             <div class="branches-body">
-                <table class="branches-table">
-                    <thead>
-                        <tr>
-                            ${showGoToCityButton || showGoToReservationsButton ? `<th class="city-col">Şehir</th>` : '' }
-                            <th class="branch-name-col">Şube Adı</th>
-                            <th class="address-col">Adres</th>
-                            <th class="email-col">E-posta</th>
-                            <th class="actions-col">İşlemler</th>
-                        </tr>
-                    </thead>
-                    <tbody id="branchesTableBody"></tbody>
-                </table>
+                <div class="branches-table-wrapper px-7">
+                    <table class="branches-table">
+                        <thead>
+                            <tr>
+                                ${showGoToCityButton || showGoToReservationsButton ? `<th class="city-col">Şehir</th>` : '' }
+                                <th class="branch-name-col">Şube Adı</th>
+                                <th class="address-col">Adres</th>
+                                <th class="email-col">E-posta</th>
+                                <th class="actions-col">İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody id="branchesTableBody"></tbody>
+                    </table>
+                </div>
             </div>
         </div>`;
 
@@ -4428,18 +4441,20 @@ $(document).ready(function() {
 
                 <div class="reservations-container subdivision">
                     <div class="reservations-body">
-                        <table class="reservations-table">
-                            <thead>
-                                <tr>
-                                    <th class="table-col">Masa No</th>
-                                    <th class="actions-col">Kişi Sayısı</th>
-                                    <th class="actions-col">Rezervasyon Tarihi</th>
-                                    <th class="customer-name-col">Müşteri Adı</th>
-                                    <th class="address-col">Telefon</th>
-                                </tr>
-                            </thead>
-                            <tbody id="reservationsTableBody"></tbody>
-                        </table>
+                        <div class="reservations-table-wrapper px-7">
+                            <table class="reservations-table">
+                                <thead>
+                                    <tr>
+                                        <th class="table-col">Masa No</th>
+                                        <th class="actions-col">Kişi Sayısı</th>
+                                        <th class="actions-col">Rezervasyon Tarihi</th>
+                                        <th class="customer-name-col">Müşteri Adı</th>
+                                        <th class="address-col">Telefon</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="reservationsTableBody"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
                 `;
@@ -5431,7 +5446,7 @@ $(document).ready(function() {
             <div class="pages-header">
                 <h2>Sayfa Seçiniz...</h2>
             </div>
-            <div class="pages-body">
+            <div class="pages-body px-7">
                 <a href="../admin/pages/home-preview.html" class="page-box" target="_blank">
                     <div class="page-img">
                         <img src="../../images/home-admin.jpg" alt="anasayfa"/>
@@ -5772,8 +5787,6 @@ $(document).ready(function() {
             success: function(response) {
                 $('#employeesTableBody').empty();
 
-                paginationTemplate("employees-container", "prevEmployeePage", "nextEmployeePage", "employeePageInfo", "employeeTotalItemsInfo");
-
                 displayEmployees(response);
             },
             error: function(xhr) {
@@ -5793,7 +5806,7 @@ $(document).ready(function() {
 
 
         let employeeHTML = `
-            <div class="employee-cards">
+            <div class="employee-cards px-7">
                 <div class="count-box employee-card">
                     <div class="count-box-content">
                         <p class="count-box-value">${data.employeeCount}</p>
@@ -5839,7 +5852,7 @@ $(document).ready(function() {
                 </div>
             </div>
 
-            <div class="filter-section">
+            <div class="filter-section px-7">
                 <div class="filter-box filter-box--search">
                     <div class="input-wrapper">
                         <input id="filter-name" type="text" placeholder="Çalışan ara...">
@@ -5892,30 +5905,34 @@ $(document).ready(function() {
                 </div>
             </div>
 
-            <table class="employees-table">
-                <thead>
-                    <tr>
-                        <th>Çalışan</th>
-                        <th>Pozisyon</th>
-                        <th>Şube</th>
-                        <th>İşe Başlama</th>
-                        <th>Maaş</th>
-                        <th>Durum</th>
-                        <th>İşlemler</th>
-                    </tr>
-                </thead>
-                
-                <tbody id="employeesTableBody">
-                </tbody>
-            </table>
+            <div class="employees-table-wrapper px-7">
+                <table class="employees-table">
+                    <thead>
+                        <tr>
+                            <th>Çalışan</th>
+                            <th>Pozisyon</th>
+                            <th>Şube</th>
+                            <th>İşe Başlama</th>
+                            <th>Maaş</th>
+                            <th>Durum</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="employeesTableBody">
+                    </tbody>
+                </table>
+            </div>
         `;
         
         // İçeriği güncelle
-        $('.employee-body').html(employeeHTML);
+        $('.employees-body').html(employeeHTML);
 
         fetchEmployeeFilterOptions();
 
-        fetchEmployees();
+        paginationTemplate("employees-container", "prevEmployeePage", "nextEmployeePage", "employeePageInfo", "employeeTotalItemsInfo");
+
+        displayEmployees(employeeListDtos);
     }
 
 
@@ -5929,7 +5946,7 @@ $(document).ready(function() {
                 'Authorization': `Bearer ${token}`
             },
             success: function(response) {
-                $('.employee-body').empty();
+                $('.employees-body').empty();
 
                 displayEmployeeStatistics(response);
             },
@@ -5953,10 +5970,10 @@ $(document).ready(function() {
         // Çalışanlar için HTML yapısı
         let employeeSectionHTML = `
         <div class="employees-container">
-            <div class="employee-header">
+            <div class="employees-header">
                 <h2>Çalışanlar</h2>
             </div>
-            <div class="employee-body">
+            <div class="employees-body">
                 
             </div>
         </div>`;

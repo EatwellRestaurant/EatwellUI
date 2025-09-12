@@ -65,7 +65,7 @@ body{
 }
 
 .sidenav a {
-  padding: 15px 8px 15px 32px;
+  padding: 15px 8px 15px 25px;
   text-decoration: none;
   font-size: 17px;
   color: #000;
@@ -451,11 +451,8 @@ td, th {
 .employees-table,
 .cities-table,
 .branches-table,
-.users-table,
 .products-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
+  margin-bottom: 10px;
   min-width: 600px;
 }
 
@@ -1312,14 +1309,14 @@ td, th {
 
 .menus-header,
 .head-office-header,
-.employee-header,
+.employees-header,
 .pages-header,
 .reservations-header,
 .cities-header,
 .branches-header,
 .users-header,
 .products-header {
-  margin-bottom: 20px;
+  margin: 0 7px 20px 7px;
   padding-bottom: 10px;
   border-bottom: 1px solid #81818140;
   display: flex;
@@ -1330,7 +1327,7 @@ td, th {
 
 .menus-header h2,
 .head-office-header h2,
-.employee-header h2,
+.employees-header h2,
 .pages-header h2,
 .reservations-header h2,
 .cities-header h2,
@@ -1346,22 +1343,8 @@ td, th {
   margin-bottom: 5px;
 }
 
-.menus-body,
 .head-office-body,
-.employee-body,
-.pages-body,
-.reservations-body,
-.cities-body,
-.branches-body,
-.users-body,
-.products-body {
-  color: #000;
-  overflow-x: auto;
-  padding: 7px;
-}
-
-.head-office-body,
-.employee-body {
+.employees-body {
   display: flex;
   flex-direction: column;
   gap: 30px;
@@ -2167,18 +2150,6 @@ input[type="date"] {
   -moz-appearance: none;
 }
 
-.menus-table,
-.reservations-table,
-.employees-table,
-.cities-table,
-.branches-table,
-.users-table,
-.products-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 20px;
-}
-
 
 /* Toggle Switch Stili */
 .toggle-switch {
@@ -2355,17 +2326,38 @@ input:not(:checked) + .toggle-slider:after {
   color: #a7a2a2;
 }
 
-.employees-table {
-  width: 100%;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  border-collapse: collapse;
-  background: #fff;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+.employees-table-wrapper,
+.users-table-wrapper,
+.menus-table-wrapper,
+.products-table-wrapper,
+.cities-table-wrapper,
+.branches-table-wrapper,
+.reservations-table-wrapper {
+  overflow-x: auto;
 }
 
-.employees-table th {
+.employees-table,
+.users-table,
+.menus-table,
+.products-table,
+.cities-table,
+.branches-table,
+.reservations-table {
+  font-family: "Open Sans", sans-serif;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
+  min-width: 600px;
+}
+
+.employees-table th,
+.users-table th,
+.menus-table th,
+.products-table th,
+.cities-table th,
+.branches-table th,
+.reservations-table th {
   background: #f8f9fa;
   padding: 15px;
   text-align: left;
@@ -2374,14 +2366,31 @@ input:not(:checked) + .toggle-slider:after {
   border-bottom: 2px solid #e0e0e0;
 }
 
-.employees-table td {
+.employees-table td,
+.users-table td,
+.menus-table td,
+.products-table td,
+.cities-table td,
+.branches-table td,
+.reservations-table td {
   padding: 15px;
   border-bottom: 1px solid #e9ecef;
   vertical-align: middle;
 }
 
-.employees-table tbody tr:hover {
+.employees-table tbody tr:hover,
+.users-table tbody tr:hover,
+.menus-table tbody tr:hover,
+.products-table tbody tr:hover,
+.cities-table tbody tr:hover,
+.branches-table tbody tr:hover,
+.reservations-table tbody tr:hover {
   background: #f8f9fa;
+}
+
+.px-7 {
+  padding-left: 7px;
+  padding-right: 7px;
 }
 
 /* User Cards */
@@ -2848,16 +2857,6 @@ input:not(:checked) + .toggle-slider:after {
     width: 50%;
   }
 
-  .sidenav 
-  .sidenav-header 
-  .logo {
-    font-size: 33px;
-  }
-
-  .sidenav a {
-    font-size: 20px;
-  }
-
   .users, 
   .menu{
     margin-top: 10px;
@@ -2931,18 +2930,6 @@ input:not(:checked) + .toggle-slider:after {
   .menus-table td:first-child {
     padding: 0px 13px;
   }
-
-  .cities-table th,
-  .cities-table td,
-  .branches-table th,
-  .branches-table td,
-  .reservations-table th,
-  .reservations-table td,
-  .employees-table th,
-  .employees-table td {
-    padding: 12px 14px;
-  }
-
   
   .profile > div {
     display: flex !important;
@@ -3153,7 +3140,7 @@ input:not(:checked) + .toggle-slider:after {
 @media screen and (max-width: 500px) {
   .menus-header h2, 
   .head-office-header h2,
-  .employee-header h2,
+  .employees-header h2,
   .pages-header h2,
   .reservations-header h2, 
   .cities-header h2, 
@@ -3177,8 +3164,8 @@ input:not(:checked) + .toggle-slider:after {
   }
 
   .sidenav a {
-    font-size: 18px;
-    padding: 15px 8px 15px 25px;
+    font-size: 16px;
+    padding: 15px 8px;
   }
 
   .nav {
@@ -3376,7 +3363,7 @@ input:not(:checked) + .toggle-slider:after {
 
   .menus-header h2, 
   .head-office-header h2,
-  .employee-header h2,
+  .employees-header h2,
   .pages-header h2,
   .reservations-header h2, 
   .cities-header h2, 
