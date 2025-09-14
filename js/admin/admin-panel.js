@@ -6060,7 +6060,7 @@ $(document).ready(function() {
 
 
     // Çalışanları getiren fonksiyon
-    function getEmployess(page = 1) {
+    function getEmployees(page = 1) {
 
         // Dashboard içeriğini temizle
         $('.dashboard-content').empty();
@@ -6093,10 +6093,301 @@ $(document).ready(function() {
         //URL'ye sahte bir adım ekliyoruz
         history.pushState({ page: 'employees' }, 'Çalışanlar', '?page=employees'); 
 
-        getEmployess();
+        getEmployees();
     });
 
 
+
+    // Çalışan detayı için verileri çekiyoruz
+    function fetchEmployeeDetails(employeeId) {
+        $('.employees-body').empty();
+        
+        $.ajax({
+            url: `${baseUrl}employees/getForAdmin/${employeeId}`,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                
+                if (response.success && response.data) {
+                    const employee = response.data;
+
+                    // İşe Alım ve İşten Ayrılma tarihlerini formatla (12 Eylül 2024 şeklinde)
+                    const hireDate = new Date(employee.hireDate);
+                    const leaveDate = new Date(employee.leaveDate);
+
+                    const hireDay = hireDate.getDate();
+                    const hireMonth = monthNames[hireDate.getMonth()];
+                    const hireYear = hireDate.getFullYear();
+                   
+                    const leaveDay = leaveDate.getDate();
+                    const leaveMonth = monthNames[leaveDate.getMonth()];
+                    const leaveYear = leaveDate.getFullYear();
+                    
+                    const formattedHireDate = `${hireDay} ${hireMonth} ${hireYear}`;
+                    const formattedLeaveDate = `${leaveDay} ${leaveMonth} ${leaveYear}`;
+
+                    // Doğum tarihini formatla
+                    const birthDate = new Date(employee.birthDate);
+                    const formattedBirthDate = `${birthDate.getDate().toString().padStart(2, '0')}.${(birthDate.getMonth() + 1).toString().padStart(2, '0')}.${birthDate.getFullYear()}`;
+                    
+                    let employeeDetailHTML = `
+                        <div class="main-grid px-7">
+                            <div class="profile-card">
+                                <div class="profile-header">
+                                    <div class="profile-photo">
+                                        ${
+                                            employee.imagePath === null 
+                                            ? `${employee.firstName.charAt(0)}${employee.lastName.charAt(0)}`
+                                            : `<img src="${employee.imagePath}" alt="${employee.firstName} ${employee.lastName}">`
+                                        }
+                                    </div>
+                                    <div class="profile-name">${employee.firstName} ${employee.lastName}</div>
+                                    <div class="profile-position">${employee.positionDisplayName}</div>
+                                </div>
+                                <div class="profile-body">
+                                    <div class="profile-item">
+                                        <i class="fas fa-envelope profile-item-icon"></i>
+                                        <div class="profile-item-content">
+                                            <div class="profile-item-label">E-posta</div>
+                                            <div class="profile-item-value">${employee.email}</div>
+                                        </div>
+                                    </div>
+                                    <div class="profile-item">
+                                        <i class="fas fa-phone profile-item-icon"></i>
+                                        <div class="profile-item-content">
+                                            <div class="profile-item-label">Telefon</div>
+                                            <div class="profile-item-value">${employee.phone}</div>
+                                        </div>
+                                    </div>
+                                    <div class="profile-item">
+                                        <i class="fas fa-map-marker-alt profile-item-icon"></i>
+                                        <div class="profile-item-content">
+                                            <div class="profile-item-label">Şube</div>
+                                            <div class="profile-item-value">${employee.branchName}</div>
+                                        </div>
+                                    </div>
+                                    <div class="profile-item">
+                                        <i class="fas fa-calendar profile-item-icon"></i>
+                                        <div class="profile-item-content">
+                                            <div class="profile-item-label">İşe Başlama</div>
+                                            <div class="profile-item-value">${formattedHireDate}</div>
+                                        </div>
+                                    </div>
+                                    <div class="profile-item">
+                                        <i class="fas fa-money-bill profile-item-icon"></i>
+                                        <div class="profile-item-content">
+                                            <div class="profile-item-label">Maaş</div>
+                                            <div class="profile-item-value">₺${Number(employee.salary).toLocaleString('tr-TR')}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="details-section">
+                                <div class="detail-card">
+                                    <div class="detail-header">
+                                        <h3 class="detail-title">
+                                            <i class="fas fa-user"></i>
+                                            Kişisel Bilgiler
+                                        </h3>
+                                    </div>
+                                    <div class="detail-body">
+                                        <div class="detail-grid">
+                                            <div class="detail-item">
+                                                <div class="detail-label">Ad Soyad</div>
+                                                <div class="detail-value">${employee.firstName} ${employee.lastName}</div>
+                                            </div>
+                                            <div class="detail-item">
+                                                <div class="detail-label">Doğum Tarihi</div>
+                                                <div class="detail-value">${formattedBirthDate}</div>
+                                            </div>
+                                            <div class="detail-item">
+                                                <div class="detail-label">TC Kimlik No</div>
+                                                <div class="detail-value">${employee.nationalId}</div>
+                                            </div>
+                                            <div class="detail-item">
+                                                <div class="detail-label">Eğitim Durumu</div>
+                                                <div class="detail-value">${employee.educationLevel}</div>
+                                            </div>
+                                            <div class="detail-item">
+                                                <div class="detail-label">Cinsiyet</div>
+                                                <div class="detail-value">${employee.gender}</div>
+                                            </div>
+                                            <div class="detail-item">
+                                                <div class="detail-label">Askerlik Durumu</div>
+                                                <div class="detail-value">
+                                                ${
+                                                    employee.militaryStatus === null 
+                                                    ? `Uygulanmaz`
+                                                    : employee.militaryStatus
+                                                }
+                                                </div>
+                                            </div>
+                                            <div class="detail-item">
+                                                <div class="detail-label">Medeni Durum</div>
+                                                <div class="detail-value">${employee.maritalStatus}</div>
+                                            </div>
+                                            <div class="detail-item">
+                                                <div class="detail-label">Adres</div>
+                                                <div class="detail-value">${employee.address}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="detail-card">
+                                    <div class="detail-header">
+                                        <h3 class="detail-title">
+                                            <i class="fas fa-briefcase"></i>
+                                            İş Bilgileri
+                                        </h3>
+                                    </div>
+                                    <div class="detail-body">
+                                        <div class="detail-grid">
+                                            <div class="detail-item">
+                                                <div class="detail-label">Pozisyon</div>
+                                                <div class="detail-value">
+                                                    <span class="role-badge role-${employee.positionName.toLowerCase()}">${employee.positionDisplayName}</span>
+                                                </div>
+                                            </div>
+                                            <div class="detail-item">
+                                                <div class="detail-label">Durum</div>
+                                                <div class="detail-value">
+                                                    <span class="status-badge status-${employee.workStatusName.toLowerCase()}">${employee.workStatusDisplayName}</span>
+                                                </div>
+                                            </div>
+                                            <div class="detail-item">
+                                                <div class="detail-label">Çalışma Tipi</div>
+                                                <div class="detail-value">${employee.employmentType}</div>
+                                            </div>
+                                             <div class="detail-item">
+                                                <div class="detail-label">Yöneticisi</div>
+                                                <div class="detail-value">${employee.manager}</div>
+                                            </div>
+                                            <div class="detail-item">
+                                                <div class="detail-label">İşten Ayrılma Tarihi</div>
+                                                <div class="detail-value">
+                                                ${
+                                                    employee.leaveDate === null 
+                                                    ? `Hâlâ çalışıyor`
+                                                    : formattedLeaveDate
+                                                }
+                                                </div>
+                                            </div>
+                                            <div class="detail-item">
+                                                <div class="detail-label">Deneyim Süresi</div>
+                                                <div class="detail-value">${employee.experienceDuration}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!---
+                                <div class="detail-card">
+                                    <div class="detail-header">
+                                        <h3 class="detail-title">
+                                            <i class="fa-solid fa-clock"></i>
+                                            Çalışma Süresi & Devamlılık
+                                        </h3>
+                                    </div>
+                                    <div class="detail-body">
+                                        <div class="performance-grid">
+                                            <div class="performance-item">
+                                                <div class="performance-number">4</div>
+                                                <div class="performance-label">Yıllık izin kullanımı (Gün)</div>
+                                            </div>
+                                            <div class="performance-item">
+                                                <div class="performance-number">5</div>
+                                                <div class="performance-label">Fazla mesai toplamı (Saat)</div>
+                                            </div>
+                                            <div class="performance-item">
+                                                <div class="performance-number">2</div>
+                                                <div class="performance-label">Devamsızlık / rapor günleri</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                --->
+                            </div>
+                        </div>
+                    `;
+                    
+                    // İçeriği güncelle
+                    $('.employees-body').html(employeeDetailHTML);
+                    
+                } else {
+                    showToast('error', 'Hata', 'Çalışan detayı alınırken hata oluştu!');
+                }
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : 'Çalışan detayı alınırken hata oluştu!');
+            }
+        });
+    }
+
+
+
+    // Çalışan detayında "Çalışanlar" başlığına tıklandığında
+    $(document).on('click', '#employees-link', function(e) {
+        e.preventDefault();
+
+        //URL'ye sahte bir adım ekliyoruz
+        history.pushState({ page: 'employees' }, 'Çalışanlar', '?page=employees'); 
+
+        getEmployees();
+    });
+
+
+
+    // Çalışan detayını getiren fonksiyon
+    function getEmployeeDetails(employeeId, employeeName) {
+
+        // Dashboard içeriğini temizle
+        $('.dashboard-content').empty();
+
+        // Çalışanlar için HTML yapısı
+        let employeeSectionHTML = `
+        <div class="employees-container">
+            <div class="employees-header">
+                <div class="header-content">
+                    <a href="#" id="employees-link">
+                        <h2>Çalışanlar</h2>
+                    </a>
+                    <i class="fa-solid fa-angle-right" aria-hidden="true"></i>
+                    <span>${employeeName}</span>
+                </div>
+            </div>
+            <div class="employees-body">
+                
+            </div>
+        </div>`;
+            
+        // dashboard'a ekle
+        $('.dashboard-content').append(employeeSectionHTML);
+
+        fetchEmployeeDetails(employeeId);
+    }
+
+
+
+    // Çalışan satırına tıklama olayı
+    $(document).on('click', '.employee-row', function() {
+        const employeeId = $(this).data('employee-id');
+        const employeeName = $(this).find(".user-name").text();
+
+        //URL'ye sahte bir adım ekliyoruz
+        history.pushState(
+            { page: 'employeeDetail', employeeId: employeeId, employeeName: employeeName }, 
+            'Çalışan Detayı', 
+            `?page=employeeDetail&id=${employeeId}`
+        );
+       
+        getEmployeeDetails(employeeId, employeeName);
+    });
 
 
 
@@ -6183,8 +6474,21 @@ $(document).ready(function() {
         }else if (page === 'employees') {
             history.replaceState({ page: 'employees' }, 'Çalışanlar', '?page=employees'); 
 
-            getEmployess();
+            getEmployees();
 
+        }else if (page === 'employeeDetail') {
+            const state = history.state;
+
+            const employeeId = state.employeeId;
+            const employeeName = state.employeeName;
+
+            history.replaceState(
+                { page: 'employeeDetail', employeeId: employeeId, employeeName: employeeName }, 
+                'Çalışan Detayı', 
+                `?page=employeeDetail&id=${employeeId}`
+            );
+           
+            getEmployeeDetails(employeeId, employeeName);
         }else {
             // Hiç page değeri yoksa dashboard'u yükle.
 
@@ -6526,7 +6830,21 @@ $(document).ready(function() {
                     break;
                 
                 case 'employees':
-                    getEmployess();
+                    getEmployees();
+                    break;
+
+                case 'employeeDetail':
+
+                    const state = history.state;
+
+                    const employeeId = state?.employeeId;
+                    const employeeName = state?.employeeName;
+
+                    if (employeeId) {
+                        getEmployeeDetails(employeeId, employeeName);
+                    } else {
+                        getEmployees();
+                    }
                     break;
 
                 case 'dashboard':

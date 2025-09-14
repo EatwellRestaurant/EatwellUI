@@ -2472,13 +2472,13 @@ input:not(:checked) + .toggle-slider:after {
 }
 
 .status-active {
-  background: #d4edda;
-  color: #155724;
+  background: #e0f7fa; 
+  color: #006064;
 }
 
 .status-onleave {
-  background: #cce5ff;
-  color: #004085;
+  background: #fff3e0; 
+  color: #e65100;
 }
 
 .status-resigned {
@@ -2530,6 +2530,308 @@ input:not(:checked) + .toggle-slider:after {
 .btn-view:hover {
   background: #e1bee7;
 }
+
+.header-content {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  justify-content: center;
+}
+
+.header-content a:hover {
+  color: #000;
+  text-decoration: underline;
+  transition: all .2s ease-in;
+}
+
+.header-content i {
+  font-size: 14px;
+}
+
+.header-content span {
+  font-size: 17px;
+}
+
+.main-grid {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  gap: 30px;
+}
+
+.profile-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.profile-header {
+  background: linear-gradient(0deg, #f5dd5f, #fecf00);
+  padding: 30px;
+  text-align: center;
+  color: #000;
+}
+
+.profile-photo {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: rgb(191 155 155 / 10%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  font-size: 36px;
+  color: #000;
+  font-weight: bold;
+  border: 4px solid rgba(255,255,255,0.3);
+}
+
+.profile-photo img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+}
+
+.profile-name {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.profile-position {
+  font-size: 16px;
+  opacity: 0.8;
+}
+
+.profile-body {
+  padding: 25px;
+}
+
+.profile-item {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.profile-item:last-child {
+  border-bottom: none;
+}
+
+.profile-item-icon {
+  font-size: 15px;
+  color: #FFD700;
+}
+
+.profile-item-content {
+  flex: 1;
+}
+
+.profile-item-label {
+  font-size: 12px;
+  color: #666;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+
+.profile-item-value {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+.details-section {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.detail-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.detail-header {
+  background: #f8f9fa;
+  padding: 20px 25px;
+  border-bottom: 1px solid #e9ecef;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.detail-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.detail-body {
+  padding: 25px;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.detail-label {
+  font-size: 12px;
+  color: #666;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.detail-value {
+  font-size: 15px;
+  color: #333;
+  font-weight: 500;
+}
+
+.detail-value.empty {
+  color: #999;
+  font-style: italic;
+}
+
+.role-badge {
+  padding: 6px 12px;
+  border-radius: 15px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  display: inline-block;
+}
+
+.role-admin {
+  background: #FFD700;
+  color: #000;
+}
+
+.role-manager {
+  background: #17a2b8;
+  color: #fff;
+}
+
+.role-chef {
+  background: #28a745;
+  color: #fff;
+}
+
+.role-waiter {
+  background: #6c757d;
+  color: #fff;
+}
+
+/* Performance Stats */
+.performance-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 20px;
+}
+
+.performance-item {
+  text-align: center;
+  padding: 20px;
+  border: 2px solid #f0f0f0;
+  border-radius: 10px;
+  transition: all 0.3s;
+}
+
+.performance-item:hover {
+  border-color: #FFD700;
+  background: #fffdf0;
+}
+
+.performance-number {
+  font-size: 28px;
+  font-weight: bold;
+  color: #FFD700;
+  margin-bottom: 5px;
+}
+
+.performance-label {
+  font-size: 14px;
+  color: #666;
+}
+
+/* Activity Timeline */
+.activity-timeline {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.timeline-item {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: 17px;
+  top: 35px;
+  bottom: -20px;
+  width: 2px;
+  background: #e9ecef;
+}
+
+.timeline-item:last-child::before {
+  display: none;
+}
+
+.timeline-icon {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  background: #FFD700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #000;
+  position: relative;
+  z-index: 1;
+}
+
+.timeline-content {
+  flex: 1;
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.timeline-title {
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.timeline-desc {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.timeline-time {
+  font-size: 12px;
+  color: #999;
+}
+
 
 
 /* Responsive Tasarım Media Queries */
@@ -3076,6 +3378,11 @@ input:not(:checked) + .toggle-slider:after {
   .filter-box .dropdown-toggle {
     padding: 8px 20px 8px 7px;
   }
+
+  .main-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
 }
 
 
@@ -3157,10 +3464,9 @@ input:not(:checked) + .toggle-slider:after {
     width: 215px;
   }
 
-  .sidenav 
-  .sidenav-header 
-  .logo {
+  .sidenav .sidenav-header .logo {
     font-size: 30px;
+    margin: 0px 0px 30px 16px;
   }
 
   .sidenav a {
@@ -3448,6 +3754,23 @@ input:not(:checked) + .toggle-slider:after {
   .filter-box .dropdown i {
     right: 5%;
   }
+
+  .profile-photo {
+    font-size: 32px;
+  }
+
+  .profile-name {
+    font-size: 22px;
+  }
+
+  .profile-position {
+    font-size: 15px;
+  }
+
+  .detail-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
 }
 
 
@@ -3471,16 +3794,6 @@ input:not(:checked) + .toggle-slider:after {
 
   .sidenav {
     width: 205px;
-  }
-
-  .sidenav 
-  .sidenav-header 
-  .logo {
-    font-size: 27px;
-  }
-
-  .sidenav a {
-    font-size: 16px;
   }
 
   .btn-create-menu,
