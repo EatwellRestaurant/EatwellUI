@@ -6098,6 +6098,77 @@ $(document).ready(function() {
 
 
 
+    // Çalışan detay sayfasındaki sekme (tab) geçişlerini yöneten fonksiyon
+    $(document).on('click', '.tab-btn', function() {
+
+        $(".tab-btn").removeClass("active");
+        $(this).addClass("active");
+
+        // Panellerde active class'ını güncelle
+        let tabId = $(this).data("tab");
+        $(".tab-pane").removeClass("active");
+        $("#" + tabId).addClass("active");
+    });
+
+
+
+    const days = {
+        1: "PZT",
+        2: "SAL",
+        3: "ÇAR",
+        4: "PER",
+        5: "CUM",
+        6: "CMT",
+        7: "PAZ"
+    };
+
+
+    // Çalışan detay sayfasındaki vardiyaları oluşturuyoruz
+    function generateShiftDayHtml(shiftDayDtos){
+        
+        $('.schedule-grid').empty();
+
+        let shiftDayHtml = '';
+
+        shiftDayDtos.forEach(shiftDay => {
+
+            let className = null;
+            let displayText = null;
+            const dayName = days[shiftDay.shiftId];
+
+            if (shiftDay.isHoliday){
+                className = "off";
+                displayText = "Tatil"
+
+            } else if (shiftDay.isLeave) {
+                className = "off";
+                displayText = "İzinli"
+
+            } else {
+                className = "working";
+                // saniye kısmını kaldırıyoruz
+                const start = shiftDay.startTime.substring(0, 5);
+                const end = shiftDay.endTime.substring(0, 5);
+
+                displayText = `${start}-${end}`;
+            }
+
+            shiftDayHtml += `
+                <div class="schedule-day ${className}">
+                    <button class="edit-btn">
+                        <i class="fa-solid fa-pencil"></i>
+                    </button>
+                    <strong>${dayName}</strong>
+                    ${displayText}
+                </div>
+                `;            
+        });
+
+        $('.schedule-grid').html(shiftDayHtml);
+    }
+
+
+
     // Çalışan detayı için verileri çekiyoruz
     function fetchEmployeeDetails(employeeId) {
         $('.employees-body').empty();
@@ -6112,6 +6183,7 @@ $(document).ready(function() {
                 
                 if (response.success && response.data) {
                     const employee = response.data;
+                    const shiftDayDtos = employee.shiftDayDtos;
 
                     // İşe Alım ve İşten Ayrılma tarihlerini formatla (12 Eylül 2024 şeklinde)
                     const hireDate = new Date(employee.hireDate);
@@ -6216,16 +6288,14 @@ $(document).ready(function() {
                                                 <div class="detail-label">Cinsiyet</div>
                                                 <div class="detail-value">${employee.gender}</div>
                                             </div>
-                                            <div class="detail-item">
-                                                <div class="detail-label">Askerlik Durumu</div>
-                                                <div class="detail-value">
-                                                ${
-                                                    employee.militaryStatus === null 
-                                                    ? `Uygulanmaz`
-                                                    : employee.militaryStatus
-                                                }
-                                                </div>
-                                            </div>
+                                            ${
+                                                employee.militaryStatus === null 
+                                                ? ``
+                                                : `<div class="detail-item">
+                                                        <div class="detail-label">Askerlik Durumu</div>
+                                                        <div class="detail-value">${employee.militaryStatus}</div>
+                                                    </div>`
+                                            }
                                             <div class="detail-item">
                                                 <div class="detail-label">Medeni Durum</div>
                                                 <div class="detail-value">${employee.maritalStatus}</div>
@@ -6313,10 +6383,56 @@ $(document).ready(function() {
                                 --->
                             </div>
                         </div>
+
+                        <div class="tab-container px-7">
+                            <div class="tab-nav">
+                                <button class="tab-btn active" data-tab="shifts">
+                                    <i class="fa-solid fa-clock"></i>
+                                    Vardiyalar
+                                </button>
+
+                                <button class="tab-btn" data-tab="finance">
+                                    <i class="fa-solid fa-coins"></i>
+                                    Finansal
+                                </button>
+
+                                <button class="tab-btn" data-tab="tasks">
+                                    <i class="fa-solid fa-circle-check"></i>
+                                    Görevler
+                                </button>
+
+                                <button class="tab-btn" data-tab="notifications">
+                                    <i class="fa-solid fa-bell"></i>
+                                    Bildirimler
+                                </button>
+
+                                <button class="tab-btn" data-tab="messages">
+                                    <i class="fa-solid fa-comment"></i>
+                                    Mesajlar
+                                </button>
+                            </div>
+
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="shifts">
+                                    <div class="swap-info-box">
+                                        <i class="fa-solid fa-pencil"></i>
+                                        <span>Günleri düzenlemek için üzerine gelin ve düzenleme butonuna tıklayın.</span>
+                                    </div>
+                                    <div class="schedule-grid">
+                                    </div>
+                                </div>
+                                <div class="tab-pane" id="finance">Finans içerikleri buraya gelecek</div>
+                                <div class="tab-pane" id="tasks">Görevler içerikleri buraya gelecek</div>
+                                <div class="tab-pane" id="notifications">Bildirimler içerikleri buraya gelecek</div>
+                                <div class="tab-pane" id="messages">Mesajlar içerikleri buraya gelecek</div>
+                            </div>
+                        </div>
                     `;
                     
                     // İçeriği güncelle
                     $('.employees-body').html(employeeDetailHTML);
+
+                    generateShiftDayHtml(shiftDayDtos);
                     
                 } else {
                     showToast('error', 'Hata', 'Çalışan detayı alınırken hata oluştu!');
