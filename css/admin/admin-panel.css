@@ -1991,6 +1991,8 @@ td, th {
 
 .input-wrapper input,
 .dropdown-toggle {
+  display: flex;
+  align-items: center;
   width: 100%;
   min-height: 40px; 
   padding: 8px 40px 8px 7px; 
@@ -2285,15 +2287,22 @@ input:not(:checked) + .toggle-slider:after {
 }
 
 .filter-box .input-wrapper input,
-.filter-box .dropdown-toggle {
+.filter-box .dropdown-toggle,
+.permission-filter-year .dropdown-toggle {
   margin-bottom: 0;
+}
+
+.permission-filter-year .dropdown-toggle {
+  font-size: 1.5rem;
+  color: #000;
 }
 
 .filter-box {
   width: 100%;
 }
 
-.filter-box .dropdown i {
+.filter-box .dropdown i,
+.permission-filter-year i {
   position: absolute;
   cursor: pointer;
   font-size: 13px;
@@ -2911,7 +2920,7 @@ input:not(:checked) + .toggle-slider:after {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 7px;
+  gap: 15px;
   color: #051b30;
 }
 
@@ -4195,6 +4204,10 @@ input:not(:checked) + .toggle-slider:after {
 
   .no-permission i {
     font-size: 28px;
+  }
+
+  .permission-filter-year .dropdown-toggle {
+    font-size: 1.4rem;
   }
 }
 

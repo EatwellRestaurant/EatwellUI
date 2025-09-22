@@ -4770,6 +4770,7 @@ $(document).ready(function() {
     });
     
 
+
     // Dışarı tıklanınca ilgili menüleri kapat
     $(document).on("click", function (e) {
 
@@ -4785,10 +4786,11 @@ $(document).ready(function() {
         const $statusDropdown = $("#statusDropdown");
         const $rolesDropdown = $("#rolesDropdown");
         const $branchesDropdown = $("#branchesDropdown");
+        const $yearsDropdown = $("#yearsDropdown");
 
         // Eğer tıklanan yer ilgili dropdown’un kendisi veya içindeki bir eleman değilse,
         // o dropdown kapatılır (menü kapanır, ok simgesi eski haline döner ve border rengi sıfırlanır).        
-        [$statusDropdown, $rolesDropdown, $branchesDropdown].forEach($dd => {
+        [$statusDropdown, $rolesDropdown, $branchesDropdown, $yearsDropdown].forEach($dd => {
             if (!$dd.is(e.target) && $dd.has(e.target).length === 0) {
                 $dd.find(".dropdown-menu").removeClass("active");
                 $dd.find("i").removeClass("rotated-180");
@@ -4813,6 +4815,7 @@ $(document).ready(function() {
             $(".btn-manage-table i").removeClass("rotated-90");
         }
     });
+
 
 
     // Rezervasyon filtreleme seçeneklerinden "Takvim" ikonuna tıklandığında takvim listesinin görüntülenmesi için...
@@ -6113,6 +6116,7 @@ $(document).ready(function() {
     });
 
 
+
     const PermissionLeaveTypeEnum = {
         AnnualLeave: 1,
         ExcuseLeave: 2,
@@ -6252,10 +6256,11 @@ $(document).ready(function() {
 
 
     // Çalışan izin geçmişi verilerini çekiyoruz
-    function fetchEmployeePermissions(employeeId, leaveTypeId) {
-        let request = `${baseUrl}Employees/${employeeId}/Permissions?yearId=2`;
+    function fetchEmployeePermissions(employeeId, yearId, leaveTypeId) {
+        let request = `${baseUrl}Employees/${employeeId}/Permissions?`;
         
         if (leaveTypeId != null) request += `&leaveTypeId=${leaveTypeId}`;
+        if (yearId != null) request += `&yearId=${yearId}`;
         
         $.ajax({
             url: request,
@@ -6277,19 +6282,102 @@ $(document).ready(function() {
 
 
 
-    // Çalışan detay sayfasındaki izin geçmişini leaveType durumuna göre filtreleme
+    // Çalışan detayındaki izin geçmişini leaveType durumuna göre filtreleme
     $(document).on('click', '.filter-tab', function() {
 
         $(".filter-tab ").removeClass("active");
         $(this).addClass("active");
 
         const leaveTypeId = $(this).data('leave-type');
+        const yearId = $('#yearsSelectedId').attr('data-selected-id') || null;
 
         const params = new URLSearchParams(window.location.search);
         const employeeId = params.get('id');
 
-        fetchEmployeePermissions(employeeId, leaveTypeId);
+        fetchEmployeePermissions(employeeId, yearId, leaveTypeId);
     });
+
+
+
+    // Çalışan detayındaki izin geçmişinde "Yıl" option'ı için gelen yılları ekle...
+    function updateYearsList(yearDtos){
+        let $menu = $('#yearsDropdown .dropdown-menu');
+
+        // İlk eleman hariç diğerlerini siliyoruz
+        $menu.children().not(':first').remove();
+
+        let yearHTML = '';
+
+        if (yearDtos.length > 0) {
+
+            // Yılları ekle
+            yearDtos.forEach(year => {
+                yearHTML += `
+                    <div class="dropdown-option" data-year-id="${year.id}">${year.name}</div>
+                `;
+            })
+        } 
+
+        $menu.append(yearHTML);
+    }
+
+
+
+    // Çalışan detayındaki izin geçmişinde "Yıl" option'ına tıklandığında
+    $(document).on('click', '#yearsDropdown .dropdown-toggle', function(e) {
+        e.stopPropagation(); 
+
+        toggleDropdown("#yearsDropdown");
+    });
+
+
+
+    // Çalışan detayındaki izin geçmişinde "Yıl" option'ının ikonuna tıklandığında
+    $(document).on('click', '#yearsDropdown i', function(e) {
+        e.stopPropagation(); 
+
+        toggleDropdown("#yearsDropdown");
+    });
+
+
+
+    // "Yıl" option kutusunda bir seçenek seçildiğinde
+    $(document).on('click', '#yearsDropdown .dropdown-option', function() {
+
+        selectDropdownOption("#yearsDropdown", this, "year-id");
+
+        $("#yearsDropdown .dropdown-toggle").text(`${$(this).text()} Yılı`);
+
+
+        const leaveTypeId = $(".filter-tab.active").attr('data-leave-type') || null;
+        const yearId = $('#yearsSelectedId').attr('data-selected-id');
+
+        const params = new URLSearchParams(window.location.search);
+        const employeeId = params.get('id');
+
+        fetchEmployeePermissions(employeeId, yearId, leaveTypeId);
+    });
+
+
+
+    // Çalışan detayındaki izin geçmişinde "Yıl" option'ı için yılları çekiyoruz
+    function fetchYears() {
+        $.ajax({
+            url: `${baseUrl}Years`,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                
+                updateYearsList(response.data);
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Yıllar alınırken hata oluştu!");
+            }
+        });
+    }
 
 
     
@@ -6301,7 +6389,18 @@ $(document).ready(function() {
         let permissionHtml = `
             <div class="permission-header">
                 <h2>İzin Geçmişi</h2>
-                <p>${year} Yılı</p>
+
+                <div class="permission-filter-year">
+                    <div class="input-wrapper">
+                        <div class="dropdown" id="yearsDropdown">
+                            <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
+                            <div class="dropdown-toggle" id="yearsSelectedId" data-selected-id="">${year} Yılı</div>
+                            
+                            <div class="dropdown-menu">  
+                            </div>
+                        </div>        
+                    </div>
+                </div>
             </div>
 
             <div class="permission-body">
@@ -6640,6 +6739,7 @@ $(document).ready(function() {
 
                     generateShiftDayHtml(shiftDayDtos);
                     generatePermissionHtml();
+                    fetchYears();
                     generateTimeLineHtml(permissionListDtos);
                     
                 } else {
