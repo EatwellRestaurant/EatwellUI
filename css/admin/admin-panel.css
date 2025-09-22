@@ -1347,7 +1347,7 @@ td, th {
 .employees-body {
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 25px;
 }
 
 .head-office-cards,
@@ -2555,7 +2555,7 @@ input:not(:checked) + .toggle-slider:after {
 .main-grid {
   display: grid;
   grid-template-columns: 350px 1fr;
-  gap: 30px;
+  gap: 25px;
 }
 
 .profile-card {
@@ -2768,70 +2768,6 @@ input:not(:checked) + .toggle-slider:after {
   color: #666;
 }
 
-/* Activity Timeline */
-.activity-timeline {
-  max-height: 400px;
-  overflow-y: auto;
-}
-
-.timeline-item {
-  display: flex;
-  gap: 15px;
-  margin-bottom: 20px;
-  position: relative;
-}
-
-.timeline-item::before {
-  content: '';
-  position: absolute;
-  left: 17px;
-  top: 35px;
-  bottom: -20px;
-  width: 2px;
-  background: #e9ecef;
-}
-
-.timeline-item:last-child::before {
-  display: none;
-}
-
-.timeline-icon {
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-  background: #FFD700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  color: #000;
-  position: relative;
-  z-index: 1;
-}
-
-.timeline-content {
-  flex: 1;
-  background: #f8f9fa;
-  padding: 15px;
-  border-radius: 8px;
-}
-
-.timeline-title {
-  font-weight: 600;
-  margin-bottom: 5px;
-}
-
-.timeline-desc {
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 8px;
-}
-
-.timeline-time {
-  font-size: 12px;
-  color: #999;
-}
-
 .tab-container {
   display: flex;
   flex-direction: column;
@@ -2852,11 +2788,11 @@ input:not(:checked) + .toggle-slider:after {
 }
 
 .tab-nav i {
-  color: #051b30;
   font-size: 17px;
 }
 
 .tab-btn {
+  color: #051b30;
   display: flex;
   align-items: baseline;
   justify-content: center;
@@ -2918,7 +2854,7 @@ input:not(:checked) + .toggle-slider:after {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 16px;
-  margin-bottom: 20px;
+  margin-bottom: 35px;
 }
 
 .schedule-day {
@@ -2963,6 +2899,247 @@ input:not(:checked) + .toggle-slider:after {
   opacity: 1;
 }
 
+.permission-container {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  margin-bottom: 10px;
+}
+
+.permission-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 7px;
+  color: #051b30;
+}
+
+.permission-header h2 {
+  font-size: 22px;
+}
+
+.permission-header p{
+  font-size: 16px;
+}
+
+.filter-tabs {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.filter-tab {
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid #e9ecef;
+  background: white;
+  color: #6c757d;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-tab.active {
+  background: #667eea;
+  color: white;
+  border-color: #667eea;
+}
+
+.timeline {
+  position: relative; 
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 24px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #e9ecef;
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 24px;
+  padding-left: 64px;
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: 14px;
+  top: 8px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 3px solid white;
+  box-shadow: 0 0 0 2px #ccc;
+  z-index: 10;
+}
+
+.timeline-item:last-child {
+  margin-bottom: 0;
+}
+
+.timeline-item.leave-annual::before { 
+  background: #28a745; 
+  box-shadow: 0 0 0 2px #28a745;
+}
+
+.timeline-item.leave-sick::before { 
+  background: #dc3545; 
+  box-shadow: 0 0 0 2px #dc3545;
+}
+
+.timeline-item.leave-excuse::before { 
+  background: #ffc107; 
+  box-shadow: 0 0 0 2px #ffc107;
+}
+
+.timeline-item.leave-unpaid::before { 
+  background: #6c757d; 
+  box-shadow: 0 0 0 2px #6c757d;
+}
+
+.timeline-item.leave-maternity::before { 
+  background: #e83e8c; 
+  box-shadow: 0 0 0 2px #e83e8c;
+}
+
+.timeline-item.leave-paternity::before { 
+  background: #007bff;
+  box-shadow: 0 0 0 2px #007bff;
+}
+
+.timeline-item.leave-marriage::before { 
+  background: #20c997; 
+  box-shadow: 0 0 0 2px #20c997;
+}
+
+.timeline-item.leave-bereavement::before { 
+  background: #343a40;
+  box-shadow: 0 0 0 2px #343a40;
+}
+
+
+.timeline-card {
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 16px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.timeline-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.timeline-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+.timeline-date {
+  font-weight: 600;
+  font-size: 16px;
+  color: #2c3e50;
+}
+
+.timeline-type {
+  background: #f8f9fa;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.timeline-type.leave-annual { 
+  background: #d4edda; 
+  color: #155724; 
+}
+
+.timeline-type.leave-excuse { 
+  background: #fff3cd; 
+  color: #856404; 
+}
+
+.timeline-type.leave-unpaid { 
+  background: #e2e3e5;   
+  color: #383d41; 
+}
+
+.timeline-type.leave-sick { 
+  background: #f8d7da; 
+  color: #721c24; 
+}
+
+.timeline-type.leave-maternity { 
+  background: #fce4ec;  
+  color: #880e4f; 
+}
+
+.timeline-type.leave-paternity { 
+  background: #e3f2fd;   
+  color: #0d47a1; 
+}
+
+.timeline-type.leave-marriage { 
+  background: #e8f5e9;   
+  color: #1b5e20; 
+}
+
+.timeline-type.leave-bereavement { 
+  background: #f5f5f5;   
+  color: #212121;    
+}
+
+.timeline-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.timeline-duration {
+  color: #6c757d;
+  font-size: 14px;
+}
+
+.timeline-status {
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-pending { 
+  background: #fff3cd; 
+  color: #856404; 
+}
+
+.status-approved { 
+  background: #d4edda; 
+  color: #155724; 
+}
+
+.status-rejected { 
+  background: #f8d7da; 
+  color: #721c24; 
+}
+
+.timeline-description {
+  color: #6c757d;
+  font-size: 13px;
+  font-style: italic;
+}
 
 
 /* Responsive Tasarım Media Queries */
@@ -3940,6 +4117,33 @@ input:not(:checked) + .toggle-slider:after {
 
   .tab-pane .swap-info-box {
     width: 90%;
+  }
+  
+  .filter-tabs {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .filter-tab {
+    width: 50%;
+    text-align: center;
+  }
+
+  .timeline-item {
+    margin-bottom: 24px;
+    padding-left: 44px;
+  }
+  
+  .timeline::before {
+    left: 20px;
+  }
+
+  .timeline-item::before {
+    left: 10px;
+  }
+
+  .timeline-card {
+    gap: 12px;
   }
 }
 

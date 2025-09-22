@@ -33,6 +33,17 @@ $(document).ready(function() {
         "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
         "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"
     ];
+
+
+    const days = {
+        1: "PZT",
+        2: "SAL",
+        3: "ÇAR",
+        4: "PER",
+        5: "CUM",
+        6: "CMT",
+        7: "PAZ"
+    };
     
     
     if (new Date(expiration) < new Date()){
@@ -2778,18 +2789,9 @@ $(document).ready(function() {
         Installation: 4
     };
 
-    
-    // Şubenin Status enum değerine göre gösterilecek yazılar
-    const statusTextMap = {
-        [BranchStatusEnum.Opened]: "Açıldı",
-        [BranchStatusEnum.AwaitingApproval]: "Onay Bekliyor",
-        [BranchStatusEnum.Planning]: "Planlama Aşamasında",
-        [BranchStatusEnum.Installation]: "Kurulum Aşamasında"
-    };
 
-
-    // Status enum değerine göre CSS sınıfları
-    const statusClassMap = {
+    // Şubelerin status enum değerine göre CSS sınıfları
+    const branchStatusClassMap = {
         [BranchStatusEnum.Opened]: "status-opened",
         [BranchStatusEnum.AwaitingApproval]: "status-permission",
         [BranchStatusEnum.Planning]: "status-planning",
@@ -2818,7 +2820,7 @@ $(document).ready(function() {
                             <i class="fas fa-exclamation-circle"></i>
                         </div>
                         
-                        <div class="shop-status ${statusClassMap[branch.status]}">${statusTextMap[branch.status]}</div>
+                        <div class="shop-status ${branchStatusClassMap[branch.status]}">${branch.statusName}</div>
                         <div class="expected-date">Tahmini açılış: ${formattedDate}</div>
                     </div>
                 `;
@@ -6111,16 +6113,156 @@ $(document).ready(function() {
     });
 
 
-
-    const days = {
-        1: "PZT",
-        2: "SAL",
-        3: "ÇAR",
-        4: "PER",
-        5: "CUM",
-        6: "CMT",
-        7: "PAZ"
+    const PermissionLeaveTypeEnum = {
+        AnnualLeave: 1,
+        ExcuseLeave: 2,
+        UnpaidLeave: 3,
+        SickLeave: 4,
+        MaternityLeave: 5,
+        PaternityLeave: 6,
+        MarriageLeave: 7,
+        BereavementLeave: 8
     };
+
+
+    // İzinlerin leaveTypeId değerine göre CSS sınıfları
+    const leaveTypeClassMap = {
+        [PermissionLeaveTypeEnum.AnnualLeave]: "leave-annual",
+        [PermissionLeaveTypeEnum.ExcuseLeave]: "leave-excuse",
+        [PermissionLeaveTypeEnum.UnpaidLeave]: "leave-unpaid",
+        [PermissionLeaveTypeEnum.SickLeave]: "leave-sick",
+        [PermissionLeaveTypeEnum.MaternityLeave]: "leave-maternity",
+        [PermissionLeaveTypeEnum.PaternityLeave]: "leave-paternity",
+        [PermissionLeaveTypeEnum.MarriageLeave]: "leave-marriage",
+        [PermissionLeaveTypeEnum.BereavementLeave]: "leave-bereavement"
+    };
+
+
+    const PermissionStatusEnum = {
+        Pending: 1,
+        Approved: 2,
+        Rejected: 3
+    };
+
+
+    // İzinlerin status enum değerine göre CSS sınıfları
+    const leaveStatusClassMap = {
+        [PermissionStatusEnum.Pending]: "status-pending",
+        [PermissionStatusEnum.Approved]: "status-approved",
+        [PermissionStatusEnum.Rejected]: "status-rejected"
+    };
+
+
+
+    function calculateLeaveDays(startDateStr, endDateStr, isHalfDay = false) {
+        
+        if (isHalfDay) {
+            return "0.5 gün";
+        }
+
+        const start = new Date(startDateStr);
+        const end = new Date(endDateStr);
+    
+        const diffTime = end - start;
+    
+        // Milisaniyeyi güne çeviriyoruz (1 gün = 1000*60*60*24)
+        let diffDays = diffTime / (1000 * 60 * 60 * 24);
+    
+        // Başlangıç günü dahil olsun diye +1 ekliyoruz
+        diffDays = diffDays + 1;
+    
+        return `${diffDays} gün`;
+    }
+    
+
+
+    function formatLeaveDateRange(startDateStr, endDateStr) {
+        
+        const start = new Date(startDateStr);
+        const end = new Date(endDateStr);
+    
+        const startDay = start.getDate();
+        const startMonth = monthNames[start.getMonth()];
+        const startYear = start.getFullYear();
+    
+        const endDay = end.getDate();
+        const endMonth = monthNames[end.getMonth()];
+        const endYear = end.getFullYear();
+    
+        // Eğer alınan iznin başlangıç ve bitiş tarihleri aynı ise
+        if (
+            startDay === endDay &&
+            startMonth === endMonth &&
+            startYear === endYear
+        ) {
+            return `${startDay} ${startMonth} ${startYear}`;
+        }
+    
+        // Eğer alınan iznin başlangıç ve bitiş tarihleri farklı ise
+        if (startYear === endYear && startMonth === endMonth) {
+            return `${startDay}-${endDay} ${startMonth} ${startYear}`;
+        }
+    
+        // Eğer alınan izinde ay ya da yıl farklıysa yani: 28 Ağu 2025 - 02 Eyl 2025 gibi
+        return `${startDay} ${startMonth} ${startYear} - ${endDay} ${endMonth} ${endYear}`;
+    }
+    
+
+    
+    function generatePermissionHtml(permissionListDtos){
+
+        $('.permission-container').empty();
+        let year = new Date().getFullYear();
+
+        let permissionHtml = `
+            <div class="permission-header">
+                <h2>İzin Geçmişi</h2>
+                <p>${year} Yılı</p>
+            </div>
+
+            <div class="permission-body">
+                <div class="filter-tabs">
+                    <div class="filter-tab active">Tümü</div>
+                    <div class="filter-tab">Yıllık İzin</div>
+                    <div class="filter-tab">Hastalık</div>
+                    <div class="filter-tab">Mazeret</div>
+                </div>
+            </div>
+
+            <div class="timeline">
+            </div>
+        `;
+
+
+        let timelineHtml = '';
+
+        permissionListDtos.forEach(permission => {
+
+            let className = leaveTypeClassMap[permission.leaveTypeId];
+            let formattedDate = formatLeaveDateRange(permission.startDate, permission.endDate);
+            let duration = calculateLeaveDays(permission.startDate, permission.endDate);
+
+            timelineHtml += `
+                <div class="timeline-item ${className}" data-type="${className}" style="display: block;">
+                    <div class="timeline-card">
+                        <div class="timeline-header">
+                            <div class="timeline-date">${formattedDate}</div>
+                            <div class="timeline-type ${className}">${permission.leaveTypeName}</div>
+                        </div>
+                        <div class="timeline-info">
+                            <div class="timeline-duration">${duration}</div>
+                            <div class="timeline-status ${leaveStatusClassMap[permission.status]}">${permission.statusName}</div>
+                        </div>
+                        <div class="timeline-description">${permission.description ?? ''}</div>
+                    </div>
+                </div>
+            `;
+        });
+
+        $('.permission-container').html(permissionHtml);
+        $('.timeline').html(timelineHtml);
+    }
+
 
 
     // Çalışan detay sayfasındaki vardiyaları oluşturuyoruz
@@ -6183,7 +6325,9 @@ $(document).ready(function() {
                 
                 if (response.success && response.data) {
                     const employee = response.data;
+                    const employeeName = `${employee.firstName} ${employee.lastName}`;
                     const shiftDayDtos = employee.shiftDayDtos;
+                    const permissionListDtos = employee.permissionListDtos;
 
                     // İşe Alım ve İşten Ayrılma tarihlerini formatla (12 Eylül 2024 şeklinde)
                     const hireDate = new Date(employee.hireDate);
@@ -6212,10 +6356,10 @@ $(document).ready(function() {
                                         ${
                                             employee.imagePath === null 
                                             ? `${employee.firstName.charAt(0)}${employee.lastName.charAt(0)}`
-                                            : `<img src="${employee.imagePath}" alt="${employee.firstName} ${employee.lastName}">`
+                                            : `<img src="${employee.imagePath}" alt="${employeeName}">`
                                         }
                                     </div>
-                                    <div class="profile-name">${employee.firstName} ${employee.lastName}</div>
+                                    <div class="profile-name">${employeeName}</div>
                                     <div class="profile-position">${employee.positionDisplayName}</div>
                                 </div>
                                 <div class="profile-body">
@@ -6270,7 +6414,7 @@ $(document).ready(function() {
                                         <div class="detail-grid">
                                             <div class="detail-item">
                                                 <div class="detail-label">Ad Soyad</div>
-                                                <div class="detail-value">${employee.firstName} ${employee.lastName}</div>
+                                                <div class="detail-value">${employeeName}</div>
                                             </div>
                                             <div class="detail-item">
                                                 <div class="detail-label">Doğum Tarihi</div>
@@ -6418,7 +6562,11 @@ $(document).ready(function() {
                                         <i class="fa-solid fa-pencil"></i>
                                         <span>Günleri düzenlemek için üzerine gelin ve düzenleme butonuna tıklayın.</span>
                                     </div>
+                                    
                                     <div class="schedule-grid">
+                                    </div>
+
+                                    <div class="permission-container">
                                     </div>
                                 </div>
                                 <div class="tab-pane" id="finance">Finans içerikleri buraya gelecek</div>
@@ -6433,6 +6581,7 @@ $(document).ready(function() {
                     $('.employees-body').html(employeeDetailHTML);
 
                     generateShiftDayHtml(shiftDayDtos);
+                    generatePermissionHtml(permissionListDtos);
                     
                 } else {
                     showToast('error', 'Hata', 'Çalışan detayı alınırken hata oluştu!');
