@@ -6207,11 +6207,95 @@ $(document).ready(function() {
         return `${startDay} ${startMonth} ${startYear} - ${endDay} ${endMonth} ${endYear}`;
     }
     
+    
+
+    function generateTimeLineHtml(permissionListDtos){
+        let timelineHtml = '';
+
+        if (permissionListDtos.length > 0) {
+
+            permissionListDtos.forEach(permission => {
+
+                let className = leaveTypeClassMap[permission.leaveTypeId];
+                let formattedDate = formatLeaveDateRange(permission.startDate, permission.endDate);
+                let duration = calculateLeaveDays(permission.startDate, permission.endDate);
+
+                timelineHtml += `
+                    <div class="timeline-item ${className}" data-type="${className}" style="display: block;">
+                        <div class="timeline-card">
+                            <div class="timeline-header">
+                                <div class="timeline-date">${formattedDate}</div>
+                                <div class="timeline-type ${className}">${permission.leaveTypeName}</div>
+                            </div>
+                            <div class="timeline-info">
+                                <div class="timeline-duration">${duration}</div>
+                                <div class="timeline-status ${leaveStatusClassMap[permission.status]}">${permission.statusName}</div>
+                            </div>
+                            <div class="timeline-description">${permission.description ?? ''}</div>
+                        </div>
+                    </div>
+                `;
+            });
+        } else {
+            timelineHtml += `
+                <div class="no-permission">
+                    <i class="fas fa-calendar-times"></i>
+                    <span>İzin kaydı bulunamadı.</span>
+                </div>
+            `;
+        }
+
+
+        $('.timeline').html(timelineHtml);
+    }
+
+
+
+    // Çalışan izin geçmişi verilerini çekiyoruz
+    function fetchEmployeePermissions(employeeId, leaveTypeId) {
+        let request = `${baseUrl}Employees/${employeeId}/Permissions?yearId=2`;
+        
+        if (leaveTypeId != null) request += `&leaveTypeId=${leaveTypeId}`;
+        
+        $.ajax({
+            url: request,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                $('.timeline').empty();
+
+                generateTimeLineHtml(response.data)
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : 'İzin geçmişi alınırken hata oluştu!');
+            }
+        });
+    }
+
+
+
+    // Çalışan detay sayfasındaki izin geçmişini leaveType durumuna göre filtreleme
+    $(document).on('click', '.filter-tab', function() {
+
+        $(".filter-tab ").removeClass("active");
+        $(this).addClass("active");
+
+        const leaveTypeId = $(this).data('leave-type');
+
+        const params = new URLSearchParams(window.location.search);
+        const employeeId = params.get('id');
+
+        fetchEmployeePermissions(employeeId, leaveTypeId);
+    });
+
 
     
-    function generatePermissionHtml(permissionListDtos){
-
+    function generatePermissionHtml(){
         $('.permission-container').empty();
+
         let year = new Date().getFullYear();
 
         let permissionHtml = `
@@ -6222,10 +6306,10 @@ $(document).ready(function() {
 
             <div class="permission-body">
                 <div class="filter-tabs">
-                    <div class="filter-tab active">Tümü</div>
-                    <div class="filter-tab">Yıllık İzin</div>
-                    <div class="filter-tab">Hastalık</div>
-                    <div class="filter-tab">Mazeret</div>
+                    <div class="filter-tab active" data-leave-type="">Tümü</div>
+                    <div class="filter-tab" data-leave-type="${PermissionLeaveTypeEnum.AnnualLeave}">Yıllık İzin</div>
+                    <div class="filter-tab" data-leave-type="${PermissionLeaveTypeEnum.SickLeave}">Hastalık</div>
+                    <div class="filter-tab" data-leave-type="${PermissionLeaveTypeEnum.ExcuseLeave}">Mazeret</div>
                 </div>
             </div>
 
@@ -6234,33 +6318,7 @@ $(document).ready(function() {
         `;
 
 
-        let timelineHtml = '';
-
-        permissionListDtos.forEach(permission => {
-
-            let className = leaveTypeClassMap[permission.leaveTypeId];
-            let formattedDate = formatLeaveDateRange(permission.startDate, permission.endDate);
-            let duration = calculateLeaveDays(permission.startDate, permission.endDate);
-
-            timelineHtml += `
-                <div class="timeline-item ${className}" data-type="${className}" style="display: block;">
-                    <div class="timeline-card">
-                        <div class="timeline-header">
-                            <div class="timeline-date">${formattedDate}</div>
-                            <div class="timeline-type ${className}">${permission.leaveTypeName}</div>
-                        </div>
-                        <div class="timeline-info">
-                            <div class="timeline-duration">${duration}</div>
-                            <div class="timeline-status ${leaveStatusClassMap[permission.status]}">${permission.statusName}</div>
-                        </div>
-                        <div class="timeline-description">${permission.description ?? ''}</div>
-                    </div>
-                </div>
-            `;
-        });
-
         $('.permission-container').html(permissionHtml);
-        $('.timeline').html(timelineHtml);
     }
 
 
@@ -6581,7 +6639,8 @@ $(document).ready(function() {
                     $('.employees-body').html(employeeDetailHTML);
 
                     generateShiftDayHtml(shiftDayDtos);
-                    generatePermissionHtml(permissionListDtos);
+                    generatePermissionHtml();
+                    generateTimeLineHtml(permissionListDtos);
                     
                 } else {
                     showToast('error', 'Hata', 'Çalışan detayı alınırken hata oluştu!');

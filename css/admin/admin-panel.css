@@ -2960,6 +2960,10 @@ input:not(:checked) + .toggle-slider:after {
   background: #e9ecef;
 }
 
+.timeline:has(.no-permission)::before {
+  content: none;
+}
+
 .timeline-item {
   position: relative;
   margin-bottom: 24px;
@@ -3140,6 +3144,33 @@ input:not(:checked) + .toggle-slider:after {
   font-size: 13px;
   font-style: italic;
 }
+
+.no-permission {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px; 
+  padding: 30px 20px;
+  border: 1px dashed #ccc; 
+  border-radius: 8px;
+  background: #fafafa;
+  color: #666;
+  font-size: 15px;
+  font-style: italic;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.no-permission:hover {
+  background: #f0f0f0;
+}
+
+.no-permission i {
+  font-size: 32px;
+  color: #aaa;
+}
+
 
 
 /* Responsive Tasarım Media Queries */
@@ -3855,6 +3886,18 @@ input:not(:checked) + .toggle-slider:after {
     align-items: center;
   }
 
+  .menus-container,
+  .head-office-container,
+  .employees-container,
+  .pages-container,
+  .reservations-container,
+  .cities-container,
+  .branches-container,
+  .users-container,
+  .products-container {
+    padding: 20px 10px;
+  }
+
   .col-div-3 {
     width: 100%;
   }
@@ -4144,6 +4187,14 @@ input:not(:checked) + .toggle-slider:after {
 
   .timeline-card {
     gap: 12px;
+  }
+
+  .no-permission {
+    font-size: 14px;
+  }
+
+  .no-permission i {
+    font-size: 28px;
   }
 }
 
