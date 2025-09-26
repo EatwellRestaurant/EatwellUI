@@ -6103,16 +6103,240 @@ $(document).ready(function() {
 
 
 
+    const PaymentStatusEnum = {
+        Pending: 1,
+        Approved: 2,
+        Paid: 3,
+        Rejected: 4,
+        Cancelled: 5,
+        Failed: 6
+    };
+
+
+    // Ödeme enum değerine göre CSS sınıfları
+    const paymentStatusClassMap = {
+        [PaymentStatusEnum.Pending]: "payment-pending",
+        [PaymentStatusEnum.Approved]: "payment-approved",
+        [PaymentStatusEnum.Paid]: "payment-paid",
+        [PaymentStatusEnum.Rejected]: "payment-rejected",
+        [PaymentStatusEnum.Cancelled]: "payment-cancelled",
+        [PaymentStatusEnum.Failed]: "payment-failed",
+    };
+
+
+
+    function displaySalaryTable(){
+        let salaryTableHTML = '';
+
+        // Maaşları tabloya ekle
+        if (employeeSalaryListDtos.length > 0) {
+            employeeSalaryListDtos.forEach(salary => {
+
+                salaryTableHTML += `
+                    <tr class="salary-row" data-salary-id="${salary.id}">
+                        <td class="month-cell">${salary.month} ${salary.year}</td>
+                        <td>₺${Number(salary.baseSalary).toLocaleString('tr-TR')}</td>
+                        <td class="positive-amount">
+                            ${salary.bonuses > 0 
+                                ? `₺${Number(salary.bonuses).toLocaleString('tr-TR')}` 
+                                : `—`}
+                        </td>
+                        <td class="positive-amount">
+                            ${salary.additionalPayments > 0 
+                                ? `₺${Number(salary.additionalPayments).toLocaleString('tr-TR')}` 
+                                : `—`}
+                        </td>
+                        <td class="negative-amount">
+                            ${salary.deductions > 0 
+                                ? `₺${Number(salary.deductions).toLocaleString('tr-TR')}` 
+                                : `—`}
+                        </td>
+                        <td>₺${Number(salary.netSalary).toLocaleString('tr-TR')}</td>
+                        <td>
+                            <span class="status-badge ${paymentStatusClassMap[salary.paymentStatus]}">${salary.paymentStatusName}</span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn btn-view" title="Görüntüle" data-salary-id="${salary.id}">
+                                    <i class="fas fa-eye" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>`;
+            });
+        } else {
+            // Maaş yoksa bilgi mesajı göster
+            salaryTableHTML = `
+                <tr>
+                    <td colspan="8" class="empty-table-row">Maaş kaydı bulunmamaktadır.</td>
+                </tr>`;
+        }
+
+
+        // Tabloyu güncelle
+        $('#salariesTableBody').html(salaryTableHTML);
+    }
+
+
+
+    function generateSalaryHtml(){
+        
+        $('.salary-container').empty();
+
+        let salaryHtml = `
+            <div class="salary-header chart-title">
+                <h2>Aylık Finansal Detaylar</h2>
+            </div>
+
+            <div class="salary-section px-7">
+                <table class="salary-table">
+                    <thead>
+                        <tr>
+                            <th>Dönem</th>
+                            <th>Temel Maaş</th>
+                            <th>Primler</th>
+                            <th>Yan Ödemeler</th>
+                            <th>Kesintiler</th>
+                            <th>Net Maaş</th>
+                            <th>Durum</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="salariesTableBody">
+                    </tbody>
+                </table>
+            </div>
+        `;
+
+
+        $('.salary-container').html(salaryHtml);
+    }
+
+
+
+    const FinanceDeductionEnum = {
+        SocialSecurity: 1,
+        IncomeTax: 2,
+        UnemploymentInsurance: 3,
+        UnionFee: 4,
+        PrivateHealthInsurance: 5,
+        Other: 6
+    };
+
+
+    function generateFinanceHtml(){
+
+        $('.tab-content').empty();
+
+        // Son maaş kaydını alıyoruz (en güncel olanı)
+        let lastSalary = employeeSalaryListDtos[0]; 
+
+        let sgkDeduction = lastSalary.employeeDeductionListDtos.find(d => d.deductionType === FinanceDeductionEnum.SocialSecurity);
+        let healthInsuranceValue = sgkDeduction ? `₺${Number(sgkDeduction.amount).toLocaleString('tr-TR')}/ay` : "Yok";
+
+        // Yan ödemeleri de ekliyoruz...
+        let mealAllowanceValue = lastSalary.mealAllowance && lastSalary.mealAllowance > 0 
+            ? `₺${Number(lastSalary.mealAllowance).toLocaleString('tr-TR')}/ay`
+            : "Yok";
+
+        let transportAllowanceValue = lastSalary.transportAllowance && lastSalary.transportAllowance > 0 
+            ? `₺${Number(lastSalary.transportAllowance).toLocaleString('tr-TR')}/ay`
+            : "Yok";
+
+        let educationAllowanceValue = lastSalary.educationAllowance && lastSalary.educationAllowance > 0 
+            ? `₺${Number(lastSalary.educationAllowance).toLocaleString('tr-TR')}/ay`
+            : "Yok";
+
+
+        let financeHtml = `
+            <div class="benefits-container">
+                <div class="benefits-header chart-title">
+                    <h2>Sosyal Haklar ve Yan Ödemeler</h2>
+                </div>
+
+                <div class="benefits-section ">
+                    <div class="benefits-grid">
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <img src="../../icons/hospital.png" alt="hospital" class="benefit-img">
+                            </div>
+                            <div class="benefit-text">
+                                <div class="benefit-name">Sağlık Sigortası</div>
+                                <div class="benefit-value">${healthInsuranceValue}</div>
+                            </div>
+                        </div>
+
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <img src="../../icons/meal.png" alt="meal" class="benefit-img">
+                            </div>
+                            <div class="benefit-text">
+                                <div class="benefit-name">Yemek Kartı</div>
+                                <div class="benefit-value">${mealAllowanceValue}</div>
+                            </div>
+                        </div>
+
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <img src="../../icons/bus.png" alt="bus" class="benefit-img">
+                            </div>
+                            <div class="benefit-text">
+                                <div class="benefit-name">Ulaşım Desteği</div>
+                                <div class="benefit-value">${transportAllowanceValue}</div>
+                            </div>
+                        </div>
+
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <img src="../../icons/graduation.png" alt="graduation" class="benefit-img">
+                            </div>
+                            <div class="benefit-text">
+                                <div class="benefit-name">Eğitim Desteği</div>
+                                <div class="benefit-value">${educationAllowanceValue}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="salary-container">
+            </div>
+        `;
+
+        $('.tab-content').html(financeHtml);
+    }
+
+
+
+    // Çalışan detayında "Finansal" başlığına tıklandığında
+    $(document).on('click', '#finance', function(e) {
+        e.preventDefault();
+
+        generateFinanceHtml();
+        generateSalaryHtml();
+        displaySalaryTable();
+    });
+
+
+
+    // Çalışan detayında "Vardiyalar" başlığına tıklandığında
+    $(document).on('click', '#shifts', function(e) {
+        e.preventDefault();
+
+        generateShiftDayHtml(shiftDayDtos);
+        generatePermissionHtml();
+        fetchYears();
+        generateTimeLineHtml(permissionListDtos);
+    });
+
+
     // Çalışan detay sayfasındaki sekme (tab) geçişlerini yöneten fonksiyon
     $(document).on('click', '.tab-btn', function() {
 
         $(".tab-btn").removeClass("active");
         $(this).addClass("active");
-
-        // Panellerde active class'ını güncelle
-        let tabId = $(this).data("tab");
-        $(".tab-pane").removeClass("active");
-        $("#" + tabId).addClass("active");
     });
 
 
@@ -6387,7 +6611,7 @@ $(document).ready(function() {
         let year = new Date().getFullYear();
 
         let permissionHtml = `
-            <div class="permission-header">
+            <div class="permission-header chart-title">
                 <h2>İzin Geçmişi</h2>
 
                 <div class="permission-filter-year">
@@ -6425,7 +6649,31 @@ $(document).ready(function() {
     // Çalışan detay sayfasındaki vardiyaları oluşturuyoruz
     function generateShiftDayHtml(shiftDayDtos){
         
-        $('.schedule-grid').empty();
+        $('.tab-content').empty();
+
+        let scheduleHtml = `
+            <div class="schedule-container">
+                <div class="schedule-header chart-title">
+                    <h2>Çalışma Programı</h2>
+
+                    <!--
+                    <div class="swap-info-box">
+                        <i class="fa-solid fa-pencil"></i>
+                        <span>Günleri düzenlemek için üzerine gelin ve düzenleme butonuna tıklayın.</span>
+                    </div>
+                    -->
+                </div>
+                
+                <div class="schedule-grid">
+                </div>
+            </div>
+            
+            <div class="permission-container">
+            </div>
+        `;
+
+        $('.tab-content').html(scheduleHtml);
+
 
         let shiftDayHtml = '';
 
@@ -6445,6 +6693,7 @@ $(document).ready(function() {
 
             } else {
                 className = "working";
+
                 // saniye kısmını kaldırıyoruz
                 const start = shiftDay.startTime.substring(0, 5);
                 const end = shiftDay.endTime.substring(0, 5);
@@ -6467,6 +6716,9 @@ $(document).ready(function() {
     }
 
 
+    let shiftDayDtos = null;
+    let permissionListDtos = null;
+    let employeeSalaryListDtos = null;
 
     // Çalışan detayı için verileri çekiyoruz
     function fetchEmployeeDetails(employeeId) {
@@ -6483,8 +6735,8 @@ $(document).ready(function() {
                 if (response.success && response.data) {
                     const employee = response.data;
                     const employeeName = `${employee.firstName} ${employee.lastName}`;
-                    const shiftDayDtos = employee.shiftDayDtos;
-                    const permissionListDtos = employee.permissionListDtos;
+                    shiftDayDtos = employee.shiftDayDtos;
+                    permissionListDtos = employee.permissionListDtos;
 
                     // İşe Alım ve İşten Ayrılma tarihlerini formatla (12 Eylül 2024 şeklinde)
                     const hireDate = new Date(employee.hireDate);
@@ -6687,46 +6939,38 @@ $(document).ready(function() {
 
                         <div class="tab-container px-7">
                             <div class="tab-nav">
-                                <button class="tab-btn active" data-tab="shifts">
+                                <button class="tab-btn active" id="shifts">
                                     <i class="fa-solid fa-clock"></i>
                                     Vardiyalar
                                 </button>
 
-                                <button class="tab-btn" data-tab="finance">
+                                <button class="tab-btn" id="finance">
                                     <i class="fa-solid fa-coins"></i>
                                     Finansal
                                 </button>
 
-                                <button class="tab-btn" data-tab="tasks">
+                                <button class="tab-btn" id="tasks">
                                     <i class="fa-solid fa-circle-check"></i>
                                     Görevler
                                 </button>
 
-                                <button class="tab-btn" data-tab="notifications">
+                                <button class="tab-btn" id="notifications">
                                     <i class="fa-solid fa-bell"></i>
                                     Bildirimler
                                 </button>
 
-                                <button class="tab-btn" data-tab="messages">
+                                <button class="tab-btn" id="messages">
                                     <i class="fa-solid fa-comment"></i>
                                     Mesajlar
                                 </button>
                             </div>
 
                             <div class="tab-content">
-                                <div class="tab-pane active" id="shifts">
-                                    <div class="swap-info-box">
-                                        <i class="fa-solid fa-pencil"></i>
-                                        <span>Günleri düzenlemek için üzerine gelin ve düzenleme butonuna tıklayın.</span>
-                                    </div>
-                                    
-                                    <div class="schedule-grid">
-                                    </div>
 
-                                    <div class="permission-container">
-                                    </div>
+                                <div class="tab-pane" id="finance">
+                                    
                                 </div>
-                                <div class="tab-pane" id="finance">Finans içerikleri buraya gelecek</div>
+
                                 <div class="tab-pane" id="tasks">Görevler içerikleri buraya gelecek</div>
                                 <div class="tab-pane" id="notifications">Bildirimler içerikleri buraya gelecek</div>
                                 <div class="tab-pane" id="messages">Mesajlar içerikleri buraya gelecek</div>
@@ -6741,6 +6985,8 @@ $(document).ready(function() {
                     generatePermissionHtml();
                     fetchYears();
                     generateTimeLineHtml(permissionListDtos);
+
+                    employeeSalaryListDtos = employee.employeeSalaryListDtos;
                     
                 } else {
                     showToast('error', 'Hata', 'Çalışan detayı alınırken hata oluştu!');
