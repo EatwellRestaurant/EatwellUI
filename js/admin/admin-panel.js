@@ -4787,10 +4787,19 @@ $(document).ready(function() {
         const $rolesDropdown = $("#rolesDropdown");
         const $branchesDropdown = $("#branchesDropdown");
         const $yearsDropdown = $("#yearsDropdown");
+        const $financeYearsDropdown = $("#financeYearsDropdown");
+        const $financePaymentStatusDropdown = $("#financePaymentStatusDropdown");
 
         // Eğer tıklanan yer ilgili dropdown’un kendisi veya içindeki bir eleman değilse,
         // o dropdown kapatılır (menü kapanır, ok simgesi eski haline döner ve border rengi sıfırlanır).        
-        [$statusDropdown, $rolesDropdown, $branchesDropdown, $yearsDropdown].forEach($dd => {
+        [
+            $statusDropdown, 
+            $rolesDropdown, 
+            $branchesDropdown, 
+            $yearsDropdown, 
+            $financeYearsDropdown, 
+            $financePaymentStatusDropdown]
+            .forEach($dd => {
             if (!$dd.is(e.target) && $dd.has(e.target).length === 0) {
                 $dd.find(".dropdown-menu").removeClass("active");
                 $dd.find("i").removeClass("rotated-180");
@@ -5869,12 +5878,12 @@ $(document).ready(function() {
 
     // Input ve dropdown'lardan filtre değerlerini alıp "Çalışanlar" listesini filtreliyoruz
     function performSearch() {
-        let name = $('#filter-name').val().trim();
+        const name = $('#filter-name').val().trim();
     
         // Dropdown'lardan seçili değerleri alıyoruz
-        let selectedStatusId = $('#statusSelectedId').attr('data-selected-id') || null;
-        let selectedRoleId = $('#rolesSelectedId').attr('data-selected-id') || null;
-        let selectedBranchId = $('#branchesSelectedId').attr('data-selected-id') || null;
+        const selectedStatusId = $('#statusSelectedId').attr('data-selected-id') || null;
+        const selectedRoleId = $('#rolesSelectedId').attr('data-selected-id') || null;
+        const selectedBranchId = $('#branchesSelectedId').attr('data-selected-id') || null;
     
         searchEmployees(name, selectedStatusId, selectedRoleId, selectedBranchId);
     }
@@ -6103,6 +6112,55 @@ $(document).ready(function() {
 
 
 
+
+    // Çalışan detayında belirtilen kriterlere (yıl, ödeme durumu) göre filtreleme yapıyoruz
+    function searchEmployeeSalaries(employeeId, yearId, paymentStatusId) {
+        currentPage = 1;
+        
+        let url = `${baseUrl}Employees/${employeeId}/Salaries?pageNumber=${currentPage}&pageSize=${pageItems}`;
+
+        // Sadece dolu parametreleri ekliyoruz
+        if (yearId != null) url += `&yearId=${yearId}`;
+        if (paymentStatusId != null) url += `&paymentStatus=${paymentStatusId}`;
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                employeeSalaryListDtos = response.data;
+                
+                $('#salariesTableBody').empty();
+
+                displaySalaryTable();
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Çalışan istatistikleri alınırken hata oluştu!");
+            }
+        });
+    }
+
+
+
+    // Dropdown'lardan filtre değerlerini alıp "Çalışan Maaş" listesini filtreliyoruz
+    function filterEmployeeSalaries() {
+    
+        // Dropdown'lardan seçili değerleri alıyoruz
+        const selectedYearId = $('#financeYearsSelectedId').attr('data-selected-id') || null;
+        const selectedPaymentStatusId = $('#financePaymentStatusSelectedId').attr('data-selected-id') || null;
+
+        const params = new URLSearchParams(window.location.search);
+        const employeeId = params.get('id');
+    
+        searchEmployeeSalaries(employeeId, selectedYearId, selectedPaymentStatusId);
+    }
+
+
+    
+
     const PaymentStatusEnum = {
         Pending: 1,
         Approved: 2,
@@ -6125,6 +6183,7 @@ $(document).ready(function() {
 
 
 
+    // Çalışan detayındaki maaşlar tablosunu oluşturuyoruz...
     function displaySalaryTable(){
         let salaryTableHTML = '';
 
@@ -6179,6 +6238,142 @@ $(document).ready(function() {
 
 
 
+
+    // "Tüm Yıllar" option'ı için gelen yılları ekle...
+    function updateYearList(yearDtos){
+        let $menu = $('#financeYearsDropdown .dropdown-menu');
+
+        // İlk eleman hariç diğerlerini siliyoruz
+        $menu.children().not(':first').remove();
+
+        let yearsHTML = '';
+
+        if (yearDtos.length > 0) {
+
+            // Yılları ekle
+            yearDtos.forEach(year => {
+                yearsHTML += `
+                    <div class="dropdown-option" data-year-id="${year.id}">${year.name}</div>
+                `;
+            })
+        } 
+
+        $menu.append(yearsHTML);
+    }
+
+
+    // Çalışan detayındaki "Tüm Yıllar" option'ına tıklandığında
+    $(document).on('click', '#financeYearsDropdown .dropdown-toggle', function(e) {
+        e.stopPropagation(); 
+
+        toggleDropdown("#financeYearsDropdown");
+        closeDropdown("#financePaymentStatusDropdown");
+    });
+
+
+
+    // Çalışan detayındaki "Tüm Yıllar" option'ının ikonuna tıklandığında
+    $(document).on('click', '#financeYearsDropdown i', function(e) {
+        e.stopPropagation(); 
+
+        toggleDropdown("#financeYearsDropdown");
+        closeDropdown("#financePaymentStatusDropdown");
+    });
+
+
+    // "Tüm Yıllar" option kutusunda bir seçenek seçildiğinde
+    $(document).on('click', '#financeYearsDropdown .dropdown-option', function() {
+
+        selectDropdownOption("#financeYearsDropdown", this, "year-id");
+
+        filterEmployeeSalaries();
+    });
+
+
+
+
+    // "Tüm Durumlar" (Ödeme Durumları) option'ı için gelen durumları ekle...
+    function updatePaymentStatusList(paymentStatusDtos){
+        let $menu = $('#financePaymentStatusDropdown .dropdown-menu');
+
+        // İlk eleman hariç diğerlerini siliyoruz
+        $menu.children().not(':first').remove();
+
+        let paymentStatusHTML = '';
+
+        if (paymentStatusDtos.length > 0) {
+
+            // Durumları ekle
+            paymentStatusDtos.forEach(paymentStatus => {
+                paymentStatusHTML += `
+                    <div class="dropdown-option" data-payment-status-id="${paymentStatus.id}">${paymentStatus.name}</div>
+                `;
+            })
+        } 
+
+        $menu.append(paymentStatusHTML);
+    }
+
+
+    // Çalışan detayındaki "Tüm Durumlar" (Ödeme Durumları) option'ına tıklandığında
+    $(document).on('click', '#financePaymentStatusDropdown .dropdown-toggle', function(e) {
+        e.stopPropagation(); 
+
+        toggleDropdown("#financePaymentStatusDropdown");
+        closeDropdown("#financeYearsDropdown");
+    });
+
+
+    // Çalışan detayındaki "Tüm Durumlar" (Ödeme Durumları) option'ının ikonuna tıklandığında
+    $(document).on('click', '#financePaymentStatusDropdown i', function(e) {
+        e.stopPropagation(); 
+
+        toggleDropdown("#financePaymentStatusDropdown");
+        closeDropdown("#financeYearsDropdown");
+    });
+
+
+
+    // "Tüm Durumlar" (Ödeme Durumları) option kutusunda bir seçenek seçildiğinde
+    $(document).on('click', '#financePaymentStatusDropdown .dropdown-option', function() {
+
+        selectDropdownOption("#financePaymentStatusDropdown", this, "payment-status-id");
+
+        filterEmployeeSalaries();
+    });
+
+
+
+    // Çalışan detayındaki filtreleme seçenekleri için verileri çekiyoruz
+    function fetchEmployeeSalaryFilterOptions() {
+        const params = new URLSearchParams(window.location.search);
+        const employeeId = params.get('id');
+        
+        $.ajax({
+            url: `${baseUrl}EmployeeStatistics/GetEmployeeSalaryFilterOptions/${employeeId}`,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                
+                let yearListDtos = response.yearListDtos;
+                let paymentStatusDtos = response.paymentStatusDtos;
+
+                updateYearList(yearListDtos);
+                updatePaymentStatusList(paymentStatusDtos);
+
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Çalışan istatistikleri alınırken hata oluştu!");
+            }
+        });
+    }
+
+
+
+    // Çalışan detayındaki "Aylık Finansal Detaylar" bölümünün taslağını oluşturuyoruz...
     function generateSalaryHtml(){
         
         $('.salary-container').empty();
@@ -6186,6 +6381,36 @@ $(document).ready(function() {
         let salaryHtml = `
             <div class="salary-header chart-title">
                 <h2>Aylık Finansal Detaylar</h2>
+            </div>
+
+            <div class="filter-group px-7"> 
+                <div class="filter-box">
+                    <div class="input-wrapper">
+                        <div class="dropdown" id="financeYearsDropdown">
+                            <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
+                            
+                            <div class="dropdown-toggle" id="financeYearsSelectedId" data-selected-id="">Tüm Yıllar</div>
+                            
+                            <div class="dropdown-menu">
+                                <div class="dropdown-option" data-year-id="">Tüm Yıllar</div>    
+                            </div>
+                        </div>        
+                    </div>
+                </div>
+
+                <div class="filter-box">
+                    <div class="input-wrapper">
+                        <div class="dropdown" id="financePaymentStatusDropdown">
+                            <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
+                            
+                            <div class="dropdown-toggle" id="financePaymentStatusSelectedId" data-selected-id="">Tüm Durumlar</div>
+                            
+                            <div class="dropdown-menu">
+                                <div class="dropdown-option" data-payment-status-id="">Tüm Durumlar</div>    
+                            </div>
+                        </div>        
+                    </div>
+                </div>
             </div>
 
             <div class="salary-section px-7">
@@ -6215,16 +6440,7 @@ $(document).ready(function() {
 
 
 
-    const FinanceDeductionEnum = {
-        SocialSecurity: 1,
-        IncomeTax: 2,
-        UnemploymentInsurance: 3,
-        UnionFee: 4,
-        PrivateHealthInsurance: 5,
-        Other: 6
-    };
-
-
+    // Çalışan detayındaki "Sosyal Haklar ve Yan Ödemeler" bölümünün taslağını oluşturuyoruz...
     function generateFinanceHtml(){
 
         $('.tab-content').empty();
@@ -6232,7 +6448,7 @@ $(document).ready(function() {
         // Son maaş kaydını alıyoruz (en güncel olanı)
         let lastSalary = employeeSalaryListDtos[0]; 
 
-        let sgkDeduction = lastSalary.employeeDeductionListDtos.find(d => d.deductionType === FinanceDeductionEnum.SocialSecurity);
+        let sgkDeduction = lastSalary.employeeDeductionListDtos.find(d => d.deductionType === "SGK Primi");
         let healthInsuranceValue = sgkDeduction ? `₺${Number(sgkDeduction.amount).toLocaleString('tr-TR')}/ay` : "Yok";
 
         // Yan ödemeleri de ekliyoruz...
@@ -6255,7 +6471,7 @@ $(document).ready(function() {
                     <h2>Sosyal Haklar ve Yan Ödemeler</h2>
                 </div>
 
-                <div class="benefits-section ">
+                <div class="benefits-section  px-7">
                     <div class="benefits-grid">
                         <div class="benefit-item">
                             <div class="benefit-icon">
@@ -6316,6 +6532,7 @@ $(document).ready(function() {
 
         generateFinanceHtml();
         generateSalaryHtml();
+        fetchEmployeeSalaryFilterOptions();
         displaySalaryTable();
     });
 

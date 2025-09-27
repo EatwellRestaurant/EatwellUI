@@ -761,8 +761,9 @@ td, th {
 
 .pagination-page-size .dropdown i {
   position: absolute;
-  top: 28%;
+  top: 50%;
   left: 68%;
+  transform: translateY(-50%);
   transition: all .4s ease-in-out;
 }
 
@@ -3269,6 +3270,12 @@ input:not(:checked) + .toggle-slider:after {
   color: #d32f2f; 
 }
 
+.filter-group {
+  width: 37%;
+  display: flex;
+  gap: 17px;
+}
+
 
 /* Responsive Tasarım Media Queries */
 @media screen and (max-width: 2000px) {
@@ -3353,6 +3360,13 @@ input:not(:checked) + .toggle-slider:after {
 
   .filter-box .dropdown-toggle {
     padding: 8px 30px 8px 7px;
+  }
+}
+
+
+@media screen and (max-width: 1225px) {
+  .benefits-grid {
+    grid-template-columns: repeat(2, minmax(200px, 1fr));
   }
 }
 
@@ -3444,6 +3458,10 @@ input:not(:checked) + .toggle-slider:after {
 
   .schedule-header .swap-info-box { 
     width: 60%;
+  }
+
+  .filter-group {
+    width: 49%;
   }
 }
 
@@ -3845,6 +3863,10 @@ input:not(:checked) + .toggle-slider:after {
   .schedule-header .swap-info-box {
     width: 80%;
   }
+
+  .filter-group {
+    width: 60%;
+  }
 }
 
 
@@ -3902,6 +3924,14 @@ input:not(:checked) + .toggle-slider:after {
 
   .employee-cards {
     grid-template-columns: repeat(1, 1fr);
+  }
+
+  .benefits-grid {
+    grid-template-columns: repeat(1, minmax(200px, 1fr));
+  }
+
+  .filter-group {
+    width: 80%;
   }
 }
 
@@ -4301,6 +4331,11 @@ input:not(:checked) + .toggle-slider:after {
   .tab-content .chart-title h2 {
     font-size: 20px;
     text-align: center;
+  }
+
+  .filter-group {
+    flex-direction: column;
+    width: 100%;
   }
 }
 
