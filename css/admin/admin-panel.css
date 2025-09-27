@@ -767,39 +767,19 @@ td, th {
   transition: all .4s ease-in-out;
 }
 
-.dropdown-pagination-toggle {
-  padding: 5px;
-  padding-left: 7px; 
-  border-radius: 5px;
-  border: 2px solid #dedbdb;
-  color: #000;
-  background: #fff;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  transition: all 0.2s ease-in;
+.pagination-toggle {
+  padding: 5px !important;
+  padding-left: 7px !important;
+  color: #000 !important;
+  display: block !important;
+  margin-bottom: 0 !important;
+  min-height: max-content !important;
+  font-size: 1.4rem !important;
 }
 
-.dropdown-pagination {
-  position: absolute;
-  top: 112%;
-  left: 0;
-  right: 0;
-  background: #fff;
-  border: 2px solid #dedbdb;
-  display: none;
-  z-index: 10;
-  border-radius: 4px;
-  max-height: 160px;
-  overflow-x: auto;
-}
-
-.dropdown-pagination-option {
-  padding: 7px;
-}
-
-.dropdown-pagination-option:hover {
-  background-color: #f0f0f0;
+.pagination-option {
+  padding: 7px !important;
+  font-size: 1.4rem !important;
 }
 
 .dropdown-pagination.active {

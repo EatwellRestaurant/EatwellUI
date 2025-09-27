@@ -304,11 +304,11 @@ $(document).ready(function() {
                 <span class="page-size-label">Göster: </span>
                 <div class="dropdown" id="customPaginationDropdown">
                     <i class="fa-solid fa-caret-down"></i>
-                    <div class="dropdown-pagination-toggle" id="selectedValue">10</div>
-                    <div class="dropdown-pagination">
-                        <div class="dropdown-pagination-option">10</div>
-                        <div class="dropdown-pagination-option">15</div>
-                        <div class="dropdown-pagination-option">20</div>
+                    <div class="dropdown-toggle pagination-toggle" id="selectedValue">10</div>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-option pagination-option" data-pagination-id="10">10</div>
+                        <div class="dropdown-option pagination-option" data-pagination-id="15">15</div>
+                        <div class="dropdown-option pagination-option" data-pagination-id="20">20</div>
                     </div>
                 </div>
             </div>
@@ -4306,7 +4306,7 @@ $(document).ready(function() {
 
 
     function updateTableList(){
-        $('#customDropdown .dropdown-menu').empty();
+        $('#tablesDropdown .dropdown-menu').empty();
 
         let tablesHTML = '';
 
@@ -4327,7 +4327,7 @@ $(document).ready(function() {
             `;
         }
 
-        $('#customDropdown .dropdown-menu').html(tablesHTML);
+        $('#tablesDropdown .dropdown-menu').html(tablesHTML);
     }
 
 
@@ -4396,11 +4396,13 @@ $(document).ready(function() {
 
                             <div class="reservation-box">
                                 <div class="input-wrapper">
-                                    <div class="dropdown" id="customDropdown">
-                                        <div class="dropdown-toggle" id="selectedId" data-selected-id="">Masalarda ara...</div>
+                                    <div class="dropdown" id="tablesDropdown">
+                                        <div class="dropdown-toggle" id="tableSelectedId" data-selected-id="">Masalarda ara...</div>
+                                        
                                         <div class="dropdown-menu">
                                         </div>
                                     </div>
+
                                     <span class="chair">
                                         <i class="fa-solid fa-chair"></i>
                                     </span>
@@ -4691,19 +4693,10 @@ $(document).ready(function() {
 
 
     // Pagination bölümündeki "Göster" option'ına tıklandığında
-    $(document).on('click', '.dropdown-pagination-toggle', function(e) {
+    $(document).on('click', '#customPaginationDropdown .dropdown-toggle', function(e) {
         e.stopPropagation(); 
 
-        const pagination = $("#customPaginationDropdown").find(".dropdown-pagination");
-        pagination.toggleClass("active");
-
-        if (pagination.hasClass("active")) {
-            $(".dropdown-pagination-toggle").css("border-color", "#ffc515"); 
-            $('#customPaginationDropdown i').addClass('rotated-180');
-        } else {
-            $(".dropdown-pagination-toggle").css("border-color", "#dedbdb"); 
-            $('#customPaginationDropdown i').removeClass('rotated-180');
-        }
+        toggleDropdown("#customPaginationDropdown");
     });
     
     
@@ -4711,62 +4704,30 @@ $(document).ready(function() {
     $(document).on('click', '#customPaginationDropdown i', function(e) {
         e.stopPropagation(); 
 
-        const pagination = $("#customPaginationDropdown").find(".dropdown-pagination");
-        pagination.toggleClass("active");
-
-        if (pagination.hasClass("active")) {
-            $(".dropdown-pagination-toggle").css("border-color", "#ffc515"); 
-            $('#customPaginationDropdown i').addClass('rotated-180');
-        } else {
-            $(".dropdown-pagination-toggle").css("border-color", "#dedbdb"); 
-            $('#customPaginationDropdown i').removeClass('rotated-180');
-        }
+        toggleDropdown("#customPaginationDropdown");
     });
 
 
     // "Göster" option kutusunda bir seçenek seçildiğinde
-    $(document).on('click', '.dropdown-pagination-option', function() {
-        const label = $(this).text();
-        const dropdownToggle = $("#customPaginationDropdown").find(".dropdown-pagination-toggle");
-
-        pageItems = label;
-        dropdownToggle.text(label);
-        dropdownToggle.css("color", "#000");
-
-        $("#customPaginationDropdown").find(".dropdown-pagination").removeClass("active");
-        $(".dropdown-pagination-toggle").css("border-color", "#dedbdb"); 
-        $('#customPaginationDropdown i').removeClass('rotated-180');
+    $(document).on('click', '#customPaginationDropdown .dropdown-option', function() {
+        
+        selectDropdownOption("#customPaginationDropdown", this, "pagination-id");
     });
 
 
 
     // Rezervasyonlar sayfasındaki "Masalarda Ara" option'ına tıklandığında
-    $(document).on('click', '#customDropdown .dropdown-toggle', function(e) {
+    $(document).on('click', '#tablesDropdown .dropdown-toggle', function(e) {
         e.stopPropagation(); 
 
-        const menu = $("#customDropdown").find(".dropdown-menu");
-        menu.toggleClass("active");
-
-        if (menu.hasClass("active")) {
-            $(this).css("border-color", "#ffc515"); 
-        } else {
-            $(this).css("border-color", "#dedbdb"); 
-        }
+        toggleDropdown("#tablesDropdown");
     });
 
 
     // "Masalarda Ara" option kutusunda bir seçenek seçildiğinde
-    $(document).on('click', '#customDropdown .dropdown-option', function() {
-        const label = $(this).text();
-        const selectedId = $(this).data('table-id');
-        const dropdownToggle = $("#customDropdown").find(".dropdown-toggle");
+    $(document).on('click', '#tablesDropdown .dropdown-option', function() {
 
-        dropdownToggle.text(label);
-        dropdownToggle.css("color", "#000");
-        dropdownToggle.attr('data-selected-id', selectedId); // seçilen nesnenin id bilgisini saklıyoruz
-
-        $("#customDropdown").find(".dropdown-menu").removeClass("active");
-        $(".dropdown-toggle").css("border-color", "#dedbdb"); 
+        selectDropdownOption("#tablesDropdown", this, "table-id");
     });
     
 
@@ -4774,12 +4735,12 @@ $(document).ready(function() {
     // Dışarı tıklanınca ilgili menüleri kapat
     $(document).on("click", function (e) {
 
-        const $customDropdown = $("#customDropdown");
+        const $tablesDropdown = $("#tablesDropdown");
 
         // Eğer tıklanan yer Rezervasyonlar sayfasındaki "Masalarda Ara..." listesi veya içindeki seçenekler değilse
-        if (!$customDropdown.is(e.target) && $customDropdown.has(e.target).length === 0) {
-            $customDropdown.find(".dropdown-menu").removeClass("active");
-            $customDropdown.find(".dropdown-toggle").css("border-color", "#dedbdb"); 
+        if (!$tablesDropdown.is(e.target) && $tablesDropdown.has(e.target).length === 0) {
+            $tablesDropdown.find(".dropdown-menu").removeClass("active");
+            $tablesDropdown.find(".dropdown-toggle").css("border-color", "#dedbdb"); 
         }
 
 
@@ -4789,6 +4750,7 @@ $(document).ready(function() {
         const $yearsDropdown = $("#yearsDropdown");
         const $financeYearsDropdown = $("#financeYearsDropdown");
         const $financePaymentStatusDropdown = $("#financePaymentStatusDropdown");
+        const $customPaginationDropdown = $("#customPaginationDropdown");
 
         // Eğer tıklanan yer ilgili dropdown’un kendisi veya içindeki bir eleman değilse,
         // o dropdown kapatılır (menü kapanır, ok simgesi eski haline döner ve border rengi sıfırlanır).        
@@ -4798,7 +4760,8 @@ $(document).ready(function() {
             $branchesDropdown, 
             $yearsDropdown, 
             $financeYearsDropdown, 
-            $financePaymentStatusDropdown]
+            $financePaymentStatusDropdown,
+            $customPaginationDropdown]
             .forEach($dd => {
             if (!$dd.is(e.target) && $dd.has(e.target).length === 0) {
                 $dd.find(".dropdown-menu").removeClass("active");
@@ -4808,15 +4771,6 @@ $(document).ready(function() {
         });
 
         
-        const $customPaginationDropdown = $("#customPaginationDropdown");
-
-        // Eğer tıklanan yer pagination bölümündeki "Göster" listesi veya içindeki seçenekler değilse
-        if (!$customPaginationDropdown.is(e.target) && $customPaginationDropdown.has(e.target).length === 0) {
-            $customPaginationDropdown.find(".dropdown-pagination").removeClass("active");
-            $(".dropdown-pagination-toggle").css("border-color", "#dedbdb"); 
-            $('#customPaginationDropdown i').removeClass('rotated-180');
-        }
-
 
         // Eğer tıklanan yer .table-options kutusu (yani "Masaları Yönet" butonuna tıklandığında açılan kutu) veya içindeki seçenekler değilse
         if (!$(e.target).closest('.table-options, .btn-manage-table').length) {
@@ -5523,6 +5477,18 @@ $(document).ready(function() {
         const dropdown = $(dropdownSelector);
         const toggle = dropdown.find(".dropdown-toggle");
         const menu = dropdown.find(".dropdown-menu");
+
+       // Önce diğer açık dropdown'ları kapatıyoruz
+       $(".dropdown").not(dropdown).each(function() {
+            const otherDropdown = $(this);
+            const toggle = otherDropdown.find(".dropdown-toggle");
+            const menu = otherDropdown.find(".dropdown-menu");
+        
+            menu.removeClass("active");
+            toggle.css("border-color", "#dedbdb");
+            otherDropdown.find("i").removeClass("rotated-180");
+        });
+
         menu.toggleClass("active");
     
         if (menu.hasClass("active")) {
@@ -5533,17 +5499,6 @@ $(document).ready(function() {
             dropdown.find('i').removeClass('rotated-180');
         }
     }
-
-
-    //Gönderilen dropdown'ı kapatır, border rengini değiştirir ve ikonun yönünü günceller.
-    function closeDropdown(dropdownSelector){
-
-        const dropdown = $(dropdownSelector);
-        dropdown.find(".dropdown-menu").removeClass("active");
-        dropdown.find(".dropdown-toggle").css("border-color", "#dedbdb");
-        dropdown.find("i").removeClass("rotated-180");
-    }
-
 
 
 
@@ -5575,8 +5530,6 @@ $(document).ready(function() {
         e.stopPropagation(); 
 
         toggleDropdown("#statusDropdown");
-        closeDropdown("#rolesDropdown");
-        closeDropdown("#branchesDropdown");
     });
 
 
@@ -5585,8 +5538,6 @@ $(document).ready(function() {
         e.stopPropagation(); 
 
         toggleDropdown("#statusDropdown");
-        closeDropdown("#rolesDropdown");
-        closeDropdown("#branchesDropdown");
     });
 
 
@@ -5629,8 +5580,6 @@ $(document).ready(function() {
         e.stopPropagation(); 
 
         toggleDropdown("#rolesDropdown");
-        closeDropdown("#statusDropdown");
-        closeDropdown("#branchesDropdown");
     });
 
 
@@ -5639,8 +5588,6 @@ $(document).ready(function() {
         e.stopPropagation(); 
 
         toggleDropdown("#rolesDropdown");
-        closeDropdown("#statusDropdown");
-        closeDropdown("#branchesDropdown");
     });
 
 
@@ -5683,8 +5630,6 @@ $(document).ready(function() {
         e.stopPropagation(); 
 
         toggleDropdown("#branchesDropdown");
-        closeDropdown("#statusDropdown");
-        closeDropdown("#rolesDropdown");
     });
 
 
@@ -5693,8 +5638,6 @@ $(document).ready(function() {
         e.stopPropagation(); 
 
         toggleDropdown("#branchesDropdown");
-        closeDropdown("#statusDropdown");
-        closeDropdown("#rolesDropdown");
     });
 
 
@@ -6267,7 +6210,6 @@ $(document).ready(function() {
         e.stopPropagation(); 
 
         toggleDropdown("#financeYearsDropdown");
-        closeDropdown("#financePaymentStatusDropdown");
     });
 
 
@@ -6277,7 +6219,6 @@ $(document).ready(function() {
         e.stopPropagation(); 
 
         toggleDropdown("#financeYearsDropdown");
-        closeDropdown("#financePaymentStatusDropdown");
     });
 
 
@@ -6320,7 +6261,6 @@ $(document).ready(function() {
         e.stopPropagation(); 
 
         toggleDropdown("#financePaymentStatusDropdown");
-        closeDropdown("#financeYearsDropdown");
     });
 
 
@@ -6329,7 +6269,6 @@ $(document).ready(function() {
         e.stopPropagation(); 
 
         toggleDropdown("#financePaymentStatusDropdown");
-        closeDropdown("#financeYearsDropdown");
     });
 
 
