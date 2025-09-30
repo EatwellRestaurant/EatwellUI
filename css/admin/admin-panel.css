@@ -1992,6 +1992,7 @@ td, th {
   width: 60%;
   display: flex;
   flex-wrap: wrap;
+  gap: 20px;
   justify-content: space-between;
 }
 
@@ -2016,7 +2017,6 @@ td, th {
   font-size: 1.6rem;
   letter-spacing: .03rem;
   border-radius: 5px;
-  margin-bottom: 20px;
   border: 2px solid #dedbdb;
   background: #fff;
   font-family: "Mulish", sans-serif;
@@ -2027,13 +2027,15 @@ td, th {
   transition: all 0.2s ease-in;
 }
 
+.input-wrapper input:not(:placeholder-shown),
+.input-wrapper input:focus,
+.input-wrapper #filter-name {
+  color: #000;
+}
+
 .input-wrapper input:focus {
   outline: 0;
   border-color: #ffc515;
-}
-
-.input-wrapper #filter-name {
-  color: #000;
 }
 
 .dropdown {
@@ -2111,7 +2113,7 @@ td, th {
 
 .input-wrapper span {
   position: absolute;
-  top: 33%;
+  top: 50%;
   right: 0px;
   padding: 0 10px;
   transform: translateY(-50%);
@@ -2139,7 +2141,7 @@ td, th {
 }
 
 .input-wrapper .calendar {
-  top: 51%;
+  top: 68%;
 }
 
 #filter-start-date,
@@ -2163,7 +2165,6 @@ input[type="date"]::-webkit-clear-button {
 }
 
 input[type="date"] {
-  position: relative;
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -2199,7 +2200,8 @@ input[type="date"] {
   justify-content: center;
   color: white;
   font-size: 14px;
-  font-weight: bold;
+  font-weight: 500;
+  font-family: 'Poppins', sans-serif;
 }
 
 .toggle-slider:before {

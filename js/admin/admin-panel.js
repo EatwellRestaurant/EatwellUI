@@ -28,6 +28,7 @@ $(document).ready(function() {
     const token = localStorage.getItem('token');
     const expiration = localStorage.getItem('expiration');
     const userName = localStorage.getItem('userName');
+    let tables = null;
 
     const monthNames = [
         "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
@@ -288,7 +289,7 @@ $(document).ready(function() {
     });
 
 
-    //Global değişkenler
+    // Global değişkenler
     const baseUrl = 'https://eatwell-api.azurewebsites.net/api/';
     let currentPage = 1; // Global tanım
     let totalPages = 1;  // Toplam sayfa sayısı
@@ -296,15 +297,24 @@ $(document).ready(function() {
     let pageItems = 10;  // Toplam görüntülenmek istenen öge sayısı
 
 
-    function paginationTemplate(addToDiv, prevId, nextId, pageInfoId, totalItemsInfoId){
-        
+    function paginationTemplate(addToDiv, prevId, nextId, pageInfoId, totalItemsInfoId, tableName){
+        const container = $(`.${addToDiv}`);
+    
+        // Eğer zaten pagination varsa eklemiyoruz
+        if (container.find(".pagination-container").length > 0) {
+            return;
+        }
+
+
         let paginationsHtml = `
         <div class="pagination-container">
             <div class="pagination-page-size">
                 <span class="page-size-label">Göster: </span>
-                <div class="dropdown" id="customPaginationDropdown">
+                <div class="dropdown ${tableName}" id="paginationDropdown">
                     <i class="fa-solid fa-caret-down"></i>
+                    
                     <div class="dropdown-toggle pagination-toggle" id="selectedValue">10</div>
+                    
                     <div class="dropdown-menu">
                         <div class="dropdown-option pagination-option" data-pagination-id="10">10</div>
                         <div class="dropdown-option pagination-option" data-pagination-id="15">15</div>
@@ -323,8 +333,20 @@ $(document).ready(function() {
         </div>
         `;
 
-        $(`.${addToDiv}`).append(paginationsHtml);
+        container.append(paginationsHtml);
     }
+
+
+
+    // Pagination bölümündeki "Göster" option'ına veya ikonuna tıklandığında
+    $(document).on('click', '#paginationDropdown .dropdown-toggle, #paginationDropdown i', function(e) {
+        e.stopPropagation(); 
+
+        toggleDropdown("#paginationDropdown");
+    });
+    
+
+
 
     // İstatistikleri API'den al
     function getStatistics() {
@@ -357,8 +379,43 @@ $(document).ready(function() {
     }
 
 
+
+    // Kullanıcılar sayfasında önceki sayfa butonuna tıklama olayı
+    $(document).on('click', '#prevUserPage', function() {
+        if (currentPage > 1) {
+            currentPage--;
+            fetchUsers();
+        }
+    });
+    
+    
+    
+    // Kullanıcılar sayfasında sonraki sayfa butonuna tıklama olayı
+    $(document).on('click', '#nextUserPage', function() {
+        if (currentPage < totalPages) {
+            currentPage++;
+            fetchUsers();
+        }
+    });
+
+
+
+    // Kullanıcılar tablosundaki "Göster" option kutusunda bir seçenek seçildiğinde
+    $(document).on('click', '.pagination-users-table#paginationDropdown .dropdown-option', function() {
+        
+        selectDropdownOption("#paginationDropdown", this, "pagination-id");
+
+        pageItems = $(this).text();
+
+        fetchUsers();
+    });
+
+
+
     // Kullanıcıları göster
     function displayUsers(response) {
+
+        $('#usersTableBody').empty();
 
         let usersTableHTML = '';
         
@@ -402,76 +459,19 @@ $(document).ready(function() {
     }
 
 
-    // Kullanıcıları getiren fonksiyon
-    function getUsers(page = 1) {
-        const token = localStorage.getItem('token');
-        
+
+    function fetchUsers(){
         $.ajax({
-            url: `${baseUrl}users/getall?pageNumber=1&pageSize=10`,
+            url: `${baseUrl}users/getall?pageNumber=${currentPage}&pageSize=${pageItems}`,
             type: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
             },
             success: function(response) {
-                // Dashboard içeriğini temizle
-                $('.dashboard-content').empty();
-                
-                currentPage = page;
 
-                // Kullanıcılar için HTML yapısı
-                let usersHTML = `
-                <div class="users-container">
-                    <div class="users-header">
-                        <h2>Kullanıcı Listesi</h2>
-                    </div>
-                    <div class="users-body">
-                        <div class="users-table-wrapper px-7">
-                            <table class="users-table">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Ad</th>
-                                        <th>Soyad</th>
-                                        <th>E-posta</th>
-                                        <th>Kayıt Tarihi</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="usersTableBody">
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                `;
-                
-                // Kullanıcıları dashboard'a ekle
-                $('.dashboard-content').append(usersHTML);
-
-                paginationTemplate("users-container", "prevUserPage", "nextUserPage", "userPageInfo", "userTotalItemsInfo");
+                paginationTemplate("users-container", "prevUserPage", "nextUserPage", "userPageInfo", "userTotalItemsInfo", "pagination-users-table");
 
                 // Kullanıcıları göster
-                displayUsers(response);
-            },
-            error: function(xhr) {
-                const errorMessage = xhr.responseJSON?.Message;
-                showToast('error', 'Hata', errorMessage ? errorMessage : 'Kullanıcılar alınırken hata oluştu!');
-            }
-        });
-    }
-
-
-    function fetchUsers() {
-        let baseRequest = `${baseUrl}users/getall?pageNumber=${currentPage}&pageSize=${pageItems}`;
-
-        $.ajax({
-            url: baseRequest,
-            type: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            },
-            success: function(response) {
-                $('#usersTableBody').empty();
-
                 displayUsers(response);
             },
             error: function(xhr) {
@@ -482,22 +482,47 @@ $(document).ready(function() {
     }
 
 
-    // Kullanıcılar sayfasında önceki sayfa butonuna tıklama olayı
-    $(document).on('click', '#prevUserPage', function() {
-        if (currentPage > 1) {
-            currentPage--;
-            fetchUsers();
-        }
-    });
-    
-    
-    // Kullanıcılar sayfasında sonraki sayfa butonuna tıklama olayı
-    $(document).on('click', '#nextUserPage', function() {
-        if (currentPage < totalPages) {
-            currentPage++;
-            fetchUsers();
-        }
-    });
+
+    // Kullanıcıları getiren fonksiyon
+    function getUsers(page = 1) {
+
+        // Dashboard içeriğini temizle
+        $('.dashboard-content').empty();
+                
+        currentPage = page;
+
+        // Kullanıcılar için HTML yapısı
+        let usersHTML = `
+        <div class="users-container">
+            <div class="users-header">
+                <h2>Kullanıcı Listesi</h2>
+            </div>
+            <div class="users-body">
+                <div class="users-table-wrapper px-7">
+                    <table class="users-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Ad</th>
+                                <th>Soyad</th>
+                                <th>E-posta</th>
+                                <th>Kayıt Tarihi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        `;
+
+        // Dashboard'a ekle
+        $('.dashboard-content').append(usersHTML);
+
+        fetchUsers();
+    }
+
 
 
     // Navbar'daki "Kullanıcılar" seçeneğine tıklandığında
@@ -625,8 +650,43 @@ $(document).ready(function() {
     });
 
 
+
+
+    // Menüler sayfasında önceki sayfa butonuna tıklama olayı
+    $(document).on('click', '#prevMenuPage', function() {
+        if (currentPage > 1) {
+            currentPage--;
+            fetchMenus();
+        }
+    });
+    
+    
+    // Menüler sayfasında sonraki sayfa butonuna tıklama olayı
+    $(document).on('click', '#nextMenuPage', function() {
+        if (currentPage < totalPages) {
+            currentPage++;
+            fetchMenus();
+        }
+    });
+
+
+
+    // Menüler tablosundaki "Göster" option kutusunda bir seçenek seçildiğinde
+    $(document).on('click', '.pagination-menus-table#paginationDropdown .dropdown-option', function() {
+        
+        selectDropdownOption("#paginationDropdown", this, "pagination-id");
+
+        pageItems = $(this).text();
+
+        fetchMenus();
+    });
+
+
+
     // Menüleri göster
     function displayMenus(response) {
+
+        $('#menusTableBody').empty();
 
         let menusTableHTML = '';
         
@@ -689,65 +749,6 @@ $(document).ready(function() {
     }
 
 
-    // Menüleri getiren fonksiyon
-    function getMenus(page = 1) {
-        const token = localStorage.getItem('token');
-        
-        $.ajax({
-            url: `${baseUrl}mealCategories/getAllForAdmin?pageNumber=1&pageSize=10`,
-            type: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            },
-            success: function(response) {
-                // Dashboard içeriğini temizle
-                $('.dashboard-content').empty();
-                
-                currentPage = page;
-
-                // Menüler için HTML yapısı
-                let menusHTML = `
-                <div class="menus-container">
-                    <div class="menus-header">
-                        <h2>Menü Listesi</h2>
-                        <button class="btn-create-menu">
-                            <i class="fa-solid fa-plus"></i>
-                            Menü Ekle
-                        </button>
-                    </div>
-                    <div class="menus-body">
-                        <div class="menus-table-wrapper px-7">
-                            <table class="menus-table">
-                                <thead>
-                                    <tr>
-                                        <th>Durum</th>
-                                        <th>Menü Adı</th>
-                                        <th>Kayıt Tarihi</th>
-                                        <th>İşlemler</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="menusTableBody">
-                                </tbody>
-                            </table>
-                        </div>    
-                    </div>
-                </div>`;
-                
-                // Menüleri dashboard'a ekle
-                $('.dashboard-content').append(menusHTML);
-                
-                paginationTemplate("menus-container", "prevMenuPage", "nextMenuPage", "menuPageInfo", "menuTotalItemsInfo");
-                
-                // Menüleri göster
-                displayMenus(response);
-            },
-            error: function(xhr) {
-                const errorMessage = xhr.responseJSON?.Message;
-                showToast('error', 'Hata', errorMessage ? errorMessage : 'Menüler alınırken hata oluştu!');
-            }
-        });
-    }
-
 
     function fetchMenus() {
         $.ajax({
@@ -757,8 +758,10 @@ $(document).ready(function() {
                 'Authorization': `Bearer ${token}`
             },
             success: function(response) {
-                $('#menusTableBody').empty();
 
+                paginationTemplate("menus-container", "prevMenuPage", "nextMenuPage", "menuPageInfo", "menuTotalItemsInfo", "pagination-menus-table");
+
+                // Menüleri göster
                 displayMenus(response);
             },
             error: function(xhr) {
@@ -769,22 +772,48 @@ $(document).ready(function() {
     }
 
 
-    // Menüler sayfasında önceki sayfa butonuna tıklama olayı
-    $(document).on('click', '#prevMenuPage', function() {
-        if (currentPage > 1) {
-            currentPage--;
-            fetchMenus();
-        }
-    });
-    
-    
-    // Menüler sayfasında sonraki sayfa butonuna tıklama olayı
-    $(document).on('click', '#nextMenuPage', function() {
-        if (currentPage < totalPages) {
-            currentPage++;
-            fetchMenus();
-        }
-    });
+
+    // Menüleri getiren fonksiyon
+    function getMenus(page = 1) {
+
+        // Dashboard içeriğini temizle
+        $('.dashboard-content').empty();
+                
+        currentPage = page;
+
+        // Menüler için HTML yapısı
+        let menusHTML = `
+        <div class="menus-container">
+            <div class="menus-header">
+                <h2>Menü Listesi</h2>
+                <button class="btn-create-menu">
+                    <i class="fa-solid fa-plus"></i>
+                    Menü Ekle
+                </button>
+            </div>
+            <div class="menus-body">
+                <div class="menus-table-wrapper px-7">
+                    <table class="menus-table">
+                        <thead>
+                            <tr>
+                                <th>Durum</th>
+                                <th>Menü Adı</th>
+                                <th>Kayıt Tarihi</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody id="menusTableBody">
+                        </tbody>
+                    </table>
+                </div>    
+            </div>
+        </div>`;
+        
+        // Menüleri dashboard'a ekle
+        $('.dashboard-content').append(menusHTML);
+
+        fetchMenus();
+    }
 
 
 
@@ -827,6 +856,7 @@ $(document).ready(function() {
             }
         });
     }
+
 
 
     // Menü durumunu değiştirme olayı
@@ -1337,8 +1367,87 @@ $(document).ready(function() {
 
 
 
+    // Ürünler sayfasında önceki/sonraki sayfa değişim işlemlerini yöneten ortak fonksiyon
+    function changeProductPage(direction) {
+        if (
+            (direction === "prev" && currentPage > 1) ||
+            (direction === "next" && currentPage < totalPages)
+        ) {
+            currentPage += direction === "prev" ? -1 : 1;
+
+            const params = new URLSearchParams(window.location.search);
+            const menuId = params.get('menuId');
+
+            let request;
+            let showGoToMenuButton;
+            let paginationTable;
+
+            if (menuId === null) {
+                request = `${baseUrl}products/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`;
+                showGoToMenuButton = true;
+                paginationTable = "pagination-products-table";
+            } else {
+                request = `${baseUrl}products/getAllForAdminByMealCategoryId?mealCategoryId=${menuId}&pageNumber=${currentPage}&pageSize=${pageItems}`;
+                showGoToMenuButton = false;
+                paginationTable = "pagination-productsByMenu-table";
+            }
+
+            fetchProducts(request, showGoToMenuButton, paginationTable);
+        }
+    }
+
+
+
+    // Ürünler sayfasında önceki sayfa butonuna tıklama olayı
+    $(document).on('click', '#prevProductPage', function() {
+        changeProductPage("prev");
+    });
+
+
+
+    // Ürünler sayfasında sonraki sayfa butonuna tıklama olayı
+    $(document).on('click', '#nextProductPage', function() {
+        changeProductPage("next");
+    });
+
+
+
+    // Menüdeki ürünler tablosunda "Göster" option kutusunda bir seçenek seçildiğinde
+    $(document).on('click', '.pagination-productsByMenu-table#paginationDropdown .dropdown-option', function() {
+        
+        selectDropdownOption("#paginationDropdown", this, "pagination-id");
+
+        const params = new URLSearchParams(window.location.search);
+        const menuId = params.get('menuId');
+
+        pageItems = $(this).text();
+
+        const request = `${baseUrl}products/getAllForAdminByMealCategoryId?mealCategoryId=${menuId}&pageNumber=${currentPage}&pageSize=${pageItems}`
+        
+        fetchProducts(request, false, "pagination-productsByMenu-table");
+    });
+
+
+
+    // Ürünler tablosundaki "Göster" option kutusunda bir seçenek seçildiğinde
+    $(document).on('click', '.pagination-products-table#paginationDropdown .dropdown-option', function() {
+        
+        selectDropdownOption("#paginationDropdown", this, "pagination-id");
+
+        pageItems = $(this).text();
+
+        const request = `${baseUrl}products/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`;
+
+        fetchProducts(request, true, "pagination-products-table");
+    });
+
+
+
+    // Ürünleri göster
     function displayProducts(response, showGoToMenuButton) {
-    
+        
+        $('#productsTableBody').empty();
+
         let tableHTML = '';
 
         if (response.data.length > 0) {
@@ -1403,8 +1512,33 @@ $(document).ready(function() {
     }
 
 
+
+    // Ürün verilerini çekiyoruz
+    function fetchProducts(request, showGoToMenuButton, paginationTable) {
+        $.ajax({
+            url: request,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+
+                paginationTemplate("products-container", "prevProductPage", "nextProductPage", "productPageInfo", "productTotalItemsInfo", `${paginationTable}`);
+
+                // Ürünleri göster
+                displayProducts(response, showGoToMenuButton);
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Ürünler alınırken hata oluştu!");
+            }
+        });
+    }
+
+
+
     // Ürünleri getiren ortak fonksiyon
-    function renderProductsList(data, options = {}) {
+    function renderProductsList(options = {}) {
         const {
             title = 'Ürün Listesi',
             showGoToMenuButton = false
@@ -1445,91 +1579,21 @@ $(document).ready(function() {
 
         // Ürünleri dashboard'a ekle
         $('.dashboard-content').append(html);
-
-        paginationTemplate("products-container", "prevProductPage", "nextProductPage", "productPageInfo", "productTotalItemsInfo");
-
-        // Ürünleri göster
-        displayProducts(data, showGoToMenuButton);
     }
 
 
-    function fetchProducts(request, showGoToMenuButton) {
-        $.ajax({
-            url: request,
-            type: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            },
-            success: function(response) {
-                $('#productsTableBody').empty();
-
-                displayProducts(response, showGoToMenuButton);
-            },
-            error: function(xhr) {
-                const errorMessage = xhr.responseJSON?.Message;
-                showToast('error', 'Hata', errorMessage ? errorMessage : "Ürünler alınırken hata oluştu!");
-            }
-        });
-    }
-
-
-    // Ürünler sayfasında önceki sayfa butonuna tıklama olayı
-    $(document).on('click', '#prevProductPage', function() {
-        if (currentPage > 1) {
-            currentPage--;
-
-            const params = new URLSearchParams(window.location.search);
-            const menuId = params.get('menuId');
-            let request;
-            let showGoToMenuButton;
-
-            if (menuId === null) {
-                request = `${baseUrl}products/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`;
-                showGoToMenuButton = true;
-            } else {
-                request = `${baseUrl}products/getAllForAdminByMealCategoryId?mealCategoryId=${menuId}&pageNumber=${currentPage}&pageSize=${pageItems}`;
-                showGoToMenuButton = false;
-            }
-
-            fetchProducts(request, showGoToMenuButton);
-        }
-    });
-    
-    
-    // Ürünler sayfasında sonraki sayfa butonuna tıklama olayı
-    $(document).on('click', '#nextProductPage', function() {
-        if (currentPage < totalPages) {
-            currentPage++;
-
-            const params = new URLSearchParams(window.location.search);
-            const menuId = params.get('menuId');
-            let request;
-            let showGoToMenuButton;
-
-            if (menuId === null) {
-                request = `${baseUrl}products/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`;
-                showGoToMenuButton = true;
-            } else {
-                request = `${baseUrl}products/getAllForAdminByMealCategoryId?mealCategoryId=${menuId}&pageNumber=${currentPage}&pageSize=${pageItems}`;
-                showGoToMenuButton = false;
-            }
-
-            fetchProducts(request, showGoToMenuButton);
-        }
-    });
-
-
+    // Menüye göre ürünleri getiren fonksiyon
     function getProductsByMenu(menuId, menuName) {
-        const token = localStorage.getItem('token');
-        $.ajax({
-            url: `${baseUrl}products/getAllForAdminByMealCategoryId?mealCategoryId=${menuId}&pageNumber=1&pageSize=10`,
-            type: 'GET',
-            headers: { 'Authorization': `Bearer ${token}` },
-            success: (response) => renderProductsList(response, { title: menuName, showGoToMenuButton: false }),
-            error: (xhr) => showToast('error', 'Hata', xhr.responseJSON?.Message || 'Ürünler getirilirken hata oluştu!')
-        });
+        currentPage = 1;
+
+        renderProductsList({ title: menuName, showGoToMenuButton: false })
+
+        const request = `${baseUrl}products/getAllForAdminByMealCategoryId?mealCategoryId=${menuId}&pageNumber=${currentPage}&pageSize=${pageItems}`
+        
+        fetchProducts(request, false, "pagination-productsByMenu-table");
     }
     
+
 
     // Menüde "Ürünleri Gör" butonuna tıklandığında
     $(document).on('click', '.btn-products-menu', function(e) {
@@ -1548,17 +1612,18 @@ $(document).ready(function() {
     });
 
 
-    function getAllProducts() {
-        const token = localStorage.getItem('token');
 
-        $.ajax({
-            url: `${baseUrl}products/getAllForAdmin?pageNumber=1&pageSize=10`,
-            type: 'GET',
-            headers: { 'Authorization': `Bearer ${token}` },
-            success: (response) => renderProductsList(response, { title: 'Ürün Listesi', showGoToMenuButton: true }),
-            error: (xhr) => showToast('error', 'Hata', xhr.responseJSON?.Message || 'Ürünler alınırken hata oluştu!')
-        });
+    // Ürünleri getiren fonksiyon
+    function getAllProducts() {
+        currentPage = 1;
+
+        renderProductsList({ title: 'Ürün Listesi', showGoToMenuButton: true });
+
+        const request = `${baseUrl}products/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`;
+
+        fetchProducts(request, true, "pagination-products-table");
     }
+
 
 
     // Navbar'daki "Ürünler" seçeneğine tıklandığında
@@ -1571,6 +1636,7 @@ $(document).ready(function() {
         getAllProducts();
     });
 
+    
 
     // Ürünler listesinde "Menüye Git" butonuna tıklandığında
     $(document).on('click', '.btn-menu', function(e) {
@@ -2295,6 +2361,40 @@ $(document).ready(function() {
 
 
 
+
+    // Şehirler sayfasında önceki sayfa butonuna tıklama olayı
+    $(document).on('click', '#prevCityPage', function() {
+        if (currentPage > 1) {
+            currentPage--;
+            fetchCities();
+        }
+    });
+    
+
+    
+    // Şehirler sayfasında sonraki sayfa butonuna tıklama olayı
+    $(document).on('click', '#nextCityPage', function() {
+        if (currentPage < totalPages) {
+            currentPage++;
+            fetchCities();
+        }
+    });
+
+
+
+    // Şehirler tablosundaki "Göster" option kutusunda bir seçenek seçildiğinde
+    $(document).on('click', '.pagination-cities-table#paginationDropdown .dropdown-option', function() {
+        
+        selectDropdownOption("#paginationDropdown", this, "pagination-id");
+
+        pageItems = $(this).text();
+
+        fetchCities();
+    });
+
+
+
+    // Şehirleri göster
     function displayCities(response) {
                     
         let citiesTableHTML = '';
@@ -2333,60 +2433,17 @@ $(document).ready(function() {
     }
 
 
-    // Şehirleri getiren fonksiyon
-    function getCities(page = 1) {
-        const token = localStorage.getItem('token');
-        
+
+    function fetchCities(){
         $.ajax({
-            url: `${baseUrl}cities?pageNumber=1&pageSize=10`,
+            url: `${baseUrl}cities?pageNumber=${currentPage}&pageSize=${pageItems}`,
             type: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
             },
             success: function(response) {
-                // Dashboard içeriğini temizle
-                $('.dashboard-content').empty();
                 
-                currentPage = page;
-
-                // Şehirler için HTML yapısı
-                let citiesHTML = `
-                <div class="cities-container">
-                    <div class="cities-header">
-                        <h2>Şehir Listesi</h2>
-                        <div class="branch-controls">
-                            <button class="btn-head-office">
-                                <i class="fa-solid fa-landmark"></i>
-                                Genel Merkez
-                            </button>
-                            <button class="btn-all-branches">
-                                <i class="fa-solid fa-building"></i>
-                                Tüm Şubeler
-                            </button>
-                        </div>
-                    </div>
-                    <div class="cities-body">
-                        <div class="cities-table-wrapper px-7">
-                            <table class="cities-table">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Şehir Adı</th>
-                                        <th>Şube Sayısı</th>
-                                        <th>İşlemler</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="citiesTableBody">
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>`;
-                
-                // Şehirleri dashboard'a ekle
-                $('.dashboard-content').append(citiesHTML);
-                
-                paginationTemplate("cities-container", "prevCityPage", "nextCityPage", "cityPageInfo", "cityTotalItemsInfo");
+                paginationTemplate("cities-container", "prevCityPage", "nextCityPage", "cityPageInfo", "cityTotalItemsInfo", "pagination-cities-table");
 
                 // Şehirleri göster
                 displayCities(response);
@@ -2397,44 +2454,57 @@ $(document).ready(function() {
             }
         });
     }
-    
 
-    function fetchCities() {
-        $.ajax({
-            url: `${baseUrl}cities?pageNumber=${currentPage}&pageSize=${pageItems}`,
-            type: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            },
-            success: function(response) {
-                $('#citiesTableBody').empty();
 
-                displayCities(response);
-            },
-            error: function(xhr) {
-                const errorMessage = xhr.responseJSON?.Message;
-                showToast('error', 'Hata', errorMessage ? errorMessage : "Şehirler alınırken hata oluştu!");
-            }
-        });
+
+    // Şehirleri getiren fonksiyon
+    function getCities(page = 1) {
+        
+        // Dashboard içeriğini temizle
+        $('.dashboard-content').empty();
+                
+        currentPage = page;
+
+        // Şehirler için HTML yapısı
+        let citiesHTML = `
+        <div class="cities-container">
+            <div class="cities-header">
+                <h2>Şehir Listesi</h2>
+                <div class="branch-controls">
+                    <button class="btn-head-office">
+                        <i class="fa-solid fa-landmark"></i>
+                        Genel Merkez
+                    </button>
+                    <button class="btn-all-branches">
+                        <i class="fa-solid fa-building"></i>
+                        Tüm Şubeler
+                    </button>
+                </div>
+            </div>
+            <div class="cities-body">
+                <div class="cities-table-wrapper px-7">
+                    <table class="cities-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Şehir Adı</th>
+                                <th>Şube Sayısı</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody id="citiesTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>`;
+        
+        // Şehirleri dashboard'a ekle
+        $('.dashboard-content').append(citiesHTML);
+
+        fetchCities();
     }
-
-
-    // Şehirler sayfasında önceki sayfa butonuna tıklama olayı
-    $(document).on('click', '#prevCityPage', function() {
-        if (currentPage > 1) {
-            currentPage--;
-            fetchCities();
-        }
-    });
     
-    
-    // Şehirler sayfasında sonraki sayfa butonuna tıklama olayı
-    $(document).on('click', '#nextCityPage', function() {
-        if (currentPage < totalPages) {
-            currentPage++;
-            fetchCities();
-        }
-    });
 
 
     // Navbar'daki "Şehir ve Şubeler" seçeneğine tıklandığında
@@ -2449,8 +2519,116 @@ $(document).ready(function() {
 
 
 
-    function displayBranches(response, showGoToCityButton, showGoToReservationsButton) {
+
+
+    function getBranchRequestData() {
+        const params = new URLSearchParams(window.location.search);
+        const cityId = params.get('cityId');
     
+        let request;
+        let showGoToCityButton;
+        let showGoToReservationsButton;
+    
+        if (cityId === null) {
+            request = `${baseUrl}branches/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`;
+    
+            const page = params.get('page');
+    
+            if (page === 'branchesForReservation') {
+                showGoToCityButton = false;
+                showGoToReservationsButton = true;
+            } else {
+                showGoToCityButton = true;
+                showGoToReservationsButton = false;
+            }
+        } else {
+            request = `${baseUrl}branches/getAllForAdminByCityId?cityId=${cityId}&pageNumber=${currentPage}&pageSize=${pageItems}`;
+            showGoToCityButton = false;
+            showGoToReservationsButton = false;
+        }
+    
+        return { request, showGoToCityButton, showGoToReservationsButton };
+    }
+    
+
+
+    // Şubeler sayfasında önceki sayfa butonuna tıklama olayı
+    $(document).on('click', '#prevBranchPage', function() {
+        if (currentPage > 1) {
+            currentPage--;
+
+            const { request, showGoToCityButton, showGoToReservationsButton } = 
+                getBranchRequestData(currentPage, pageItems, baseUrl);
+
+            fetchBranches(request, showGoToCityButton, showGoToReservationsButton);
+        }
+    });
+    
+
+    
+    // Şubeler sayfasında sonraki sayfa butonuna tıklama olayı
+    $(document).on('click', '#nextBranchPage', function() {
+        if (currentPage < totalPages) {
+            currentPage++;
+
+            const { request, showGoToCityButton, showGoToReservationsButton } = 
+                getBranchRequestData(currentPage, pageItems, baseUrl);
+
+            fetchBranches(request, showGoToCityButton, showGoToReservationsButton);
+        }
+    });
+
+
+
+    // Rezervasyonlar için listelenen şubeler tablosundaki "Göster" option kutusunda bir seçenek seçildiğinde
+    $(document).on('click', '.pagination-branchesForReservations-table#paginationDropdown .dropdown-option', function() {
+        
+        selectDropdownOption("#paginationDropdown", this, "pagination-id");
+
+        pageItems = $(this).text();
+
+        const request = `${baseUrl}branches/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`;
+
+        fetchBranches(request, false, true, "pagination-branchesForReservations-table");
+    });
+
+
+
+    // Şehir listesinde "Şubeleri Gör" tablosundaki "Göster" option kutusunda bir seçenek seçildiğinde
+    $(document).on('click', '.pagination-branchesByCity-table#paginationDropdown .dropdown-option', function() {
+        
+        selectDropdownOption("#paginationDropdown", this, "pagination-id");
+
+        pageItems = $(this).text();
+        const params = new URLSearchParams(window.location.search);
+        const cityId = params.get('cityId');
+
+        const request = `${baseUrl}branches/getAllForAdminByCityId?cityId=${cityId}&pageNumber=${currentPage}&pageSize=${pageItems}`;
+
+        fetchBranches(request, false, false, "pagination-branchesByCity-table");
+    });
+
+
+
+    // Şehir listesinde "Tüm Şubeler" tablosundaki "Göster" option kutusunda bir seçenek seçildiğinde
+    $(document).on('click', '.pagination-branches-table#paginationDropdown .dropdown-option', function() {
+        
+        selectDropdownOption("#paginationDropdown", this, "pagination-id");
+
+        pageItems = $(this).text();
+
+        const request = `${baseUrl}branches/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`;
+
+        fetchBranches(request, true, false, "pagination-branches-table");
+    });
+
+
+
+    // Şubeleri göster
+    function displayBranches(response, showGoToCityButton, showGoToReservationsButton) {
+        
+        $('#branchesTableBody').empty();
+
         let tableHTML = '';
 
         if (response.data.length > 0) {
@@ -2516,8 +2694,33 @@ $(document).ready(function() {
     }
 
 
+
+    // Şube verilerini çekiyoruz
+    function fetchBranches(request, showGoToCityButton, showGoToReservationsButton, paginationTable) {
+        $.ajax({
+            url: request,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+
+                paginationTemplate("branches-container", "prevBranchPage", "nextBranchPage", "branchPageInfo", "branchTotalItemsInfo", `${paginationTable}`);
+
+                // Şubeleri göster
+                displayBranches(response, showGoToCityButton, showGoToReservationsButton);
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Şubeler alınırken hata oluştu!");
+            }
+        });
+    }
+
+
+
     // Şubeleri getiren ortak fonksiyon
-    function renderBranchesList(data, options = {}) {
+    function renderBranchesList(options = {}) {
         const {
             title = 'Şube Listesi',
             showGoToCityButton = false,
@@ -2560,101 +2763,21 @@ $(document).ready(function() {
 
         // Şubeleri dashboard'a ekle
         $('.dashboard-content').append(html);
-    
-        paginationTemplate("branches-container", "prevBranchPage", "nextBranchPage", "branchPageInfo", "branchTotalItemsInfo");
-    
-        // Şubeleri göster
-        displayBranches(data, showGoToCityButton, showGoToReservationsButton);
     }
 
-
-    function fetchBranches(request, showGoToCityButton, showGoToReservationsButton) {
-        $.ajax({
-            url: request,
-            type: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            },
-            success: function(response) {
-                $('#branchesTableBody').empty();
-
-                displayBranches(response, showGoToCityButton, showGoToReservationsButton);
-            },
-            error: function(xhr) {
-                const errorMessage = xhr.responseJSON?.Message;
-                showToast('error', 'Hata', errorMessage ? errorMessage : "Şubeler alınırken hata oluştu!");
-            }
-        });
-    }
-
-
-    function getBranchRequestData() {
-        const params = new URLSearchParams(window.location.search);
-        const cityId = params.get('cityId');
-    
-        let request;
-        let showGoToCityButton;
-        let showGoToReservationsButton;
-    
-        if (cityId === null) {
-            request = `${baseUrl}branches/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`;
-    
-            const page = params.get('page');
-    
-            if (page === 'branchesForReservation') {
-                showGoToCityButton = false;
-                showGoToReservationsButton = true;
-            } else {
-                showGoToCityButton = true;
-                showGoToReservationsButton = false;
-            }
-        } else {
-            request = `${baseUrl}branches/getAllForAdminByCityId?cityId=${cityId}&pageNumber=${currentPage}&pageSize=${pageItems}`;
-            showGoToCityButton = false;
-            showGoToReservationsButton = false;
-        }
-    
-        return { request, showGoToCityButton, showGoToReservationsButton };
-    }
-    
-
-
-    // Şubeler sayfasında önceki sayfa butonuna tıklama olayı
-    $(document).on('click', '#prevBranchPage', function() {
-        if (currentPage > 1) {
-            currentPage--;
-
-            const { request, showGoToCityButton, showGoToReservationsButton } = 
-                getBranchRequestData(currentPage, pageItems, baseUrl);
-
-            fetchBranches(request, showGoToCityButton, showGoToReservationsButton);
-        }
-    });
-    
-    
-    // Şubeler sayfasında sonraki sayfa butonuna tıklama olayı
-    $(document).on('click', '#nextBranchPage', function() {
-        if (currentPage < totalPages) {
-            currentPage++;
-
-            const { request, showGoToCityButton, showGoToReservationsButton } = 
-                getBranchRequestData(currentPage, pageItems, baseUrl);
-
-            fetchBranches(request, showGoToCityButton, showGoToReservationsButton);
-        }
-    });
 
 
     // Şehirlerin şubelerini getiren fonksiyon
     function getBranchesByCity(cityId, cityName) {
-        $.ajax({
-            url: `${baseUrl}branches/getAllForAdminByCityId?cityId=${cityId}&pageNumber=${currentPage}&pageSize=${pageItems}`,
-            type: 'GET',
-            headers: { 'Authorization': `Bearer ${token}` },
-            success: (response) => renderBranchesList(response, { title: cityName, showGoToCityButton: false, showGoToReservationsButton: false }),
-            error: (xhr) => showToast('error', 'Hata', xhr.responseJSON?.Message || 'Şubeler getirilirken hata oluştu!')
-        });
+        currentPage = 1;
+
+        renderBranchesList({ title: cityName, showGoToCityButton: false, showGoToReservationsButton: false })
+
+        const request = `${baseUrl}branches/getAllForAdminByCityId?cityId=${cityId}&pageNumber=${currentPage}&pageSize=${pageItems}`;
+
+        fetchBranches(request, false, false, "pagination-branchesByCity-table");
     }
+
 
 
     // Şehirlerde "Şubeleri Gör" butonuna tıklandığında
@@ -2678,13 +2801,11 @@ $(document).ready(function() {
     function getAllBranches() {
         currentPage = 1;
 
-        $.ajax({
-            url: `${baseUrl}branches/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`,
-            type: 'GET',
-            headers: { 'Authorization': `Bearer ${token}` },
-            success: (response) => renderBranchesList(response, { title: 'Şube Listesi', showGoToCityButton: true, showGoToReservationsButton: false }),
-            error: (xhr) => showToast('error', 'Hata', xhr.responseJSON?.Message || 'Şubeler alınırken hata oluştu!')
-        });
+        renderBranchesList({ title: 'Şube Listesi', showGoToCityButton: true, showGoToReservationsButton: false });
+
+        const request = `${baseUrl}branches/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`;
+
+        fetchBranches(request, true, false, "pagination-branches-table");
     }
 
 
@@ -2698,6 +2819,7 @@ $(document).ready(function() {
 
         getAllBranches();
     });    
+
 
 
 
@@ -4202,13 +4324,12 @@ $(document).ready(function() {
 
     function getAllBranchesForReservations() {
         currentPage = 1;
-        $.ajax({
-            url: `${baseUrl}branches/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`,
-            type: 'GET',
-            headers: { 'Authorization': `Bearer ${token}` },
-            success: (response) => renderBranchesList(response, { title: 'Şube Seçiniz...', showGoToCityButton: false, showGoToReservationsButton: true }),
-            error: (xhr) => showToast('error', 'Hata', xhr.responseJSON?.Message || 'Şubeler alınırken hata oluştu!')
-        });
+
+        renderBranchesList({ title: 'Şube Seçiniz...', showGoToCityButton: false, showGoToReservationsButton: true })
+        
+        const request = `${baseUrl}branches/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`;
+        
+        fetchBranches(request, false, true, "pagination-branchesForReservations-table");
     }
 
 
@@ -4223,8 +4344,48 @@ $(document).ready(function() {
     });
 
 
+
+
+
+    // Rezervasyonlar sayfasında önceki sayfa butonuna tıklama olayı
+    $(document).on('click', '#prevReservationPage', function() {
+        if (currentPage > 1) {
+            currentPage--;
+            
+            applyReservationFilters();
+        }
+    });
+    
+
+
+    // Rezervasyonlar sayfasında sonraki sayfa butonuna tıklama olayı
+    $(document).on('click', '#nextReservationPage', function() {
+        if (currentPage < totalPages) {
+            currentPage++;
+
+            applyReservationFilters();
+        }
+    });
+
+
+
+    // Rezervasyon tablosundaki "Göster" option kutusunda bir seçenek seçildiğinde
+    $(document).on('click', '.pagination-reservations-table#paginationDropdown .dropdown-option', function() {
+        
+        selectDropdownOption("#paginationDropdown", this, "pagination-id");
+
+        pageItems = $(this).text();
+
+        applyReservationFilters();
+    });
+
+
+
     // Rezervasyonları göster
     function displayReservations(response) {
+
+        $('#reservationsTableBody').empty();
+
         let reservationsTableHTML = '';
         
         // Rezervasyonları tabloya ekle
@@ -4247,7 +4408,7 @@ $(document).ready(function() {
             // Rezervasyon yoksa bilgi mesajı göster
             reservationsTableHTML = `
                 <tr>
-                    <td colspan="5" class="empty-table-row">Henüz rezervasyon bulunmamaktadır.</td>
+                    <td colspan="5" class="empty-table-row">Rezervasyon bulunmamaktadır.</td>
                 </tr>`;
         }
         
@@ -4267,214 +4428,32 @@ $(document).ready(function() {
     }
 
 
-    // Masaları göster
-    function displayTables() { 
-        $('.table-box').empty();
 
-        let tablesHTML = '';
-
-        if (tables.length > 0) {
-
-            // Masaları ekle
-            tables.forEach(table => {
-                tablesHTML += `
-                <div class="table-item">
-                    <span>${table.no}</span>
-                    <div class="tooltip-text">
-                        <span class="tooltip-label">
-                            <strong>Masa Adı</strong> 
-                            <span>:</span>
-                            ${table.name}
-                        </span>
-                        </br>
-                        <span class="tooltip-label">
-                            <strong>Kapasite</strong> 
-                            <span>:</span>
-                            ${table.capacity}
-                        </span>
-                    </div>
-                </div>`;
-            })
-        } else {
-            tablesHTML = `
-                <h3 class="empty-table-row">Henüz masa bulunmamaktadır.</h3>
-            `;
-        }
-
-        $('.table-box').html(tablesHTML);
-    }
-
-
-    function updateTableList(){
-        $('#tablesDropdown .dropdown-menu').empty();
-
-        let tablesHTML = '';
-
-        if (tables.length > 0) {
-            tablesHTML += `
-                <div class="dropdown-option" data-table-id="">Tüm masaları göster</div>
-            `;
-
-            // Masaları ekle
-            tables.forEach(table => {
-                tablesHTML += `
-                    <div class="dropdown-option" data-table-id="${table.id}">${table.no}</div>
-                `;
-            })
-        } else {
-            tablesHTML = `
-                <h3 class="empty-table-row">Henüz masa bulunmamaktadır.</h3>
-            `;
-        }
-
-        $('#tablesDropdown .dropdown-menu').html(tablesHTML);
-    }
-
-
-    let tables = null;
-    
-
-    // Rezervasyonlar sayfasının taslağını getiren fonksiyon
-    function getReservationTemplate(branchId, branchName, page = 1) {
-        const token = localStorage.getItem('token');
-        
+    function fetchReservations(branchId) {
         // Bugünün tarihi
         const today = new Date();
         const todayStr = today.toISOString().split('T')[0];
         
         $.ajax({
-            url: `${baseUrl}reservations/getAdminDashboardReservationData?pageNumber=1&pageSize=10&branchId=${branchId}&DateRangeFilter.StartDate=${todayStr}&DateRangeFilter.EndDate=${todayStr}`,
+            url: `${baseUrl}reservations/getAdminDashboardReservationData?pageNumber=${currentPage}&pageSize=${pageItems}&branchId=${branchId}&DateRangeFilter.StartDate=${todayStr}&DateRangeFilter.EndDate=${todayStr}`,
             type: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
             },
             success: function(response) {
-                // Dashboard içeriğini temizle
-                $('.dashboard-content').empty();
                 
-                const tableResponse = response.tableResponse.data;
-                tables = response.tableResponse.data;
-                currentPage = page;
-                
-                // Rezervasyonlar için temel HTML yapısı
-                let reservationsHTML = `
-                <div class="reservations-container">
-                    <div class="reservations-header">
-                        <h2>${branchName}</h2>
-                        <div class="table-management">
-                            <button class="btn-manage-table">
-                                <i class="fa-solid fa-gear"></i>
-                                Masaları Yönet
-                            </button>
-                            <div class="table-options">
-                                <button class="btn-create-table table-manage-button">
-                                    Ekle
-                                </button>
-                                <button class="btn-edit-table table-manage-button">
-                                    Düzenle
-                                </button>
-                                <button class="btn-delete-table table-manage-button">
-                                    Sil
-                                </button>
-                            </div>
-                        </div>
-                        <div class="table-exit-button">
-                            <i class="fa-solid fa-arrow-left"></i>
-                            Geri Dön
-                        </div>
-                    </div>
-                    <div class="reservations-body">
-                        <div class="reservation-section">
-                            <div class="reservation-box">
-                                <div class="input-wrapper">
-                                    <input id="filter-name" type="text" placeholder="Müşteri adı ara...">
-                                    <span class="user">
-                                        <i class="fa-solid fa-user"></i>
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div class="reservation-box">
-                                <div class="input-wrapper">
-                                    <div class="dropdown" id="tablesDropdown">
-                                        <div class="dropdown-toggle" id="tableSelectedId" data-selected-id="">Masalarda ara...</div>
-                                        
-                                        <div class="dropdown-menu">
-                                        </div>
-                                    </div>
-
-                                    <span class="chair">
-                                        <i class="fa-solid fa-chair"></i>
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div class="reservation-box">
-                                <div class="input-wrapper">
-                                    <label for="filter-start-date">Başlangıç Tarihi</label>
-                                    <input id="filter-start-date" type="date" class="custom-date">
-                                    <span class="calendar">
-                                        <i class="fa-solid fa-calendar-days"></i>
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div class="reservation-box">
-                                <div class="input-wrapper">
-                                    <label for="filter-end-date">Bitiş Tarihi</label>
-                                    <input id="filter-end-date" type="date" class="custom-date">
-                                    <span class="calendar">
-                                        <i class="fa-solid fa-calendar-days"></i>
-                                    </span>
-                                </div>
-                            </div>
-
-                            <button class="btn-filter-table">
-                                <i class="fa-solid fa-search"></i>
-                                Ara
-                            </button>
-                        </div>
-
-                        <div class="table-section">
-                            <h2>Masa Durumu</h2>
-                            <div class="table-box">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="reservations-container subdivision">
-                    <div class="reservations-body">
-                        <div class="reservations-table-wrapper px-7">
-                            <table class="reservations-table">
-                                <thead>
-                                    <tr>
-                                        <th class="table-col">Masa No</th>
-                                        <th class="actions-col">Kişi Sayısı</th>
-                                        <th class="actions-col">Rezervasyon Tarihi</th>
-                                        <th class="customer-name-col">Müşteri Adı</th>
-                                        <th class="address-col">Telefon</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="reservationsTableBody"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                `;
-
-                // Rezervasyon taslağını dashboard'a ekle
-                $('.dashboard-content').append(reservationsHTML);
-                paginationTemplate("reservations-container.subdivision", "prevReservationPage", "nextReservationPage", "reservationPageInfo", "reservationTotalItemsInfo");
+                paginationTemplate("reservations-container.subdivision", "prevReservationPage", "nextReservationPage", "reservationPageInfo", "reservationTotalItemsInfo", "pagination-reservations-table");
                 
                 $('#filter-start-date').val(todayStr);
                 $('#filter-end-date').val(todayStr);
 
+                tables = response.tableResponse.data;
 
                 displayTables();
 
                 updateTableList();
                 
+                // Rezervasyonları göster
                 displayReservations(response.reservationResponse);
             },
             error: function(xhr) {
@@ -4483,6 +4462,246 @@ $(document).ready(function() {
             }
         });
     }
+
+
+
+    // Rezervasyonlar sayfasının taslağını getiren fonksiyon
+    function getReservationTemplate(branchId, branchName, page = 1) {
+        
+        // Dashboard içeriğini temizle
+        $('.dashboard-content').empty();
+                
+        currentPage = page;
+        
+        // Rezervasyonlar için temel HTML yapısı
+        let reservationsHTML = `
+        <div class="reservations-container">
+            <div class="reservations-header">
+                <h2>${branchName}</h2>
+                <div class="table-management">
+                    <button class="btn-manage-table">
+                        <i class="fa-solid fa-gear"></i>
+                        Masaları Yönet
+                    </button>
+                    <div class="table-options">
+                        <button class="btn-create-table table-manage-button">
+                            Ekle
+                        </button>
+                        <button class="btn-edit-table table-manage-button">
+                            Düzenle
+                        </button>
+                        <button class="btn-delete-table table-manage-button">
+                            Sil
+                        </button>
+                    </div>
+                </div>
+                <div class="table-exit-button">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Geri Dön
+                </div>
+            </div>
+            <div class="reservations-body">
+                <div class="reservation-section">
+                    <div class="reservation-box">
+                        <div class="input-wrapper">
+                            <input id="customer-filter-name" type="text" placeholder="Müşteri adı ara...">
+                            <span class="user">
+                                <i class="fa-solid fa-user"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="reservation-box">
+                        <div class="input-wrapper">
+                            <div class="dropdown" id="tablesDropdown">
+                                <div class="dropdown-toggle" id="tableSelectedId" data-selected-id="">Masalarda ara...</div>
+                                
+                                <div class="dropdown-menu">
+                                </div>
+                            </div>
+
+                            <span class="chair">
+                                <i class="fa-solid fa-chair"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="reservation-box">
+                        <div class="input-wrapper">
+                            <label for="filter-start-date">Başlangıç Tarihi</label>
+                            <input id="filter-start-date" type="date" class="custom-date">
+                            <span class="calendar">
+                                <i class="fa-solid fa-calendar-days"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="reservation-box">
+                        <div class="input-wrapper">
+                            <label for="filter-end-date">Bitiş Tarihi</label>
+                            <input id="filter-end-date" type="date" class="custom-date">
+                            <span class="calendar">
+                                <i class="fa-solid fa-calendar-days"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-section">
+                    <h2>Masa Durumu</h2>
+                    <div class="table-box">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="reservations-container subdivision">
+            <div class="reservations-body">
+                <div class="reservations-table-wrapper px-7">
+                    <table class="reservations-table">
+                        <thead>
+                            <tr>
+                                <th class="table-col">Masa No</th>
+                                <th class="actions-col">Kişi Sayısı</th>
+                                <th class="actions-col">Rezervasyon Tarihi</th>
+                                <th class="customer-name-col">Müşteri Adı</th>
+                                <th class="address-col">Telefon</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reservationsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        `;
+
+        // Rezervasyon taslağını dashboard'a ekle
+        $('.dashboard-content').append(reservationsHTML);
+
+        fetchReservations(branchId);
+    }
+
+
+
+    // Şubeler listesinde "Rezervasyonlara Git" butonuna tıklandığında
+    $(document).on('click', '.btn-reservation', function(e) {
+        e.stopPropagation();
+
+        const branchId = $(this).data('branch-id');
+        const branchName = $(this).data('branch-name');
+
+        // Seçilen şubeyi geçmişe kaydediyoruz
+        selectEntity(branchId, branchName, Entity.BRANCH);
+
+        localStorage.setItem('selectedBranchId', branchId);
+        localStorage.setItem('selectedBranchName', branchName);
+
+        getReservationTemplate(branchId, branchName);
+    });
+
+
+
+    // Reservasyon listesi için belirtilen kriterlere göre (isim, masa, başlangıç tarihi, bitiş tarihi) filtreleme yapıyoruz
+    function searchReservations(name, tableId, startDate, endDate) {
+
+        const params = new URLSearchParams(window.location.search);
+        const branchId = params.get('branchId');
+
+        let request = `${baseUrl}reservations/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}&branchId=${branchId}&DateRangeFilter.StartDate=${startDate}&DateRangeFilter.EndDate=${endDate}`;
+
+        // Sadece dolu parametreleri ekliyoruz
+        if (name && name.trim() !== "") request += `&fullName=${name}`;
+        if (tableId != null) request += `&tableId=${tableId}`;
+        
+
+        $.ajax({
+            url: request,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+
+                displayReservations(response);
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Rezervasyonlar alınırken hata oluştu!");
+            }
+        });
+    }
+
+
+
+    // Input ve dropdown'lardan filtre değerlerini alıp "Rezervasyonlar" listesini filtreliyoruz
+    function applyReservationFilters() {
+        const name = $('#customer-filter-name').val().trim();
+    
+        // Dropdown'lardan seçili değerleri alıyoruz
+        const selectedTableId = $('#tableSelectedId').attr('data-selected-id') || null;
+        const selectedStartDate = $('#filter-start-date').val() || null;
+        const selectedEndDate = $('#filter-end-date').val() || null;
+    
+        searchReservations(name, selectedTableId, selectedStartDate, selectedEndDate);
+    }
+
+
+
+    // Rezervasyon listesinde "Müşteri Adı Ara" input'unda debounce ile arama
+    $(document).on('input', '#customer-filter-name', function () {
+        clearTimeout(timeout);
+
+        timeout = setTimeout(function () {
+            applyReservationFilters();
+        }, 700);
+    });
+
+
+
+    // Rezervasyon listesinde "Masalarda Ara" option kutusunda bir seçenek seçildiğinde
+    $(document).on('click', '#tablesDropdown .dropdown-option', function() {
+
+        selectDropdownOption("#tablesDropdown", this, "table-id");
+
+        applyReservationFilters();
+    });
+
+
+
+    // Rezervasyonlar sayfasındaki "Masalarda Ara" option'ına tıklandığında
+    $(document).on('click', '#tablesDropdown .dropdown-toggle', function(e) {
+        e.stopPropagation(); 
+
+        toggleDropdown("#tablesDropdown");
+    });
+
+
+
+    // Rezervasyon listesinde başlangıç veya bitiş tarihi seçildiğinde
+    $(document).on('change', '#filter-start-date, #filter-end-date', function () {
+        applyReservationFilters();
+    });
+    
+
+
+    // Rezervasyon filtreleme seçeneklerinden "Takvim" ikonuna veya input'una tıklandığında takvim listesinin görüntülenmesi için...
+    $(document).on('click', '.calendar, .custom-date', function(e) {
+        e.stopPropagation();
+
+        // Eğer tıklanan zaten input ise direkt onu kullan
+        const input = $(this).hasClass('custom-date') 
+            ? this 
+            : $(this).siblings('.custom-date')[0];
+
+            
+        if (input && typeof input.showPicker === 'function') {
+            input.showPicker();
+        } else {
+            input?.focus();
+        }
+    });
+
+
 
 
     // Rezervasyon detaylarını getiren fonksiyon
@@ -4602,135 +4821,16 @@ $(document).ready(function() {
         });
     }
 
+
     
     // Rezervasyon satırına tıklama olayı
-    $(document).on('click', '.reservation-row', function(e) {
+    $(document).on('click', '.reservation-row', function() {
         const reservationId = $(this).data('reservation-id');
 
         getReservationDetails(reservationId);
     });
 
-
-
-
-    function fetchReservations() {
-        const reservationBody = $('.reservations-body');
     
-        const customerName = reservationBody.find('#filter-name').val();
-        const tableId = reservationBody.find('.dropdown-toggle').attr('data-selected-id');
-        const startDate = reservationBody.find('#filter-start-date').val();
-        const endDate = reservationBody.find('#filter-end-date').val();
-    
-        const token = localStorage.getItem('token');
-        const params = new URLSearchParams(window.location.search);
-        const branchId = params.get('branchId');
-    
-        let baseRequest = `${baseUrl}reservations/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}&branchId=${branchId}&DateRangeFilter.StartDate=${startDate}&DateRangeFilter.EndDate=${endDate}`;
-    
-        if (customerName.trim() !== '') baseRequest += `&fullName=${customerName}`;
-        if (tableId !== "") baseRequest += `&tableId=${tableId}`;
-    
-        $.ajax({
-            url: baseRequest,
-            type: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            },
-            success: function(response) {
-                $('#reservationsTableBody').empty();
-
-                displayReservations(response);
-            },
-            error: function(xhr) {
-                const errorMessage = xhr.responseJSON?.Message;
-                showToast('error', 'Hata', errorMessage ? errorMessage : "Rezervasyonlar alınırken hata oluştu!");
-            }
-        });
-    }
-    
-
-    $(document).on('click', '#prevReservationPage', function() {
-        if (currentPage > 1) {
-            currentPage--;
-            fetchReservations();
-        }
-    });
-    
-    
-    $(document).on('click', '#nextReservationPage', function() {
-        if (currentPage < totalPages) {
-            currentPage++;
-            fetchReservations();
-        }
-    });
-    
-
-
-    // Rezervasyon filtreleme seçeneklerinden "Ara" butonuna tıklandığında
-    $(document).on('click', '.btn-filter-table', function(e) {
-        e.stopPropagation();
-
-        currentPage = 1; // Filtreleme yapıldığında sayfa başa dönsün
-        fetchReservations();
-    });
-
-
-    // Şubeler listesinde "Rezervasyonlara Git" butonuna tıklandığında
-    $(document).on('click', '.btn-reservation', function(e) {
-        e.stopPropagation();
-
-        const branchId = $(this).data('branch-id');
-        const branchName = $(this).data('branch-name');
-
-        // Seçilen şubeyi geçmişe kaydediyoruz
-        selectEntity(branchId, branchName, Entity.BRANCH);
-
-        localStorage.setItem('selectedBranchId', branchId);
-        localStorage.setItem('selectedBranchName', branchName);
-
-        getReservationTemplate(branchId, branchName);
-    });
-
-
-    // Pagination bölümündeki "Göster" option'ına tıklandığında
-    $(document).on('click', '#customPaginationDropdown .dropdown-toggle', function(e) {
-        e.stopPropagation(); 
-
-        toggleDropdown("#customPaginationDropdown");
-    });
-    
-    
-    // Pagination bölümündeki "Göster" option'ının ikonuna tıklandığında
-    $(document).on('click', '#customPaginationDropdown i', function(e) {
-        e.stopPropagation(); 
-
-        toggleDropdown("#customPaginationDropdown");
-    });
-
-
-    // "Göster" option kutusunda bir seçenek seçildiğinde
-    $(document).on('click', '#customPaginationDropdown .dropdown-option', function() {
-        
-        selectDropdownOption("#customPaginationDropdown", this, "pagination-id");
-    });
-
-
-
-    // Rezervasyonlar sayfasındaki "Masalarda Ara" option'ına tıklandığında
-    $(document).on('click', '#tablesDropdown .dropdown-toggle', function(e) {
-        e.stopPropagation(); 
-
-        toggleDropdown("#tablesDropdown");
-    });
-
-
-    // "Masalarda Ara" option kutusunda bir seçenek seçildiğinde
-    $(document).on('click', '#tablesDropdown .dropdown-option', function() {
-
-        selectDropdownOption("#tablesDropdown", this, "table-id");
-    });
-    
-
 
     // Dışarı tıklanınca ilgili menüleri kapat
     $(document).on("click", function (e) {
@@ -4750,7 +4850,7 @@ $(document).ready(function() {
         const $yearsDropdown = $("#yearsDropdown");
         const $financeYearsDropdown = $("#financeYearsDropdown");
         const $financePaymentStatusDropdown = $("#financePaymentStatusDropdown");
-        const $customPaginationDropdown = $("#customPaginationDropdown");
+        const $paginationDropdown = $("#paginationDropdown");
 
         // Eğer tıklanan yer ilgili dropdown’un kendisi veya içindeki bir eleman değilse,
         // o dropdown kapatılır (menü kapanır, ok simgesi eski haline döner ve border rengi sıfırlanır).        
@@ -4761,7 +4861,7 @@ $(document).ready(function() {
             $yearsDropdown, 
             $financeYearsDropdown, 
             $financePaymentStatusDropdown,
-            $customPaginationDropdown]
+            $paginationDropdown]
             .forEach($dd => {
             if (!$dd.is(e.target) && $dd.has(e.target).length === 0) {
                 $dd.find(".dropdown-menu").removeClass("active");
@@ -4770,7 +4870,7 @@ $(document).ready(function() {
             }
         });
 
-        
+
 
         // Eğer tıklanan yer .table-options kutusu (yani "Masaları Yönet" butonuna tıklandığında açılan kutu) veya içindeki seçenekler değilse
         if (!$(e.target).closest('.table-options, .btn-manage-table').length) {
@@ -4781,19 +4881,70 @@ $(document).ready(function() {
 
 
 
-    // Rezervasyon filtreleme seçeneklerinden "Takvim" ikonuna tıklandığında takvim listesinin görüntülenmesi için...
-    $(document).on('click', '.calendar', function(e) {
-        e.stopPropagation();
-        
-       // İkona en yakın input'u hedefliyoruz
-        const input = $(this).siblings('.custom-date')[0];
+    // Masaları göster
+    function displayTables() { 
+        $('.table-box').empty();
 
-        if (input && typeof input.showPicker === 'function') {
-            input.showPicker();
+        let tablesHTML = '';
+
+        if (tables.length > 0) {
+
+            // Masaları ekle
+            tables.forEach(table => {
+                tablesHTML += `
+                <div class="table-item">
+                    <span>${table.no}</span>
+                    <div class="tooltip-text">
+                        <span class="tooltip-label">
+                            <strong>Masa Adı</strong> 
+                            <span>:</span>
+                            ${table.name}
+                        </span>
+                        </br>
+                        <span class="tooltip-label">
+                            <strong>Kapasite</strong> 
+                            <span>:</span>
+                            ${table.capacity}
+                        </span>
+                    </div>
+                </div>`;
+            })
         } else {
-            input?.focus();
+            tablesHTML = `
+                <h3 class="empty-table-row">Henüz masa bulunmamaktadır.</h3>
+            `;
         }
-    });
+
+        $('.table-box').html(tablesHTML);
+    }
+
+
+
+    function updateTableList(){
+        $('#tablesDropdown .dropdown-menu').empty();
+
+        let tablesHTML = '';
+
+        if (tables.length > 0) {
+            tablesHTML += `
+                <div class="dropdown-option" data-table-id="">Tüm masaları göster</div>
+            `;
+
+            // Masaları ekle
+            tables.forEach(table => {
+                tablesHTML += `
+                    <div class="dropdown-option" data-table-id="${table.id}">${table.no}</div>
+                `;
+            })
+        } else {
+            tablesHTML = `
+                <h3 class="empty-table-row">Henüz masa bulunmamaktadır.</h3>
+            `;
+        }
+
+        $('#tablesDropdown .dropdown-menu').html(tablesHTML);
+    }
+
 
 
     function createTable() {
@@ -5370,11 +5521,6 @@ $(document).ready(function() {
     });
     
 
-    // Rezervasyonda "Göster" option kutusunda bir seçenek seçildiğinde
-    $(document).on('click', '.reservations-container.subdivision  .dropdown-pagination-option', function() {
-        fetchReservations();
-    });
-
 
 
     // Navbar'daki "Sayfalar" seçeneğine tıklandığında
@@ -5502,6 +5648,40 @@ $(document).ready(function() {
 
 
 
+    // Çalışan sayfasında önceki sayfa butonuna tıklama olayı
+    $(document).on('click', '#prevEmployeePage', function() {
+        if (currentPage > 1) {
+            currentPage--;
+
+            applyEmployeeFilters();
+        }
+    });
+    
+
+    
+    // Çalışan sayfasında sonraki sayfa butonuna tıklama olayı
+    $(document).on('click', '#nextEmployeePage', function() {
+        if (currentPage < totalPages) {
+            currentPage++;
+
+            applyEmployeeFilters();
+        }
+    });
+
+
+
+    // Çalışan tablosundaki "Göster" option kutusunda bir seçenek seçildiğinde
+    $(document).on('click', '.pagination-employees-table#paginationDropdown .dropdown-option', function() {
+        
+        selectDropdownOption("#paginationDropdown", this, "pagination-id");
+
+        pageItems = $(this).text();
+
+        applyEmployeeFilters();
+    });
+
+
+
     // "Tüm Durumlar" option'ı için gelen durumları ekle...
     function updateStatusList(workStatusDtos){
         let $menu = $('#statusDropdown .dropdown-menu');
@@ -5546,7 +5726,7 @@ $(document).ready(function() {
 
         selectDropdownOption("#statusDropdown", this, "work-status-id");
 
-        performSearch();
+        applyEmployeeFilters();
     });
 
 
@@ -5596,7 +5776,7 @@ $(document).ready(function() {
         
         selectDropdownOption("#rolesDropdown", this, "role-id");
 
-        performSearch();
+        applyEmployeeFilters();
     });
 
 
@@ -5646,7 +5826,7 @@ $(document).ready(function() {
 
         selectDropdownOption("#branchesDropdown", this, "branch-id");
 
-        performSearch();
+        applyEmployeeFilters();
     });
     
 
@@ -5678,9 +5858,44 @@ $(document).ready(function() {
     }
 
 
+
+    function fetchEmployees() {
+        $.ajax({
+            url: `${baseUrl}employees/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+
+                firstemployeesTableHTML = response;
+
+                displayEmployees(response);
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Çalışanlar alınırken hata oluştu!");
+            }
+        });
+    }
+
+
+    
+    // Çalışanlar listesini ilk haline getirmek için kullanılır
+    function clearEmployeesTable(){
+        $('#employeesTableBody').empty();
+
+        // Tabloyu güncelle
+        displayEmployees(firstemployeesTableHTML);
+    }
+
+    
+
     let firstemployeesTableHTML = null;
     
     function displayEmployees(response) {
+
+        $('#employeesTableBody').empty();
 
         let employeesTableHTML = '';
 
@@ -5756,106 +5971,10 @@ $(document).ready(function() {
 
 
 
-    function fetchEmployees() {
-        $.ajax({
-            url: `${baseUrl}employees/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`,
-            type: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            },
-            success: function(response) {
-                $('#employeesTableBody').empty();
-
-                firstemployeesTableHTML = response;
-
-                displayEmployees(response);
-            },
-            error: function(xhr) {
-                const errorMessage = xhr.responseJSON?.Message;
-                showToast('error', 'Hata', errorMessage ? errorMessage : "Çalışanlar alınırken hata oluştu!");
-            }
-        });
-    }
-
-
-    
-    // Çalışanlar listesini ilk haline getirmek için kullanılır
-    function clearEmployeesTable(){
-        $('#employeesTableBody').empty();
-
-        // Tabloyu güncelle
-        displayEmployees(firstemployeesTableHTML);
-    }
-
-
-    // Çalışanlar listesi için belirtilen kriterlere (isim, durum, rol, şube) göre filtreleme yapıyoruz
-    function searchEmployees(name, statusId, roleId, branchId) {
-
-        let url = `${baseUrl}Employees/getFilteredEmployeesForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`;
-
-        // Sadece dolu parametreleri ekliyoruz
-        if (name && name.trim() !== "") url += `&fullName=${name}`;
-        if (statusId != null) url += `&workStatus=${statusId}`;
-        
-        if (roleId != null) url += `&operationClaimId=${roleId}`;
-        if (branchId != null) url += `&branchId=${branchId}`;
-
-        $.ajax({
-            url: url,
-            type: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            },
-            success: function(response) {
-                $('#employeesTableBody').empty();
-
-                displayEmployees(response);
-            },
-            error: function(xhr) {
-                const errorMessage = xhr.responseJSON?.Message;
-                showToast('error', 'Hata', errorMessage ? errorMessage : "Çalışan istatistikleri alınırken hata oluştu!");
-            }
-        });
-    }
-
-
-    // Input ve dropdown'lardan filtre değerlerini alıp "Çalışanlar" listesini filtreliyoruz
-    function performSearch() {
-        const name = $('#filter-name').val().trim();
-    
-        // Dropdown'lardan seçili değerleri alıyoruz
-        const selectedStatusId = $('#statusSelectedId').attr('data-selected-id') || null;
-        const selectedRoleId = $('#rolesSelectedId').attr('data-selected-id') || null;
-        const selectedBranchId = $('#branchesSelectedId').attr('data-selected-id') || null;
-    
-        searchEmployees(name, selectedStatusId, selectedRoleId, selectedBranchId);
-    }
-
-
-
-    let timeout;
-
-    // Çalışanlar listesinde "Çalışan Ara" input'unda debounce ile arama
-    $(document).on('input', '#filter-name', function () {
-        clearTimeout(timeout);
-
-        timeout = setTimeout(function () {
-            performSearch();
-        }, 700);
-    });
-
-
-
-    // Çalışanlar listesinde "Çalışan Ara" input'unun search butonuna tıklandığında arama
-    $(document).on('click', '.employee-search', function () {
-        performSearch();
-    });
-
-
-
     // Çalışanları göster
     function displayEmployeeStatistics(response) {
-        
+        $('.employees-body').empty();
+
         const data = response.data;
         const employeeListDtos = data.employeeListDtos;
 
@@ -5910,7 +6029,7 @@ $(document).ready(function() {
             <div class="filter-section px-7">
                 <div class="filter-box filter-box--search">
                     <div class="input-wrapper">
-                        <input id="filter-name" type="text" placeholder="Çalışan ara...">
+                        <input id="employee-filter-name" type="text" placeholder="Çalışan ara...">
                         <span class="employee-search">
                             <i class="fa-solid fa-search" aria-hidden="true"></i>
                         </span>
@@ -5985,7 +6104,7 @@ $(document).ready(function() {
 
         fetchEmployeeFilterOptions();
 
-        paginationTemplate("employees-container", "prevEmployeePage", "nextEmployeePage", "employeePageInfo", "employeeTotalItemsInfo");
+        paginationTemplate("employees-container", "prevEmployeePage", "nextEmployeePage", "employeePageInfo", "employeeTotalItemsInfo", "pagination-employees-table");
 
         firstemployeesTableHTML = employeeListDtos;
 
@@ -6003,8 +6122,7 @@ $(document).ready(function() {
                 'Authorization': `Bearer ${token}`
             },
             success: function(response) {
-                $('.employees-body').empty();
-
+                
                 displayEmployeeStatistics(response);
             },
             error: function(xhr) {
@@ -6035,7 +6153,7 @@ $(document).ready(function() {
             </div>
         </div>`;
 
-        // dashboard'a ekle
+        // Dashboard'a ekle
         $('.dashboard-content').append(employeeSectionHTML);
 
         fetchAllEmployeeStatistics();
@@ -6053,6 +6171,70 @@ $(document).ready(function() {
         getEmployees();
     });
 
+
+
+    // Çalışanlar listesi için belirtilen kriterlere (isim, durum, rol, şube) göre filtreleme yapıyoruz
+    function searchEmployees(name, statusId, roleId, branchId) {
+
+        let url = `${baseUrl}Employees/getFilteredEmployeesForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`;
+
+        // Sadece dolu parametreleri ekliyoruz
+        if (name && name.trim() !== "") url += `&fullName=${name}`;
+        if (statusId != null) url += `&workStatus=${statusId}`;
+        
+        if (roleId != null) url += `&operationClaimId=${roleId}`;
+        if (branchId != null) url += `&branchId=${branchId}`;
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                $('#employeesTableBody').empty();
+
+                displayEmployees(response);
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Çalışanlar alınırken hata oluştu!");
+            }
+        });
+    }
+
+
+    // Input ve dropdown'lardan filtre değerlerini alıp "Çalışanlar" listesini filtreliyoruz
+    function applyEmployeeFilters() {
+        const name = $('#employee-filter-name').val().trim();
+    
+        // Dropdown'lardan seçili değerleri alıyoruz
+        const selectedStatusId = $('#statusSelectedId').attr('data-selected-id') || null;
+        const selectedRoleId = $('#rolesSelectedId').attr('data-selected-id') || null;
+        const selectedBranchId = $('#branchesSelectedId').attr('data-selected-id') || null;
+    
+        searchEmployees(name, selectedStatusId, selectedRoleId, selectedBranchId);
+    }
+
+
+
+    let timeout;
+
+    // Çalışanlar listesinde "Çalışan Ara" input'unda debounce ile arama
+    $(document).on('input', '#employee-filter-name', function () {
+        clearTimeout(timeout);
+
+        timeout = setTimeout(function () {
+            applyEmployeeFilters();
+        }, 700);
+    });
+
+
+
+    // Çalışanlar listesinde "Çalışan Ara" input'unun search butonuna tıklandığında arama
+    $(document).on('click', '.employee-search', function () {
+        applyEmployeeFilters();
+    });
 
 
 
