@@ -29,6 +29,9 @@ $(document).ready(function() {
     const expiration = localStorage.getItem('expiration');
     const userName = localStorage.getItem('userName');
     let tables = null;
+    let shiftDayDtos = null;
+    let permissionListDtos = null;
+    let employeeSalaryListDtos = null;
 
     const monthNames = [
         "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
@@ -6192,7 +6195,6 @@ $(document).ready(function() {
                 'Authorization': `Bearer ${token}`
             },
             success: function(response) {
-                $('#employeesTableBody').empty();
 
                 displayEmployees(response);
             },
@@ -6238,51 +6240,6 @@ $(document).ready(function() {
 
 
 
-    // Çalışan detayında belirtilen kriterlere (yıl, ödeme durumu) göre filtreleme yapıyoruz
-    function searchEmployeeSalaries(employeeId, yearId, paymentStatusId) {
-        currentPage = 1;
-        
-        let url = `${baseUrl}Employees/${employeeId}/Salaries?pageNumber=${currentPage}&pageSize=${pageItems}`;
-
-        // Sadece dolu parametreleri ekliyoruz
-        if (yearId != null) url += `&yearId=${yearId}`;
-        if (paymentStatusId != null) url += `&paymentStatus=${paymentStatusId}`;
-
-        $.ajax({
-            url: url,
-            type: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            },
-            success: function(response) {
-                employeeSalaryListDtos = response.data;
-                
-                $('#salariesTableBody').empty();
-
-                displaySalaryTable();
-            },
-            error: function(xhr) {
-                const errorMessage = xhr.responseJSON?.Message;
-                showToast('error', 'Hata', errorMessage ? errorMessage : "Çalışan istatistikleri alınırken hata oluştu!");
-            }
-        });
-    }
-
-
-
-    // Dropdown'lardan filtre değerlerini alıp "Çalışan Maaş" listesini filtreliyoruz
-    function filterEmployeeSalaries() {
-    
-        // Dropdown'lardan seçili değerleri alıyoruz
-        const selectedYearId = $('#financeYearsSelectedId').attr('data-selected-id') || null;
-        const selectedPaymentStatusId = $('#financePaymentStatusSelectedId').attr('data-selected-id') || null;
-
-        const params = new URLSearchParams(window.location.search);
-        const employeeId = params.get('id');
-    
-        searchEmployeeSalaries(employeeId, selectedYearId, selectedPaymentStatusId);
-    }
-
 
     
 
@@ -6309,12 +6266,15 @@ $(document).ready(function() {
 
 
     // Çalışan detayındaki maaşlar tablosunu oluşturuyoruz...
-    function displaySalaryTable(){
+    function displaySalaryTable(response){
+
+        $('#salariesTableBody').empty();
+
         let salaryTableHTML = '';
 
         // Maaşları tabloya ekle
-        if (employeeSalaryListDtos.length > 0) {
-            employeeSalaryListDtos.forEach(salary => {
+        if (response.data.length > 0) {
+            response.data.forEach(salary => {
 
                 salaryTableHTML += `
                     <tr class="salary-row" data-salary-id="${salary.id}">
@@ -6359,6 +6319,17 @@ $(document).ready(function() {
 
         // Tabloyu güncelle
         $('#salariesTableBody').html(salaryTableHTML);
+
+        totalPages = response.totalPages;
+        totalItems = response.totalItems;
+
+        // Sayfa bilgisini güncelle
+        $('#salaryPageInfo').text(`Sayfa ${currentPage} / ${totalPages}`);
+        $('#salaryTotalItemsInfo').text(`Toplam Kayıt: ${totalItems}`);
+
+        // Sayfalama butonlarının durumunu güncelle
+        $('#prevSalaryPage').prop('disabled', !response.hasPrevious); // İlk sayfada geri butonu devre dışı
+        $('#nextSalaryPage').prop('disabled', !response.hasNext); // Son sayfada ileri butonu devre dışı
     }
 
 
@@ -6409,7 +6380,7 @@ $(document).ready(function() {
 
         selectDropdownOption("#financeYearsDropdown", this, "year-id");
 
-        filterEmployeeSalaries();
+        applyEmployeeSalaryFilters(true);
     });
 
 
@@ -6460,7 +6431,7 @@ $(document).ready(function() {
 
         selectDropdownOption("#financePaymentStatusDropdown", this, "payment-status-id");
 
-        filterEmployeeSalaries();
+        applyEmployeeSalaryFilters(true);
     });
 
 
@@ -6562,12 +6533,10 @@ $(document).ready(function() {
 
 
     // Çalışan detayındaki "Sosyal Haklar ve Yan Ödemeler" bölümünün taslağını oluşturuyoruz...
-    function generateFinanceHtml(){
+    function generateFinanceHtml(lastSalary){
 
         $('.tab-content').empty();
 
-        // Son maaş kaydını alıyoruz (en güncel olanı)
-        let lastSalary = employeeSalaryListDtos[0]; 
 
         let sgkDeduction = lastSalary.employeeDeductionListDtos.find(d => d.deductionType === "SGK Primi");
         let healthInsuranceValue = sgkDeduction ? `₺${Number(sgkDeduction.amount).toLocaleString('tr-TR')}/ay` : "Yok";
@@ -6646,15 +6615,98 @@ $(document).ready(function() {
     }
 
 
+    // Çalışan detayında belirtilen kriterlere (yıl, ödeme durumu) göre filtreleme yapıyoruz
+    function searchEmployeeSalaries(employeeId, yearId, paymentStatusId, isFiltered) {
+        currentPage = 1;
+        
+        let url = `${baseUrl}Employees/${employeeId}/Salaries?pageNumber=${currentPage}&pageSize=${pageItems}`;
+
+        // Sadece dolu parametreleri ekliyoruz
+        if (yearId != null) url += `&yearId=${yearId}`;
+        if (paymentStatusId != null) url += `&paymentStatus=${paymentStatusId}`;
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                
+                if (!isFiltered){
+                    generateFinanceHtml(response.data[0]);
+                    generateSalaryHtml();
+                    fetchEmployeeSalaryFilterOptions();
+                    paginationTemplate("salary-container", "prevSalaryPage", "nextSalaryPage", "salaryPageInfo", "salaryTotalItemsInfo", "pagination-salaries-table");
+                }
+
+                displaySalaryTable(response);
+                
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Çalışan istatistikleri alınırken hata oluştu!");
+            }
+        });
+    }
+
+
+
+    // Dropdown'lardan filtre değerlerini alıp "Çalışan Maaş" listesini filtreliyoruz
+    function applyEmployeeSalaryFilters(isFiltered) {
+    
+        // Dropdown'lardan seçili değerleri alıyoruz
+        const selectedYearId = $('#financeYearsSelectedId').attr('data-selected-id') || null;
+        const selectedPaymentStatusId = $('#financePaymentStatusSelectedId').attr('data-selected-id') || null;
+
+        const params = new URLSearchParams(window.location.search);
+        const employeeId = params.get('id');
+    
+        searchEmployeeSalaries(employeeId, selectedYearId, selectedPaymentStatusId, isFiltered);
+    }
+
+
+
+    // Çalışanın maaşlar bölümünde önceki sayfa butonuna tıklama olayı
+    $(document).on('click', '#prevSalaryPage', function() {
+        if (currentPage > 1) {
+            currentPage--;
+
+            applyEmployeeSalaryFilters(true);
+        }
+    });
+    
+
+    
+    // Çalışanın maaşlar bölümünde sonraki sayfa butonuna tıklama olayı
+    $(document).on('click', '#nextSalaryPage', function() {
+        if (currentPage < totalPages) {
+            currentPage++;
+
+            applyEmployeeSalaryFilters(true);
+        }
+    });
+
+
+
+    // Çalışanın maaşlar bölümündeki "Göster" option kutusunda bir seçenek seçildiğinde
+    $(document).on('click', '.pagination-salaries-table#paginationDropdown .dropdown-option', function() {
+        
+        selectDropdownOption("#paginationDropdown", this, "pagination-id");
+
+        pageItems = $(this).text();
+
+        applyEmployeeSalaryFilters(true);
+    });
+
+
+
 
     // Çalışan detayında "Finansal" başlığına tıklandığında
     $(document).on('click', '#finance', function(e) {
         e.preventDefault();
 
-        generateFinanceHtml();
-        generateSalaryHtml();
-        fetchEmployeeSalaryFilterOptions();
-        displaySalaryTable();
+        applyEmployeeSalaryFilters(false);
     });
 
 
@@ -6663,7 +6715,7 @@ $(document).ready(function() {
     $(document).on('click', '#shifts', function(e) {
         e.preventDefault();
 
-        generateShiftDayHtml(shiftDayDtos);
+        generateShiftDayHtml();
         generatePermissionHtml();
         fetchYears();
         generateTimeLineHtml(permissionListDtos);
@@ -6775,7 +6827,7 @@ $(document).ready(function() {
     
     
 
-    function generateTimeLineHtml(permissionListDtos){
+    function generateTimeLineHtml(){
         let timelineHtml = '';
 
         if (permissionListDtos.length > 0) {
@@ -6985,7 +7037,7 @@ $(document).ready(function() {
 
 
     // Çalışan detay sayfasındaki vardiyaları oluşturuyoruz
-    function generateShiftDayHtml(shiftDayDtos){
+    function generateShiftDayHtml(){
         
         $('.tab-content').empty();
 
@@ -7054,16 +7106,13 @@ $(document).ready(function() {
     }
 
 
-    let shiftDayDtos = null;
-    let permissionListDtos = null;
-    let employeeSalaryListDtos = null;
 
     // Çalışan detayı için verileri çekiyoruz
     function fetchEmployeeDetails(employeeId) {
         $('.employees-body').empty();
         
         $.ajax({
-            url: `${baseUrl}employees/getForAdmin/${employeeId}`,
+            url: `${baseUrl}employees/getForAdmin/${employeeId}?pageNumber=${currentPage}&pageSize=${pageItems}`,
             type: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -7319,12 +7368,10 @@ $(document).ready(function() {
                     // İçeriği güncelle
                     $('.employees-body').html(employeeDetailHTML);
 
-                    generateShiftDayHtml(shiftDayDtos);
+                    generateShiftDayHtml();
                     generatePermissionHtml();
                     fetchYears();
-                    generateTimeLineHtml(permissionListDtos);
-
-                    employeeSalaryListDtos = employee.employeeSalaryListDtos;
+                    generateTimeLineHtml();
                     
                 } else {
                     showToast('error', 'Hata', 'Çalışan detayı alınırken hata oluştu!');
