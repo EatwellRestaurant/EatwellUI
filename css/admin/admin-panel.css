@@ -678,11 +678,14 @@ td, th {
 .reservation-row,
 .city-row,
 .employee-row,
-.salary-row,
 .branch-row,
 .user-row,
 .product-row {
   cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.salary-row {
   transition: background-color 0.3s;
 }
 
@@ -2897,6 +2900,10 @@ input:not(:checked) + .toggle-slider:after {
   gap: 17px;
 }
 
+.salary-container .pagination-container {
+  margin-top: 0;
+}
+
 .permission-container {
   margin-bottom: 10px;
 }
@@ -3256,6 +3263,78 @@ input:not(:checked) + .toggle-slider:after {
   width: 37%;
   display: flex;
   gap: 17px;
+}
+
+.hidden {
+  display: none;
+}
+
+.salary-details-row,
+.salary-details-row:hover {
+  background-color: #F9FAFB;
+}
+
+.salary-details,
+.salary-payments__title,
+.salary-payments__item-icon {
+  display: flex;
+  gap: 9px;
+}
+
+.salary-payments {
+  display: flex;
+  flex-direction: column;
+  gap: 17px;
+  padding: 16px;
+  background-color: #fff;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+}
+
+.salary-payments__title,
+.salary-payments__item-icon {
+  align-items: center;
+}
+
+.salary-payments__title-text {
+  font-weight: 700;
+  font-size: 15px;
+  color: #374151;
+}
+
+.salary-payments__list {
+  display: flex;
+  gap: 15px;
+  flex-direction: column;
+}
+
+.salary-payments__item {
+  display: flex;
+  gap: 30px;
+  justify-content: space-between;
+}
+
+.salary-payments__item-icon {
+  color: #4b5563;
+}
+
+.salary-payments__item-label,
+.salary-payments__item-value {
+  font-size: 14px;
+}
+
+.salary-toggle-btn {
+  cursor: pointer;
+  padding: 0px !important;
+  text-align: center;
+}
+
+.salary-toggle-btn button{
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  color: #4f5969;
+  padding: 12px 18px;
 }
 
 

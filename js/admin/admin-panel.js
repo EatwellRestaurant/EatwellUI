@@ -31,7 +31,6 @@ $(document).ready(function() {
     let tables = null;
     let shiftDayDtos = null;
     let permissionListDtos = null;
-    let employeeSalaryListDtos = null;
 
     const monthNames = [
         "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
@@ -6265,6 +6264,18 @@ $(document).ready(function() {
 
 
 
+    // Çalışan detayındaki maaşlar tablosunda toggle butonuna tıklama olayı
+    $(document).on("click", ".salary-toggle-btn", function () {
+        const $row = $(this).closest(".salary-row"); 
+        const $detailsRow = $row.next(".salary-details-row"); 
+    
+        $detailsRow.toggleClass("hidden");
+    
+        $(this).find("i").toggleClass("fa-angle-down fa-angle-up");
+    });
+
+
+
     // Çalışan detayındaki maaşlar tablosunu oluşturuyoruz...
     function displaySalaryTable(response){
 
@@ -6276,8 +6287,16 @@ $(document).ready(function() {
         if (response.data.length > 0) {
             response.data.forEach(salary => {
 
+                let employeeBonusListDtos = salary.employeeBonusListDtos;
+                let employeeDeductionListDtos = salary.employeeDeductionListDtos;
+
                 salaryTableHTML += `
                     <tr class="salary-row" data-salary-id="${salary.id}">
+                        <td class="salary-toggle-btn">
+                            <button>
+                                <i class="fa-solid fa-angle-down"></i>
+                            </button>
+                        </td>
                         <td class="month-cell">${salary.month} ${salary.year}</td>
                         <td>₺${Number(salary.baseSalary).toLocaleString('tr-TR')}</td>
                         <td class="positive-amount">
@@ -6299,14 +6318,55 @@ $(document).ready(function() {
                         <td>
                             <span class="status-badge ${paymentStatusClassMap[salary.paymentStatus]}">${salary.paymentStatusName}</span>
                         </td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="action-btn btn-view" title="Görüntüle" data-salary-id="${salary.id}">
-                                    <i class="fas fa-eye" aria-hidden="true"></i>
-                                </button>
+                    </tr>
+                    
+                    <tr class="salary-details-row hidden">
+                        <td colspan="8">
+                            <div class="salary-details">
+                                <div class="salary-payments">
+                                    <div class="salary-payments__title">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0cbb0f" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-dollar-sign-icon lucide-dollar-sign"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>                                        
+                                        
+                                        <span class="salary-payments__title-text">
+                                            Yan Ödemeler
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="salary-payments__list">
+                                        <div class="salary-payments__item">
+                                            <div class="salary-payments__item-icon">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cooking-pot-icon lucide-cooking-pot"><path d="M2 12h20"/><path d="M20 12v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8"/><path d="m4 8 16-4"/><path d="m8.86 6.78-.45-1.81a2 2 0 0 1 1.45-2.43l1.94-.48a2 2 0 0 1 2.43 1.46l.45 1.8"/></svg>
+                                                <span class="salary-payments__item-label">Yemek Yardımı</span>
+                                            </div>
+                                            
+                                            <div class="salary-payments__item-value">
+                                                ₺${Number(salary.mealAllowance).toLocaleString('tr-TR')}
+                                            </div>
+                                        </div>
+
+                                        <div class="salary-payments__item">
+                                            <div class="salary-payments__item-icon">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-car-icon lucide-car"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>
+                                                <span class="salary-payments__item-label">Ulaşım Yardımı</span>
+                                            </div>
+                                            
+                                            <div class="salary-payments__item-value">
+                                                ₺${Number(salary.transportAllowance).toLocaleString('tr-TR')}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="salary-bonuses">
+                                </div>
+                                
+                                <div class="salary-deductions">
+                                </div>
                             </div>
                         </td>
-                    </tr>`;
+                    </tr>
+                `;
+
             });
         } else {
             // Maaş yoksa bilgi mesajı göster
@@ -6509,6 +6569,7 @@ $(document).ready(function() {
                 <table class="salary-table">
                     <thead>
                         <tr>
+                            <th></th>
                             <th>Dönem</th>
                             <th>Temel Maaş</th>
                             <th>Primler</th>
@@ -6516,7 +6577,6 @@ $(document).ready(function() {
                             <th>Kesintiler</th>
                             <th>Net Maaş</th>
                             <th>Durum</th>
-                            <th>İşlemler</th>
                         </tr>
                     </thead>
 
@@ -6649,8 +6709,7 @@ $(document).ready(function() {
             }
         });
     }
-
-
+    
 
     // Dropdown'lardan filtre değerlerini alıp "Çalışan Maaş" listesini filtreliyoruz
     function applyEmployeeSalaryFilters(isFiltered) {
