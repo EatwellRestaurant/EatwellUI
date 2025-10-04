@@ -6261,7 +6261,7 @@ $(document).ready(function() {
         [PaymentStatusEnum.Cancelled]: "payment-cancelled",
         [PaymentStatusEnum.Failed]: "payment-failed",
     };
-
+    
 
 
     // Çalışan detayındaki maaşlar tablosunda toggle butonuna tıklama olayı
@@ -6303,7 +6303,7 @@ $(document).ready(function() {
                 };
 
                 // Şubelerin status enum değerine göre CSS sınıfları
-                const bonusTypeClassMap = {
+                const bonusTypeSvgMap = {
                     [bonusType.Performance]: 
                     `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trending-up-icon lucide-trending-up">
                         <path d="M16 7h6v6"/>
@@ -6367,26 +6367,57 @@ $(document).ready(function() {
 
 
                 let bonusItemHtml = '';
-                employeeBonusListDtos.forEach(bonus => {
+                if (employeeBonusListDtos.length > 0) {
 
-                    bonusItemHtml += `
-                        <div class="salary-bonuses__item">
-                            <div class="salary-bonuses__item-icon">
-                                ${bonusTypeClassMap[bonus.bonusType]}                             
-                                <span class="salary-bonuses__item-label">${bonus.bonusTypeName}</span>
+                    employeeBonusListDtos.forEach(bonus => {
+
+                        bonusItemHtml += `
+                            <div class="salary-bonuses__item">
+                                <div class="salary-bonuses__item-icon">
+                                    ${bonusTypeSvgMap[bonus.bonusType]}                             
+                                    <span class="salary-bonuses__item-label">${bonus.bonusTypeName}</span>
+                                    
+                                    <div class="payment-status">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9cadaf" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" 
+                                            class="lucide lucide-info-icon lucide-info payment-icon">
+                                            <circle cx="12" cy="12" r="10"/>
+                                            <path d="M12 16v-4"/>
+                                            <path d="M12 8h.01"/>
+                                        </svg>
+
+                                        <div class="payment-status__info ${paymentStatusClassMap[bonus.paymentStatus]}">
+                                            <i class="fa-solid fa-circle"></i>
+                                            <span>
+                                                Durum: ${bonus.paymentStatusName}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                
+                                <div class="salary-bonuses__item-value positive-amount">
+                                    ₺${Number(bonus.amount).toLocaleString('tr-TR')}
+                                </div>
                             </div>
-                            
-                            <div class="salary-bonuses__item-value positive-amount">
-                                ₺${Number(bonus.amount).toLocaleString('tr-TR')}
-                            </div>
+                        `;
+                    });
+                } else {
+                    bonusItemHtml = `
+                        <div class="empty-table-row">
+                            <span>Herhangi bir prim bulunmuyor.</span>
                         </div>
                     `;
-                });
-
+                }
 
                 let bonusTableHtml = `
                     <div class="salary-bonuses__title">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0cbb0f" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-dollar-sign-icon lucide-dollar-sign"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>                                        
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e4a907" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trophy-icon lucide-trophy">
+                            <path d="M10 14.66v1.626a2 2 0 0 1-.976 1.696A5 5 0 0 0 7 21.978"/>
+                            <path d="M14 14.66v1.626a2 2 0 0 0 .976 1.696A5 5 0 0 1 17 21.978"/>
+                            <path d="M18 9h1.5a1 1 0 0 0 0-5H18"/>
+                            <path d="M4 22h16"/><path d="M6 9a6 6 0 0 0 12 0V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1z"/>
+                            <path d="M6 9H4.5a1 1 0 0 1 0-5H6"/>
+                        </svg>                       
                         
                         <span class="salary-bonuses__title-text">
                             Primler
@@ -6397,6 +6428,118 @@ $(document).ready(function() {
                         ${bonusItemHtml}
                     </div>
                 `;
+
+
+                const deductionType = {
+                    SocialSecurity: 1,
+                    IncomeTax: 2,
+                    UnemploymentInsurance: 3,
+                    UnionFee: 4,
+                    PrivateHealthInsurance: 5,
+                    Other: 6
+                };
+
+
+                const deductionTypeSvgMap = {
+                    [deductionType.SocialSecurity]: 
+                    `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-icon lucide-shield">
+                        <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>
+                    </svg>`,
+                    
+                    [deductionType.IncomeTax]: 
+                    `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9e1010" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-banknote-icon lucide-banknote">
+                        <rect width="20" height="12" x="2" y="6" rx="2"/>
+                        <circle cx="12" cy="12" r="2"/>
+                        <path d="M6 12h.01M18 12h.01"/>
+                    </svg>`,
+                
+                    [deductionType.UnemploymentInsurance]: 
+                    `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-briefcase-icon lucide-briefcase">
+                        <path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                        <rect width="20" height="14" x="2" y="6" rx="2"/>
+                    </svg>`,
+                
+                    [deductionType.UnionFee]: 
+                    `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-handshake-icon lucide-handshake">
+                        <path d="m11 17 2 2a1 1 0 1 0 3-3"/>
+                        <path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4"/>
+                        <path d="m21 3 1 11h-2"/>
+                        <path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3"/><path d="M3 4h8"/>
+                    </svg>`,
+                
+                    [deductionType.PrivateHealthInsurance]: 
+                    `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heart-icon lucide-heart">
+                        <path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/>
+                    </svg>`,
+                
+                    [deductionType.Other]: 
+                    `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder-minus-icon lucide-folder-minus"><path d="M9 13h6"/>
+                        <path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/>
+                    </svg>`
+                };
+
+
+                let deductionItemHtml = '';
+                if (employeeDeductionListDtos.length > 0) {
+
+                    employeeDeductionListDtos.forEach(deduction => {
+
+                        deductionItemHtml += `
+                            <div class="salary-deductions__item">
+                                <div class="salary-deductions__item-icon">
+                                    ${deductionTypeSvgMap[deduction.deductionType]}                             
+                                    <span class="salary-deductions__item-label">${deduction.deductionTypeName}</span>
+
+                                    <div class="payment-status">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9cadaf" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" 
+                                            class="lucide lucide-info-icon lucide-info payment-icon">
+                                            <circle cx="12" cy="12" r="10"/>
+                                            <path d="M12 16v-4"/>
+                                            <path d="M12 8h.01"/>
+                                        </svg>
+
+                                        <div class="payment-status__info ${paymentStatusClassMap[deduction.paymentStatus]}">
+                                            <i class="fa-solid fa-circle"></i>
+                                            <span>
+                                                Durum: ${deduction.paymentStatusName}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="salary-deductions__item-value negative-amount">
+                                    ₺${Number(deduction.amount).toLocaleString('tr-TR')}
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    deductionItemHtml = `
+                        <div class="empty-table-row">
+                            <span>Herhangi bir kesinti bulunmuyor.</span>
+                        </div>
+                    `;
+                }
+
+
+                let deductionTableHtml = `
+                    <div class="salary-deductions__title">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-receipt-text-icon lucide-receipt-text">
+                            <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/>
+                            <path d="M14 8H8"/>
+                            <path d="M16 12H8"/><path d="M13 16H8"/>
+                        </svg>                        
+                        
+                        <span class="salary-deductions__title-text">
+                            Kesintiler
+                        </span>
+                    </div>
+                    
+                    <div class="salary-deductions__list">
+                        ${deductionItemHtml}
+                    </div>
+                `;
+                
 
 
                 salaryTableHTML += `
@@ -6438,7 +6581,10 @@ $(document).ready(function() {
 
                                 <div class="salary-payments">
                                     <div class="salary-payments__title">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0cbb0f" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-dollar-sign-icon lucide-dollar-sign"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>                                        
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0cbb0f" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-dollar-sign-icon lucide-dollar-sign">
+                                            <line x1="12" x2="12" y1="2" y2="22"/>
+                                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                                        </svg>                                        
                                         
                                         <span class="salary-payments__title-text">
                                             Yan Ödemeler
@@ -6448,7 +6594,12 @@ $(document).ready(function() {
                                     <div class="salary-payments__list">
                                         <div class="salary-payments__item">
                                             <div class="salary-payments__item-icon">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cooking-pot-icon lucide-cooking-pot"><path d="M2 12h20"/><path d="M20 12v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8"/><path d="m4 8 16-4"/><path d="m8.86 6.78-.45-1.81a2 2 0 0 1 1.45-2.43l1.94-.48a2 2 0 0 1 2.43 1.46l.45 1.8"/></svg>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cooking-pot-icon lucide-cooking-pot">
+                                                    <path d="M2 12h20"/><path d="M20 12v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8"/>
+                                                    <path d="m4 8 16-4"/>
+                                                    <path d="m8.86 6.78-.45-1.81a2 2 0 0 1 1.45-2.43l1.94-.48a2 2 0 0 1 2.43 1.46l.45 1.8"/>
+                                                </svg>
+                                                
                                                 <span class="salary-payments__item-label">Yemek Yardımı</span>
                                             </div>
                                             
@@ -6459,7 +6610,11 @@ $(document).ready(function() {
 
                                         <div class="salary-payments__item">
                                             <div class="salary-payments__item-icon">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-car-icon lucide-car"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-car-icon lucide-car">
+                                                    <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/>
+                                                    <circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/>
+                                                </svg>
+                                                
                                                 <span class="salary-payments__item-label">Ulaşım Yardımı</span>
                                             </div>
                                             
@@ -6471,6 +6626,7 @@ $(document).ready(function() {
                                 </div>
                                 
                                 <div class="salary-deductions">
+                                    ${deductionTableHtml}
                                 </div>
                             </div>
                         </td>
@@ -6708,7 +6864,7 @@ $(document).ready(function() {
         $('.tab-content').empty();
 
 
-        let sgkDeduction = lastSalary.employeeDeductionListDtos.find(d => d.deductionType === "SGK Primi");
+        let sgkDeduction = lastSalary.employeeDeductionListDtos.find(d => d.deductionType === 1);
         let healthInsuranceValue = sgkDeduction ? `₺${Number(sgkDeduction.amount).toLocaleString('tr-TR')}/ay` : "Yok";
 
         // Yan ödemeleri de ekliyoruz...

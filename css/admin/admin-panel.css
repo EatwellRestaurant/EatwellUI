@@ -2455,6 +2455,51 @@ input:not(:checked) + .toggle-slider:after {
   color: #721c24;
 }
 
+.payment-status {
+  position: relative;
+}
+
+.payment-icon {
+  font-size: 1.2rem;
+  vertical-align: middle;
+  margin-right: 4px;
+  background: transparent !important;
+}
+
+.payment-icon:hover + .payment-status__info {
+  opacity: 1;
+  transform: translateX(-10%) translateY(4px);
+  pointer-events: auto;
+}
+
+.payment-icon:hover {
+  cursor: help;
+}
+
+.payment-status__info {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  top: 130%; 
+  left: 10%;
+  transform: translateX(-10%);
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  border: 1px solid #e6e2e7;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  transition: all .3s ease-in-out;
+  z-index: 10;
+}
+
+.payment-status__info i {
+  font-size: 9px;
+}
+
 .payment-pending {
   background: #fff9c4;
   color: #f57f17; 
@@ -3274,19 +3319,12 @@ input:not(:checked) + .toggle-slider:after {
   background-color: #F9FAFB;
 }
 
-.salary-details,
-.salary-payments__title,
-.salary-bonuses__title,
-.salary-payments__item-icon,
-.salary-bonuses__item-icon {
-  display: flex;
-  gap: 9px;
-}
-
 .salary-payments,
-.salary-bonuses {
+.salary-bonuses,
+.salary-deductions {
   display: flex;
   flex-direction: column;
+  width: 100%;
   gap: 17px;
   padding: 16px;
   background-color: #fff;
@@ -3294,43 +3332,68 @@ input:not(:checked) + .toggle-slider:after {
   border: 1px solid #e5e7eb;
 }
 
+.salary-details,
+.salary-payments__title,
+.salary-bonuses__title,
+.salary-deductions__title,
+.salary-payments__item-icon,
+.salary-bonuses__item-icon, 
+.salary-deductions__item-icon {
+  display: flex;
+  gap: 9px;
+}
+
 .salary-payments__title,
 .salary-payments__item-icon,
 .salary-bonuses__title,
-.salary-bonuses__item-icon {
+.salary-bonuses__item-icon,
+.salary-deductions__title,
+.salary-deductions__item-icon {
   align-items: center;
 }
 
 .salary-payments__title-text,
-.salary-bonuses__title-text {
+.salary-bonuses__title-text,
+.salary-deductions__title-text {
   font-weight: 700;
   font-size: 15px;
   color: #374151;
 }
 
 .salary-payments__list,
-.salary-bonuses__list {
+.salary-bonuses__list,
+.salary-deductions__list {
   display: flex;
   gap: 15px;
   flex-direction: column;
 }
 
 .salary-payments__item,
-.salary-bonuses__item {
+.salary-bonuses__item,
+.salary-deductions__item {
   display: flex;
   gap: 30px;
   justify-content: space-between;
 }
 
+.salary-bonus__info {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
 .salary-payments__item-icon,
-.salary-bonuses__item-icon {
+.salary-bonuses__item-icon,
+.salary-deductions__item-icon {
   color: #4b5563;
 }
 
 .salary-payments__item-label,
 .salary-payments__item-value,
 .salary-bonuses__item-label,
-.salary-bonuses__item-value {
+.salary-bonuses__item-value,
+.salary-deductions__item-label,
+.salary-deductions__item-value {
   font-size: 14px;
 }
 
