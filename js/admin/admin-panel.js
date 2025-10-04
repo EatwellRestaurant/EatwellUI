@@ -6290,6 +6290,115 @@ $(document).ready(function() {
                 let employeeBonusListDtos = salary.employeeBonusListDtos;
                 let employeeDeductionListDtos = salary.employeeDeductionListDtos;
 
+                const bonusType = {
+                    Performance: 1,
+                    Shift: 2,
+                    Weekend: 3,
+                    Overtime: 4,
+                    Holiday: 5,
+                    Sales: 6,
+                    ProjectCompletion: 7,
+                    Referral: 8,
+                    Special: 9
+                };
+
+                // Şubelerin status enum değerine göre CSS sınıfları
+                const bonusTypeClassMap = {
+                    [bonusType.Performance]: 
+                    `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trending-up-icon lucide-trending-up">
+                        <path d="M16 7h6v6"/>
+                        <path d="m22 7-8.5 8.5-5-5L2 17"/>
+                    </svg>`,
+
+                    [bonusType.Shift]: 
+                    `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clock-icon lucide-clock">
+                        <path d="M12 6v6l4 2"/>
+                        <circle cx="12" cy="12" r="10"/>
+                    </svg>`,
+                    
+                    [bonusType.Weekend]: 
+                    `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar-icon lucide-calendar">
+                        <path d="M8 2v4"/>
+                        <path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/>
+                        <path d="M3 10h18"/>
+                    </svg>`,
+                    
+                    [bonusType.Overtime]: 
+                    `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-timer-icon lucide-timer">
+                        <line x1="10" x2="14" y1="2" y2="2"/>
+                        <line x1="12" x2="15" y1="14" y2="11"/>
+                        <circle cx="12" cy="14" r="8"/>
+                    </svg>`,
+
+                    [bonusType.Holiday]: 
+                    `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sun-icon lucide-sun">
+                        <circle cx="12" cy="12" r="4"/>
+                        <path d="M12 2v2"/><path d="M12 20v2"/>
+                        <path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/>
+                        <path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/>
+                        <path d="m19.07 4.93-1.41 1.41"/>
+                    </svg>`,
+
+                    [bonusType.Sales]: 
+                    `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4fe388" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shopping-bag-icon lucide-shopping-bag">
+                        <path d="M16 10a4 4 0 0 1-8 0"/>
+                        <path d="M3.103 6.034h17.794"/>
+                        <path d="M3.4 5.467a2 2 0 0 0-.4 1.2V20a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6.667a2 2 0 0 0-.4-1.2l-2-2.667A2 2 0 0 0 17 2H7a2 2 0 0 0-1.6.8z"/>
+                    </svg>`,
+
+                    [bonusType.ProjectCompletion]: 
+                    `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10d15a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-icon lucide-check">
+                        <path d="M20 6 9 17l-5-5"/>
+                    </svg>`,
+
+                    [bonusType.Referral]: 
+                    `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-users-round-icon lucide-users-round">
+                        <path d="M18 21a8 8 0 0 0-16 0"/><circle cx="10" cy="8" r="5"/>
+                        <path d="M22 20c0-3.37-2-6.5-4-8a5 5 0 0 0-.45-8.3"/>
+                    </svg>`,
+
+                    [bonusType.Special]: 
+                    `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gift-icon lucide-gift">
+                        <rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/>
+                        <path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/>
+                        <path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/>
+                    </svg>`
+                };
+
+
+                let bonusItemHtml = '';
+                employeeBonusListDtos.forEach(bonus => {
+
+                    bonusItemHtml += `
+                        <div class="salary-bonuses__item">
+                            <div class="salary-bonuses__item-icon">
+                                ${bonusTypeClassMap[bonus.bonusType]}                             
+                                <span class="salary-bonuses__item-label">${bonus.bonusTypeName}</span>
+                            </div>
+                            
+                            <div class="salary-bonuses__item-value positive-amount">
+                                ₺${Number(bonus.amount).toLocaleString('tr-TR')}
+                            </div>
+                        </div>
+                    `;
+                });
+
+
+                let bonusTableHtml = `
+                    <div class="salary-bonuses__title">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0cbb0f" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-dollar-sign-icon lucide-dollar-sign"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>                                        
+                        
+                        <span class="salary-bonuses__title-text">
+                            Primler
+                        </span>
+                    </div>
+                    
+                    <div class="salary-bonuses__list">
+                        ${bonusItemHtml}
+                    </div>
+                `;
+
+
                 salaryTableHTML += `
                     <tr class="salary-row" data-salary-id="${salary.id}">
                         <td class="salary-toggle-btn">
@@ -6323,6 +6432,10 @@ $(document).ready(function() {
                     <tr class="salary-details-row hidden">
                         <td colspan="8">
                             <div class="salary-details">
+                                <div class="salary-bonuses">
+                                    ${bonusTableHtml}
+                                </div>    
+
                                 <div class="salary-payments">
                                     <div class="salary-payments__title">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0cbb0f" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-dollar-sign-icon lucide-dollar-sign"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>                                        
@@ -6355,9 +6468,6 @@ $(document).ready(function() {
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                
-                                <div class="salary-bonuses">
                                 </div>
                                 
                                 <div class="salary-deductions">

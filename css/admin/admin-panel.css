@@ -3276,12 +3276,15 @@ input:not(:checked) + .toggle-slider:after {
 
 .salary-details,
 .salary-payments__title,
-.salary-payments__item-icon {
+.salary-bonuses__title,
+.salary-payments__item-icon,
+.salary-bonuses__item-icon {
   display: flex;
   gap: 9px;
 }
 
-.salary-payments {
+.salary-payments,
+.salary-bonuses {
   display: flex;
   flex-direction: column;
   gap: 17px;
@@ -3292,34 +3295,42 @@ input:not(:checked) + .toggle-slider:after {
 }
 
 .salary-payments__title,
-.salary-payments__item-icon {
+.salary-payments__item-icon,
+.salary-bonuses__title,
+.salary-bonuses__item-icon {
   align-items: center;
 }
 
-.salary-payments__title-text {
+.salary-payments__title-text,
+.salary-bonuses__title-text {
   font-weight: 700;
   font-size: 15px;
   color: #374151;
 }
 
-.salary-payments__list {
+.salary-payments__list,
+.salary-bonuses__list {
   display: flex;
   gap: 15px;
   flex-direction: column;
 }
 
-.salary-payments__item {
+.salary-payments__item,
+.salary-bonuses__item {
   display: flex;
   gap: 30px;
   justify-content: space-between;
 }
 
-.salary-payments__item-icon {
+.salary-payments__item-icon,
+.salary-bonuses__item-icon {
   color: #4b5563;
 }
 
 .salary-payments__item-label,
-.salary-payments__item-value {
+.salary-payments__item-value,
+.salary-bonuses__item-label,
+.salary-bonuses__item-value {
   font-size: 14px;
 }
 
