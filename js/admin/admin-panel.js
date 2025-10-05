@@ -50,15 +50,57 @@ $(document).ready(function() {
     
     
     if (new Date(expiration) < new Date()){
-        localStorage.removeItem('token');
-        localStorage.removeItem('expiration');
-        localStorage.removeItem('userName');
-        localStorage.removeItem('adminRemembered');
         
-        window.location.href = 'admin-login.html';
+        handleLogout("Oturum süreniz dolmuştur!");
     }
     
     
+    function handleLogout(showMessage = null) {
+       
+        let title = 'Başarılı';
+
+        if (showMessage && (
+            showMessage.includes('geçersiz') ||
+            showMessage.includes('süreniz') ||
+            showMessage.includes('dolmuş')
+        )) {
+            title = 'Oturum Sonlandırıldı.';
+        }
+    
+        showToast('success', title, showMessage ? showMessage : 'Çıkış yapılıyor...');
+    
+
+        setTimeout(() => {
+            // Tüm localStorage verilerini temizliyoruz.
+            
+            localStorage.removeItem('token');
+            localStorage.removeItem('expiration');
+            localStorage.removeItem('userName');
+            localStorage.removeItem('adminRemembered');
+    
+            localStorage.removeItem('selectedMenuId');
+            localStorage.removeItem('selectedMenuName');
+    
+            localStorage.removeItem('selectedCityId');
+            localStorage.removeItem('selectedCityName');
+    
+            localStorage.removeItem('selectedBranchId');
+            localStorage.removeItem('selectedBranchName');
+    
+            localStorage.removeItem('menuHistory');
+            localStorage.removeItem('cityHistory');
+            localStorage.removeItem('branchHistory');
+    
+            localStorage.removeItem('menuHistoryIndex');
+            localStorage.removeItem('cityHistoryIndex');
+            localStorage.removeItem('branchHistoryIndex');
+    
+            // Giriş sayfasına yönlendiriyoruz
+            window.location.href = 'admin-login.html';
+        }, 2000);
+    }
+    
+
     
     // Token kontrolü
     try {    
@@ -70,91 +112,23 @@ $(document).ready(function() {
         
         // Eğer kullanıcının yetkisi admin değilse
         if (userRole !== 'Admin') {
-            localStorage.removeItem('token');
-            localStorage.removeItem('expiration');
-            localStorage.removeItem('userName');
-            localStorage.removeItem('adminRemembered');
-
-            localStorage.removeItem('selectedMenuId');
-            localStorage.removeItem('selectedMenuName');
-
-            localStorage.removeItem('selectedCityId');
-            localStorage.removeItem('selectedCityName');
-            
-            localStorage.removeItem('selectedBranchId');
-            localStorage.removeItem('selectedBranchName');
-
-            localStorage.removeItem('menuHistory');
-            localStorage.removeItem('cityHistory');
-            localStorage.removeItem('branchHistory');
-
-            localStorage.removeItem('menuHistoryIndex');
-            localStorage.removeItem('cityHistoryIndex');
-            localStorage.removeItem('branchHistoryIndex');
-
-            window.location.href = 'admin-login.html';
-            return;
+            handleLogout("Yetkiniz yok!");
         }
 
         // Kullanıcı adını göster
         $('#userNameDisplay').text(userName);
     } catch (error) {
-        console.error('Token decode hatası:', error);
-        localStorage.removeItem('token');
-        localStorage.removeItem('expiration');
-        localStorage.removeItem('userName');
-        localStorage.removeItem('adminRemembered');
-        
-        localStorage.removeItem('selectedMenuId');
-        localStorage.removeItem('selectedMenuName');
-        
-        localStorage.removeItem('selectedCityId');
-        localStorage.removeItem('selectedCityName');
 
-        localStorage.removeItem('selectedBranchId');
-        localStorage.removeItem('selectedBranchName');
-        
-        localStorage.removeItem('menuHistory');
-        localStorage.removeItem('cityHistory');
-        localStorage.removeItem('branchHistory');
-
-        localStorage.removeItem('menuHistoryIndex');
-        localStorage.removeItem('cityHistoryIndex');
-        localStorage.removeItem('branchHistoryIndex');
-
-        window.location.href = 'admin-login.html';
+        handleLogout();
     }
+
+
 
     // Çıkış yap butonuna tıklandığında
     $('#logoutBtn').click(function(e) {
         e.preventDefault();
-        showToast('success', 'Başarılı', 'Çıkış yapılıyor...');
-        
-        setTimeout(() => {
-            localStorage.removeItem('token');
-            localStorage.removeItem('expiration');
-            localStorage.removeItem('userName');
-            localStorage.removeItem('adminRemembered');
 
-            localStorage.removeItem('selectedMenuId');
-            localStorage.removeItem('selectedMenuName');
-
-            localStorage.removeItem('selectedCityId');
-            localStorage.removeItem('selectedCityName');
-
-            localStorage.removeItem('selectedBranchId');
-            localStorage.removeItem('selectedBranchName');
-
-            localStorage.removeItem('menuHistory');
-            localStorage.removeItem('cityHistory');
-            localStorage.removeItem('branchHistory');
-
-            localStorage.removeItem('menuHistoryIndex');
-            localStorage.removeItem('cityHistoryIndex');
-            localStorage.removeItem('branchHistoryIndex');
-
-            window.location.href = 'admin-login.html';
-        }, 1500);
+        handleLogout(); 
     });
 
     
@@ -375,6 +349,13 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
                 showToast('error', 'Hata', errorMessage ? errorMessage : 'İstatistikler alınırken hata oluştu!');
             }
         });
@@ -478,6 +459,13 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage); 
+                    return;
+                }
+
                 showToast('error', 'Hata', errorMessage ? errorMessage : "Kullanıcılar alınırken hata oluştu!");
             }
         });
@@ -544,7 +532,7 @@ $(document).ready(function() {
         const token = localStorage.getItem('token');
         
         $.ajax({
-            url: `https://eatwell-api.azurewebsites.net/api/users/get?userId=${userId}`,
+            url: `${baseUrl}users/get?userId=${userId}`,
             type: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -638,6 +626,13 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor. 
+                    handleLogout(errorMessage);
+                    return;
+                }
+
                 showToast('error', 'Hata', errorMessage ? errorMessage : 'Kullanıcı detayı alınırken hata oluştu!');
             }
         });
@@ -768,6 +763,13 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
+                
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+                
                 showToast('error', 'Hata', errorMessage ? errorMessage : "Menüler alınırken hata oluştu!");
             }
         });
@@ -836,7 +838,7 @@ $(document).ready(function() {
         const toggleSwitch = $(`.toggle-switch input[data-menu-id="${menuId}"]`);
 
         $.ajax({
-            url: `https://eatwell-api.azurewebsites.net/api/mealCategories/setDeleteOrRestore?mealCategoryId=${menuId}`,
+            url: `${baseUrl}mealCategories/setDeleteOrRestore?mealCategoryId=${menuId}`,
             type: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -852,9 +854,17 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
                 showToast('error', 'Hata', errorMessage ? errorMessage : 'Menü durumunu değiştirirken hata oluştu!');
-                 // Toggle switch'i eski haline getir
-                 toggleSwitch.prop('checked', !toggleSwitch.prop('checked'));
+                 
+                // Toggle switch'i eski haline getir
+                toggleSwitch.prop('checked', !toggleSwitch.prop('checked'));
             }
         });
     }
@@ -882,7 +892,7 @@ $(document).ready(function() {
         const token = localStorage.getItem('token');
         
         $.ajax({
-            url: `https://eatwell-api.azurewebsites.net/api/mealCategories/getForAdmin?mealCategoryId=${menuId}`,
+            url: `${baseUrl}mealCategories/getForAdmin?mealCategoryId=${menuId}`,
             type: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -963,6 +973,13 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
+                
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
                 showToast('error', 'Hata', errorMessage ? errorMessage : 'Menü detayı alınırken hata oluştu!');
             }
         });
@@ -1043,7 +1060,7 @@ $(document).ready(function() {
         const token = localStorage.getItem('token');
         
         $.ajax({
-            url: `https://eatwell-api.azurewebsites.net/api/mealCategories/getForAdmin?mealCategoryId=${menuId}`,
+            url: `${baseUrl}mealCategories/getForAdmin?mealCategoryId=${menuId}`,
             type: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -1112,6 +1129,13 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
+                
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
                 showToast('error', 'Hata', errorMessage ? errorMessage : 'Menü bilgileri alınırken hata oluştu!');
             }
         });
@@ -1149,7 +1173,7 @@ $(document).ready(function() {
         const token = localStorage.getItem('token');
         
         $.ajax({
-            url: `https://eatwell-api.azurewebsites.net/api/mealCategories/update?mealCategoryId=${menuId}`,
+            url: `${baseUrl}mealCategories/update?mealCategoryId=${menuId}`,
             type: 'PUT',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -1170,6 +1194,13 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
                 showToast('error', 'Hata', errorMessage ? errorMessage : 'Menü güncellenirken hata oluştu!');
             }
         });
@@ -1283,7 +1314,7 @@ $(document).ready(function() {
         const token = localStorage.getItem('token');
         
         $.ajax({
-            url: `https://eatwell-api.azurewebsites.net/api/mealCategories/add`,
+            url: `${baseUrl}mealCategories/add`,
             type: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -1304,6 +1335,13 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
                 showToast('error', 'Hata', errorMessage ? errorMessage : "Menü eklenirken hata oluştu!");
             }
         });
@@ -1340,7 +1378,7 @@ $(document).ready(function() {
                 const token = localStorage.getItem('token');
                 
                 $.ajax({
-                    url: `https://eatwell-api.azurewebsites.net/api/mealCategories/delete?mealCategoryId=${menuId}`,
+                    url: `${baseUrl}mealCategories/delete?mealCategoryId=${menuId}`,
                     type: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -1360,6 +1398,13 @@ $(document).ready(function() {
                     },
                     error: function(xhr) {
                         const errorMessage = xhr.responseJSON?.Message;
+
+                        if (xhr.status === 401) {
+                            // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                            handleLogout(errorMessage);
+                            return;
+                        }
+
                         showToast('error', 'Hata', errorMessage ? errorMessage : 'Menü silinirken hata oluştu!');
                     }
                 });
@@ -1532,6 +1577,13 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
                 showToast('error', 'Hata', errorMessage ? errorMessage : "Ürünler alınırken hata oluştu!");
             }
         });
@@ -1662,7 +1714,7 @@ $(document).ready(function() {
         const token = localStorage.getItem('token');
         
         $.ajax({
-            url: `https://eatwell-api.azurewebsites.net/api/products/getForAdmin?productId=${productId}`,
+            url: `${baseUrl}products/getForAdmin?productId=${productId}`,
             type: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -1750,6 +1802,13 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
                 showToast('error', 'Hata', errorMessage ? errorMessage : "Ürün detayı alınırken hata oluştu!");
             }
         });
@@ -1774,7 +1833,7 @@ $(document).ready(function() {
         const token = localStorage.getItem('token');
         
         $.ajax({
-            url: `https://eatwell-api.azurewebsites.net/api/products/getForAdmin?productId=${productId}`,
+            url: `${baseUrl}products/getForAdmin?productId=${productId}`,
             type: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -1850,6 +1909,13 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
                 showToast('error', 'Hata', errorMessage ? errorMessage : "Ürün bilgileri alınırken hata oluştu!");
             }
         });
@@ -1993,7 +2059,7 @@ $(document).ready(function() {
         const token = localStorage.getItem('token');
         
         $.ajax({
-            url: `https://eatwell-api.azurewebsites.net/api/products/update?productId=${productId}`,
+            url: `${baseUrl}products/update?productId=${productId}`,
             type: 'PUT',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -2022,6 +2088,13 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
                 showToast('error', 'Hata', errorMessage ? errorMessage : 'Ürün güncellenirken hata oluştu!');
             }
         });
@@ -2124,6 +2197,13 @@ $(document).ready(function() {
                 },
                 error: function(xhr) {
                     const errorMessage = xhr.responseJSON?.Message;
+
+                    if (xhr.status === 401) {
+                        // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                        handleLogout(errorMessage);
+                        return;
+                    }
+
                     showToast('error', 'Hata', errorMessage ? errorMessage : "Menüler alınırken hata oluştu!");
                 }
             })
@@ -2206,7 +2286,7 @@ $(document).ready(function() {
         const token = localStorage.getItem('token');
         
         $.ajax({
-            url: `https://eatwell-api.azurewebsites.net/api/products/add`,
+            url: `${baseUrl}api/products/add`,
             type: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -2232,6 +2312,13 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
                 showToast('error', 'Hata', errorMessage ? errorMessage : "Menü eklenirken hata oluştu!");
             }
         });
@@ -2287,7 +2374,7 @@ $(document).ready(function() {
                 const token = localStorage.getItem('token');
                 
                 $.ajax({
-                    url: `https://eatwell-api.azurewebsites.net/api/products/delete?productId=${productId}`,
+                    url: `${baseUrl}products/delete?productId=${productId}`,
                     type: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -2310,6 +2397,13 @@ $(document).ready(function() {
                     },
                     error: function(xhr) {
                         const errorMessage = xhr.responseJSON?.Message;
+                        
+                        if (xhr.status === 401) {
+                            // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                            handleLogout(errorMessage);
+                            return;
+                        }
+
                         showToast('error', 'Hata', errorMessage ? errorMessage : 'Ürün silinirken hata oluştu!');
                     }
                 });
@@ -2324,7 +2418,7 @@ $(document).ready(function() {
         const toggleSwitch = $(`.toggle-switch input[data-product-id="${productId}"]`);
 
         $.ajax({
-            url: `https://eatwell-api.azurewebsites.net/api/products/setDeleteOrRestore?productId=${productId}`,
+            url: `${baseUrl}products/setDeleteOrRestore?productId=${productId}`,
             type: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -2340,9 +2434,17 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
+                
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
                 showToast('error', 'Hata', errorMessage ? errorMessage : 'Ürün durumunu değiştirirken hata oluştu!');
-                 // Toggle switch'i eski haline getir
-                 toggleSwitch.prop('checked', !toggleSwitch.prop('checked'));
+                 
+                // Toggle switch'i eski haline getir
+                toggleSwitch.prop('checked', !toggleSwitch.prop('checked'));
             }
         });
     }
@@ -2452,6 +2554,13 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
                 showToast('error', 'Hata', errorMessage ? errorMessage : 'Şehirler alınırken hata oluştu!');
             }
         });
@@ -2714,6 +2823,13 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
                 showToast('error', 'Hata', errorMessage ? errorMessage : "Şubeler alınırken hata oluştu!");
             }
         });
@@ -3369,6 +3485,13 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
                 showToast('error', 'Hata', errorMessage ? errorMessage : "Şube istatistikleri alınırken hata oluştu!");
             }
         });
@@ -3486,6 +3609,13 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
                 showToast('error', 'Hata', errorMessage ? errorMessage : 'Şirket ayarları güncellenirken hata oluştu!');
             }
         });
@@ -3554,7 +3684,7 @@ $(document).ready(function() {
         const token = localStorage.getItem('token');
         
         $.ajax({
-            url: `https://eatwell-api.azurewebsites.net/api/branches/getForAdmin?branchId=${branchId}`,
+            url: `${baseUrl}branches/getForAdmin?branchId=${branchId}`,
             type: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -3670,6 +3800,13 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
                 showToast('error', 'Hata', errorMessage ? errorMessage : 'Şube detayı alınırken hata oluştu!');
             }
         });
@@ -3693,7 +3830,7 @@ $(document).ready(function() {
         const token = localStorage.getItem('token');
         
         $.ajax({
-            url: `https://eatwell-api.azurewebsites.net/api/branches/getForAdmin?branchId=${branchId}`,
+            url: `${baseUrl}branches/getForAdmin?branchId=${branchId}`,
             type: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -3812,6 +3949,13 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
                 showToast('error', 'Hata', errorMessage ? errorMessage : "Şube bilgileri getirilirken hata oluştu!");
             }
         });
@@ -3938,7 +4082,7 @@ $(document).ready(function() {
         const token = localStorage.getItem('token');
         
         $.ajax({
-            url: `https://eatwell-api.azurewebsites.net/api/branches/update?branchId=${branchId}`,
+            url: `${baseUrl}branches/update?branchId=${branchId}`,
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -3977,6 +4121,13 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
                 showToast('error', 'Hata', errorMessage ? errorMessage : 'Şube güncellenirken hata oluştu!');
             }
         });
@@ -4014,7 +4165,7 @@ $(document).ready(function() {
                 const token = localStorage.getItem('token');
                 
                 $.ajax({
-                    url: `https://eatwell-api.azurewebsites.net/api/branches/delete?branchId=${branchId}`,
+                    url: `${baseUrl}branches/delete?branchId=${branchId}`,
                     type: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -4041,6 +4192,13 @@ $(document).ready(function() {
                     },
                     error: function(xhr) {
                         const errorMessage = xhr.responseJSON?.Message;
+
+                        if (xhr.status === 401) {
+                            // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                            handleLogout(errorMessage);
+                            return;
+                        }
+
                         showToast('error', 'Hata', errorMessage ? errorMessage : 'Şube silinirken hata oluştu!');
                     }
                 });
@@ -4184,6 +4342,13 @@ $(document).ready(function() {
                 },
                 error: function(xhr) {
                     const errorMessage = xhr.responseJSON?.Message;
+                    
+                    if (xhr.status === 401) {
+                        // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                        handleLogout(errorMessage);
+                        return;
+                    }
+
                     showToast('error', 'Hata', errorMessage ? errorMessage : "Şehirler alınırken hata oluştu!");
                 }
             })
@@ -4273,7 +4438,7 @@ $(document).ready(function() {
         const token = localStorage.getItem('token');
         
         $.ajax({
-            url: `https://eatwell-api.azurewebsites.net/api/branches/add`,
+            url: `${baseUrl}branches/add`,
             type: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -4316,6 +4481,13 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
                 showToast('error', 'Hata', errorMessage ? errorMessage : "Şube eklenirken hata oluştu!");
             }
         });
@@ -4460,6 +4632,13 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
                 showToast('error', 'Hata', errorMessage ? errorMessage : 'Rezervasyonlar alınırken hata oluştu!');
             }
         });
@@ -4628,6 +4807,13 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
                 showToast('error', 'Hata', errorMessage ? errorMessage : "Rezervasyonlar alınırken hata oluştu!");
             }
         });
@@ -4818,6 +5004,13 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
                 showToast('error', 'Hata', errorMessage ? errorMessage : 'Rezervasyon detayı alınırken hata oluştu!');
             }
         });
@@ -5130,6 +5323,13 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
                 showToast('error', 'Hata', errorMessage ? errorMessage : "Masa eklenirken hata oluştu!");
             }
         });
@@ -5258,6 +5458,13 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
                 showToast('error', 'Hata', errorMessage ? errorMessage : 'Masa bilgileri alınırken hata oluştu!');
             }
         });
@@ -5333,6 +5540,13 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
                 showToast('error', 'Hata', errorMessage ? errorMessage : "Masalar alınırken hata oluştu!");
             }
         });
@@ -5397,6 +5611,13 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
                 showToast('error', 'Hata', errorMessage ? errorMessage : 'Masa güncellenirken hata oluştu!');
             }
         });
@@ -5515,6 +5736,13 @@ $(document).ready(function() {
                     },
                     error: function(xhr) {
                         const errorMessage = xhr.responseJSON?.Message;
+
+                        if (xhr.status === 401) {
+                            // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                            handleLogout(errorMessage);
+                            return;
+                        }
+
                         showToast('error', 'Hata', errorMessage ? errorMessage : 'Masa silinirken hata oluştu!');
                     }
                 });
@@ -5854,6 +6082,13 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
                 showToast('error', 'Hata', errorMessage ? errorMessage : "Çalışan istatistikleri alınırken hata oluştu!");
             }
         });
@@ -5876,6 +6111,13 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
                 showToast('error', 'Hata', errorMessage ? errorMessage : "Çalışanlar alınırken hata oluştu!");
             }
         });
@@ -6129,6 +6371,13 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
                 showToast('error', 'Hata', errorMessage ? errorMessage : "Çalışan istatistikleri alınırken hata oluştu!");
             }
         });
@@ -6199,6 +6448,13 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
                 showToast('error', 'Hata', errorMessage ? errorMessage : "Çalışanlar alınırken hata oluştu!");
             }
         });
@@ -6264,10 +6520,9 @@ $(document).ready(function() {
     
 
 
-    // Çalışan detayındaki maaşlar tablosunda toggle butonuna tıklama olayı
-    $(document).on("click", ".salary-toggle-btn", function () {
-        const $row = $(this).closest(".salary-row"); 
-        const $detailsRow = $row.next(".salary-details-row"); 
+    // Çalışan detayında maaş satırına tıklama olayı
+    $(document).on("click", ".salary-row", function () {
+        const $detailsRow = $(this).next(".salary-details-row"); 
     
         $detailsRow.toggleClass("hidden");
     
@@ -6784,6 +7039,13 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
                 showToast('error', 'Hata', errorMessage ? errorMessage : "Çalışan istatistikleri alınırken hata oluştu!");
             }
         });
@@ -6971,6 +7233,13 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
                 showToast('error', 'Hata', errorMessage ? errorMessage : "Çalışan istatistikleri alınırken hata oluştu!");
             }
         });
@@ -7214,6 +7483,13 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
                 showToast('error', 'Hata', errorMessage ? errorMessage : 'İzin geçmişi alınırken hata oluştu!');
             }
         });
@@ -7313,6 +7589,13 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
                 showToast('error', 'Hata', errorMessage ? errorMessage : "Yıllar alınırken hata oluştu!");
             }
         });
@@ -7704,6 +7987,13 @@ $(document).ready(function() {
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
                 showToast('error', 'Hata', errorMessage ? errorMessage : 'Çalışan detayı alınırken hata oluştu!');
             }
         });
@@ -8234,29 +8524,7 @@ $(document).ready(function() {
                 
                 default:
                     // Eğer hiç tanımlamadığımız bir page değeri gelirse token'ı silip ve login sayfasına yönlendiriyoruz.
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('expiration');
-                    localStorage.removeItem('userName');
-                    localStorage.removeItem('adminRemembered');
-
-                    localStorage.removeItem('selectedMenuId');
-                    localStorage.removeItem('selectedMenuName');
-
-                    localStorage.removeItem('selectedCityId');
-                    localStorage.removeItem('selectedCityName');
-                    
-                    localStorage.removeItem('selectedBranchId');
-                    localStorage.removeItem('selectedBranchName');
-
-                    localStorage.removeItem('menuHistory');
-                    localStorage.removeItem('cityHistory');
-                    localStorage.removeItem('branchHistory');
-
-                    localStorage.removeItem('menuHistoryIndex');
-                    localStorage.removeItem('cityHistoryIndex');
-                    localStorage.removeItem('branchHistoryIndex');
-
-                    window.location.href = 'admin-login.html';
+                    handleLogout();
                     break;
             }
         } else {

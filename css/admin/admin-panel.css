@@ -678,14 +678,11 @@ td, th {
 .reservation-row,
 .city-row,
 .employee-row,
+.salary-row,
 .branch-row,
 .user-row,
 .product-row {
   cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.salary-row {
   transition: background-color 0.3s;
 }
 
