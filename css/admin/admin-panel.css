@@ -3408,6 +3408,73 @@ input:not(:checked) + .toggle-slider:after {
   padding: 12px 18px;
 }
 
+.task-stats-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.task-stat-item {
+  padding: 20px;
+  border-radius: 10px;
+  border: 2px solid #f0f0f0;
+  transition: all 0.3s;
+}
+
+.task-stat-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+}
+
+.task-stat-item.total {
+  border-color: #FDD835;
+  background: #fffbea;
+}
+
+.task-stat-item.completed {
+  border-color: #7CB342;
+  background: #f1f8e9;
+}
+
+.task-stat-item.ongoing {
+  border-color: #29B6F6;
+  background: #e1f5fe;
+}
+
+.task-stat-item.pending {
+  border-color: #EF5350;
+  background: #ffebee;
+}
+
+.task-stat-number {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+.task-stat-item.total .task-stat-number { 
+  color: #F9A825; 
+}
+
+.task-stat-item.completed .task-stat-number { 
+  color: #7CB342; 
+}
+
+.task-stat-item.ongoing .task-stat-number { 
+  color: #29B6F6; 
+}
+
+.task-stat-item.pending .task-stat-number { 
+  color: #EF5350; 
+}
+
+.task-stat-label {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
 
 /* Responsive Tasarım Media Queries */
 @media screen and (max-width: 2000px) {

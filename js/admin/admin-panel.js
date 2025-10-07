@@ -26,7 +26,6 @@ $(document).ready(function() {
 
     //Global değişkenler
     const token = localStorage.getItem('token');
-    const expiration = localStorage.getItem('expiration');
     const userName = localStorage.getItem('userName');
     let tables = null;
     let shiftDayDtos = null;
@@ -49,11 +48,6 @@ $(document).ready(function() {
     };
     
     
-    if (new Date(expiration) < new Date()){
-        
-        handleLogout("Oturum süreniz dolmuştur!");
-    }
-    
     
     function handleLogout(showMessage = null) {
        
@@ -64,7 +58,7 @@ $(document).ready(function() {
             showMessage.includes('süreniz') ||
             showMessage.includes('dolmuş')
         )) {
-            title = 'Oturum Sonlandırıldı.';
+            title = 'Oturum Sonlandırıldı';
         }
     
         showToast('success', title, showMessage ? showMessage : 'Çıkış yapılıyor...');
@@ -6071,9 +6065,11 @@ $(document).ready(function() {
             },
             success: function(response) {
                 
-                let workStatusDtos = response.workStatusDtos;
-                let operationClaimListDtos = response.operationClaimListDtos;
-                let branchDtos = response.branchDtos;
+                const filterOptions = response.data;
+
+                let workStatusDtos = filterOptions.workStatusDtos;
+                let operationClaimListDtos = filterOptions.operationClaimListDtos;
+                let branchDtos = filterOptions.branchDtos;
 
                 updateStatusList(workStatusDtos);
                 updateRoleList(operationClaimListDtos);
@@ -6495,6 +6491,420 @@ $(document).ready(function() {
 
 
 
+
+
+
+    // Çalışan detayında "Vardiyalar" başlığına tıklandığında
+    $(document).on('click', '#shifts', function(e) {
+        e.preventDefault();
+
+        generateShiftDayHtml();
+        generatePermissionHtml();
+        fetchYears();
+        generateTimeLineHtml(permissionListDtos);
+    });
+
+
+
+    const PermissionLeaveTypeEnum = {
+        AnnualLeave: 1,
+        ExcuseLeave: 2,
+        UnpaidLeave: 3,
+        SickLeave: 4,
+        MaternityLeave: 5,
+        PaternityLeave: 6,
+        MarriageLeave: 7,
+        BereavementLeave: 8
+    };
+
+
+    // İzinlerin leaveTypeId değerine göre CSS sınıfları
+    const leaveTypeClassMap = {
+        [PermissionLeaveTypeEnum.AnnualLeave]: "leave-annual",
+        [PermissionLeaveTypeEnum.ExcuseLeave]: "leave-excuse",
+        [PermissionLeaveTypeEnum.UnpaidLeave]: "leave-unpaid",
+        [PermissionLeaveTypeEnum.SickLeave]: "leave-sick",
+        [PermissionLeaveTypeEnum.MaternityLeave]: "leave-maternity",
+        [PermissionLeaveTypeEnum.PaternityLeave]: "leave-paternity",
+        [PermissionLeaveTypeEnum.MarriageLeave]: "leave-marriage",
+        [PermissionLeaveTypeEnum.BereavementLeave]: "leave-bereavement"
+    };
+
+
+    const PermissionStatusEnum = {
+        Pending: 1,
+        Approved: 2,
+        Rejected: 3
+    };
+
+
+    // İzinlerin status enum değerine göre CSS sınıfları
+    const leaveStatusClassMap = {
+        [PermissionStatusEnum.Pending]: "status-pending",
+        [PermissionStatusEnum.Approved]: "status-approved",
+        [PermissionStatusEnum.Rejected]: "status-rejected"
+    };
+
+
+
+    function calculateLeaveDays(startDateStr, endDateStr, isHalfDay = false) {
+        
+        if (isHalfDay) {
+            return "0.5 gün";
+        }
+
+        const start = new Date(startDateStr);
+        const end = new Date(endDateStr);
+    
+        const diffTime = end - start;
+    
+        // Milisaniyeyi güne çeviriyoruz (1 gün = 1000*60*60*24)
+        let diffDays = diffTime / (1000 * 60 * 60 * 24);
+    
+        // Başlangıç günü dahil olsun diye +1 ekliyoruz
+        diffDays = diffDays + 1;
+    
+        return `${diffDays} gün`;
+    }
+    
+
+
+    function formatLeaveDateRange(startDateStr, endDateStr) {
+        
+        const start = new Date(startDateStr);
+        const end = new Date(endDateStr);
+    
+        const startDay = start.getDate();
+        const startMonth = monthNames[start.getMonth()];
+        const startYear = start.getFullYear();
+    
+        const endDay = end.getDate();
+        const endMonth = monthNames[end.getMonth()];
+        const endYear = end.getFullYear();
+    
+        // Eğer alınan iznin başlangıç ve bitiş tarihleri aynı ise
+        if (
+            startDay === endDay &&
+            startMonth === endMonth &&
+            startYear === endYear
+        ) {
+            return `${startDay} ${startMonth} ${startYear}`;
+        }
+    
+        // Eğer alınan iznin başlangıç ve bitiş tarihleri farklı ise
+        if (startYear === endYear && startMonth === endMonth) {
+            return `${startDay}-${endDay} ${startMonth} ${startYear}`;
+        }
+    
+        // Eğer alınan izinde ay ya da yıl farklıysa yani: 28 Ağu 2025 - 02 Eyl 2025 gibi
+        return `${startDay} ${startMonth} ${startYear} - ${endDay} ${endMonth} ${endYear}`;
+    }
+    
+    
+
+    function generateTimeLineHtml(){
+        let timelineHtml = '';
+
+        if (permissionListDtos.length > 0) {
+
+            permissionListDtos.forEach(permission => {
+
+                let className = leaveTypeClassMap[permission.leaveTypeId];
+                let formattedDate = formatLeaveDateRange(permission.startDate, permission.endDate);
+                let duration = calculateLeaveDays(permission.startDate, permission.endDate);
+
+                timelineHtml += `
+                    <div class="timeline-item ${className}" data-type="${className}" style="display: block;">
+                        <div class="timeline-card">
+                            <div class="timeline-header">
+                                <div class="timeline-date">${formattedDate}</div>
+                                <div class="timeline-type ${className}">${permission.leaveTypeName}</div>
+                            </div>
+                            <div class="timeline-info">
+                                <div class="timeline-duration">${duration}</div>
+                                <div class="timeline-status ${leaveStatusClassMap[permission.status]}">${permission.statusName}</div>
+                            </div>
+                            <div class="timeline-description">${permission.description ?? ''}</div>
+                        </div>
+                    </div>
+                `;
+            });
+        } else {
+            timelineHtml += `
+                <div class="no-permission">
+                    <i class="fas fa-calendar-times"></i>
+                    <span>İzin kaydı bulunamadı.</span>
+                </div>
+            `;
+        }
+
+
+        $('.timeline').html(timelineHtml);
+    }
+
+
+
+    // Çalışan izin geçmişi verilerini çekiyoruz
+    function fetchEmployeePermissions(employeeId, yearId, leaveTypeId) {
+        let request = `${baseUrl}Employees/${employeeId}/Permissions?`;
+        
+        if (leaveTypeId != null) request += `&leaveTypeId=${leaveTypeId}`;
+        if (yearId != null) request += `&yearId=${yearId}`;
+        
+        $.ajax({
+            url: request,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                $('.timeline').empty();
+
+                generateTimeLineHtml(response.data)
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
+                showToast('error', 'Hata', errorMessage ? errorMessage : 'İzin geçmişi alınırken hata oluştu!');
+            }
+        });
+    }
+
+
+
+    // Çalışan detayındaki izin geçmişini leaveType durumuna göre filtreleme
+    $(document).on('click', '.filter-tab', function() {
+
+        $(".filter-tab ").removeClass("active");
+        $(this).addClass("active");
+
+        const leaveTypeId = $(this).data('leave-type');
+        const yearId = $('#yearsSelectedId').attr('data-selected-id') || null;
+
+        const params = new URLSearchParams(window.location.search);
+        const employeeId = params.get('id');
+
+        fetchEmployeePermissions(employeeId, yearId, leaveTypeId);
+    });
+
+
+
+    // Çalışan detayındaki izin geçmişinde "Yıl" option'ı için gelen yılları ekle...
+    function updateYearsList(yearDtos){
+        let $menu = $('#yearsDropdown .dropdown-menu');
+
+        // İlk eleman hariç diğerlerini siliyoruz
+        $menu.children().not(':first').remove();
+
+        let yearHTML = '';
+
+        if (yearDtos.length > 0) {
+
+            // Yılları ekle
+            yearDtos.forEach(year => {
+                yearHTML += `
+                    <div class="dropdown-option" data-year-id="${year.id}">${year.name}</div>
+                `;
+            })
+        } 
+
+        $menu.append(yearHTML);
+    }
+
+
+
+    // Çalışan detayındaki izin geçmişinde "Yıl" option'ına tıklandığında
+    $(document).on('click', '#yearsDropdown .dropdown-toggle', function(e) {
+        e.stopPropagation(); 
+
+        toggleDropdown("#yearsDropdown");
+    });
+
+
+
+    // Çalışan detayındaki izin geçmişinde "Yıl" option'ının ikonuna tıklandığında
+    $(document).on('click', '#yearsDropdown i', function(e) {
+        e.stopPropagation(); 
+
+        toggleDropdown("#yearsDropdown");
+    });
+
+
+
+    // "Yıl" option kutusunda bir seçenek seçildiğinde
+    $(document).on('click', '#yearsDropdown .dropdown-option', function() {
+
+        selectDropdownOption("#yearsDropdown", this, "year-id");
+
+        $("#yearsDropdown .dropdown-toggle").text(`${$(this).text()} Yılı`);
+
+
+        const leaveTypeId = $(".filter-tab.active").attr('data-leave-type') || null;
+        const yearId = $('#yearsSelectedId').attr('data-selected-id');
+
+        const params = new URLSearchParams(window.location.search);
+        const employeeId = params.get('id');
+
+        fetchEmployeePermissions(employeeId, yearId, leaveTypeId);
+    });
+
+
+
+    // Çalışan detayındaki izin geçmişinde "Yıl" option'ı için yılları çekiyoruz
+    function fetchYears() {
+        $.ajax({
+            url: `${baseUrl}Years`,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                
+                updateYearsList(response.data);
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Yıllar alınırken hata oluştu!");
+            }
+        });
+    }
+
+
+    
+    function generatePermissionHtml(){
+        $('.permission-container').empty();
+
+        let year = new Date().getFullYear();
+
+        let permissionHtml = `
+            <div class="permission-header chart-title">
+                <h2>İzin Geçmişi</h2>
+
+                <div class="permission-filter-year">
+                    <div class="input-wrapper">
+                        <div class="dropdown" id="yearsDropdown">
+                            <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
+                            <div class="dropdown-toggle" id="yearsSelectedId" data-selected-id="">${year} Yılı</div>
+                            
+                            <div class="dropdown-menu">  
+                            </div>
+                        </div>        
+                    </div>
+                </div>
+            </div>
+
+            <div class="permission-body">
+                <div class="filter-tabs">
+                    <div class="filter-tab active" data-leave-type="">Tümü</div>
+                    <div class="filter-tab" data-leave-type="${PermissionLeaveTypeEnum.AnnualLeave}">Yıllık İzin</div>
+                    <div class="filter-tab" data-leave-type="${PermissionLeaveTypeEnum.SickLeave}">Hastalık</div>
+                    <div class="filter-tab" data-leave-type="${PermissionLeaveTypeEnum.ExcuseLeave}">Mazeret</div>
+                </div>
+            </div>
+
+            <div class="timeline">
+            </div>
+        `;
+
+
+        $('.permission-container').html(permissionHtml);
+    }
+
+
+
+    // Çalışan detay sayfasındaki vardiyaları oluşturuyoruz
+    function generateShiftDayHtml(){
+        
+        $('.tab-content').empty();
+
+        let scheduleHtml = `
+            <div class="schedule-container">
+                <div class="schedule-header chart-title">
+                    <h2>Çalışma Programı</h2>
+
+                    <!--
+                    <div class="swap-info-box">
+                        <i class="fa-solid fa-pencil"></i>
+                        <span>Günleri düzenlemek için üzerine gelin ve düzenleme butonuna tıklayın.</span>
+                    </div>
+                    -->
+                </div>
+                
+                <div class="schedule-grid">
+                </div>
+            </div>
+            
+            <div class="permission-container">
+            </div>
+        `;
+
+        $('.tab-content').html(scheduleHtml);
+
+
+        let shiftDayHtml = '';
+
+        shiftDayDtos.forEach(shiftDay => {
+
+            let className = null;
+            let displayText = null;
+            const dayName = days[shiftDay.shiftId];
+
+            if (shiftDay.isHoliday){
+                className = "off";
+                displayText = "Tatil"
+
+            } else if (shiftDay.isLeave) {
+                className = "off";
+                displayText = "İzinli"
+
+            } else {
+                className = "working";
+
+                // saniye kısmını kaldırıyoruz
+                const start = shiftDay.startTime.substring(0, 5);
+                const end = shiftDay.endTime.substring(0, 5);
+
+                displayText = `${start}-${end}`;
+            }
+
+            shiftDayHtml += `
+                <div class="schedule-day ${className}">
+                    <button class="edit-btn">
+                        <i class="fa-solid fa-pencil"></i>
+                    </button>
+                    <strong>${dayName}</strong>
+                    ${displayText}
+                </div>
+                `;            
+        });
+
+        $('.schedule-grid').html(shiftDayHtml);
+    }
+
+
+
+
+
+
+    // Çalışan detayında "Finansal" başlığına tıklandığında
+    $(document).on('click', '#finance', function(e) {
+        e.preventDefault();
+
+        applyEmployeeSalaryFilters(false);
+    });
 
     
 
@@ -7017,7 +7427,7 @@ $(document).ready(function() {
 
 
 
-    // Çalışan detayındaki filtreleme seçenekleri için verileri çekiyoruz
+    // Çalışan detayındaki maaş listesi için filtreleme seçeneklerini çekiyoruz
     function fetchEmployeeSalaryFilterOptions() {
         const params = new URLSearchParams(window.location.search);
         const employeeId = params.get('id');
@@ -7029,9 +7439,10 @@ $(document).ready(function() {
                 'Authorization': `Bearer ${token}`
             },
             success: function(response) {
-                
-                let yearListDtos = response.yearListDtos;
-                let paymentStatusDtos = response.paymentStatusDtos;
+                const filterOptions = response.data;
+
+                let yearListDtos = filterOptions.yearListDtos;
+                let paymentStatusDtos = filterOptions.paymentStatusDtos;
 
                 updateYearList(yearListDtos);
                 updatePaymentStatusList(paymentStatusDtos);
@@ -7203,7 +7614,7 @@ $(document).ready(function() {
     }
 
 
-    // Çalışan detayında belirtilen kriterlere (yıl, ödeme durumu) göre filtreleme yapıyoruz
+    // Çalışan detayında maaşlar için belirtilen kriterlere (yıl, ödeme durumu) göre filtreleme yapıyoruz
     function searchEmployeeSalaries(employeeId, yearId, paymentStatusId, isFiltered) {
         currentPage = 1;
         
@@ -7240,7 +7651,7 @@ $(document).ready(function() {
                     return;
                 }
 
-                showToast('error', 'Hata', errorMessage ? errorMessage : "Çalışan istatistikleri alınırken hata oluştu!");
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Çalışanın maaşları alınırken hata oluştu!");
             }
         });
     }
@@ -7296,24 +7707,131 @@ $(document).ready(function() {
 
 
 
-    // Çalışan detayında "Finansal" başlığına tıklandığında
-    $(document).on('click', '#finance', function(e) {
+
+
+    // Çalışan detayında "Görevler" başlığına tıklandığında
+    $(document).on('click', '#tasks', function(e) {
         e.preventDefault();
 
-        applyEmployeeSalaryFilters(false);
+        fetchEmployeeTaskStatistics();
     });
 
+    
+
+    // Dropdown'lardan filtre değerlerini alıp "Çalışan Görevleri" listesini filtreliyoruz
+    function applyEmployeeTaskFilters(isFiltered) {
+    
+        // Dropdown'lardan seçili değerleri alıyoruz
+        const selectedPriorityLevelId = $('#priorityLevelSelectedId').attr('data-selected-id') || null;
+        const selectedTaskStatusId = $('#taskStatusSelectedId').attr('data-selected-id') || null;
+
+        const params = new URLSearchParams(window.location.search);
+        const employeeId = params.get('id');
+    
+        searchEmployeeTasks(employeeId, selectedPriorityLevelId, selectedTaskStatusId, isFiltered);
+    }
 
 
-    // Çalışan detayında "Vardiyalar" başlığına tıklandığında
-    $(document).on('click', '#shifts', function(e) {
-        e.preventDefault();
 
-        generateShiftDayHtml();
-        generatePermissionHtml();
-        fetchYears();
-        generateTimeLineHtml(permissionListDtos);
-    });
+    // Çalışan detayında görevler için belirtilen kriterlere (öncelik seviyesi, görev durumu) göre filtreleme yapıyoruz
+    function searchEmployeeTasks(employeeId, priorityLevelId, taskStatusId, isFiltered) {
+        currentPage = 1;
+        
+        let url = `${baseUrl}Employees/${employeeId}/Tasks?pageNumber=${currentPage}&pageSize=${pageItems}`;
+
+        // Sadece dolu parametreleri ekliyoruz
+        if (priorityLevelId != null) url += `&priorityLevel=${priorityLevelId}`;
+        if (taskStatusId != null) url += `&taskStatus=${taskStatusId}`;
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                
+                if (!isFiltered){
+                    generateTaskHtml(response);
+                    paginationTemplate("task-container", "prevTaskPage", "nextTaskPage", "taskPageInfo", "taskTotalItemsInfo", "pagination-tasks-table");
+                }
+                
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Çalışan istatistikleri alınırken hata oluştu!");
+            }
+        });
+    }
+
+
+
+    function fetchEmployeeTaskStatistics(){
+        const params = new URLSearchParams(window.location.search);
+        const employeeId = params.get('id');
+
+        $.ajax({
+            url: `${baseUrl}Employees/${employeeId}/Tasks/Statistics`,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+
+                generateTaskHtml(response);
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Çalışanın görev istatistikleri alınırken hata oluştu!");
+            }
+        });
+    }
+
+
+
+    function generateTaskHtml(response){
+        $('.tab-content').empty();
+
+        const stats = response.data;
+
+        let taskHtml = `
+            <div class="task-stats-container">
+                <div class="task-stat-item total">
+                    <div class="task-stat-number">${stats.totalTaskCount}</div>
+                    <div class="task-stat-label">Toplam Görev</div>
+                </div>
+                <div class="task-stat-item completed">
+                    <div class="task-stat-number">${stats.completedTaskCount}</div>
+                    <div class="task-stat-label">Tamamlanan</div>
+                </div>
+                <div class="task-stat-item ongoing">
+                    <div class="task-stat-number">${stats.inProgressTaskCount}</div>
+                    <div class="task-stat-label">Devam Eden</div>
+                </div>
+                <div class="task-stat-item pending">
+                    <div class="task-stat-number">${stats.pendingTaskCount}</div>
+                    <div class="task-stat-label">Bekleyen</div>
+                </div>
+            </div>
+        `;
+
+        $('.tab-content').html(taskHtml);
+    }
+
 
 
     // Çalışan detay sayfasındaki sekme (tab) geçişlerini yöneten fonksiyon
@@ -7323,395 +7841,6 @@ $(document).ready(function() {
         $(this).addClass("active");
     });
 
-
-
-    const PermissionLeaveTypeEnum = {
-        AnnualLeave: 1,
-        ExcuseLeave: 2,
-        UnpaidLeave: 3,
-        SickLeave: 4,
-        MaternityLeave: 5,
-        PaternityLeave: 6,
-        MarriageLeave: 7,
-        BereavementLeave: 8
-    };
-
-
-    // İzinlerin leaveTypeId değerine göre CSS sınıfları
-    const leaveTypeClassMap = {
-        [PermissionLeaveTypeEnum.AnnualLeave]: "leave-annual",
-        [PermissionLeaveTypeEnum.ExcuseLeave]: "leave-excuse",
-        [PermissionLeaveTypeEnum.UnpaidLeave]: "leave-unpaid",
-        [PermissionLeaveTypeEnum.SickLeave]: "leave-sick",
-        [PermissionLeaveTypeEnum.MaternityLeave]: "leave-maternity",
-        [PermissionLeaveTypeEnum.PaternityLeave]: "leave-paternity",
-        [PermissionLeaveTypeEnum.MarriageLeave]: "leave-marriage",
-        [PermissionLeaveTypeEnum.BereavementLeave]: "leave-bereavement"
-    };
-
-
-    const PermissionStatusEnum = {
-        Pending: 1,
-        Approved: 2,
-        Rejected: 3
-    };
-
-
-    // İzinlerin status enum değerine göre CSS sınıfları
-    const leaveStatusClassMap = {
-        [PermissionStatusEnum.Pending]: "status-pending",
-        [PermissionStatusEnum.Approved]: "status-approved",
-        [PermissionStatusEnum.Rejected]: "status-rejected"
-    };
-
-
-
-    function calculateLeaveDays(startDateStr, endDateStr, isHalfDay = false) {
-        
-        if (isHalfDay) {
-            return "0.5 gün";
-        }
-
-        const start = new Date(startDateStr);
-        const end = new Date(endDateStr);
-    
-        const diffTime = end - start;
-    
-        // Milisaniyeyi güne çeviriyoruz (1 gün = 1000*60*60*24)
-        let diffDays = diffTime / (1000 * 60 * 60 * 24);
-    
-        // Başlangıç günü dahil olsun diye +1 ekliyoruz
-        diffDays = diffDays + 1;
-    
-        return `${diffDays} gün`;
-    }
-    
-
-
-    function formatLeaveDateRange(startDateStr, endDateStr) {
-        
-        const start = new Date(startDateStr);
-        const end = new Date(endDateStr);
-    
-        const startDay = start.getDate();
-        const startMonth = monthNames[start.getMonth()];
-        const startYear = start.getFullYear();
-    
-        const endDay = end.getDate();
-        const endMonth = monthNames[end.getMonth()];
-        const endYear = end.getFullYear();
-    
-        // Eğer alınan iznin başlangıç ve bitiş tarihleri aynı ise
-        if (
-            startDay === endDay &&
-            startMonth === endMonth &&
-            startYear === endYear
-        ) {
-            return `${startDay} ${startMonth} ${startYear}`;
-        }
-    
-        // Eğer alınan iznin başlangıç ve bitiş tarihleri farklı ise
-        if (startYear === endYear && startMonth === endMonth) {
-            return `${startDay}-${endDay} ${startMonth} ${startYear}`;
-        }
-    
-        // Eğer alınan izinde ay ya da yıl farklıysa yani: 28 Ağu 2025 - 02 Eyl 2025 gibi
-        return `${startDay} ${startMonth} ${startYear} - ${endDay} ${endMonth} ${endYear}`;
-    }
-    
-    
-
-    function generateTimeLineHtml(){
-        let timelineHtml = '';
-
-        if (permissionListDtos.length > 0) {
-
-            permissionListDtos.forEach(permission => {
-
-                let className = leaveTypeClassMap[permission.leaveTypeId];
-                let formattedDate = formatLeaveDateRange(permission.startDate, permission.endDate);
-                let duration = calculateLeaveDays(permission.startDate, permission.endDate);
-
-                timelineHtml += `
-                    <div class="timeline-item ${className}" data-type="${className}" style="display: block;">
-                        <div class="timeline-card">
-                            <div class="timeline-header">
-                                <div class="timeline-date">${formattedDate}</div>
-                                <div class="timeline-type ${className}">${permission.leaveTypeName}</div>
-                            </div>
-                            <div class="timeline-info">
-                                <div class="timeline-duration">${duration}</div>
-                                <div class="timeline-status ${leaveStatusClassMap[permission.status]}">${permission.statusName}</div>
-                            </div>
-                            <div class="timeline-description">${permission.description ?? ''}</div>
-                        </div>
-                    </div>
-                `;
-            });
-        } else {
-            timelineHtml += `
-                <div class="no-permission">
-                    <i class="fas fa-calendar-times"></i>
-                    <span>İzin kaydı bulunamadı.</span>
-                </div>
-            `;
-        }
-
-
-        $('.timeline').html(timelineHtml);
-    }
-
-
-
-    // Çalışan izin geçmişi verilerini çekiyoruz
-    function fetchEmployeePermissions(employeeId, yearId, leaveTypeId) {
-        let request = `${baseUrl}Employees/${employeeId}/Permissions?`;
-        
-        if (leaveTypeId != null) request += `&leaveTypeId=${leaveTypeId}`;
-        if (yearId != null) request += `&yearId=${yearId}`;
-        
-        $.ajax({
-            url: request,
-            type: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            },
-            success: function(response) {
-                $('.timeline').empty();
-
-                generateTimeLineHtml(response.data)
-            },
-            error: function(xhr) {
-                const errorMessage = xhr.responseJSON?.Message;
-
-                if (xhr.status === 401) {
-                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
-                    handleLogout(errorMessage);
-                    return;
-                }
-
-                showToast('error', 'Hata', errorMessage ? errorMessage : 'İzin geçmişi alınırken hata oluştu!');
-            }
-        });
-    }
-
-
-
-    // Çalışan detayındaki izin geçmişini leaveType durumuna göre filtreleme
-    $(document).on('click', '.filter-tab', function() {
-
-        $(".filter-tab ").removeClass("active");
-        $(this).addClass("active");
-
-        const leaveTypeId = $(this).data('leave-type');
-        const yearId = $('#yearsSelectedId').attr('data-selected-id') || null;
-
-        const params = new URLSearchParams(window.location.search);
-        const employeeId = params.get('id');
-
-        fetchEmployeePermissions(employeeId, yearId, leaveTypeId);
-    });
-
-
-
-    // Çalışan detayındaki izin geçmişinde "Yıl" option'ı için gelen yılları ekle...
-    function updateYearsList(yearDtos){
-        let $menu = $('#yearsDropdown .dropdown-menu');
-
-        // İlk eleman hariç diğerlerini siliyoruz
-        $menu.children().not(':first').remove();
-
-        let yearHTML = '';
-
-        if (yearDtos.length > 0) {
-
-            // Yılları ekle
-            yearDtos.forEach(year => {
-                yearHTML += `
-                    <div class="dropdown-option" data-year-id="${year.id}">${year.name}</div>
-                `;
-            })
-        } 
-
-        $menu.append(yearHTML);
-    }
-
-
-
-    // Çalışan detayındaki izin geçmişinde "Yıl" option'ına tıklandığında
-    $(document).on('click', '#yearsDropdown .dropdown-toggle', function(e) {
-        e.stopPropagation(); 
-
-        toggleDropdown("#yearsDropdown");
-    });
-
-
-
-    // Çalışan detayındaki izin geçmişinde "Yıl" option'ının ikonuna tıklandığında
-    $(document).on('click', '#yearsDropdown i', function(e) {
-        e.stopPropagation(); 
-
-        toggleDropdown("#yearsDropdown");
-    });
-
-
-
-    // "Yıl" option kutusunda bir seçenek seçildiğinde
-    $(document).on('click', '#yearsDropdown .dropdown-option', function() {
-
-        selectDropdownOption("#yearsDropdown", this, "year-id");
-
-        $("#yearsDropdown .dropdown-toggle").text(`${$(this).text()} Yılı`);
-
-
-        const leaveTypeId = $(".filter-tab.active").attr('data-leave-type') || null;
-        const yearId = $('#yearsSelectedId').attr('data-selected-id');
-
-        const params = new URLSearchParams(window.location.search);
-        const employeeId = params.get('id');
-
-        fetchEmployeePermissions(employeeId, yearId, leaveTypeId);
-    });
-
-
-
-    // Çalışan detayındaki izin geçmişinde "Yıl" option'ı için yılları çekiyoruz
-    function fetchYears() {
-        $.ajax({
-            url: `${baseUrl}Years`,
-            type: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            },
-            success: function(response) {
-                
-                updateYearsList(response.data);
-            },
-            error: function(xhr) {
-                const errorMessage = xhr.responseJSON?.Message;
-
-                if (xhr.status === 401) {
-                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
-                    handleLogout(errorMessage);
-                    return;
-                }
-
-                showToast('error', 'Hata', errorMessage ? errorMessage : "Yıllar alınırken hata oluştu!");
-            }
-        });
-    }
-
-
-    
-    function generatePermissionHtml(){
-        $('.permission-container').empty();
-
-        let year = new Date().getFullYear();
-
-        let permissionHtml = `
-            <div class="permission-header chart-title">
-                <h2>İzin Geçmişi</h2>
-
-                <div class="permission-filter-year">
-                    <div class="input-wrapper">
-                        <div class="dropdown" id="yearsDropdown">
-                            <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
-                            <div class="dropdown-toggle" id="yearsSelectedId" data-selected-id="">${year} Yılı</div>
-                            
-                            <div class="dropdown-menu">  
-                            </div>
-                        </div>        
-                    </div>
-                </div>
-            </div>
-
-            <div class="permission-body">
-                <div class="filter-tabs">
-                    <div class="filter-tab active" data-leave-type="">Tümü</div>
-                    <div class="filter-tab" data-leave-type="${PermissionLeaveTypeEnum.AnnualLeave}">Yıllık İzin</div>
-                    <div class="filter-tab" data-leave-type="${PermissionLeaveTypeEnum.SickLeave}">Hastalık</div>
-                    <div class="filter-tab" data-leave-type="${PermissionLeaveTypeEnum.ExcuseLeave}">Mazeret</div>
-                </div>
-            </div>
-
-            <div class="timeline">
-            </div>
-        `;
-
-
-        $('.permission-container').html(permissionHtml);
-    }
-
-
-
-    // Çalışan detay sayfasındaki vardiyaları oluşturuyoruz
-    function generateShiftDayHtml(){
-        
-        $('.tab-content').empty();
-
-        let scheduleHtml = `
-            <div class="schedule-container">
-                <div class="schedule-header chart-title">
-                    <h2>Çalışma Programı</h2>
-
-                    <!--
-                    <div class="swap-info-box">
-                        <i class="fa-solid fa-pencil"></i>
-                        <span>Günleri düzenlemek için üzerine gelin ve düzenleme butonuna tıklayın.</span>
-                    </div>
-                    -->
-                </div>
-                
-                <div class="schedule-grid">
-                </div>
-            </div>
-            
-            <div class="permission-container">
-            </div>
-        `;
-
-        $('.tab-content').html(scheduleHtml);
-
-
-        let shiftDayHtml = '';
-
-        shiftDayDtos.forEach(shiftDay => {
-
-            let className = null;
-            let displayText = null;
-            const dayName = days[shiftDay.shiftId];
-
-            if (shiftDay.isHoliday){
-                className = "off";
-                displayText = "Tatil"
-
-            } else if (shiftDay.isLeave) {
-                className = "off";
-                displayText = "İzinli"
-
-            } else {
-                className = "working";
-
-                // saniye kısmını kaldırıyoruz
-                const start = shiftDay.startTime.substring(0, 5);
-                const end = shiftDay.endTime.substring(0, 5);
-
-                displayText = `${start}-${end}`;
-            }
-
-            shiftDayHtml += `
-                <div class="schedule-day ${className}">
-                    <button class="edit-btn">
-                        <i class="fa-solid fa-pencil"></i>
-                    </button>
-                    <strong>${dayName}</strong>
-                    ${displayText}
-                </div>
-                `;            
-        });
-
-        $('.schedule-grid').html(shiftDayHtml);
-    }
 
 
 
@@ -7961,14 +8090,6 @@ $(document).ready(function() {
                             </div>
 
                             <div class="tab-content">
-
-                                <div class="tab-pane" id="finance">
-                                    
-                                </div>
-
-                                <div class="tab-pane" id="tasks">Görevler içerikleri buraya gelecek</div>
-                                <div class="tab-pane" id="notifications">Bildirimler içerikleri buraya gelecek</div>
-                                <div class="tab-pane" id="messages">Mesajlar içerikleri buraya gelecek</div>
                             </div>
                         </div>
                     `;
