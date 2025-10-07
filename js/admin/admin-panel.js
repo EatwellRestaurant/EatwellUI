@@ -5040,6 +5040,8 @@ $(document).ready(function() {
         const $financeYearsDropdown = $("#financeYearsDropdown");
         const $financePaymentStatusDropdown = $("#financePaymentStatusDropdown");
         const $paginationDropdown = $("#paginationDropdown");
+        const $priorityLevelDropdown = $("#priorityLevelDropdown");
+        const $taskStatusDropdown = $("#taskStatusDropdown");
 
         // Eğer tıklanan yer ilgili dropdown’un kendisi veya içindeki bir eleman değilse,
         // o dropdown kapatılır (menü kapanır, ok simgesi eski haline döner ve border rengi sıfırlanır).        
@@ -5050,7 +5052,10 @@ $(document).ready(function() {
             $yearsDropdown, 
             $financeYearsDropdown, 
             $financePaymentStatusDropdown,
-            $paginationDropdown]
+            $paginationDropdown,
+            $priorityLevelDropdown,
+            $taskStatusDropdown
+        ]
             .forEach($dd => {
             if (!$dd.is(e.target) && $dd.has(e.target).length === 0) {
                 $dd.find(".dropdown-menu").removeClass("active");
@@ -7433,7 +7438,7 @@ $(document).ready(function() {
         const employeeId = params.get('id');
         
         $.ajax({
-            url: `${baseUrl}EmployeeStatistics/GetEmployeeSalaryFilterOptions/${employeeId}`,
+            url: `${baseUrl}Employees/${employeeId}/Salaries/filters`,
             type: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -7457,7 +7462,7 @@ $(document).ready(function() {
                     return;
                 }
 
-                showToast('error', 'Hata', errorMessage ? errorMessage : "Çalışan istatistikleri alınırken hata oluştu!");
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Çalışanın maaşları alınırken hata oluştu!");
             }
         });
     }
@@ -7560,7 +7565,7 @@ $(document).ready(function() {
                     <h2>Sosyal Haklar ve Yan Ödemeler</h2>
                 </div>
 
-                <div class="benefits-section  px-7">
+                <div class="benefits-section px-7">
                     <div class="benefits-grid">
                         <div class="benefit-item">
                             <div class="benefit-icon">
@@ -7713,8 +7718,45 @@ $(document).ready(function() {
     $(document).on('click', '#tasks', function(e) {
         e.preventDefault();
 
-        fetchEmployeeTaskStatistics();
+        fetchEmployeeTaskOverview();
     });
+
+
+
+    function fetchEmployeeTaskOverview(){
+        const params = new URLSearchParams(window.location.search);
+        const employeeId = params.get('id');
+
+        $.ajax({
+            url: `${baseUrl}Employees/${employeeId}/Tasks/Overview?pageNumber=${currentPage}&pageSize=${pageItems}`,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                
+                const data = response.data;
+
+                generateTaskStatsHtml(data.statistics.data);
+                generateTaskFiltersHtml();
+                updatePriorityLevelList(data.filterOptions.data.priorityLevelDtos);
+                updateTaskStatusList(data.filterOptions.data.taskStatusDtos);
+                paginationTemplate("task-container", "prevTaskPage", "nextTaskPage", "taskPageInfo", "taskTotalItemsInfo", "pagination-tasks-table");
+                displayTaskList(data.tasks);
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Çalışanın görev istatistikleri alınırken hata oluştu!");
+            }
+        });
+    }
 
     
 
@@ -7752,8 +7794,11 @@ $(document).ready(function() {
             success: function(response) {
                 
                 if (!isFiltered){
-                    generateTaskHtml(response);
-                    paginationTemplate("task-container", "prevTaskPage", "nextTaskPage", "taskPageInfo", "taskTotalItemsInfo", "pagination-tasks-table");
+                    generateTaskHtml();
+                    // DOM güncellemesi tamamlandıktan sonra filtreleri çek
+                    setTimeout(() => {
+                        fetchEmployeeTaskFilterOptions();
+                    }, 0);
                 }
                 
             },
@@ -7785,7 +7830,7 @@ $(document).ready(function() {
             },
             success: function(response) {
 
-                generateTaskHtml(response);
+                generateTaskStatsHtml(response);
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
@@ -7803,34 +7848,389 @@ $(document).ready(function() {
 
 
 
-    function generateTaskHtml(response){
+    function generateTaskStatsHtml(stats){
         $('.tab-content').empty();
-
-        const stats = response.data;
 
         let taskHtml = `
             <div class="task-stats-container">
-                <div class="task-stat-item total">
-                    <div class="task-stat-number">${stats.totalTaskCount}</div>
-                    <div class="task-stat-label">Toplam Görev</div>
+                <div class="task-stats-header chart-title">
+                    <h2>Genel Bakış</h2>
                 </div>
-                <div class="task-stat-item completed">
-                    <div class="task-stat-number">${stats.completedTaskCount}</div>
-                    <div class="task-stat-label">Tamamlanan</div>
+
+                <div class="task-stats-section px-7">
+                    <div class="task-stat-item total">
+                        <div class="task-stat-number">${stats.totalTaskCount}</div>
+                        <div class="task-stat-label">Toplam Görev</div>
+                    </div>
+                    <div class="task-stat-item completed">
+                        <div class="task-stat-number">${stats.completedTaskCount}</div>
+                        <div class="task-stat-label">Tamamlanan</div>
+                    </div>
+                    <div class="task-stat-item ongoing">
+                        <div class="task-stat-number">${stats.inProgressTaskCount}</div>
+                        <div class="task-stat-label">Devam Eden</div>
+                    </div>
+                    <div class="task-stat-item pending">
+                        <div class="task-stat-number">${stats.pendingTaskCount}</div>
+                        <div class="task-stat-label">Bekleyen</div>
+                    </div>
                 </div>
-                <div class="task-stat-item ongoing">
-                    <div class="task-stat-number">${stats.inProgressTaskCount}</div>
-                    <div class="task-stat-label">Devam Eden</div>
-                </div>
-                <div class="task-stat-item pending">
-                    <div class="task-stat-number">${stats.pendingTaskCount}</div>
-                    <div class="task-stat-label">Bekleyen</div>
-                </div>
+            </div>
+
+            <div class="task-container">
             </div>
         `;
 
         $('.tab-content').html(taskHtml);
     }
+
+
+
+
+    function generateTaskFiltersHtml(){
+        $('.task-container').empty();
+
+        let taskHtml = `
+            <div class="task-header chart-title">
+                <h2>Görev Listesi</h2>
+            </div>
+
+            <div class="filter-group px-7"> 
+                <div class="filter-box">
+                    <div class="input-wrapper">
+                        <div class="dropdown" id="priorityLevelDropdown">
+                            <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
+                            
+                            <div class="dropdown-toggle" id="priorityLevelSelectedId" data-selected-id="">Tüm Öncelikler</div>
+                            
+                            <div class="dropdown-menu">
+                                <div class="dropdown-option" data-priority-level-id="">Tüm Öncelikler</div>    
+                            </div>
+                        </div>        
+                    </div>
+                </div>
+
+                <div class="filter-box">
+                    <div class="input-wrapper">
+                        <div class="dropdown" id="taskStatusDropdown">
+                            <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
+                            
+                            <div class="dropdown-toggle" id="taskStatusSelectedId" data-selected-id="">Tüm Durumlar</div>
+                            
+                            <div class="dropdown-menu">
+                                <div class="dropdown-option" data-task-status-id="">Tüm Durumlar</div>    
+                            </div>
+                        </div>        
+                    </div>
+                </div>
+            </div>
+
+            <div class="task-list px-7">
+            </div>
+        `;
+
+        $('.task-container').html(taskHtml);
+    }
+
+
+
+    // Çalışan detayındaki görevler listesi için filtreleme seçeneklerini çekiyoruz
+    function fetchEmployeeTaskFilterOptions() {
+        $.ajax({
+            url: `${baseUrl}EmployeeStatistics/GetEmployeeTaskFilterOptions`,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                const filterOptions = response.data;
+
+                const priorityLevelDtos = filterOptions.priorityLevelDtos;
+
+                updatePriorityLevelList(priorityLevelDtos);
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Çalışanın görevleri alınırken hata oluştu!");
+            }
+        });
+    }
+
+
+
+    // "Tüm Öncelikler" option'ı için gelen öncelikleri ekle...
+    function updatePriorityLevelList(priorityLevelDtos){
+        let $menu = $('#priorityLevelDropdown .dropdown-menu');
+
+        // İlk eleman hariç diğerlerini siliyoruz
+        $menu.children().not(':first').remove();
+
+        let priorityLevelHTML = '';
+
+        if (priorityLevelDtos.length > 0) {
+
+            // Öncelikleri ekle
+            priorityLevelDtos.forEach(priorityLevel => {
+                priorityLevelHTML += `
+                    <div class="dropdown-option" data-priority-level-id="${priorityLevel.id}">${priorityLevel.name}</div>
+                `;
+            })
+        } 
+
+        $menu.append(priorityLevelHTML);
+    }
+
+
+
+    // Çalışan detayındaki "Tüm Öncelikler" option'ına tıklandığında
+    $(document).on('click', '#priorityLevelDropdown .dropdown-toggle', function(e) {
+        e.stopPropagation(); 
+
+        toggleDropdown("#priorityLevelDropdown");
+    });
+
+
+
+    // Çalışan detayındaki "Tüm Öncelikler" option'ının ikonuna tıklandığında
+    $(document).on('click', '#priorityLevelDropdown i', function(e) {
+        e.stopPropagation(); 
+
+        toggleDropdown("#priorityLevelDropdown");
+    });
+
+
+    // "Tüm Öncelikler" option kutusunda bir seçenek seçildiğinde
+    $(document).on('click', '#priorityLevelDropdown .dropdown-option', function() {
+
+        selectDropdownOption("#priorityLevelDropdown", this, "priority-level-id");
+
+        applyEmployeeTaskFilters(true);
+    });
+
+
+
+    // "Tüm Durumlar" (Görev Durumları) option'ı için gelen durumları ekle...
+    function updateTaskStatusList(taskStatusDtos){
+        let $menu = $('#taskStatusDropdown .dropdown-menu');
+
+        // İlk eleman hariç diğerlerini siliyoruz
+        $menu.children().not(':first').remove();
+
+        let taskStatusHTML = '';
+
+        if (taskStatusDtos.length > 0) {
+
+            // Durumları ekle
+            taskStatusDtos.forEach(taskStatus => {
+                taskStatusHTML += `
+                    <div class="dropdown-option" data-task-status-id="${taskStatus.id}">${taskStatus.name}</div>
+                `;
+            })
+        } 
+
+        $menu.append(taskStatusHTML);
+    }
+
+
+
+    // Çalışan detayındaki "Tüm Durumlar" (Görev Durumları) option'ına tıklandığında
+    $(document).on('click', '#taskStatusDropdown .dropdown-toggle', function(e) {
+        e.stopPropagation(); 
+
+        toggleDropdown("#taskStatusDropdown");
+    });
+
+
+
+    // Çalışan detayındaki "Tüm Durumlar" (Görev Durumları) option'ının ikonuna tıklandığında
+    $(document).on('click', '#taskStatusDropdown i', function(e) {
+        e.stopPropagation(); 
+
+        toggleDropdown("#taskStatusDropdown");
+    });
+
+
+    // "Tüm Durumlar" (Görev Durumları) option kutusunda bir seçenek seçildiğinde
+    $(document).on('click', '#taskStatusDropdown .dropdown-option', function() {
+
+        selectDropdownOption("#taskStatusDropdown", this, "priority-level-id");
+
+        applyEmployeeTaskFilters(true);
+    });
+
+
+
+    const PriorityLevelEnum = {
+        Low: 1,
+        Medium: 2,
+        High: 3,
+        Urgent: 4
+    };
+
+
+    // Öncelik seviyelerinin enum değerine göre CSS sınıfları
+    const priorityLevelClassMap = {
+        [PriorityLevelEnum.Low]: "priority-low",
+        [PriorityLevelEnum.Medium]: "priority-medium",
+        [PriorityLevelEnum.High]: "priority-high",
+        [PriorityLevelEnum.Urgent]: "priority-urgent"
+    };
+
+
+    const TaskStatusEnum = {
+        Pending: 1,
+        InProgress: 2,
+        Completed: 3,
+        Cancelled: 4
+    };
+
+
+    // Görevlerin status enum değerine göre CSS sınıfları
+    const taskStatusClassMap = {
+        [TaskStatusEnum.Pending]: "status-pending",
+        [TaskStatusEnum.InProgress]: "status-inProgress",
+        [TaskStatusEnum.Completed]: "status-completed",
+        [TaskStatusEnum.Cancelled]: "status-cancelled"
+    };
+
+
+
+    function displayTaskList(response){
+
+        $('.task-list').empty();
+        
+        let taskItemsHtml = '';
+
+        // Görevleri tabloya ekle
+        if (response.data.length > 0){
+            response.data.forEach(task => {
+
+                const startDate = new Date(task.startDate);
+                const formattedStartDate = `${startDate.getDate().toString().padStart(2, '0')}.${(startDate.getMonth() + 1).toString().padStart(2, '0')}.${startDate.getFullYear()}`;
+
+                const endDate = new Date(task.endDate);
+                const formattedEndDate = `${endDate.getDate().toString().padStart(2, '0')}.${(endDate.getMonth() + 1).toString().padStart(2, '0')}.${endDate.getFullYear()}`;
+
+                const dayDiff = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
+
+                taskItemsHtml += `
+                    <div class="task-card">
+                        <div class="task-header">
+                            <div class="task-title-section">
+                                <div class="task-title">${task.name}</div>
+                                <div class="task-description">${task.description}</div>
+                            </div>
+
+                            <div class="task-badges">
+                                <span class="priority-badge ${priorityLevelClassMap[task.priorityLevel]}"">${task.priorityLevelName}</span>
+                                <span class="status-badge ${taskStatusClassMap[task.taskStatus]}">${task.taskStatusName}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="task-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Başlangıç</span>
+                                <span class="detail-value">${formattedStartDate}</span>
+                            </div>
+
+                            <div class="detail-item">
+                                <span class="detail-label">Bitiş</span>
+                                <span class="detail-value">${formattedEndDate}</span>
+                            </div>
+
+                            <div class="detail-item">
+                                <span class="detail-label">Atayan</span>
+                                <span class="detail-value">${task.assignedByFullName}</span>
+                            </div>
+
+                            <div class="detail-item">
+                                <span class="detail-label">Süre</span>
+                                <span class="detail-value">${dayDiff} gün</span>
+                            </div>
+                        </div>
+
+                        <div class="progress-section">
+                            <div class="progress-header">
+                                <span class="progress-label">İlerleme Durumu</span>
+                                <span class="progress-percent">${task.progressPercentage}%</span>
+                            </div>
+
+                            <div class="progress-bar-bg">
+                                <div class="progress-bar-fill" style="width: ${task.progressPercentage}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        } else {
+
+            // Görev yoksa kullanıcıya bilgi mesajı göster
+            taskItemsHtml = `
+                <div class="no-task">
+                    <i class="fas fa-tasks"></i>
+                    <span>Görev kaydı bulunamadı.</span>
+                </div>
+            `;
+        }
+        
+       // Tabloyu güncelle
+       $('.task-list').html(taskItemsHtml);
+
+       totalPages = response.totalPages;
+       totalItems = response.totalItems;
+
+       // Sayfa bilgisini güncelle
+       $('#taskPageInfo').text(`Sayfa ${currentPage} / ${totalPages}`);
+       $('#taskTotalItemsInfo').text(`Toplam Kayıt: ${totalItems}`);
+
+       // Sayfalama butonlarının durumunu güncelle
+       $('#prevTaskPage').prop('disabled', !response.hasPrevious); // İlk sayfada geri butonu devre dışı
+       $('#nextTaskPage').prop('disabled', !response.hasNext); // Son sayfada ileri butonu devre dışı
+    }
+
+
+
+
+    // Çalışanın görevler bölümünde önceki sayfa butonuna tıklama olayı
+    $(document).on('click', '#prevTaskPage', function() {
+        if (currentPage > 1) {
+            currentPage--;
+
+            applyEmployeeTaskFilters(true);
+        }
+    });
+    
+
+    
+    // Çalışanın görevler bölümünde sonraki sayfa butonuna tıklama olayı
+    $(document).on('click', '#nextTaskPage', function() {
+        if (currentPage < totalPages) {
+            currentPage++;
+
+            applyEmployeeTaskFilters(true);
+        }
+    });
+
+
+
+    // Çalışanın görevler bölümündeki "Göster" option kutusunda bir seçenek seçildiğinde
+    $(document).on('click', '.pagination-tasks-table#paginationDropdown .dropdown-option', function() {
+        
+        selectDropdownOption("#paginationDropdown", this, "pagination-id");
+
+        pageItems = $(this).text();
+
+        applyEmployeeTaskFilters(true);
+    });
+
+
 
 
 

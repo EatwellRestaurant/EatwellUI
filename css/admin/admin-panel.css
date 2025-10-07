@@ -453,7 +453,8 @@ td, th {
 .cities-table-wrapper,
 .branches-table-wrapper,
 .reservations-table-wrapper,
-.salary-section {
+.salary-section,
+.task-section {
   overflow-x: auto;
 }
 
@@ -461,6 +462,7 @@ td, th {
 .menus-table,
 .reservations-table,
 .salary-table,
+.task-table,
 .cities-table,
 .users-table,
 .products-table,
@@ -2394,15 +2396,6 @@ input:not(:checked) + .toggle-slider:after {
   color: #666;
 }
 
-/* Role Badges */
-.role-badge {
-  padding: 4px 10px;
-  border-radius: 15px;
-  font-size: 11px;
-  font-weight: 500;
-  text-transform: uppercase;
-}
-
 .role-manager {
   background: #17a2b8;
   color: #fff;
@@ -2414,8 +2407,8 @@ input:not(:checked) + .toggle-slider:after {
 }
 
 .role-waiter {
-  background: #ffc107; 
-  color: #212529;
+  background: #6c757d;
+  color: #fff;
 }
 
 .role-delivery {
@@ -2429,12 +2422,35 @@ input:not(:checked) + .toggle-slider:after {
 }
 
 /* Status Badges */
-.status-badge {
+.status-badge,
+.priority-badge,
+.role-badge {
   padding: 6px 12px;
   border-radius: 20px;
   font-size: 12px;
   font-weight: 500;
   text-transform: uppercase;
+  letter-spacing: 0.7px;
+}
+
+.priority-low { 
+  background: #E8F5E9; 
+  color: #2E7D32; 
+}
+
+.priority-medium { 
+  background: #FFF3E0; 
+  color: #EF6C00; 
+}
+
+.priority-high { 
+  background: #FFEBEE; 
+  color: #C62828; 
+}
+
+.priority-urgent { 
+  background: #B71C1C; 
+  color: white; 
 }
 
 .status-active {
@@ -2450,6 +2466,36 @@ input:not(:checked) + .toggle-slider:after {
 .status-resigned {
   background: #f8d7da;
   color: #721c24;
+}
+
+.status-pending { 
+  background: #fff3cd; 
+  color: #856404; 
+}
+
+.status-inProgress { 
+  background: #cce5ff; 
+  color: #004085;
+}
+
+.status-completed { 
+  background: #d4edda; 
+  color: #155724; 
+}
+
+.status-approved { 
+  background: #d4edda; 
+  color: #155724; 
+}
+
+.status-rejected { 
+  background: #f8d7da; 
+  color: #721c24; 
+}
+
+.status-cancelled { 
+  background: #f8d7da; 
+  color: #721c24; 
 }
 
 .payment-status {
@@ -2748,35 +2794,6 @@ input:not(:checked) + .toggle-slider:after {
   font-style: italic;
 }
 
-.role-badge {
-  padding: 6px 12px;
-  border-radius: 15px;
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  display: inline-block;
-}
-
-.role-admin {
-  background: #FFD700;
-  color: #000;
-}
-
-.role-manager {
-  background: #17a2b8;
-  color: #fff;
-}
-
-.role-chef {
-  background: #28a745;
-  color: #fff;
-}
-
-.role-waiter {
-  background: #6c757d;
-  color: #fff;
-}
-
 /* Performance Stats */
 .performance-grid {
   display: grid;
@@ -2936,13 +2953,16 @@ input:not(:checked) + .toggle-slider:after {
 .permission-container,
 .schedule-container,
 .benefits-container,
-.salary-container {
+.salary-container,
+.task-stats-container,
+.task-container {
   display: flex;
   flex-direction: column;
   gap: 17px;
 }
 
-.salary-container .pagination-container {
+.salary-container .pagination-container,
+.task-container .pagination-container {
   margin-top: 0;
 }
 
@@ -3164,28 +3184,14 @@ input:not(:checked) + .toggle-slider:after {
   font-weight: 500;
 }
 
-.status-pending { 
-  background: #fff3cd; 
-  color: #856404; 
-}
-
-.status-approved { 
-  background: #d4edda; 
-  color: #155724; 
-}
-
-.status-rejected { 
-  background: #f8d7da; 
-  color: #721c24; 
-}
-
 .timeline-description {
   color: #6c757d;
   font-size: 13px;
   font-style: italic;
 }
 
-.no-permission {
+.no-permission,
+.no-task  {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -3199,14 +3205,16 @@ input:not(:checked) + .toggle-slider:after {
   font-size: 15px;
   font-style: italic;
   text-align: center;
-  transition: all 0.3s ease;
+  transition: all .3s ease-in-out;
 }
 
-.no-permission:hover {
+.no-permission:hover,
+.no-task:hover {
   background: #f0f0f0;
 }
 
-.no-permission i {
+.no-permission i,
+.no-task i {
   font-size: 32px;
   color: #aaa;
 }
@@ -3408,7 +3416,7 @@ input:not(:checked) + .toggle-slider:after {
   padding: 12px 18px;
 }
 
-.task-stats-container {
+.task-stats-section {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 15px;
@@ -3474,6 +3482,100 @@ input:not(:checked) + .toggle-slider:after {
   color: #666;
   font-weight: 500;
 }
+
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.task-card {
+  border: 2px solid #f0f0f0;
+  border-radius: 10px;
+  padding: 20px;
+  transition: all 0.3s;
+  background: white;
+}
+
+.task-card:hover {
+  border-color: #FDD835;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+.task-card .task-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.task-title-section {
+  flex: 1;
+}
+
+.task-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.task-description {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.5;
+}
+
+.task-badges {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.task-details {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.progress-section {
+  margin-top: 15px;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.progress-label {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.progress-percent {
+  font-size: 14px;
+  color: #333;
+  font-weight: 600;
+}
+
+.progress-bar-bg {
+  height: 8px;
+  background: #f0f0f0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #7CB342, #9CCC65);
+  border-radius: 10px;
+  transition: width .3s ease-in-out;
+}
+
 
 
 /* Responsive Tasarım Media Queries */
@@ -4066,6 +4168,10 @@ input:not(:checked) + .toggle-slider:after {
   .filter-group {
     width: 60%;
   }
+
+  .task-stats-section {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 
@@ -4131,6 +4237,19 @@ input:not(:checked) + .toggle-slider:after {
 
   .filter-group {
     width: 80%;
+  }
+
+  .task-card .task-header {
+    flex-direction: column-reverse;
+    gap: 15px;
+  }
+  
+  .task-details {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .progress-section {
+    margin-top: 20px;
   }
 }
 
@@ -4535,6 +4654,14 @@ input:not(:checked) + .toggle-slider:after {
   .filter-group {
     flex-direction: column;
     width: 100%;
+  }
+
+  .task-stats-section {
+    grid-template-columns: repeat(1, 1fr);
+  }
+
+  .task-card {
+    padding: 15px;
   }
 }
 
