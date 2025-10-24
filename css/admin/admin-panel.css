@@ -2835,13 +2835,12 @@ input:not(:checked) + .toggle-slider:after {
 .tab-nav {
   display: flex;
   color: #051b30;
-  padding: 5px;
 }
 
 .tab-nav,
 .tab-container .tab-content {
   background: #fff;
-  border-radius: 10px;
+  border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -2850,10 +2849,6 @@ input:not(:checked) + .toggle-slider:after {
   display: flex;
   flex-direction: column;
   gap: 40px;
-}
-
-.tab-nav i {
-  font-size: 17px;
 }
 
 .tab-btn {
@@ -2865,17 +2860,27 @@ input:not(:checked) + .toggle-slider:after {
   flex: 1;
   padding: 15px;
   border: none;
+  border-bottom: 3px solid transparent;
   background: transparent;
   cursor: pointer;
-  border-radius: 8px;
   font-family: 'Poppins', sans-serif;
   font-weight: 600;
-  font-size: 15px;
+  font-size: 16px;
   transition: all 0.3s ease-in-out;
 }
 
 .tab-btn:focus-visible {
   outline: none;
+}
+
+.tab-btn:hover {
+  background-color: #f9fafb;
+}
+
+.tab-btn.active {
+  color: #051b30;
+  border-bottom-color: #ffea79; 
+  background: #fffbeb;
 }
 
 .swap-info-box {
@@ -2896,10 +2901,6 @@ input:not(:checked) + .toggle-slider:after {
   width: 50%;
   color: #1d4ed8;
   margin-top: 10px;
-}
-
-.tab-btn.active {
-  background: #ffea79;
 }
 
 .schedule-grid {
@@ -4156,11 +4157,6 @@ input:not(:checked) + .toggle-slider:after {
     gap: 20px;
   }
 
-  .tab-nav {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-  }
-
   .schedule-header .swap-info-box {
     width: 80%;
   }
@@ -4265,6 +4261,11 @@ input:not(:checked) + .toggle-slider:after {
   .users-header h2, 
   .products-header h2 {
     max-width: 200px;
+  }
+
+  .tab-nav {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
   }
 }
 
@@ -4594,13 +4595,9 @@ input:not(:checked) + .toggle-slider:after {
     gap: 20px;
   }
 
-  .tab-nav,
-  .schedule-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
   .schedule-grid {
     gap: 10px;
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .schedule-header .swap-info-box {
@@ -4816,12 +4813,8 @@ input:not(:checked) + .toggle-slider:after {
     width: 93%;
   }
 
-  .tab-nav, 
   .schedule-grid {
     grid-template-columns: repeat(1, 1fr);
-  }
-
-  .schedule-grid {
     justify-items: center;
   }
 

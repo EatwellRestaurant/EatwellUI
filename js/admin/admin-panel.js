@@ -8477,16 +8477,6 @@ $(document).ready(function() {
                                     <i class="fa-solid fa-circle-check"></i>
                                     Görevler
                                 </button>
-
-                                <button class="tab-btn" id="notifications">
-                                    <i class="fa-solid fa-bell"></i>
-                                    Bildirimler
-                                </button>
-
-                                <button class="tab-btn" id="messages">
-                                    <i class="fa-solid fa-comment"></i>
-                                    Mesajlar
-                                </button>
                             </div>
 
                             <div class="tab-content">
