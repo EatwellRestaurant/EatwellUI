@@ -7,43 +7,57 @@
     <title>EATWELL - Admin Girişi</title>
     <link href="../../icons/favicon.png" type="image/x-icon" rel="shortcut icon">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="../../css/style.css"rel="stylesheet">
-    <link href="../../css/admin/auth.css"rel="stylesheet">
+    <link href="../../css/style.css" rel="stylesheet">
+    <link href="../../css/admin/auth.css" rel="stylesheet">
 </head>
 <body>
     <div class="auth-container">
-        <div class="auth-box">
-            <div class="auth-header">
-                <h2>EATWELL</h2>
-                <p>Admin girişi</p>
-                <span>Yönetim Paneli</span>
+        <!-- Left Panel — Image & Branding -->
+        <div class="auth-left-panel">
+            <div class="auth-left-content">
+                <h1>EATWELL</h1>
+                <div class="brand-line"></div>
+                <p>Yönetim Paneli.</br>Restoranınızı kontrol altında tutun.</p>
             </div>
-            <form id="adminLoginForm" class="auth-form">
-                <div class="form-group">
-                    <label for="adminEmail">E-posta</label>
-                    <input type="email" id="adminEmail" name="adminEmail" required>
+        </div>
+
+        <!-- Right Panel — Form -->
+        <div class="auth-right-panel">
+            <div class="auth-box">
+                <div class="auth-header">
+                    <h2>EATWELL</h2>
+                    <p>Admin girişi</p>
+                    <span>Yönetim Paneli</span>
                 </div>
-                <div class="form-group">
-                    <label for="adminPassword">Şifre</label>
-                    <div class="password-input-group">
-                        <input type="password" id="adminPassword" name="adminPassword" required>
-                        <i class="fa-solid fa-eye toggle-password"></i>
+                <form id="adminLoginForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="adminEmail">E-posta</label>
+                        <div class="input-icon-group">
+                            <i class="fa-solid fa-envelope input-icon"></i>
+                            <input type="email" id="adminEmail" name="adminEmail" autocomplete="email" required>
+                        </div>
                     </div>
-                </div>
-                <div class="form-group remember-me">
-                    <div class="form-check">
+                    <div class="form-group">
+                        <label for="adminPassword">Şifre</label>
+                        <div class="password-input-group input-icon-group">
+                            <i class="fa-solid fa-lock input-icon"></i>
+                            <input type="password" id="adminPassword" name="adminPassword" autocomplete="current-password" required>
+                            <i class="fa-solid fa-eye toggle-password"></i>
+                        </div>
+                    </div>
+                    <div class="form-group remember-me">
                         <input class="form-check-input" type="checkbox" id="rememberMe">
                         <label class="form-check-label" for="rememberMe">
                             Beni Hatırla
                         </label>
                     </div>
+                    <button type="submit" class="btn btn-primary">Giriş Yap</button>
+                </form>
+                <div class="auth-footer">
+                    <p>Kullanıcı girişi için <a href="../auth/login.html">tıklayın.</a></p>
                 </div>
-                <button type="submit" class="btn btn-primary">Giriş Yap</button>
-            </form>
-            <div class="auth-footer">
-                <p>Kullanıcı girişi için <a href="../auth/login.html">tıklayın.</a></p>
             </div>
         </div>
     </div>
@@ -52,4 +66,4 @@
     <script src="https://kit.fontawesome.com/437bb43714.js" crossorigin="anonymous"></script>
     <script src="../../js/admin/admin-login.js"></script>
 </body>
-</html> 
+</html>

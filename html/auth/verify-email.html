@@ -4,41 +4,54 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email Doğrulama - EATWELL</title>
+    <title>EATWELL - E-posta Doğrulama</title>
     <link href="../../icons/favicon.png" type="image/x-icon" rel="shortcut icon">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="../../css/style.css" rel="stylesheet">
     <link href="../../css/admin/auth.css" rel="stylesheet">
 </head>
 <body>
     <div class="auth-container">
-        <div class="auth-box">
-            <div class="auth-header">
-                <h2>Email Doğrulama</h2>
-                <p>Lütfen email adresinize gönderilen doğrulama kodunu giriniz</p>
+        <!-- Left Panel — Image & Branding -->
+        <div class="auth-left-panel">
+            <div class="auth-left-content">
+                <h1>EATWELL</h1>
+                <div class="brand-line"></div>
+                <p>Hesabınızı doğrulayın ve lezzet yolculuğuna başlayın.</p>
             </div>
-            <form id="verifyForm" class="auth-form">
-                <div class="verification-inputs">
-                    <input type="text" maxlength="1" class="verification-input" data-index="0">
-                    <input type="text" maxlength="1" class="verification-input" data-index="1">
-                    <input type="text" maxlength="1" class="verification-input" data-index="2">
-                    <input type="text" maxlength="1" class="verification-input" data-index="3">
-                    <input type="text" maxlength="1" class="verification-input" data-index="4">
+        </div>
+
+        <!-- Right Panel — Form -->
+        <div class="auth-right-panel">
+            <div class="auth-box">
+                <div class="auth-header verify-email-header">
+                    <h2>E-posta Doğrulama</h2>
+                    <p>Lütfen e-posta adresinize gönderilen doğrulama kodunu giriniz.</p>
                 </div>
-                <div class="verification-info">
-                    <p>Doğrulama kodu 3 dakika içinde geçerliliğini yitirecektir.</p>
-                    <button type="button" id="resendCode" class="btn btn-link">Kodu Tekrar Gönder</button>
+                <form id="verifyForm" class="auth-form">
+                    <div class="verification-inputs">
+                        <input type="text" maxlength="1" class="verification-input" id="code-0" name="code-0" autocomplete="one-time-code" data-index="0">
+                        <input type="text" maxlength="1" class="verification-input" id="code-1" name="code-1" autocomplete="off" data-index="1">
+                        <input type="text" maxlength="1" class="verification-input" id="code-2" name="code-2" autocomplete="off" data-index="2">
+                        <input type="text" maxlength="1" class="verification-input" id="code-3" name="code-3" autocomplete="off" data-index="3">
+                        <input type="text" maxlength="1" class="verification-input" id="code-4" name="code-4" autocomplete="off" data-index="4">
+                    </div>
+                    <div class="verification-info">
+                        <p>Doğrulama kodu 3 dakika içinde geçerliliğini yitirecektir.</p>
+                        <button type="button" id="resendCode" class="btn btn-link">Kodu Tekrar Gönder</button>
+                    </div>
+                    <button type="submit" class="btn btn-primary"><span>Doğrula</span></button>
+                </form>
+                <div class="auth-footer">
+                    <p>Doğrulama kodunu almadınız mı? <a href="#" id="checkSpam">Spam klasörünü kontrol edin</a></p>
                 </div>
-                <button type="submit" class="btn btn-primary">Doğrula</button>
-            </form>
-            <div class="auth-footer">
-                <p>Doğrulama kodunu almadınız mı? <a href="#" id="checkSpam">Spam klasörünü kontrol edin</a></p>
             </div>
         </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://kit.fontawesome.com/437bb43714.js" crossorigin="anonymous"></script>
     <script src="../../js/admin/verify-email.js"></script>
 </body>
-</html> 
+</html>

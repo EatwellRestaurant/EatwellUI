@@ -90,6 +90,10 @@ a{
     border-left: 4px solid #28a745;
 }
 
+.toast.info {
+    border-left: 4px solid #0d6efd;
+}
+
 .toast i {
     font-size: 1.8rem;
 }
@@ -100,6 +104,10 @@ a{
 
 .toast.success i {
     color: #28a745;
+}
+
+.toast.info i {
+    color: #0d6efd;
 }
 
 .toast-content {

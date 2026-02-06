@@ -4,7 +4,12 @@ $(document).ready(function() {
 
     // Toast gösterme fonksiyonu
     function showToast(type, title, message) {
-        const icon = type === 'error' ? 'fa-circle-xmark' : 'fa-circle-check';
+        const iconMap = {
+            error: 'fa-circle-xmark',
+            success: 'fa-circle-check',
+            info: 'fa-circle-info'
+        };
+        const icon = iconMap[type] || 'fa-circle-info';
         const toast = $(`
             <div class="toast ${type}">
                 <i class="fa-solid ${icon}"></i>
@@ -77,10 +82,10 @@ $(document).ready(function() {
                 verificationCode: verificationCode
             }),
             success: function(response) {
-                showToast('success', 'Başarılı', 'Email adresiniz başarıyla doğrulandı!');
+                showToast('success', 'Başarılı', 'E-posta adresiniz başarıyla doğrulandı!');
                 localStorage.removeItem('pendingVerificationEmail');
                 setTimeout(() => {
-                    window.location.href = 'login.html';
+                    window.location.href = '../../index.html';
                 }, 1500);
             },
             error: function(xhr) {
@@ -120,6 +125,6 @@ $(document).ready(function() {
 
     // Spam klasörü kontrolü
     $('#checkSpam').on('click', function() {
-        showToast('info', 'Bilgi', 'Lütfen spam/junk klasörünüzü kontrol edin. Doğrulama kodu burada olabilir.');
+        showToast('info', 'Bilgi', 'Lütfen spam klasörünüzü kontrol edin.</br>Doğrulama kodu burada olabilir.');
     });
 }); 

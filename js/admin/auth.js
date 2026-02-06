@@ -28,11 +28,20 @@ $(document).ready(function() {
     $('#registerForm').on('submit', function(e) {
         e.preventDefault();
         
-        const firstName = $('#firstName').val();
-        const lastName = $('#lastName').val();
+        const fullName = $('#fullName').val().trim();
         const email = $('#email').val();
         const password = $('#password').val();
         const confirmPassword = $('#confirmPassword').val();
+
+        // Ad Soyad ayrıştırma
+        const nameParts = fullName.split(/\s+/);
+        const firstName = nameParts[0] || '';
+        const lastName = nameParts.slice(1).join(' ') || '';
+
+        if (!firstName || !lastName) {
+            showToast('error', 'Hata', 'Lütfen ad ve soyadınızı giriniz.');
+            return;
+        }
 
         // Şifre kontrolü
         if (password !== confirmPassword) {
@@ -54,7 +63,7 @@ $(document).ready(function() {
                 password: password
             }),
             success: function(response) {
-                showToast('success', 'Başarılı', 'Kayıt işlemi başarılı! Lütfen email adresinizi doğrulayın.');
+                showToast('success', 'Başarılı', 'Kayıt işlemi başarılı! Lütfen e-posta adresinizi doğrulayın.');
                 localStorage.setItem('pendingVerificationEmail', email);
                 localStorage.setItem('userId', response.dataId);
                 setTimeout(() => {
@@ -138,6 +147,6 @@ $(document).ready(function() {
         input.attr('type', type);
         
         // İkon değiştirme (tersine çevrildi)
-        $(this).toggleClass('fa-eye-slash fa-eye');
+        $(this).toggleClass('fa-eye');
     });
 }); 

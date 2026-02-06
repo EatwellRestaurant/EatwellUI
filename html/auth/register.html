@@ -7,50 +7,66 @@
     <title>EATWELL - Kayıt Ol</title>
     <link href="../../icons/favicon.png" type="image/x-icon" rel="shortcut icon">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="../../css/style.css" rel="stylesheet">
     <link href="../../css/admin/auth.css" rel="stylesheet">
 </head>
 <body>
     <div class="auth-container">
-        <div class="auth-box">
-            <div class="auth-header">
-                <h2>EATWELL</h2>
-                <p>Hoş geldin!</p>
-                <span>Hadi hesabını oluşturalım...</span>
+        <!-- Left Panel — Image & Branding -->
+        <div class="auth-left-panel">
+            <div class="auth-left-content">
+                <h1>EATWELL</h1>
+                <div class="brand-line"></div>
+                <p>Lezzetin ve kalitenin buluştuğu nokta. Aramıza katılın.</p>
             </div>
-            <form id="registerForm" class="auth-form">
-                <div class="form-group">
-                    <label for="firstName">Ad</label>
-                    <input type="text" id="firstName" name="firstName" required>
+        </div>
+
+        <!-- Right Panel — Form -->
+        <div class="auth-right-panel">
+            <div class="auth-box">
+                <div class="auth-header">
+                    <h2>EATWELL</h2>
+                    <p>Hoş geldin!</p>
+                    <span>Hadi hesabını oluşturalım...</span>
                 </div>
-                <div class="form-group">
-                    <label for="lastName">Soyad</label>
-                    <input type="text" id="lastName" name="lastName" required>
-                </div>
-                <div class="form-group">
-                    <label for="email">E-posta</label>
-                    <input type="email" id="email" name="email" required>
-                </div>
-                <div class="form-group">
-                    <label for="password">Şifre</label>
-                    <div class="password-input-group">
-                        <input type="password" id="password" name="password" required>
-                        <i class="fa-solid fa-eye toggle-password"></i>
+                <form id="registerForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="fullName">Ad Soyad</label>
+                        <div class="input-icon-group">
+                            <i class="fa-solid fa-user input-icon"></i>
+                            <input type="text" id="fullName" name="fullName" autocomplete="given-name" required>
+                        </div>
                     </div>
-                </div>
-                <div class="form-group">
-                    <label for="confirmPassword">Şifre Tekrar</label>
-                    <div class="password-input-group">
-                        <input type="password" id="confirmPassword" name="confirmPassword" required>
-                        <i class="fa-solid fa-eye toggle-password"></i>
+                    <div class="form-group">
+                        <label for="email">E-posta</label>
+                        <div class="input-icon-group">
+                            <i class="fa-solid fa-envelope input-icon"></i>
+                            <input type="email" id="email" name="email" autocomplete="email" required>
+                        </div>
                     </div>
+                    <div class="form-group">
+                        <label for="password">Şifre</label>
+                        <div class="password-input-group input-icon-group">
+                            <i class="fa-solid fa-lock input-icon"></i>
+                            <input type="password" id="password" name="password" autocomplete="new-password" required>
+                            <i class="fa-solid fa-eye-slash toggle-password"></i>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="confirmPassword">Şifre Tekrar</label>
+                        <div class="password-input-group input-icon-group">
+                            <i class="fa-solid fa-lock input-icon"></i>
+                            <input type="password" id="confirmPassword" name="confirmPassword" autocomplete="new-password" required>
+                            <i class="fa-solid fa-eye-slash toggle-password"></i>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary"><span>Kayıt Ol</span></button>
+                </form>
+                <div class="auth-footer">
+                    <p>Zaten hesabınız var mı? <a href="login.html">Giriş Yap</a></p>
                 </div>
-                <button type="submit" class="btn btn-primary">Kayıt Ol</button>
-            </form>
-            <div class="auth-footer">
-                <p>Zaten hesabınız var mı? <a href="login.html">Giriş Yap</a></p>
             </div>
         </div>
     </div>
@@ -59,4 +75,4 @@
     <script src="https://kit.fontawesome.com/437bb43714.js" crossorigin="anonymous"></script>
     <script src="../../js/admin/auth.js"></script>
 </body>
-</html> 
+</html>
