@@ -348,6 +348,18 @@ div:where(.swal2-container) .swal2-html-container{
     }
 
     form {
-        padding: 40px 30px 0;
+        padding: 40px 25px 0;
+    }
+
+    .form-header {
+        padding: 30px 28px 25px;
+    }
+
+    .input-wrapper input, .input-wrapper select{
+        font-size: 1.4rem;
+    }
+
+    #reservation-btn{
+        font-size: 1.4rem;
     }
 }

@@ -318,10 +318,176 @@ $(document).ready(function() {
 
 
 
+    // Hoş geldin bölümünü başlat
+    function initWelcomeSection() {
+        const now = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        $('#currentDate').text(now.toLocaleDateString('tr-TR', options));
+    }
+
+    // Sayı animasyonu
+    function animateCount(element, target) {
+        const duration = 1000;
+        const start = 0;
+        const startTime = performance.now();
+
+        function update(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            const current = Math.floor(start + (target - start) * eased);
+            element.text(current);
+            if (progress < 1) {
+                requestAnimationFrame(update);
+            }
+        }
+        requestAnimationFrame(update);
+    }
+
+    // Chart instance'larını sakla
+    let ordersChartInstance = null;
+    let reservationsChartInstance = null;
+    let categoriesChartInstance = null;
+
+    // Dashboard grafiklerini oluştur
+    function initDashboardCharts() {
+        // Aylık Sipariş Trendi - Bar Chart
+        const ordersCtx = document.getElementById('ordersChart');
+        if (ordersCtx) {
+            ordersChartInstance = new Chart(ordersCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'],
+                    datasets: [{
+                        label: 'Siparişler',
+                        data: [65, 78, 90, 81, 95, 110, 130, 125, 105, 98, 115, 140],
+                        backgroundColor: 'rgba(126, 70, 229, 0.7)',
+                        borderColor: '#4F46E5',
+                        borderWidth: 0,
+                        borderRadius: 6,
+                        borderSkipped: false,
+                        barPercentage: .6,
+                        categoryPercentage: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#F1F5F9' },
+                            ticks: { color: '#64748B', font: { family: 'Poppins' } }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#64748B', font: { family: 'Poppins' } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Rezervasyon Durumu - Doughnut Chart
+        const reservationsCtx = document.getElementById('reservationsChart');
+        if (reservationsCtx) {
+            reservationsChartInstance = new Chart(reservationsCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Onaylanan', 'Bekleyen', 'İptal'],
+                    datasets: [{
+                        data: [60, 25, 15],
+                        backgroundColor: ['#10b95c', '#f5be0b', '#eb3131'],
+                        borderWidth: 0,
+                        spacing: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '65%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true,
+                                pointStyleWidth: 17,
+                                font: { family: 'Poppins', size: 13 }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Popüler Menü Kategorileri - Pie Chart
+        const categoriesCtx = document.getElementById('categoriesChart');
+        if (categoriesCtx) {
+            categoriesChartInstance = new Chart(categoriesCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Ana Yemek', 'Tatlılar', 'İçecekler', 'Salatalar', 'Başlangıçlar'],
+                    datasets: [{
+                        data: [35, 20, 25, 10, 10],
+                        backgroundColor: ['#4F46E5', '#EC4899', '#06B6D4', '#10B981', '#F59E0B'],
+                        borderWidth: 0,
+                        spacing: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 15,
+                                usePointStyle: true,
+                                pointStyleWidth: 17,
+                                font: { family: 'Poppins', size: 13 }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    // Son siparişler tablosunu doldur (örnek veri)
+    function populateRecentOrders() {
+        const orders = [
+            { no: '#1042', customer: 'Ahmet Yılmaz', amount: '₺245,00', status: 'completed', statusText: 'Tamamlandı', date: '07.02.2026' },
+            { no: '#1041', customer: 'Ayşe Demir', amount: '₺180,50', status: 'preparing', statusText: 'Hazırlanıyor', date: '07.02.2026' },
+            { no: '#1040', customer: 'Mehmet Kaya', amount: '₺320,00', status: 'pending', statusText: 'Bekliyor', date: '06.02.2026' },
+            { no: '#1039', customer: 'Fatma Çelik', amount: '₺95,00', status: 'completed', statusText: 'Tamamlandı', date: '06.02.2026' },
+            { no: '#1038', customer: 'Ali Öztürk', amount: '₺410,75', status: 'cancelled', statusText: 'İptal', date: '05.02.2026' }
+        ];
+
+        let html = '';
+        orders.forEach(order => {
+            html += `
+                <tr class="recent-order-row">
+                    <td><strong>${order.no}</strong></td>
+                    <td>${order.customer}</td>
+                    <td>${order.amount}</td>
+                    <td><span class="order-status ${order.status}">${order.statusText}</span></td>
+                    <td>${order.date}</td>
+                </tr>`;
+        });
+        $('#recentOrdersBody').html(html);
+    }
+
     // İstatistikleri API'den al
     function getStatistics() {
         const token = localStorage.getItem('token');
-        
+
+        // Hoş geldin bölümünü başlat
+        initWelcomeSection();
+
         $.ajax({
             url: `${baseUrl}dashboards`,
             type: 'GET',
@@ -329,28 +495,33 @@ $(document).ready(function() {
                 'Authorization': `Bearer ${token}`
             },
             success: function(response) {
-                // HTML elementlerini seçelim
-                const userBox = $('.col-div-3:eq(0) .box p');
-                const menuBox = $('.col-div-3:eq(1) .box p');
-                const orderBox = $('.col-div-3:eq(2) .box p');
-                const reservationBox = $('.col-div-3:eq(3) .box p');
-                
-                // İstatistikleri güncelle
-                userBox.html(`${response.data.userCount}<br/><span>Kullanıcılar</span>`);
-                menuBox.html(`${response.data.mealCategoryCount}<br/><span>Menüler</span>`);
-                orderBox.html(`${response.data.orderCount}<br/><span>Siparişler</span>`);
-                reservationBox.html(`${response.data.reservationCount}<br/><span>Rezervasyonlar</span>`);
+                const data = response.data;
+
+                // İstatistik kartlarını animasyonlu güncelle
+                animateCount($('#statUsers'), data.userCount || 0);
+                animateCount($('#statOrders'), data.orderCount || 0);
+                animateCount($('#statReservations'), data.reservationCount || 0);
+                animateCount($('#statEmployees'), data.employeeCount || 0);
+
+                // Grafikleri oluştur
+                initDashboardCharts();
+
+                // Son siparişler tablosunu doldur
+                populateRecentOrders();
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
 
                 if (xhr.status === 401) {
-                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
                     handleLogout(errorMessage);
                     return;
                 }
 
                 showToast('error', 'Hata', errorMessage ? errorMessage : 'İstatistikler alınırken hata oluştu!');
+
+                // Hata durumunda da grafikleri ve tabloyu göster
+                initDashboardCharts();
+                populateRecentOrders();
             }
         });
     }
@@ -9051,94 +9222,162 @@ $(document).ready(function() {
         e.preventDefault();
         resetDashboard();
         getStatistics();
+
+        //URL'ye sahte bir adım ekliyoruz
+        history.pushState({ page: 'dashboard' }, 'Anasayfa', '?page=dashboard'); 
     });
 
     // Dashboard'u ilk haline getiren fonksiyon
     function resetDashboard() {
+        // Mevcut chart instance'larını temizle
+        if (ordersChartInstance) { ordersChartInstance.destroy(); ordersChartInstance = null; }
+        if (reservationsChartInstance) { reservationsChartInstance.destroy(); reservationsChartInstance = null; }
+        if (categoriesChartInstance) { categoriesChartInstance.destroy(); categoriesChartInstance = null; }
+
         // Dashboard içeriğini temizle
         $('.dashboard-content').empty();
-        
-        // İlk halindeki HTML yapısını oluştur
+
+        // Yeni dashboard HTML yapısını oluştur
         let dashboardHTML = `
-            <div class="col-div-3 users">
-                <div class="box">
-                    <p><br/><span>Kullanıcılar</span></p>
-                    <i class="fa fa-users box-icon"></i>
-                </div>
-            </div>
-            <div class="col-div-3 menu">
-                <div class="box">
-                    <p><br/><span>Menüler</span></p>
-                    <i class="fa fa-list box-icon"></i>
-                </div>
-            </div>
-            <div class="col-div-3 orders">
-                <div class="box">
-                    <p><br/><span>Siparişler</span></p>
-                    <i class="fa fa-shopping-bag box-icon"></i>
-                </div>
-            </div>
-            <div class="col-div-3 reservations">
-                <div class="box">
-                    <p><br/><span>Rezervasyonlar</span></p>
-                    <i class="fa fa-tasks box-icon"></i>
-                </div>
-            </div>
-            <div class="col-div-8">
-                <div class="box-8">
-                    <div class="content-box">
-                        <p>Top Selling Projects <span>Sell All</span></p>
-                        <br/>
-                        <table>
-                            <tr>
-                                <th>Company</th>
-                                <th>Contact</th>
-                                <th>Country</th>
-                            </tr>
-                            <tr>
-                                <td>Alfreds Futterkiste</td>
-                                <td>Maria Anders</td>
-                                <td>Germany</td>
-                            </tr>
-                            <tr>
-                                <td>Centro comercial Moctezuma</td>
-                                <td>Francisco Chang</td>
-                                <td>Mexico</td>
-                            </tr>
-                            <tr>
-                                <td>Ernst Handel</td>
-                                <td>Roland Mendel</td>
-                                <td>Austria</td>
-                            </tr>
-                            <tr>
-                                <td>Island Trading</td>
-                                <td>Helen Bennett</td>
-                                <td>UK</td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <div class="col-div-4">
-                <div class="box-4">
-                    <div class="content-box">
-                        <p>Total Sale <span>Sell All</span></p>
-                        <div class="circle-wrap">
-                            <div class="circle">
-                                <div class="mask full">
-                                    <div class="fill"></div>
-                                </div>
-                                <div class="mask half">
-                                    <div class="fill"></div>
-                                </div>
-                                <div class="inside-circle"> 70% </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>`;
-        
+            <!-- Hoş Geldin Bölümü -->
+			<div class="welcome-section">
+				<div class="welcome-text">
+					<h2>Hoş Geldiniz</h2>
+					<p>İşte restoranınızın güncel durumu</p>
+				</div>
+				<div class="welcome-date">
+					<i class="fa-regular fa-calendar"></i>
+					<span id="currentDate"></span>
+				</div>
+			</div>
+
+			<!-- İstatistik Kartları -->
+			<div class="dash-stats-grid">
+				<div class="dash-card users" style="--accent-color: #06B6D4;">
+					<div class="dash-card-icon">
+						<i class="fa fa-users"></i>
+					</div>
+					<div class="dash-card-info">
+						<span class="dash-card-count" id="statUsers">0</span>
+						<span class="dash-card-label">Kullanıcılar</span>
+					</div>
+				</div>
+
+				<div class="dash-card orders" style="--accent-color: #10b95c;">
+					<div class="dash-card-icon">
+						<i class="fa fa-shopping-bag"></i>
+					</div>
+					<div class="dash-card-info">
+						<span class="dash-card-count" id="statOrders">0</span>
+						<span class="dash-card-label">Siparişler</span>
+					</div>
+				</div>
+
+				<div class="dash-card reservations" style="--accent-color: #f5be0b;">
+					<div class="dash-card-icon">
+						<img src="../../icons/home-restaurant-table.png" alt="Rezervasyonlar">
+					</div>
+					<div class="dash-card-info">
+						<span class="dash-card-count" id="statReservations">0</span>
+						<span class="dash-card-label">Rezervasyonlar</span>
+					</div>
+				</div>
+
+				<div class="dash-card employees" style="--accent-color: #8B5CF6;">
+					<div class="dash-card-icon">
+						<i class="fa-solid fa-address-card"></i>
+					</div>
+					<div class="dash-card-info">
+						<span class="dash-card-count" id="statEmployees">0</span>
+						<span class="dash-card-label">Çalışanlar</span>
+					</div>
+				</div>
+			</div>
+
+			<!-- Grafikler Bölümü -->
+			<div class="charts-grid">
+				<div class="chart-card chart-large">
+					<div class="chart-card-header">
+						<h3>Aylık Sipariş Trendi</h3>
+					</div>
+					<div class="chart-card-body">
+						<canvas id="ordersChart"></canvas>
+					</div>
+				</div>
+				<div class="chart-card chart-small">
+					<div class="chart-card-header">
+						<h3>Rezervasyon Durumu</h3>
+					</div>
+					<div class="chart-card-body">
+						<canvas id="reservationsChart"></canvas>
+					</div>
+				</div>
+			</div>
+
+			<!-- Alt Bölüm: Tablo + Grafik -->
+			<div class="charts-grid">
+				<div class="chart-card chart-large">
+					<div class="chart-card-header">
+						<h3>Son Siparişler</h3>
+					</div>
+					<div class="chart-card-body dashboard-table-body">
+						<div class="dashboard-table-wrapper">
+							<table class="dashboard-table">
+								<thead>
+									<tr>
+										<th>Sipariş No</th>
+										<th>Müşteri</th>
+										<th>Tutar</th>
+										<th>Durum</th>
+										<th>Tarih</th>
+									</tr>
+								</thead>
+								<tbody id="recentOrdersBody">
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				<div class="chart-card chart-small">
+					<div class="chart-card-header">
+						<h3>Popüler Menü Kategorileri</h3>
+					</div>
+					<div class="chart-card-body">
+						<canvas id="categoriesChart"></canvas>
+					</div>
+				</div>
+			</div>`;
+
         // Dashboard içeriğini güncelle
         $('.dashboard-content').append(dashboardHTML);
     }
-}); 
+
+    
+    // Dash kartlarına tıklama - ilgili sidebar menüsüne yönlendir
+    $(document).on('click', '.dash-card.users', function() {
+        $('.sidenav a:contains("Kullanıcılar")').trigger('click');
+    });
+    
+    
+    $(document).on('click', '.dash-card.orders', function() {
+        $('.sidenav a:contains("Siparişler")').trigger('click');
+    });
+    
+    
+    $(document).on('click', '.dash-card.reservations', function() {
+        $('.sidenav a:contains("Rezervasyonlar")').trigger('click');
+    });
+    
+
+    $(document).on('click', '.dash-card.employees', function() {
+        $('.sidenav a:contains("Çalışanlar")').trigger('click');
+    });
+    
+    
+    $(document).on('click', '.sidenav-header', function() {
+        $('.sidenav a:contains("Anasayfa")').trigger('click');
+    });
+
+
+    
+});
