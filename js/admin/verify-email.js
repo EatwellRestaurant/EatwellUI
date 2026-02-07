@@ -29,6 +29,9 @@ $(document).ready(function() {
         }, 5000);
     }
 
+
+
+
     // Doğrulama kodu input'larının yönetimi
     $('.verification-input').on('input', function() {
         const value = $(this).val();
@@ -46,6 +49,9 @@ $(document).ready(function() {
         }
     });
 
+
+
+
     // Geri silme işlemi
     $('.verification-input').on('keydown', function(e) {
         const index = $(this).data('index');
@@ -54,6 +60,12 @@ $(document).ready(function() {
             $(`.verification-input[data-index="${index - 1}"]`).focus();
         }
     });
+
+
+
+
+    const baseUrl = 'https://eatwell-api.azurewebsites.net/api/';
+
 
     // Form submit
     $('#verifyForm').on('submit', function(e) {
@@ -73,13 +85,14 @@ $(document).ready(function() {
 
         // API'ye doğrulama isteği gönder
         $.ajax({
-            url: 'https://eatwell-api.azurewebsites.net/api/auths/verifyEmailOfUser?userId=' + localStorage.getItem('userId'),
+            url: `${baseUrl}auths/verifyEmailOfUser`,
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             data: JSON.stringify({
-                verificationCode: verificationCode
+                userId: localStorage.getItem('userId'),
+                code: verificationCode
             }),
             success: function(response) {
                 showToast('success', 'Başarılı', 'E-posta adresiniz başarıyla doğrulandı!');
@@ -95,23 +108,19 @@ $(document).ready(function() {
         });
     });
 
+
+
+
     // Kodu tekrar gönder
     $('#resendCode').on('click', function() {
-        const email = localStorage.getItem('pendingVerificationEmail');
-        
-        if (!email) {
-            showToast('error', 'Hata', 'Email adresi bulunamadı');
-            return;
-        }
-
         $.ajax({
-            url: 'https://eatwell-api.azurewebsites.net/api/auths/resend-verification',
+            url: `${baseUrl}auths/resendEmail`,
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             data: JSON.stringify({
-                email: email
+                userId: localStorage.getItem('userId')
             }),
             success: function(response) {
                 showToast('success', 'Başarılı', 'Yeni doğrulama kodu gönderildi!');
@@ -122,6 +131,9 @@ $(document).ready(function() {
             }
         });
     });
+
+
+
 
     // Spam klasörü kontrolü
     $('#checkSpam').on('click', function() {

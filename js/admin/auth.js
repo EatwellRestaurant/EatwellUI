@@ -24,6 +24,12 @@ $(document).ready(function() {
         }, 5000);
     }
 
+
+
+
+    const baseUrl = 'https://eatwell-api.azurewebsites.net/api/';
+
+
     // Register form submit
     $('#registerForm').on('submit', function(e) {
         e.preventDefault();
@@ -51,7 +57,7 @@ $(document).ready(function() {
 
         // API'ye kayıt isteği gönder
         $.ajax({
-            url: 'https://eatwell-api.azurewebsites.net/api/auths/register',
+            url: `${baseUrl}auths/register`,
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -77,6 +83,9 @@ $(document).ready(function() {
         });
     });
 
+
+
+
     // Login form submit
     $('#loginForm').on('submit', function(e) {
         e.preventDefault();
@@ -87,7 +96,7 @@ $(document).ready(function() {
 
         // API'ye giriş isteği gönder
         $.ajax({
-            url: 'https://eatwell-api.azurewebsites.net/api/auths/login',
+            url: `${baseUrl}auths/login`,
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -118,6 +127,9 @@ $(document).ready(function() {
         });
     });
 
+
+
+
     // Form validasyonları
     $('input[type="email"]').on('input', function() {
         const email = $(this).val();
@@ -139,6 +151,9 @@ $(document).ready(function() {
             $(this).removeClass('is-invalid');
         }
     });
+
+
+    
 
     // Şifre göster/gizle fonksiyonu
     $('.toggle-password').click(function() {

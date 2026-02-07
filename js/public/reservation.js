@@ -34,43 +34,72 @@ function hideWarn(idName) {
 phoneNumber.addEventListener('input', function () {
 
     // Delete and show warning if input value contains non-numeric character
-
-    if (/[^0-9 ]/g.test(phoneNumber.value)) {
+    if (/[^0-9() ]/g.test(phoneNumber.value)) {
         warnPhone.classList.add("warn");
         warnPhone.textContent = "Lütfen yalnızca sayısal karakter kullanın.";
-        phoneNumber.value = phoneNumber.value.replace(/[^0-9 ]/g, '');
-        warnPhone.style.display = "inline";
+        warnPhone.style.display = "inline-block";
         setTimeout(function() {
             hideWarn(warnPhone);
         }, 3000);
     }
-    else {
-        // Format the phone number as it is being typed
-        let formattedNumber = phoneNumber.value.replace(/[^0-9]/g, '');
-        if (formattedNumber.length >= 4) {
-            formattedNumber = formattedNumber.slice(0, 4) + ' ' + formattedNumber.slice(4);
-        }
-        if (formattedNumber.length >= 8) {
-            formattedNumber = formattedNumber.slice(0, 8) + ' ' + formattedNumber.slice(8);
-        }
-        if (formattedNumber.length >= 11) {
-            formattedNumber = formattedNumber.slice(0, 11) + ' ' + formattedNumber.slice(11);
-        }
-        phoneNumber.value = formattedNumber;
+
+    // Strip all non-digit characters
+    let digits = phoneNumber.value.replace(/[^0-9]/g, '');
+
+    // Limit to 10 digits
+    if (digits.length > 10) {
+        digits = digits.slice(0, 10);
     }
+
+    // Format as (5XX) XXX XX XX
+    let formatted = '';
+    if (digits.length > 0) {
+        formatted = '(' + digits.slice(0, 3);
+    }
+    if (digits.length >= 3) {
+        formatted += ') ';
+    }
+    if (digits.length > 3) {
+        formatted += digits.slice(3, 6);
+    }
+    if (digits.length > 6) {
+        formatted += ' ' + digits.slice(6, 8);
+    }
+    if (digits.length > 8) {
+        formatted += ' ' + digits.slice(8, 10);
+    }
+
+    phoneNumber.value = formatted;
 });
 
 
 
 phoneNumber.addEventListener('keydown', function (event) {
-    
-    if (event.keyCode === 8) {
-        let formattedNumber = phoneNumber.value;
 
+    if (event.keyCode === 8) {
         event.preventDefault();
-        let currentValue = phoneNumber.value;
-        let modifiedValue = currentValue.slice(0, -1);
-        phoneNumber.value = modifiedValue;
+        // Remove last digit by stripping formatting, removing last char, then reformatting
+        let digits = phoneNumber.value.replace(/[^0-9]/g, '');
+        digits = digits.slice(0, -1);
+
+        let formatted = '';
+        if (digits.length > 0) {
+            formatted = '(' + digits.slice(0, 3);
+        }
+        if (digits.length >= 3) {
+            formatted += ') ';
+        }
+        if (digits.length > 3) {
+            formatted += digits.slice(3, 6);
+        }
+        if (digits.length > 6) {
+            formatted += ' ' + digits.slice(6, 8);
+        }
+        if (digits.length > 8) {
+            formatted += ' ' + digits.slice(8, 10);
+        }
+
+        phoneNumber.value = formatted;
     }
 });
 
@@ -83,7 +112,7 @@ fullName.addEventListener('input', function () {
         warnName.classList.add("warn");
         warnName.textContent = "Lütfen yalnızca alfabetik karakterler kullanın.";
         fullName.value = fullName.value.replace(/[^a-zA-ZğüşıöçĞÜŞİÖÇ ]/g, '');
-        warnName.style.display = "inline";
+        warnName.style.display = "inline-block";
         setTimeout(function() {
             hideWarn(warnName);
         }, 3000);
@@ -118,9 +147,13 @@ getReservation.addEventListener("submit", (e) => {
     let guestsNumber = Number(guestNumber.value);
     e.preventDefault()
 
-    if(!phoneNumber.value.startsWith("0")){  
-        phoneNumber.value = "0" + phoneNumber.value;
+    // Format phone for API: strip formatting and add leading 0
+    let rawPhone = phoneNumber.value.replace(/[^0-9]/g, '');
+    if(!rawPhone.startsWith("0")){
+        rawPhone = "0" + rawPhone;
     }
+    // Reformat for display: 0XXX XXX XX XX
+    let apiPhone = rawPhone.replace(/(\d{4})(\d{3})(\d{2})(\d{2})/, '$1 $2 $3 $4');
 
     // phoneNumber.value = phoneNumber.value.replace(/(\d{4})(\d{3})(\d{2})(\d{2})/, '$1 $2 $3 $4');
 
@@ -131,7 +164,7 @@ getReservation.addEventListener("submit", (e) => {
             "firstName": `${firstName}`,
             "lastName": `${lastName}`,
             "email": `${email.value}`,
-            "phone": `${phoneNumber.value}`,
+            "phone": `${apiPhone}`,
             "branchId": `${branchNumber}`,
             "reservationDate": `${datePicker.value}`,
             "reservationTime": `${timePicker.value}`,

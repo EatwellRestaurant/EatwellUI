@@ -9,10 +9,11 @@
   <link href="../../icons/favicon.png" type="image/x-icon" rel="shortcut icon">
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Allura&family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
   <link href="../../css/style.css" rel="stylesheet">
   <link href="../../css/public/reservation.css" rel="stylesheet">
 </head>
@@ -51,148 +52,173 @@
   </header>
   
   <main>
-    
+
     <section class="main reservation">
       <div class="container flex">
         <div class="form-box">
-          <h2 class="title">Şimdi Deneyimleyin</h2>
-          
+          <div class="form-header">
+            <h2 class="title">Şimdi Deneyimleyin</h2>
+            <p class="form-subtitle">Unutulmaz bir yemek deneyimi için yerinizi ayırtın.</p>
+          </div>
+
           <form id="reservation-form">
-            <div class="reservation-box">
-              <input id="full-name" type="text" placeholder="Ad Soyad" required>
-              <i class="fa-solid fa-user fa-2xl"></i>
-              <div id="warn-name"></div>
-            </div>
-            
-            <div class="reservation-box">
-              <input id="email" type="email" placeholder="E-posta" required>
-              <i class="fa-solid fa-envelope fa-2xl"></i>
-            </div>
-            
-            <div class="reservation-box">
-              <input id="phone" type="tel" placeholder="Telefon" maxlength="14" required>
-              <i class="fa-solid fa-phone fa-2xl"></i>
-              <div id="warn-phone"></div>
-            </div>
-            
-            <div class="reservation-box">
-              <select id="branch" name="branches">
-                <option>Şubeler</option>
-                <option value="1">Avcılar</option>
-                <option value="4">Nişantaşı</option>
-                <option value="7">Ataşehir</option>
-              </select>
-              <i class="fa-solid fa-location-dot fa-2xl"></i>
-            </div>
-            
-            <div class="reservation-box datetime">
-              <div class="relative">
-                <input id="datePicker" type="date" class="title-change date" required>
-                <select id="timePicker" class="time">
-                  <option value="09:00">09:00</option>
-                  <option value="09:15">09:15</option>
-                  <option value="09:30">09:30</option>
-                  <option value="09:45">09:45</option>
-                  
-                  <option value="10:00">10:00</option>
-                  <option value="10:15">10:15</option>
-                  <option value="10:30">10:30</option>
-                  <option value="10:45">10:45</option>
-                  
-                  <option value="11:00">11:00</option>
-                  <option value="11:15">11:15</option>
-                  <option value="11:30">11:30</option>
-                  <option value="11:45">11:45</option>
-                  
-                  <option value="12:00">12:00</option>
-                  <option value="12:15">12:15</option>
-                  <option value="12:30">12:30</option>
-                  <option value="12:45">12:45</option>
-                  
-                  <option value="13:00">13:00</option>
-                  <option value="13:15">13:15</option>
-                  <option value="13:30">13:30</option>
-                  <option value="13:45">13:45</option>
-                  
-                  <option value="14:00">14:00</option>
-                  <option value="14:15">14:15</option>
-                  <option value="14:30">14:30</option>
-                  <option value="14:45">14:45</option>
-                  
-                  <option value="15:00">15:00</option>
-                  <option value="15:15">15:15</option>
-                  <option value="15:30">15:30</option>
-                  <option value="15:45">15:45</option>
-                  
-                  <option value="16:00">16:00</option>
-                  <option value="16:15">16:15</option>
-                  <option value="16:30">16:30</option>
-                  <option value="16:45">16:45</option>
-                  
-                  <option value="17:00">17:00</option>
-                  <option value="17:15">17:15</option>
-                  <option value="17:30">17:30</option>
-                  <option value="17:45">17:45</option>
-                  
-                  <option value="18:00">18:00</option>
-                  <option value="18:15">18:15</option>
-                  <option value="18:30">18:30</option>
-                  <option value="18:45">18:45</option>
-                  
-                  <option value="19:00">19:00</option>
-                  <option value="19:15">19:15</option>
-                  <option value="19:30">19:30</option>
-                  <option value="19:45">19:45</option>
-                  
-                  <option value="20:00">20:00</option>
-                  <option value="20:15">20:15</option>
-                  <option value="20:30">20:30</option>
-                  <option value="20:45">20:45</option>
-                  
-                  <option value="21:00">21:00</option>
-                  <option value="21:15">21:15</option>
-                  <option value="21:30">21:30</option>
-                  <option value="21:45">21:45</option>
-                  
-                  <option value="22:00">22:00</option>
-                  <option value="22:15">22:15</option>
-                  <option value="22:30">22:30</option>
-                </select>
-                <h3>Tarih Seçin</h3>
+            <div class="form-section">
+              <div class="form-row">
+                <div class="reservation-box">
+                  <label for="full-name">Ad Soyad</label>
+                  <div class="input-wrapper">
+                    <i class="fa-solid fa-user"></i>
+                    <input id="full-name" type="text" placeholder="Adınızı ve soyadınızı girin" required>
+                  </div>
+                  <div id="warn-name"></div>
+                </div>
+
+                <div class="reservation-box">
+                  <label for="email">E-posta</label>
+                  <div class="input-wrapper">
+                    <i class="fa-solid fa-envelope"></i>
+                    <input id="email" type="email" placeholder="ornek@email.com" required>
+                  </div>
+                </div>
               </div>
-            </div>
-            
-            <div class="reservation-box">
-              <div class="relative">
-                <select id="guest" class="title-change" name="guests" required>
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                  <option value="6">6</option>
-                </select>
-                <i class="fa-solid fa-user-group fa-xl"></i>
-                <h3>Misafir Sayısı</h3>
+
+              <div class="form-row">
+                <div class="reservation-box">
+                  <label for="phone">Telefon</label>
+                  <div class="input-wrapper">
+                    <i class="fa-solid fa-phone"></i>
+                    <input id="phone" type="tel" placeholder="(5XX) XXX XX XX" maxlength="15" required>
+                  </div>
+                  <div id="warn-phone"></div>
+                </div>
+
+                <div class="reservation-box">
+                  <label for="branch">Şube Seçimi</label>
+                  <div class="input-wrapper">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <select id="branch" name="branches">
+                      <option value="1">Avcılar</option>
+                      <option value="4">Nişantaşı</option>
+                      <option value="7">Ataşehir</option>
+                    </select>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div class="reservation-box">
-              <div class="relative">
-                <textarea id="message" class="title-change" cols="37" rows="6" placeholder="Özel İsteklerinizi Belirtin..."></textarea>
-                <h3>Mesajınız</h3>
+
+            <div class="form-section">
+              <div class="form-row form-row-three">
+                <div class="reservation-box">
+                  <label for="datePicker">Tarih</label>
+                  <div class="input-wrapper">
+                    <i class="fa-solid fa-calendar-days"></i>
+                    <input id="datePicker" type="date" class="title-change date" required>
+                  </div>
+                </div>
+
+                <div class="reservation-box">
+                  <label for="timePicker">Saat</label>
+                  <div class="input-wrapper">
+                    <i class="fa-solid fa-clock"></i>
+                    <select id="timePicker" class="time">
+                      <option value="09:00">09:00</option>
+                      <option value="09:15">09:15</option>
+                      <option value="09:30">09:30</option>
+                      <option value="09:45">09:45</option>
+                      <option value="10:00">10:00</option>
+                      <option value="10:15">10:15</option>
+                      <option value="10:30">10:30</option>
+                      <option value="10:45">10:45</option>
+                      <option value="11:00">11:00</option>
+                      <option value="11:15">11:15</option>
+                      <option value="11:30">11:30</option>
+                      <option value="11:45">11:45</option>
+                      <option value="12:00">12:00</option>
+                      <option value="12:15">12:15</option>
+                      <option value="12:30">12:30</option>
+                      <option value="12:45">12:45</option>
+                      <option value="13:00">13:00</option>
+                      <option value="13:15">13:15</option>
+                      <option value="13:30">13:30</option>
+                      <option value="13:45">13:45</option>
+                      <option value="14:00">14:00</option>
+                      <option value="14:15">14:15</option>
+                      <option value="14:30">14:30</option>
+                      <option value="14:45">14:45</option>
+                      <option value="15:00">15:00</option>
+                      <option value="15:15">15:15</option>
+                      <option value="15:30">15:30</option>
+                      <option value="15:45">15:45</option>
+                      <option value="16:00">16:00</option>
+                      <option value="16:15">16:15</option>
+                      <option value="16:30">16:30</option>
+                      <option value="16:45">16:45</option>
+                      <option value="17:00">17:00</option>
+                      <option value="17:15">17:15</option>
+                      <option value="17:30">17:30</option>
+                      <option value="17:45">17:45</option>
+                      <option value="18:00">18:00</option>
+                      <option value="18:15">18:15</option>
+                      <option value="18:30">18:30</option>
+                      <option value="18:45">18:45</option>
+                      <option value="19:00">19:00</option>
+                      <option value="19:15">19:15</option>
+                      <option value="19:30">19:30</option>
+                      <option value="19:45">19:45</option>
+                      <option value="20:00">20:00</option>
+                      <option value="20:15">20:15</option>
+                      <option value="20:30">20:30</option>
+                      <option value="20:45">20:45</option>
+                      <option value="21:00">21:00</option>
+                      <option value="21:15">21:15</option>
+                      <option value="21:30">21:30</option>
+                      <option value="21:45">21:45</option>
+                      <option value="22:00">22:00</option>
+                      <option value="22:15">22:15</option>
+                      <option value="22:30">22:30</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="reservation-box">
+                  <label for="guest">Misafir Sayısı</label>
+                  <div class="input-wrapper">
+                    <i class="fa-solid fa-user-group"></i>
+                    <select id="guest" class="title-change" name="guests" required>
+                      <option value="1">1 Kişi</option>
+                      <option value="2">2 Kişi</option>
+                      <option value="3">3 Kişi</option>
+                      <option value="4">4 Kişi</option>
+                      <option value="5">5 Kişi</option>
+                      <option value="6">6 Kişi</option>
+                    </select>
+                  </div>
+                </div>
               </div>
             </div>
-            
-            <div class="reservation-box btn">
-              <button id="reservation-btn" type="submit">Rezervasyon Oluştur</button>
-              <span id="reservation-info"></span>
+
+
+            <div class="form-section">
+              <div class="reservation-box full-width">
+                <label for="message">Mesajınız</label>
+                <div class="input-wrapper textarea-wrapper">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                  <textarea id="message" class="title-change" rows="4" placeholder="Özel isteklerinizi, alerjilerinizi veya kutlama detaylarınızı belirtin..."></textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="reservation-box btn full-width">
+              <button id="reservation-btn" type="submit">
+                Rezervasyon Oluştur
+              </button>
             </div>
           </form>
         </div>
       </div>
     </section>
-    
+
   </main>
   
   <footer>

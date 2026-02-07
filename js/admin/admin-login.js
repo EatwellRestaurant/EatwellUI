@@ -92,7 +92,7 @@ $(document).ready(function() {
         input.attr('type', type);
         
         // İkon değiştirme
-        $(this).toggleClass('fa-eye-slash fa-eye');
+        $(this).toggleClass('fa-eye');
     });
 
     // Eğer daha önce "Beni hatırla" seçilmişse
