@@ -560,39 +560,22 @@ $(document).ready(function() {
 
 
 
+    // Tarihi formatla
+    function formatDate(dateStr) {
+        if (!dateStr) return '-';
+        const date = new Date(dateStr);
+        return `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`;
+    }
+
     // Kullanıcıları göster
     function displayUsers(response) {
 
         $('#usersTableBody').empty();
 
-        let usersTableHTML = '';
-        
-        // Kullanıcıları tabloya ekle
-        if (response.data.length > 0) {
-            response.data.forEach(user => {
-                // Tarihi formatla (gün.ay.yıl şeklinde)
-                const date = new Date(user.createDate);
-                const formattedDate = `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`;
-                
-                usersTableHTML += `
-                    <tr class="user-row" data-user-id="${user.id}">
-                        <td>${user.id}</td>
-                        <td>${user.firstName}</td>
-                        <td>${user.lastName}</td>
-                        <td>${user.email}</td>
-                        <td>${formattedDate}</td>
-                    </tr>`;
-            });
-        } else {
-            // Kullanıcı yoksa bilgi mesajı göster
-            usersTableHTML = `
-                <tr>
-                    <td colspan="5" class="empty-table-row">Henüz kullanıcı bulunmamaktadır.</td>
-                </tr>`;
-        }
-        
-        // Tabloyu güncelle
-        $('#usersTableBody').html(usersTableHTML);
+        // Kullanıcı verisini sakla (arama/filtre için)
+        allUsersData = response.data;
+
+        renderUsersTable(response.data);
 
         totalPages = response.totalPages;
         totalItems = response.totalItems;
@@ -600,10 +583,61 @@ $(document).ready(function() {
         // Sayfa bilgisini güncelle
         $('#userPageInfo').text(`Sayfa ${currentPage} / ${totalPages}`);
         $('#userTotalItemsInfo').text(`Toplam Kayıt: ${totalItems}`);
-        
+
         // Sayfalama butonlarının durumunu güncelle
-        $('#prevUserPage').prop('disabled', !response.hasPrevious); // İlk sayfada geri butonu devre dışı
-        $('#nextUserPage').prop('disabled', !response.hasNext); // Son sayfada ileri butonu devre dışı
+        $('#prevUserPage').prop('disabled', !response.hasPrevious);
+        $('#nextUserPage').prop('disabled', !response.hasNext);
+    }
+
+    // Kullanıcı tablosunu render et
+    function renderUsersTable(users) {
+        $('#usersTableBody').empty();
+
+        let usersTableHTML = '';
+
+        if (users.length > 0) {
+            users.forEach(user => {
+                const initials = getInitials(user.firstName, user.lastName);
+                const color = getAvatarColor(user.firstName + user.lastName);
+                const formattedDate = formatDate(user.createDate);
+                const mock = mockUserOrderData[user.id] || { orderCount: 0, totalSpent: 0, isVip: false };
+                const verificationBadge = user.verification
+                    ? '<span class="badge-verified" title="Doğrulanmış"><i class="fa fa-circle-check"></i> Doğrulanmış</span>'
+                    : '<span class="badge-unverified" title="Doğrulanmamış"><i class="fa fa-circle-xmark"></i> Doğrulanmamış</span>';
+                const vipBadge = mock.isVip ? '<span class="badge-vip"><i class="fa fa-crown"></i> VIP</span>' : '';
+
+                usersTableHTML += `
+                    <tr class="user-row" data-user-id="${user.id}">
+                        <td class="user-cell">
+                            <div class="user-cell-wrapper">
+                                <div class="user-avatar-sm" style="background: ${color};">${initials}</div>
+                                <div class="user-cell-info">
+                                    <div class="user-cell-name">${user.firstName} ${user.lastName} ${vipBadge}</div>
+                                    <div class="user-cell-email">${user.email}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><strong>${mock.orderCount}</strong></td>
+                        <td>${mock.totalSpent > 0 ? formatCurrency(mock.totalSpent) : '-'}</td>
+                        <td>${formattedDate}</td>
+                        <td>${verificationBadge}</td>
+                        <td class="user-actions-cell">
+                            <div class="actions-wrapper">
+                                <button class="user-action-btn btn-view-user" data-user-id="${user.id}" title="Detay"><i class="fa fa-eye"></i></button>
+                                <button class="user-action-btn btn-discount-user" data-user-id="${user.id}" title="İndirim"><i class="fa fa-percent"></i></button>
+                                <button class="user-action-btn btn-vip-user ${mock.isVip ? 'active' : ''}" data-user-id="${user.id}" title="VIP"><i class="fa fa-crown"></i></button>
+                            </div>
+                        </td>
+                    </tr>`;
+            });
+        } else {
+            usersTableHTML = `
+                <tr>
+                    <td colspan="6" class="empty-table-row">Kullanıcı bulunamadı.</td>
+                </tr>`;
+        }
+
+        $('#usersTableBody').html(usersTableHTML);
     }
 
 
@@ -626,8 +660,7 @@ $(document).ready(function() {
                 const errorMessage = xhr.responseJSON?.Message;
 
                 if (xhr.status === 401) {
-                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
-                    handleLogout(errorMessage); 
+                    handleLogout(errorMessage);
                     return;
                 }
 
@@ -636,37 +669,529 @@ $(document).ready(function() {
         });
     }
 
+    // Kullanıcı istatistiklerini getir (büyük sayfa ile tüm kullanıcıları çek)
+    function fetchUserStats() {
+        $.ajax({
+            url: `${baseUrl}users/getall?pageNumber=1&pageSize=10000`,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                const users = response.data || [];
+                const total = response.totalItems || users.length;
+                const verified = users.filter(u => u.verification === true).length;
+                const unverified = total - verified;
 
+                // Bu ay kayıt olan kullanıcıları hesapla
+                const now = new Date();
+                const thisMonth = users.filter(u => {
+                    const d = new Date(u.createDate);
+                    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+                }).length;
+
+                // Mock sipariş verileri üret
+                generateMockUserStats(users);
+
+                // Toplam gelir ve ortalama sepet hesapla
+                const allMock = Object.values(mockUserOrderData);
+                const totalRevenue = allMock.reduce((sum, m) => sum + m.totalSpent, 0);
+                const ordersWithSpent = allMock.filter(m => m.orderCount > 0);
+                const avgBasket = ordersWithSpent.length > 0
+                    ? Math.round(ordersWithSpent.reduce((sum, m) => sum + m.avgBasket, 0) / ordersWithSpent.length)
+                    : 0;
+
+                // İstatistik kartlarını güncelle
+                $('#statTotalUsers').text(total);
+                $('#statVerifiedUsers').text(verified);
+                $('#statUnverifiedUsers').text(unverified);
+                $('#statNewUsers').text(thisMonth);
+                $('#statTotalRevenue').text(formatCurrency(totalRevenue));
+                $('#statAvgBasket').text(formatCurrency(avgBasket));
+
+                // Grafikleri oluştur
+                initUserCharts(users);
+
+                // VIP Top 5 listesi oluştur
+                renderVipTopList(users);
+            },
+            error: function() {
+                $('#statTotalUsers').text('-');
+                $('#statVerifiedUsers').text('-');
+                $('#statUnverifiedUsers').text('-');
+                $('#statNewUsers').text('-');
+                $('#statTotalRevenue').text('-');
+                $('#statAvgBasket').text('-');
+            }
+        });
+    }
+
+    // Kullanıcı grafiklerini oluştur
+    function initUserCharts(users) {
+        // 1. Aylık Yeni Kullanıcı Trendi (Bar Chart)
+        const months = ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'];
+        const now = new Date();
+        const monthlyNew = new Array(12).fill(0);
+        users.forEach(u => {
+            const d = new Date(u.createDate);
+            if (d.getFullYear() === now.getFullYear()) {
+                monthlyNew[d.getMonth()]++;
+            }
+        });
+        // Geçmiş aylar için mock veri ekle (veri yoksa)
+        for (let i = 0; i < 12; i++) {
+            if (monthlyNew[i] === 0 && i < now.getMonth()) {
+                monthlyNew[i] = Math.floor(seededRandom(i + 100) * 15) + 3;
+            }
+        }
+
+        const newCtx = document.getElementById('usersNewChart');
+        if (newCtx) {
+            usersNewChartInstance = new Chart(newCtx, {
+                type: 'bar',
+                data: {
+                    labels: months,
+                    datasets: [{
+                        label: 'Yeni Kullanıcı',
+                        data: monthlyNew,
+                        backgroundColor: 'rgba(6, 182, 212, 0.7)',
+                        borderColor: '#06B6D4',
+                        borderWidth: 0,
+                        borderRadius: 6,
+                        borderSkipped: false,
+                        barPercentage: 0.6,
+                        categoryPercentage: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#F1F5F9' }, ticks: { color: '#64748B', font: { family: 'Poppins' } } },
+                        x: { grid: { display: false }, ticks: { color: '#64748B', font: { family: 'Poppins' } } }
+                    }
+                }
+            });
+        }
+
+        // 2. Sipariş Veren vs Vermeyen (Doughnut)
+        const allMock = Object.values(mockUserOrderData);
+        const withOrders = allMock.filter(m => m.orderCount > 0).length;
+        const withoutOrders = allMock.length - withOrders;
+
+        const orderCtx = document.getElementById('usersOrderChart');
+        if (orderCtx) {
+            usersOrderChartInstance = new Chart(orderCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Sipariş Veren', 'Sipariş Vermeyen'],
+                    datasets: [{
+                        data: [withOrders, withoutOrders],
+                        backgroundColor: ['#10B981', '#EF4444'],
+                        borderWidth: 0,
+                        spacing: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '65%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { padding: 20, usePointStyle: true, pointStyleWidth: 17, font: { family: 'Poppins', size: 13 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 3. Aktif Kullanıcı Trendi (Line Chart - Son 6 ay)
+        const activeMonths = [];
+        const activeData = [];
+        for (let i = 5; i >= 0; i--) {
+            const m = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            activeMonths.push(months[m.getMonth()]);
+            activeData.push(Math.floor(seededRandom(m.getMonth() + 200) * 40) + 20 + users.length * 0.3);
+        }
+
+        const activeCtx = document.getElementById('usersActiveChart');
+        if (activeCtx) {
+            usersActiveChartInstance = new Chart(activeCtx, {
+                type: 'line',
+                data: {
+                    labels: activeMonths,
+                    datasets: [{
+                        label: 'Aktif Kullanıcı',
+                        data: activeData,
+                        borderColor: '#8B5CF6',
+                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 5,
+                        pointBackgroundColor: '#8B5CF6',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#F1F5F9' }, ticks: { color: '#64748B', font: { family: 'Poppins' } } },
+                        x: { grid: { display: false }, ticks: { color: '#64748B', font: { family: 'Poppins' } } }
+                    }
+                }
+            });
+        }
+
+        // 4. Kullanıcı Kaybı / Churn (Doughnut)
+        const totalU = users.length;
+        const active = Math.floor(totalU * 0.6);
+        const atRisk = Math.floor(totalU * 0.25);
+        const churned = totalU - active - atRisk;
+
+        const churnCtx = document.getElementById('usersChurnChart');
+        if (churnCtx) {
+            usersChurnChartInstance = new Chart(churnCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Aktif', 'Risk Altında', 'Kayıp'],
+                    datasets: [{
+                        data: [active, atRisk, churned],
+                        backgroundColor: ['#10B981', '#F59E0B', '#EF4444'],
+                        borderWidth: 0,
+                        spacing: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '65%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { padding: 20, usePointStyle: true, pointStyleWidth: 17, font: { family: 'Poppins', size: 13 } }
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    // VIP Top 5 müşteriler listesi
+    function renderVipTopList(users) {
+        const ranked = users
+            .map(u => ({ ...u, mock: mockUserOrderData[u.id] || { orderCount: 0, totalSpent: 0, isVip: false } }))
+            .filter(u => u.mock.totalSpent > 0)
+            .sort((a, b) => b.mock.totalSpent - a.mock.totalSpent)
+            .slice(0, 5);
+
+        let html = '';
+        ranked.forEach((user, idx) => {
+            const initials = getInitials(user.firstName, user.lastName);
+            const color = getAvatarColor(user.firstName + user.lastName);
+            const medal = idx === 0 ? 'vip-gold' : idx === 1 ? 'vip-silver' : idx === 2 ? 'vip-bronze' : '';
+
+            html += `
+            <div class="vip-item ${medal}">
+                <div class="vip-rank">${idx + 1}</div>
+                <div class="user-avatar-sm" style="background: ${color};">${initials}</div>
+                <div class="vip-info">
+                    <div class="vip-name">${user.firstName} ${user.lastName}</div>
+                    <div class="vip-email">${user.email}</div>
+                </div>
+                <div class="vip-stats">
+                    <div class="vip-amount">${formatCurrency(user.mock.totalSpent)}</div>
+                    <div class="vip-orders">${user.mock.orderCount} sipariş</div>
+                </div>
+            </div>`;
+        });
+
+        if (!html) {
+            html = '<p style="text-align:center;color:#94A3B8;padding:20px">Henüz sipariş verisi yok.</p>';
+        }
+
+        $('#vipTopList').html(html);
+    }
+
+    // Arama ve filtreleme
+    function filterAndSearchUsers() {
+        const searchText = ($('#usersSearchInput').val() || '').toLowerCase().trim();
+
+        let filtered = allUsersData;
+
+        // Doğrulama filtresi
+        if (currentFilter === 'verified') {
+            filtered = filtered.filter(u => u.verification === true);
+        } else if (currentFilter === 'unverified') {
+            filtered = filtered.filter(u => u.verification !== true);
+        } else if (currentFilter === 'vip') {
+            filtered = filtered.filter(u => mockUserOrderData[u.id] && mockUserOrderData[u.id].isVip);
+        }
+
+        // Arama filtresi
+        if (searchText) {
+            filtered = filtered.filter(u =>
+                (u.firstName && u.firstName.toLowerCase().includes(searchText)) ||
+                (u.lastName && u.lastName.toLowerCase().includes(searchText)) ||
+                (u.email && u.email.toLowerCase().includes(searchText)) ||
+                ((u.firstName + ' ' + u.lastName).toLowerCase().includes(searchText))
+            );
+        }
+
+        renderUsersTable(filtered);
+    }
+
+    // Arama kutusu event
+    $(document).on('input', '#usersSearchInput', function() {
+        filterAndSearchUsers();
+    });
+
+    // Filtre butonları event
+    $(document).on('click', '.users-filter-btn', function() {
+        $('.users-filter-btn').removeClass('active');
+        $(this).addClass('active');
+        currentFilter = $(this).data('filter');
+        filterAndSearchUsers();
+    });
+
+
+
+    // Avatar renk paleti
+    const avatarColors = ['#06B6D4', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#14B8A6', '#F97316', '#6366F1', '#84CC16'];
+
+    function getAvatarColor(name) {
+        let hash = 0;
+        for (let i = 0; i < name.length; i++) {
+            hash = name.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        return avatarColors[Math.abs(hash) % avatarColors.length];
+    }
+
+    function getInitials(firstName, lastName) {
+        return ((firstName ? firstName[0] : '') + (lastName ? lastName[0] : '')).toUpperCase();
+    }
+
+    // Tüm kullanıcı verisini sakla (arama/filtre için)
+    let allUsersData = [];
+    let currentFilter = 'all';
+    let mockUserOrderData = {};
+    let usersNewChartInstance = null;
+    let usersOrderChartInstance = null;
+    let usersActiveChartInstance = null;
+    let usersChurnChartInstance = null;
+
+    // Deterministik pseudo-random (user.id bazlı, her yenilemede aynı sonuç)
+    function seededRandom(seed) {
+        let x = Math.sin(seed * 9301 + 49297) * 49297;
+        return x - Math.floor(x);
+    }
+
+    // Mock sipariş verisi üret
+    function generateMockUserStats(users) {
+        mockUserOrderData = {};
+        users.forEach(user => {
+            const seed = user.id;
+            const hasOrders = seededRandom(seed) > 0.25; // %75 kullanıcı sipariş vermiş
+            const orderCount = hasOrders ? Math.floor(seededRandom(seed + 1) * 45) + 1 : 0;
+            const avgBasket = hasOrders ? Math.floor(seededRandom(seed + 2) * 350) + 50 : 0;
+            const totalSpent = orderCount * avgBasket;
+            const daysSinceLastOrder = hasOrders ? Math.floor(seededRandom(seed + 3) * 90) : -1;
+            const lastOrderDate = hasOrders ? new Date(Date.now() - daysSinceLastOrder * 86400000) : null;
+
+            mockUserOrderData[user.id] = {
+                orderCount,
+                totalSpent,
+                avgBasket,
+                lastOrderDate,
+                isVip: false // VIP sonra hesaplanacak
+            };
+        });
+
+        // Top %10 harcama yapanları VIP olarak işaretle
+        const sortedBySpent = Object.entries(mockUserOrderData)
+            .filter(([, d]) => d.totalSpent > 0)
+            .sort((a, b) => b[1].totalSpent - a[1].totalSpent);
+        const vipCount = Math.max(1, Math.ceil(sortedBySpent.length * 0.1));
+        sortedBySpent.slice(0, vipCount).forEach(([id]) => {
+            mockUserOrderData[id].isVip = true;
+        });
+
+        return mockUserOrderData;
+    }
+
+    function formatCurrency(amount) {
+        return '₺' + amount.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    // Chart instance'ları temizle
+    function destroyUserCharts() {
+        if (usersNewChartInstance) { usersNewChartInstance.destroy(); usersNewChartInstance = null; }
+        if (usersOrderChartInstance) { usersOrderChartInstance.destroy(); usersOrderChartInstance = null; }
+        if (usersActiveChartInstance) { usersActiveChartInstance.destroy(); usersActiveChartInstance = null; }
+        if (usersChurnChartInstance) { usersChurnChartInstance.destroy(); usersChurnChartInstance = null; }
+    }
 
     // Kullanıcıları getiren fonksiyon
     function getUsers(page = 1) {
 
         // Dashboard içeriğini temizle
+        destroyUserCharts();
         $('.dashboard-content').empty();
-                
+
         currentPage = page;
 
         // Kullanıcılar için HTML yapısı
         let usersHTML = `
         <div class="users-container">
             <div class="users-header">
-                <h2>Kullanıcı Listesi</h2>
+                <h2>Kullanıcı Yönetimi</h2>
             </div>
+
+            <!-- İstatistik Kartları -->
+            <div class="users-stats-grid">
+                <div class="users-stat-card" style="--accent-color: #06B6D4;">
+                    <div class="users-stat-icon">
+                        <i class="fa fa-users"></i>
+                    </div>
+                    <div class="users-stat-info">
+                        <span class="users-stat-count" id="statTotalUsers">-</span>
+                        <span class="users-stat-label">Toplam Kullanıcı</span>
+                    </div>
+                </div>
+                <div class="users-stat-card" style="--accent-color: #10B981;">
+                    <div class="users-stat-icon">
+                        <i class="fa fa-user-check"></i>
+                    </div>
+                    <div class="users-stat-info">
+                        <span class="users-stat-count" id="statVerifiedUsers">-</span>
+                        <span class="users-stat-label">Doğrulanmış</span>
+                    </div>
+                </div>
+                <div class="users-stat-card" style="--accent-color: #EF4444;">
+                    <div class="users-stat-icon">
+                        <i class="fa fa-user-xmark"></i>
+                    </div>
+                    <div class="users-stat-info">
+                        <span class="users-stat-count" id="statUnverifiedUsers">-</span>
+                        <span class="users-stat-label">Doğrulanmamış</span>
+                    </div>
+                </div>
+                <div class="users-stat-card" style="--accent-color: #F59E0B;">
+                    <div class="users-stat-icon">
+                        <i class="fa fa-user-plus"></i>
+                    </div>
+                    <div class="users-stat-info">
+                        <span class="users-stat-count" id="statNewUsers">-</span>
+                        <span class="users-stat-label">Bu Ay Kayıt</span>
+                    </div>
+                </div>
+                <div class="users-stat-card" style="--accent-color: #8B5CF6;">
+                    <div class="users-stat-icon">
+                        <i class="fa fa-turkish-lira-sign"></i>
+                    </div>
+                    <div class="users-stat-info">
+                        <span class="users-stat-count" id="statTotalRevenue">-</span>
+                        <span class="users-stat-label">Toplam Gelir</span>
+                    </div>
+                </div>
+                <div class="users-stat-card" style="--accent-color: #EC4899;">
+                    <div class="users-stat-icon">
+                        <i class="fa fa-receipt"></i>
+                    </div>
+                    <div class="users-stat-info">
+                        <span class="users-stat-count" id="statAvgBasket">-</span>
+                        <span class="users-stat-label">Ort. Sepet Tutarı</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Arama ve Filtre Çubuğu -->
+            <div class="users-toolbar">
+                <div class="users-search-box">
+                    <i class="fa fa-search"></i>
+                    <input type="text" id="usersSearchInput" placeholder="İsim veya e-posta ile ara...">
+                </div>
+                <div class="users-filter-group">
+                    <button class="users-filter-btn active" data-filter="all">Tümü</button>
+                    <button class="users-filter-btn" data-filter="verified">Doğrulanmış</button>
+                    <button class="users-filter-btn" data-filter="unverified">Doğrulanmamış</button>
+                    <button class="users-filter-btn" data-filter="vip"><i class="fa fa-crown" style="color:#F59E0B;margin-right:4px"></i>VIP</button>
+                </div>
+            </div>
+
             <div class="users-body">
                 <div class="users-table-wrapper px-7">
                     <table class="users-table">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Ad</th>
-                                <th>Soyad</th>
-                                <th>E-posta</th>
+                                <th>Kullanıcı</th>
+                                <th>Sipariş</th>
+                                <th>Harcama</th>
                                 <th>Kayıt Tarihi</th>
+                                <th>Durum</th>
+                                <th>İşlemler</th>
                             </tr>
                         </thead>
                         <tbody id="usersTableBody">
                         </tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grafikler -->
+        <div class="users-charts-section">
+            <div class="charts-grid">
+                <div class="chart-card chart-large">
+                    <div class="chart-card-header">
+                        <h3>Aylık Yeni Kullanıcı Trendi</h3>
+                    </div>
+                    <div class="chart-card-body">
+                        <canvas id="usersNewChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card chart-small">
+                    <div class="chart-card-header">
+                        <h3>Sipariş Veren ve Vermeyen</h3>
+                    </div>
+                    <div class="chart-card-body">
+                        <canvas id="usersOrderChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="charts-grid">
+                <div class="chart-card chart-large">
+                    <div class="chart-card-header">
+                        <h3>Aktif Kullanıcı Trendi</h3>
+                    </div>
+                    <div class="chart-card-body">
+                        <canvas id="usersActiveChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card chart-small">
+                    <div class="chart-card-header">
+                        <h3>Kullanıcı Kaybı (Churn)</h3>
+                    </div>
+                    <div class="chart-card-body">
+                        <canvas id="usersChurnChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIP Top 5 Müşteriler -->
+        <div class="users-vip-section">
+            <div class="chart-card">
+                <div class="chart-card-header">
+                    <h3><i class="fa fa-crown" style="color:#F59E0B;margin-right:8px"></i>Top 5 VIP Müşteriler</h3>
+                </div>
+                <div class="chart-card-body vip-card-body">
+                    <div id="vipTopList" class="vip-top-list"></div>
                 </div>
             </div>
         </div>
@@ -676,6 +1201,7 @@ $(document).ready(function() {
         $('.dashboard-content').append(usersHTML);
 
         fetchUsers();
+        fetchUserStats();
     }
 
 
@@ -695,7 +1221,7 @@ $(document).ready(function() {
     // Kullanıcı detaylarını getiren fonksiyon
     function getUserDetails(userId) {
         const token = localStorage.getItem('token');
-        
+
         $.ajax({
             url: `${baseUrl}users/get?userId=${userId}`,
             type: 'GET',
@@ -705,84 +1231,229 @@ $(document).ready(function() {
             success: function(response) {
                 if (response.success && response.data) {
                     const user = response.data;
-                    const createDate = new Date(user.createDate);
-                    const lastLoginDate = user.lastLoginDate ? new Date(user.lastLoginDate) : null;
-                    
-                    // Tarihleri formatla
-                    const formattedCreateDate = `${createDate.getDate().toString().padStart(2, '0')}.${(createDate.getMonth() + 1).toString().padStart(2, '0')}.${createDate.getFullYear()}`;
-                    const formattedLastLoginDate = lastLoginDate ? `${lastLoginDate.getDate().toString().padStart(2, '0')}.${(lastLoginDate.getMonth() + 1).toString().padStart(2, '0')}.${lastLoginDate.getFullYear()}` : '-';
-                    
+                    const formattedCreateDate = formatDate(user.createDate);
+                    const formattedLastLoginDate = user.lastLoginDate ? formatDate(user.lastLoginDate) : '-';
+                    const initials = getInitials(user.firstName, user.lastName);
+                    const color = getAvatarColor(user.firstName + user.lastName);
+                    const mock = mockUserOrderData[user.id] || { orderCount: 0, totalSpent: 0, avgBasket: 0, lastOrderDate: null, isVip: false };
+
+                    // Kullanıcı durumunu belirle
+                    const daysSinceLogin = user.lastLoginDate
+                        ? Math.floor((Date.now() - new Date(user.lastLoginDate).getTime()) / 86400000)
+                        : 999;
+                    let statusClass = 'status-active';
+                    let statusText = 'Aktif';
+                    let statusIcon = 'fa-circle-check';
+                    if (daysSinceLogin > 60) {
+                        statusClass = 'status-churned';
+                        statusText = 'Kayıp';
+                        statusIcon = 'fa-circle-xmark';
+                    } else if (daysSinceLogin > 30) {
+                        statusClass = 'status-risk';
+                        statusText = 'Risk Altında';
+                        statusIcon = 'fa-triangle-exclamation';
+                    }
+
+                    const vipBadgeHTML = mock.isVip
+                        ? '<div class="udm-vip-crown"><i class="fa fa-crown"></i></div>'
+                        : '';
+
+                    const verifiedIcon = user.verification
+                        ? '<i class="fa fa-circle-check udm-verified-tick"></i>'
+                        : '';
+
                     let userDetailsHTML = `
                     <div class="user-details-modal">
-                        <div class="user-details-content">
-                            <div class="user-details-header">
-                                <h2>Kullanıcı Detayı</h2>
-                                <span class="close-user-details">&times;</span>
-                            </div>
-                            <div class="user-details-body">
-                                <div class="user-info">
-                                    <div class="user-info-item">
-                                        <div class="user-label">
-                                            <strong>Adı Soyadı</strong> 
-                                            <span>:</span>
-                                        </div>
-                                        <p class="user-value">${user.firstName} ${user.lastName}</p>
-                                    </div>
-                                    <div class="user-info-item">
-                                        <div class="user-label">
-                                            <strong>Email</strong> 
-                                            <span>:</span>
-                                        </div>
-                                        <p class="user-value">${user.email}</p>
-                                    </div>
-                                    <div class="user-info-item">
-                                        <div class="user-label">
-                                            <strong>Kayıt Tarihi</strong> 
-                                            <span>:</span>
-                                        </div>
-                                        <p class="user-value">${formattedCreateDate}</p>
-                                    </div>
-                                    <div class="user-info-item">
-                                        <div class="user-label">
-                                            <strong>Doğrulama</strong> 
-                                            <span>:</span>
-                                        </div>
-                                        <p class="user-value">${user.verification ? 'Yapılmış' : 'Yapılmamış'}</p>
-                                    </div>
-                                    <div class="user-info-item">
-                                        <div class="user-label">
-                                            <strong>Son Giriş Tarihi</strong> 
-                                            <span>:</span>
-                                        </div>
-                                        <p class="user-value">${formattedLastLoginDate}</p>
+                        <div class="udm-panel">
+
+                            <!-- Üst Profil Bölümü - Gradient Header -->
+                            <div class="udm-hero" style="--hero-color: ${color};">
+                                <button class="udm-close">&times;</button>
+                                ${vipBadgeHTML}
+                                <div class="udm-avatar" style="background: ${color}; box-shadow: 0 0 0 4px #fff, 0 0 0 6px ${color}40;">${initials}</div>
+                                <div class="udm-identity">
+                                    <h3 class="udm-fullname">${user.firstName} ${user.lastName} ${verifiedIcon}</h3>
+                                    <p class="udm-email"><i class="fa fa-envelope"></i> ${user.email}</p>
+                                    <div class="udm-badges">
+                                        <span class="udm-status-pill ${statusClass}"><i class="fa ${statusIcon}"></i> ${statusText}</span>
+                                        ${user.verification ? '<span class="udm-status-pill status-verified"><i class="fa fa-shield-halved"></i> Doğrulanmış</span>' : '<span class="udm-status-pill status-unverified"><i class="fa fa-shield-halved"></i> Doğrulanmamış</span>'}
+                                        ${mock.isVip ? '<span class="udm-status-pill status-vip"><i class="fa fa-crown"></i> VIP Müşteri</span>' : ''}
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- İstatistik Kartları Grid -->
+                            <div class="udm-stats-row">
+                                <div class="udm-stat-card">
+                                    <div class="udm-stat-icon" style="background: #EFF6FF; color: #3B82F6;"><i class="fa fa-shopping-bag"></i></div>
+                                    <div class="udm-stat-data">
+                                        <span class="udm-stat-number">${mock.orderCount}</span>
+                                        <span class="udm-stat-text">Toplam Sipariş</span>
+                                    </div>
+                                </div>
+                                <div class="udm-stat-card">
+                                    <div class="udm-stat-icon" style="background: #F0FDF4; color: #22C55E;"><i class="fa fa-turkish-lira-sign"></i></div>
+                                    <div class="udm-stat-data">
+                                        <span class="udm-stat-number">${formatCurrency(mock.totalSpent)}</span>
+                                        <span class="udm-stat-text">Toplam Harcama</span>
+                                    </div>
+                                </div>
+                                <div class="udm-stat-card">
+                                    <div class="udm-stat-icon" style="background: #FFF7ED; color: #F97316;"><i class="fa fa-receipt"></i></div>
+                                    <div class="udm-stat-data">
+                                        <span class="udm-stat-number">${formatCurrency(mock.avgBasket)}</span>
+                                        <span class="udm-stat-text">Ort. Sepet</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tab Menüsü -->
+                            <div class="udm-tabs">
+                                <button class="udm-tab active" data-tab="info"><i class="fa fa-user"></i> Bilgiler</button>
+                                <button class="udm-tab" data-tab="timeline"><i class="fa fa-clock-rotate-left"></i> Zaman Çizelgesi</button>
+                                <button class="udm-tab" data-tab="actions"><i class="fa fa-bolt"></i> Aksiyonlar</button>
+                            </div>
+
+                            <!-- Tab İçerikleri -->
+                            <div class="udm-tab-content">
+
+                                <!-- Bilgiler Tab -->
+                                <div class="udm-tab-pane active" id="udm-tab-info">
+                                    <div class="udm-info-grid">
+                                        <div class="udm-info-card">
+                                            <div class="udm-info-icon"><i class="fa fa-calendar-plus"></i></div>
+                                            <div class="udm-info-data">
+                                                <span class="udm-info-label">Kayıt Tarihi</span>
+                                                <span class="udm-info-value">${formattedCreateDate}</span>
+                                            </div>
+                                        </div>
+                                        <div class="udm-info-card">
+                                            <div class="udm-info-icon"><i class="fa fa-right-to-bracket"></i></div>
+                                            <div class="udm-info-data">
+                                                <span class="udm-info-label">Son Giriş</span>
+                                                <span class="udm-info-value">${formattedLastLoginDate}</span>
+                                            </div>
+                                        </div>
+                                        <div class="udm-info-card">
+                                            <div class="udm-info-icon"><i class="fa fa-bag-shopping"></i></div>
+                                            <div class="udm-info-data">
+                                                <span class="udm-info-label">Son Sipariş</span>
+                                                <span class="udm-info-value">${mock.lastOrderDate ? formatDate(mock.lastOrderDate.toISOString()) : 'Henüz yok'}</span>
+                                            </div>
+                                        </div>
+                                        <div class="udm-info-card">
+                                            <div class="udm-info-icon"><i class="fa fa-fingerprint"></i></div>
+                                            <div class="udm-info-data">
+                                                <span class="udm-info-label">Kullanıcı ID</span>
+                                                <span class="udm-info-value">#${user.id}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Zaman Çizelgesi Tab -->
+                                <div class="udm-tab-pane" id="udm-tab-timeline">
+                                    <div class="udm-timeline">
+                                        ${mock.lastOrderDate ? `
+                                        <div class="udm-tl-item">
+                                            <div class="udm-tl-dot" style="background:#3B82F6"></div>
+                                            <div class="udm-tl-body">
+                                                <span class="udm-tl-date">${formatDate(mock.lastOrderDate.toISOString())}</span>
+                                                <p class="udm-tl-text"><i class="fa fa-bag-shopping"></i> Son sipariş verildi - ${formatCurrency(mock.avgBasket)}</p>
+                                            </div>
+                                        </div>` : ''}
+                                        ${user.lastLoginDate ? `
+                                        <div class="udm-tl-item">
+                                            <div class="udm-tl-dot" style="background:#22C55E"></div>
+                                            <div class="udm-tl-body">
+                                                <span class="udm-tl-date">${formattedLastLoginDate}</span>
+                                                <p class="udm-tl-text"><i class="fa fa-right-to-bracket"></i> Son giriş yapıldı</p>
+                                            </div>
+                                        </div>` : ''}
+                                        ${mock.orderCount > 5 ? `
+                                        <div class="udm-tl-item">
+                                            <div class="udm-tl-dot" style="background:#F59E0B"></div>
+                                            <div class="udm-tl-body">
+                                                <span class="udm-tl-date">Milestone</span>
+                                                <p class="udm-tl-text"><i class="fa fa-trophy"></i> ${mock.orderCount} sipariş tamamlandı!</p>
+                                            </div>
+                                        </div>` : ''}
+                                        ${user.verification ? `
+                                        <div class="udm-tl-item">
+                                            <div class="udm-tl-dot" style="background:#8B5CF6"></div>
+                                            <div class="udm-tl-body">
+                                                <span class="udm-tl-date">Hesap</span>
+                                                <p class="udm-tl-text"><i class="fa fa-circle-check"></i> E-posta doğrulaması tamamlandı</p>
+                                            </div>
+                                        </div>` : ''}
+                                        <div class="udm-tl-item">
+                                            <div class="udm-tl-dot" style="background:#06B6D4"></div>
+                                            <div class="udm-tl-body">
+                                                <span class="udm-tl-date">${formattedCreateDate}</span>
+                                                <p class="udm-tl-text"><i class="fa fa-user-plus"></i> Hesap oluşturuldu</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Aksiyonlar Tab -->
+                                <div class="udm-tab-pane" id="udm-tab-actions">
+                                    <div class="udm-actions-grid">
+                                        <button class="udm-action-card btn-deactivate" data-user-id="${user.id}">
+                                            <div class="udm-action-icon" style="background:#FEE2E2; color:#DC2626;"><i class="fa fa-ban"></i></div>
+                                            <div class="udm-action-text">
+                                                <strong>Pasif Yap</strong>
+                                                <span>Hesabı geçici olarak dondur</span>
+                                            </div>
+                                        </button>
+                                        <button class="udm-action-card btn-discount" data-user-id="${user.id}">
+                                            <div class="udm-action-icon" style="background:#EDE9FE; color:#7C3AED;"><i class="fa fa-percent"></i></div>
+                                            <div class="udm-action-text">
+                                                <strong>İndirim Tanımla</strong>
+                                                <span>Özel indirim kuponu oluştur</span>
+                                            </div>
+                                        </button>
+                                        <button class="udm-action-card btn-notify" data-user-id="${user.id}">
+                                            <div class="udm-action-icon" style="background:#CFFAFE; color:#0891B2;"><i class="fa fa-envelope"></i></div>
+                                            <div class="udm-action-text">
+                                                <strong>Bildirim Gönder</strong>
+                                                <span>E-posta veya push bildirim</span>
+                                            </div>
+                                        </button>
+                                        <button class="udm-action-card btn-vip-toggle ${mock.isVip ? 'active' : ''}" data-user-id="${user.id}">
+                                            <div class="udm-action-icon" style="background:#FEF3C7; color:#D97706;"><i class="fa fa-crown"></i></div>
+                                            <div class="udm-action-text">
+                                                <strong>${mock.isVip ? 'VIP Kaldır' : 'VIP Etiketle'}</strong>
+                                                <span>${mock.isVip ? 'VIP ayrıcalıklarını kaldır' : 'Özel ayrıcalıklar tanımla'}</span>
+                                            </div>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>`;
-                    
-                    // Eğer detay modülü zaten varsa kaldır
+
                     $('.user-details-modal').remove();
-                    
-                    // Detay modülünü ekle
                     $('body').append(userDetailsHTML);
-                    
-                    // Detay modülünü göster
                     $('.user-details-modal').fadeIn(300);
-                    
-                    // Kapatma butonuna tıklandığında
-                    $('.close-user-details').click(function() {
-                        $('.user-details-modal').fadeOut(300, function() {
-                            $(this).remove();
-                        });
+
+                    // Tab switching
+                    $('.udm-tab').click(function() {
+                        const tab = $(this).data('tab');
+                        $('.udm-tab').removeClass('active');
+                        $(this).addClass('active');
+                        $('.udm-tab-pane').removeClass('active');
+                        $(`#udm-tab-${tab}`).addClass('active');
                     });
-                    
-                    // Modül dışına tıklandığında kapat
+
+                    $('.udm-close').click(function() {
+                        $('.user-details-modal').fadeOut(300, function() { $(this).remove(); });
+                    });
+
                     $('.user-details-modal').click(function(e) {
                         if ($(e.target).hasClass('user-details-modal')) {
-                            $('.user-details-modal').fadeOut(300, function() {
-                                $(this).remove();
-                            });
+                            $('.user-details-modal').fadeOut(300, function() { $(this).remove(); });
                         }
                     });
                 } else {
@@ -793,7 +1464,6 @@ $(document).ready(function() {
                 const errorMessage = xhr.responseJSON?.Message;
 
                 if (xhr.status === 401) {
-                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor. 
                     handleLogout(errorMessage);
                     return;
                 }
@@ -803,12 +1473,104 @@ $(document).ready(function() {
         });
     }
 
+    // Kullanıcı detay görüntüleme butonu (tablo)
+    $(document).on('click', '.btn-view-user', function(e) {
+        e.stopPropagation();
+        const userId = $(this).data('user-id');
+        getUserDetails(userId);
+    });
 
     // Kullanıcı satırına tıklama olayı
-    $(document).on('click', '.user-row', function() {
+    $(document).on('click', '.user-row', function(e) {
+        // Aksiyon butonlarına tıklanmadıysa detay aç
+        if ($(e.target).closest('.user-actions-cell').length) return;
         const userId = $(this).data('user-id');
-       
         getUserDetails(userId);
+    });
+
+    // İndirim butonu (tablo ve modal)
+    $(document).on('click', '.btn-discount-user, .btn-discount', function(e) {
+        e.stopPropagation();
+        const userId = $(this).data('user-id');
+        Swal.fire({
+            title: 'İndirim Tanımla',
+            input: 'number',
+            inputLabel: 'İndirim yüzdesi (%)',
+            inputPlaceholder: 'Örn: 15',
+            inputAttributes: { min: 1, max: 100 },
+            showCancelButton: true,
+            confirmButtonText: 'Uygula',
+            cancelButtonText: 'İptal',
+            confirmButtonColor: '#8B5CF6'
+        }).then((result) => {
+            if (result.isConfirmed && result.value) {
+                showToast('success', 'Başarılı', `%${result.value} indirim kullanıcıya tanımlandı.`);
+            }
+        });
+    });
+
+    // VIP butonu (tablo)
+    $(document).on('click', '.btn-vip-user', function(e) {
+        e.stopPropagation();
+        const userId = $(this).data('user-id');
+        const btn = $(this);
+        const isVip = btn.hasClass('active');
+        btn.toggleClass('active');
+        if (mockUserOrderData[userId]) {
+            mockUserOrderData[userId].isVip = !isVip;
+        }
+        showToast('success', 'Başarılı', isVip ? 'VIP etiketi kaldırıldı.' : 'Kullanıcı VIP olarak etiketlendi.');
+    });
+
+    // Pasif yapma butonu (modal)
+    $(document).on('click', '.btn-deactivate', function(e) {
+        e.stopPropagation();
+        Swal.fire({
+            title: 'Kullanıcıyı Pasif Yap',
+            text: 'Bu kullanıcıyı pasif hale getirmek istediğinize emin misiniz?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Evet, Pasif Yap',
+            cancelButtonText: 'İptal',
+            confirmButtonColor: '#EF4444'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                showToast('success', 'Başarılı', 'Kullanıcı pasif hale getirildi.');
+            }
+        });
+    });
+
+    // Bildirim gönder butonu (modal)
+    $(document).on('click', '.btn-notify', function(e) {
+        e.stopPropagation();
+        Swal.fire({
+            title: 'Bildirim Gönder',
+            input: 'textarea',
+            inputLabel: 'Mesajınız',
+            inputPlaceholder: 'Kullanıcıya gönderilecek mesaj...',
+            showCancelButton: true,
+            confirmButtonText: 'Gönder',
+            cancelButtonText: 'İptal',
+            confirmButtonColor: '#06B6D4'
+        }).then((result) => {
+            if (result.isConfirmed && result.value) {
+                showToast('success', 'Başarılı', 'Bildirim başarıyla gönderildi.');
+            }
+        });
+    });
+
+    // VIP toggle butonu (modal)
+    $(document).on('click', '.btn-vip-toggle', function(e) {
+        e.stopPropagation();
+        const userId = $(this).data('user-id');
+        const btn = $(this);
+        const isVip = btn.hasClass('active');
+        btn.toggleClass('active');
+        btn.html(isVip ? '<i class="fa fa-crown"></i> VIP Etiketle' : '<i class="fa fa-crown"></i> VIP Kaldır');
+        if (mockUserOrderData[userId]) {
+            mockUserOrderData[userId].isVip = !isVip;
+        }
+        showToast('success', 'Başarılı', isVip ? 'VIP etiketi kaldırıldı.' : 'Kullanıcı VIP olarak etiketlendi.');
     });
 
 
@@ -6038,7 +6800,7 @@ $(document).ready(function() {
         menu.toggleClass("active");
     
         if (menu.hasClass("active")) {
-            toggle.css("border-color", "#ffc515");
+            toggle.css("border-color", "#1E293B");
             dropdown.find('i').addClass('rotated-180');
         } else {
             toggle.css("border-color", "#dedbdb");
