@@ -2337,28 +2337,51 @@ $(document).ready(function() {
                               
                     let menuUpdateHTML = `
                     <div class="menu-update-modal" data-menu-id="${menu.id}">
-                        <div class="menu-update-content">
-                            <div class="menu-update-header">
-                                <h2>Menü Güncelleme</h2>
-                                <span class="close-menu-update">&times;</span>
+                        <div class="mum-panel">
+                            <!-- Hero Header -->
+                            <div class="mum-hero">
+                                <button class="mum-close close-menu-update"><i class="fa fa-xmark"></i></button>
+                                <h2 class="mum-title">Menü Güncelleme</h2>
+                                <p class="mum-subtitle">Menü bilgilerini düzenleyin.</p>
                             </div>
-                            <div class="menu-update-body">
-                                <div class="menu-image-container">
-                                    <img src="${menu.imagePath}" alt="${menu.name}" class="menu-update-image" id="previewImage">
 
-                                    <label for="menuImage" class="custom-upload-button">Resim Seç</label>
+                            <!-- Body -->
+                            <div class="mum-body">
+                                <!-- Image Section -->
+                                <div class="mum-image-section">
+                                    <label class="mum-image-label">Menü Görseli</label>
+                                    <div class="mum-image-wrapper">
+                                        <img src="${menu.imagePath}" alt="${menu.name}" class="mum-image" id="previewImage">
+                                        <label for="menuImage" class="mum-image-overlay">
+                                            <i class="fa fa-camera"></i>
+                                            <span>Değiştir</span>
+                                        </label>
+                                    </div>
                                     <input type="file" id="menuImage" accept="image/*" class="image-input">
                                 </div>
-                                <div class="menu-info">
-                                    <div class="menu-info-item">
-                                        <div class="menu-label">
-                                            <strong>Menü Adı</strong> 
-                                            <span>:</span>
-                                        </div>
-                                        <input type="text" class="menu-value" value="${menu.name}">
+
+                                <!-- Form Section -->
+                                <div class="mum-form-section">
+                                    <div class="mum-field">
+                                        <label class="mum-field-label">
+                                            <i class="fa fa-utensils"></i>
+                                            Menü Adı
+                                        </label>
+                                        <input type="text" class="mum-field-input field-update menu-value" value="${menu.name}" placeholder="Menü adını giriniz...">
                                     </div>
                                 </div>
-                                <button class="btn-update-menu">Güncelle</button>
+
+                                <!-- Actions -->
+                                <div class="mum-actions">
+                                    <button class="mum-btn-cancel close-menu-update-btn">
+                                        <i class="fa fa-xmark"></i>
+                                        İptal
+                                    </button>
+                                    <button class="mum-btn-update btn-update-menu">
+                                        <i class="fa fa-check"></i>
+                                        Güncelle
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>`;
@@ -2375,7 +2398,7 @@ $(document).ready(function() {
                     });
                     
                     // Kapatma butonuna tıklandığında
-                    $('.close-menu-update').click(function() {
+                    $('.close-menu-update, .close-menu-update-btn').click(function() {
                         $('.menu-update-modal').fadeOut(300, function() {
                             $(this).remove();
                         });
@@ -2494,27 +2517,51 @@ $(document).ready(function() {
     function createMenu() {
         let menuCreateHTML = `
         <div class="menu-create-modal">
-            <div class="menu-create-content">
-                <div class="menu-create-header">
-                    <h2>Menü Ekleme</h2>
-                    <span class="close-menu-create">&times;</span>
+            <div class="mum-panel">
+                <!-- Hero Header -->
+                <div class="mum-hero" style="background: linear-gradient(135deg,rgb(66, 182, 143),rgb(15, 122, 88));">
+                    <button class="mum-close close-menu-create"><i class="fa fa-xmark"></i></button>
+                    <h2 class="mum-title">Yeni Menü Ekle</h2>
+                    <p class="mum-subtitle">Yeni bir menü kategorisi oluşturun.</p>
                 </div>
-                <div class="menu-create-body">
-                    <div class="menu-image-container">
-                        <img src="../../icons/default-menu-image-placeholder.png" alt="default-menu-image" class="menu-create-image" id="previewImage">
-                        <label for="menuImage" class="custom-upload-button">Resim Seç</label>
+
+                <!-- Body -->
+                <div class="mum-body">
+                    <!-- Image Section -->
+                    <div class="mum-image-section">
+                        <label class="mum-image-label">Menü Görseli</label>
+                        <div class="mum-image-wrapper mum-image-placeholder-wrapper">
+                            <img src="../../icons/default-menu-image-placeholder.png" alt="default-menu-image" class="mum-image" id="previewImage">
+                            <label for="menuImage" class="mum-image-overlay mum-image-overlay-visible">
+                                <i class="fa fa-cloud-arrow-up"></i>
+                                <span>Görsel Yükle</span>
+                            </label>
+                        </div>
                         <input type="file" id="menuImage" accept="image/*" class="image-input">
                     </div>
-                    <div class="menu-info">
-                        <div class="menu-info-item">
-                            <div class="menu-label">
-                                <strong>Menü Adı</strong> 
-                                <span>:</span>
-                            </div>
-                            <input type="text" class="menu-value">
+
+                    <!-- Form Section -->
+                    <div class="mum-form-section">
+                        <div class="mum-field">
+                            <label class="mum-field-label">
+                                <i class="fa fa-utensils" style="color: #10B981"></i>
+                                Menü Adı
+                            </label>
+                            <input type="text" class="mum-field-input field-add menu-value" placeholder="Menü adını giriniz...">
                         </div>
                     </div>
-                    <button class="btn-add-menu">Ekle</button>
+
+                    <!-- Actions -->
+                    <div class="mum-actions">
+                        <button class="mum-btn-cancel close-menu-create-btn">
+                            <i class="fa fa-xmark"></i>
+                            İptal
+                        </button>
+                        <button class="mum-btn-save btn-add-menu">
+                            <i class="fa fa-plus"></i>
+                            Ekle
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>`;
@@ -2529,7 +2576,7 @@ $(document).ready(function() {
         });
         
         // Kapatma butonuna tıklandığında
-        $('.close-menu-create').click(function() {
+        $('.close-menu-create, .close-menu-create-btn').click(function() {
             $('.menu-create-modal').fadeOut(300, function() {
                 $(this).remove();
             });
