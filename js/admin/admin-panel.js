@@ -433,7 +433,7 @@ $(document).ready(function() {
                     labels: ['Ana Yemek', 'Tatlılar', 'İçecekler', 'Salatalar', 'Başlangıçlar'],
                     datasets: [{
                         data: [35, 20, 25, 10, 10],
-                        backgroundColor: ['#4F46E5', '#EC4899', '#06B6D4', '#10B981', '#F59E0B'],
+                        backgroundColor: ['#4F46E5', '#EC4899', '#06B6D4', '#10B95C', '#F59E0B'],
                         borderWidth: 0,
                         spacing: 2
                     }]
@@ -788,7 +788,7 @@ $(document).ready(function() {
                     labels: ['Sipariş Veren', 'Sipariş Vermeyen'],
                     datasets: [{
                         data: [withOrders, withoutOrders],
-                        backgroundColor: ['#10B981', '#EF4444'],
+                        backgroundColor: ['#10B95C', '#EF4444'],
                         borderWidth: 0,
                         spacing: 5
                     }]
@@ -862,7 +862,7 @@ $(document).ready(function() {
                     labels: ['Aktif', 'Risk Altında', 'Kayıp'],
                     datasets: [{
                         data: [active, atRisk, churned],
-                        backgroundColor: ['#10B981', '#F59E0B', '#EF4444'],
+                        backgroundColor: ['#10B95C', '#F59E0B', '#EF4444'],
                         borderWidth: 0,
                         spacing: 5
                     }]
@@ -962,7 +962,7 @@ $(document).ready(function() {
 
 
     // Avatar renk paleti
-    const avatarColors = ['#06B6D4', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#14B8A6', '#F97316', '#6366F1', '#84CC16'];
+    const avatarColors = ['#06B6D4', '#10B95C', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#14B8A6', '#F97316', '#6366F1', '#84CC16'];
 
     function getAvatarColor(name) {
         let hash = 0;
@@ -984,6 +984,10 @@ $(document).ready(function() {
     let usersOrderChartInstance = null;
     let usersActiveChartInstance = null;
     let usersChurnChartInstance = null;
+
+    // Menü grafik instance'ları
+    let menuStatusChartInstance = null;
+    let menuTimelineChartInstance = null;
 
     // Deterministik pseudo-random (user.id bazlı, her yenilemede aynı sonuç)
     function seededRandom(seed) {
@@ -1063,7 +1067,7 @@ $(document).ready(function() {
                         <span class="users-stat-label">Toplam Kullanıcı</span>
                     </div>
                 </div>
-                <div class="users-stat-card" style="--accent-color: #10B981;">
+                <div class="users-stat-card" style="--accent-color: #10B95C;">
                     <div class="users-stat-icon">
                         <i class="fa fa-user-check"></i>
                     </div>
@@ -1607,6 +1611,176 @@ $(document).ready(function() {
 
 
 
+    // Menü grafiklerini yok et
+    function destroyMenuCharts() {
+        if (menuStatusChartInstance) { menuStatusChartInstance.destroy(); menuStatusChartInstance = null; }
+        if (menuTimelineChartInstance) { menuTimelineChartInstance.destroy(); menuTimelineChartInstance = null; }
+    }
+
+    // Menü istatistiklerini getir
+    function fetchMenuStats() {
+        $.ajax({
+            url: `${baseUrl}mealCategories/getAllForAdmin?pageNumber=1&pageSize=10000`,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                const menus = response.data || [];
+                const total = menus.length;
+                const active = menus.filter(m => m.isActive === true).length;
+                const inactive = total - active;
+
+                // Bu ay eklenen menüler
+                const now = new Date();
+                const thisMonth = menus.filter(m => {
+                    const d = new Date(m.createDate);
+                    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+                }).length;
+
+                // İstatistik kartlarını güncelle
+                animateCount($('#statTotalMenus'), total);
+                animateCount($('#statActiveMenus'), active);
+                animateCount($('#statInactiveMenus'), inactive);
+                animateCount($('#statNewMenus'), thisMonth);
+
+                // Grafikleri oluştur
+                initMenuCharts(menus);
+            },
+            error: function() {
+                $('#statTotalMenus').text('-');
+                $('#statActiveMenus').text('-');
+                $('#statInactiveMenus').text('-');
+                $('#statNewMenus').text('-');
+            }
+        });
+    }
+
+    // Menü grafiklerini oluştur
+    function initMenuCharts(menus) {
+        const active = menus.filter(m => m.isActive === true).length;
+        const inactive = menus.length - active;
+
+        // 1. Aktif/Pasif Dağılımı (Doughnut Chart)
+        const statusCtx = document.getElementById('menuStatusChart');
+        if (statusCtx) {
+            menuStatusChartInstance = new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Aktif', 'Pasif'],
+                    datasets: [{
+                        data: [active, inactive],
+                        backgroundColor: ['#10B95C', '#EF4444'],
+                        borderWidth: 0,
+                        hoverOffset: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '68%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true,
+                                pointStyleWidth: 17,
+                                font: { size: 13, family: 'Poppins' }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 2. Aylık Menü Ekleme Trendi (Bar Chart)
+        const months = ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'];
+        const now = new Date();
+        const year = now.getFullYear();
+        const monthCounts = new Array(12).fill(0);
+
+        menus.forEach(m => {
+            const d = new Date(m.createDate);
+            if (d.getFullYear() === year) {
+                monthCounts[d.getMonth()]++;
+            }
+        });
+
+        const timelineCtx = document.getElementById('menuTimelineChart');
+        if (timelineCtx) {
+            menuTimelineChartInstance = new Chart(timelineCtx, {
+                type: 'bar',
+                data: {
+                    labels: months,
+                    datasets: [{
+                        label: 'Eklenen Menü',
+                        data: monthCounts,
+                        backgroundColor: '#06B6D4',
+                        borderRadius: 6,
+                        barThickness: 28
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1,
+                                font: { size: 12, family: 'Poppins' }
+                            },
+                            grid: { color: 'rgba(0,0,0,0.05)' }
+                        },
+                        x: {
+                            ticks: {
+                                font: { size: 12, family: 'Poppins' }
+                            },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    // Menü arama fonksiyonu
+    $(document).on('input', '#menusSearchInput', function() {
+        const searchTerm = $(this).val().toLowerCase().trim();
+        $('.menu-row').each(function() {
+            const menuName = $(this).find('td:nth-child(2)').text().toLowerCase();
+            if (menuName.includes(searchTerm)) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    });
+
+    // Menü filtre butonları
+    $(document).on('click', '.menus-filter-btn', function() {
+        $('.menus-filter-btn').removeClass('active');
+        $(this).addClass('active');
+        const filter = $(this).data('filter');
+
+        $('.menu-row').each(function() {
+            const isChecked = $(this).find('.menu-toggle-switch input').is(':checked');
+            if (filter === 'all') {
+                $(this).show();
+            } else if (filter === 'active') {
+                $(this).toggle(isChecked);
+            } else if (filter === 'inactive') {
+                $(this).toggle(!isChecked);
+            }
+        });
+    });
+
     // Menüleri göster
     function displayMenus(response) {
 
@@ -1634,7 +1808,7 @@ $(document).ready(function() {
                         <td>
                             <div class="table-actions-scroll">
                                 <button class="btn-delete-menu" data-menu-id="${menu.id}">
-                                    <i class="fa-solid fa-trash"></i>
+                                    <i class="fa fa-trash"></i>
                                     Sil
                                 </button>
                                 <button class="btn-edit-menu" data-menu-id="${menu.id}">
@@ -1708,20 +1882,75 @@ $(document).ready(function() {
     function getMenus(page = 1) {
 
         // Dashboard içeriğini temizle
+        destroyMenuCharts();
         $('.dashboard-content').empty();
-                
+
         currentPage = page;
 
         // Menüler için HTML yapısı
         let menusHTML = `
         <div class="menus-container">
             <div class="menus-header">
-                <h2>Menü Listesi</h2>
+                <h2>Menü Yönetimi</h2>
                 <button class="btn-create-menu">
                     <i class="fa-solid fa-plus"></i>
                     Menü Ekle
                 </button>
             </div>
+
+            <!-- İstatistik Kartları -->
+            <div class="menus-stats-grid">
+                <div class="menus-stat-card" style="--accent-color: #06B6D4;">
+                    <div class="menus-stat-icon">
+                        <i class="fa fa-utensils"></i>
+                    </div>
+                    <div class="menus-stat-info">
+                        <span class="menus-stat-count" id="statTotalMenus">-</span>
+                        <span class="menus-stat-label">Toplam Menü</span>
+                    </div>
+                </div>
+                <div class="menus-stat-card" style="--accent-color: #10b95c;">
+                    <div class="menus-stat-icon">
+                        <i class="fa fa-circle-check"></i>
+                    </div>
+                    <div class="menus-stat-info">
+                        <span class="menus-stat-count" id="statActiveMenus">-</span>
+                        <span class="menus-stat-label">Aktif Menü</span>
+                    </div>
+                </div>
+                <div class="menus-stat-card" style="--accent-color: #EF4444;">
+                    <div class="menus-stat-icon">
+                        <i class="fa fa-circle-xmark"></i>
+                    </div>
+                    <div class="menus-stat-info">
+                        <span class="menus-stat-count" id="statInactiveMenus">-</span>
+                        <span class="menus-stat-label">Pasif Menü</span>
+                    </div>
+                </div>
+                <div class="menus-stat-card" style="--accent-color: #F59E0B;">
+                    <div class="menus-stat-icon">
+                        <i class="fa fa-calendar-plus"></i>
+                    </div>
+                    <div class="menus-stat-info">
+                        <span class="menus-stat-count" id="statNewMenus">-</span>
+                        <span class="menus-stat-label">Bu Ay Eklenen</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Arama ve Filtre Çubuğu -->
+            <div class="menus-toolbar">
+                <div class="menus-search-box">
+                    <i class="fa fa-search"></i>
+                    <input type="text" id="menusSearchInput" placeholder="Menü adı ile ara...">
+                </div>
+                <div class="menus-filter-group">
+                    <button class="menus-filter-btn active" data-filter="all">Tümü</button>
+                    <button class="menus-filter-btn" data-filter="active"><i class="fa fa-circle-check" style="color:#10B95C"></i>Aktif</button>
+                    <button class="menus-filter-btn" data-filter="inactive"><i class="fa fa-circle-xmark" style="color:#EF4444"></i>Pasif</button>
+                </div>
+            </div>
+
             <div class="menus-body">
                 <div class="menus-table-wrapper px-7">
                     <table class="menus-table">
@@ -1736,14 +1965,37 @@ $(document).ready(function() {
                         <tbody id="menusTableBody">
                         </tbody>
                     </table>
-                </div>    
+                </div>
+            </div>
+        </div>
+
+        <!-- Grafikler -->
+        <div class="menus-charts-section">
+            <div class="charts-grid">
+                <div class="chart-card chart-large">
+                    <div class="chart-card-header">
+                        <h3>Aylık Menü Ekleme Trendi</h3>
+                    </div>
+                    <div class="chart-card-body">
+                        <canvas id="menuTimelineChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card chart-small">
+                    <div class="chart-card-header">
+                        <h3>Aktif / Pasif Dağılımı</h3>
+                    </div>
+                    <div class="chart-card-body">
+                        <canvas id="menuStatusChart"></canvas>
+                    </div>
+                </div>
             </div>
         </div>`;
-        
+
         // Menüleri dashboard'a ekle
         $('.dashboard-content').append(menusHTML);
 
         fetchMenus();
+        fetchMenuStats();
     }
 
 
@@ -1817,7 +2069,7 @@ $(document).ready(function() {
     // Menü detaylarını getiren fonksiyon
     function getMenuDetails(menuId) {
         const token = localStorage.getItem('token');
-        
+
         $.ajax({
             url: `${baseUrl}mealCategories/getForAdmin?mealCategoryId=${menuId}`,
             type: 'GET',
@@ -1828,64 +2080,120 @@ $(document).ready(function() {
                 if (response.success && response.data) {
                     const menu = response.data;
                     const createDate = new Date(menu.createDate);
-                    
+
                     // Tarihleri formatla
                     const formattedCreateDate = `${createDate.getDate().toString().padStart(2, '0')}.${(createDate.getMonth() + 1).toString().padStart(2, '0')}.${createDate.getFullYear()}`;
-                    
+
+                    // Ürün sayısı (API'den gelene kadar mock)
+                    // TODO: API'den menu.productCount geldiğinde aşağıdaki satırı kaldır
+                    const productCount = menu.productCount !== undefined ? menu.productCount : Math.floor(Math.random() * 20) + 1;
+
+                    // Durum badge renkleri
+                    const statusClass = menu.isActive ? 'mdm-status-active' : 'mdm-status-inactive';
+                    const statusText = menu.isActive ? 'Aktif' : 'Pasif';
+                    const statusIcon = menu.isActive ? 'fa-circle-check' : 'fa-circle-xmark';
+
+                    // Hero gradient rengi
+                    const heroColor = menu.isActive ? '#06B6D4' : '#64748B';
+
                     let menuDetailsHTML = `
                     <div class="menu-details-modal">
-                        <div class="menu-details-content">
-                            <div class="menu-details-header">
-                                <h2>Menü Detayı</h2>
-                                <span class="close-menu-details">&times;</span>
-                            </div>
-                            <div class="menu-details-body">
-                                <div class="menu-image-container">
-                                    <img src="${menu.imagePath}" alt="${menu.name}" class="menu-detail-image">
+                        <div class="mdm-panel">
+                            <!-- Hero Header -->
+                            <div class="mdm-hero" style="--mdm-hero-color: ${heroColor}">
+                                <button class="mdm-close close-menu-details"><i class="fa fa-xmark"></i></button>
+                                <div class="mdm-image-wrapper">
+                                    <img src="${menu.imagePath}" alt="${menu.name}" class="mdm-image">
                                 </div>
-                                <div class="menu-info">
-                                    <div class="menu-info-item">
-                                        <div class="menu-label">
-                                            <strong>Menü Adı</strong> 
-                                            <span>:</span>
-                                        </div>
-                                        <p class="menu-value">${menu.name}</p>
+                                <div class="mdm-identity">
+                                    <h2 class="mdm-name">${menu.name}</h2>
+                                    <div class="mdm-badges">
+                                        <span class="mdm-status-pill ${statusClass}">
+                                            <i class="fa ${statusIcon}"></i> ${statusText}
+                                        </span>
+                                        <span class="mdm-id-pill">
+                                            <i class="fa fa-hashtag"></i> ID: ${menu.id}
+                                        </span>
                                     </div>
-                                    <div class="menu-info-item">
-                                        <div class="menu-label">
-                                            <strong>Durum</strong> 
-                                            <span>:</span>
+                                </div>
+                            </div>
+
+                            <!-- Bilgi Kartları -->
+                            <div class="mdm-body">
+                                <div class="mdm-info-grid">
+                                    <div class="mdm-info-card">
+                                        <div class="mdm-info-icon" style="background: #EFF6FF; color: #3B82F6;">
+                                            <i class="fa fa-utensils"></i>
                                         </div>
-                                        <p class="menu-value">${menu.isActive ? 'Aktif' : 'Pasif'}</p>
-                                    </div>
-                                    <div class="menu-info-item">
-                                        <div class="menu-label">
-                                            <strong>Oluşturulma Tarihi</strong> 
-                                            <span>:</span>
+                                        <div class="mdm-info-data">
+                                            <span class="mdm-info-label">Menü Adı</span>
+                                            <span class="mdm-info-value">${menu.name}</span>
                                         </div>
-                                        <p class="menu-value">${formattedCreateDate}</p>
                                     </div>
+                                    <div class="mdm-info-card">
+                                        <div class="mdm-info-icon" style="background: ${menu.isActive ? '#F0FDF4' : '#FEF2F2'}; color: ${menu.isActive ? '#22C55E' : '#EF4444'};">
+                                            <i class="fa ${statusIcon}"></i>
+                                        </div>
+                                        <div class="mdm-info-data">
+                                            <span class="mdm-info-label">Durum</span>
+                                            <span class="mdm-info-value">${statusText}</span>
+                                        </div>
+                                    </div>
+                                    <div class="mdm-info-card">
+                                        <div class="mdm-info-icon" style="background: #FFF7ED; color: #F97316;">
+                                            <i class="fa fa-calendar-plus"></i>
+                                        </div>
+                                        <div class="mdm-info-data">
+                                            <span class="mdm-info-label">Oluşturulma Tarihi</span>
+                                            <span class="mdm-info-value">${formattedCreateDate}</span>
+                                        </div>
+                                    </div>
+                                    <div class="mdm-info-card">
+                                        <div class="mdm-info-icon" style="background: #F5F3FF; color: #8B5CF6;">
+                                            <i class="fa fa-box-open"></i>
+                                        </div>
+                                        <div class="mdm-info-data">
+                                            <span class="mdm-info-label">Ürün Sayısı</span>
+                                            <span class="mdm-info-value">${productCount} ürün</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Aksiyon Butonları -->
+                                <div class="mdm-actions">
+                                    <button class="mdm-action-btn mdm-btn-delete" data-menu-id="${menu.id}">
+                                        <i class="fa fa-trash"></i>
+                                        Sil
+                                    </button>
+                                    <button class="mdm-action-btn mdm-btn-edit" data-menu-id="${menu.id}">
+                                        <i class="fa fa-pen-to-square"></i>
+                                        Düzenle
+                                    </button>
+                                    <button class="mdm-action-btn mdm-btn-products" data-menu-id="${menu.id}" data-menu-name="${menu.name}">
+                                        <i class="fa fa-list"></i>
+                                        Ürünleri Gör
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>`;
-                    
+
                     // Eğer detay modülü zaten varsa kaldır
                     $('.menu-details-modal').remove();
-                    
+
                     // Detay modülünü ekle
                     $('body').append(menuDetailsHTML);
-                    
+
                     // Detay modülünü göster
                     $('.menu-details-modal').fadeIn(300);
-                    
+
                     // Kapatma butonuna tıklandığında
                     $('.close-menu-details').click(function() {
                         $('.menu-details-modal').fadeOut(300, function() {
                             $(this).remove();
                         });
                     });
-                    
+
                     // Modül dışına tıklandığında kapat
                     $('.menu-details-modal').click(function(e) {
                         if ($(e.target).hasClass('menu-details-modal')) {
@@ -1894,13 +2202,44 @@ $(document).ready(function() {
                             });
                         }
                     });
+
+                    // Modal içi aksiyon butonları
+                    $('.mdm-btn-edit').click(function(e) {
+                        e.stopPropagation();
+                        const id = $(this).data('menu-id');
+                        $('.menu-details-modal').fadeOut(300, function() {
+                            $(this).remove();
+                            updateMenu(id);
+                        });
+                    });
+
+                    $('.mdm-btn-products').click(function(e) {
+                        e.stopPropagation();
+                        const id = $(this).data('menu-id');
+                        const name = $(this).data('menu-name');
+                        $('.menu-details-modal').fadeOut(300, function() {
+                            $(this).remove();
+                            getProductsByMenu(id, name);
+                        });
+                    });
+
+                    $('.mdm-btn-delete').click(function(e) {
+                        e.stopPropagation();
+                        const id = $(this).data('menu-id');
+                        $('.menu-details-modal').fadeOut(300, function() {
+                            $(this).remove();
+                        });
+                        // Silme butonunu tetikle
+                        $(`.btn-delete-menu[data-menu-id="${id}"]`).click();
+                    });
+
                 } else {
                     showToast('error', 'Hata', 'Menü detayı alınırken hata oluştu!');
                 }
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
-                
+
                 if (xhr.status === 401) {
                     // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
                     handleLogout(errorMessage);
@@ -2292,14 +2631,6 @@ $(document).ready(function() {
             cancelButtonColor: '#3085d6',
             confirmButtonText: 'Evet, Sil!',
             cancelButtonText: 'İptal',
-            customClass: {
-                popup: 'swal2-popup-custom',
-                icon: 'swal2-icon-custom',
-                title: 'swal2-title-custom',
-                htmlContainer: 'swal2-content-custom',
-                confirmButton: 'swal2-confirm-custom',
-                cancelButton: 'swal2-cancel-custom'
-            }
         }).then((result) => {
             if (result.isConfirmed) {
                 const token = localStorage.getItem('token');
@@ -8071,7 +8402,7 @@ $(document).ready(function() {
                     </svg>`,
                 
                     [deductionType.PrivateHealthInsurance]: 
-                    `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heart-icon lucide-heart">
+                    `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B95C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heart-icon lucide-heart">
                         <path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/>
                     </svg>`,
                 
