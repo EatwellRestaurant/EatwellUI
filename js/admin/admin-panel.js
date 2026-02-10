@@ -1275,7 +1275,7 @@ $(document).ready(function() {
 
                             <!-- Üst Profil Bölümü - Gradient Header -->
                             <div class="udm-hero" style="--hero-color: ${color};">
-                                <button class="udm-close">&times;</button>
+                                <button class="udm-close"><i class="fa fa-xmark"></i></button>
                                 ${vipBadgeHTML}
                                 <div class="udm-avatar" style="background: ${color}; box-shadow: 0 0 0 4px #fff, 0 0 0 6px ${color}40;">${initials}</div>
                                 <div class="udm-identity">
@@ -2144,20 +2144,20 @@ $(document).ready(function() {
                                     </div>
                                     <div class="mdm-info-card">
                                         <div class="mdm-info-icon" style="background: #FFF7ED; color: #F97316;">
+                                            <i class="fa-solid fa-burger"></i>
+                                        </div>
+                                        <div class="mdm-info-data">
+                                            <span class="mdm-info-label">Ürün Sayısı</span>
+                                            <span class="mdm-info-value">${productCount} ürün</span>
+                                        </div>
+                                        </div>
+                                        <div class="mdm-info-card">
+                                        <div class="mdm-info-icon" style="background: #F5F3FF; color: #8B5CF6;">
                                             <i class="fa fa-calendar-plus"></i>
                                         </div>
                                         <div class="mdm-info-data">
                                             <span class="mdm-info-label">Oluşturulma Tarihi</span>
                                             <span class="mdm-info-value">${formattedCreateDate}</span>
-                                        </div>
-                                    </div>
-                                    <div class="mdm-info-card">
-                                        <div class="mdm-info-icon" style="background: #F5F3FF; color: #8B5CF6;">
-                                            <i class="fa fa-box-open"></i>
-                                        </div>
-                                        <div class="mdm-info-data">
-                                            <span class="mdm-info-label">Ürün Sayısı</span>
-                                            <span class="mdm-info-value">${productCount} ürün</span>
                                         </div>
                                     </div>
                                 </div>
@@ -2370,13 +2370,13 @@ $(document).ready(function() {
                                             <i class="fa fa-utensils"></i>
                                             Menü Adı
                                         </label>
-                                        <input type="text" class="mum-field-input field-update menu-value" value="${menu.name}" placeholder="Menü adını giriniz...">
+                                        <input type="text" class="mum-field-input mum-field-update menu-value" value="${menu.name}" placeholder="Menü adını giriniz...">
                                     </div>
                                 </div>
 
                                 <!-- Actions -->
                                 <div class="mum-actions">
-                                    <button class="mum-btn-cancel close-menu-update-btn">
+                                    <button class="mum-btn-cancel">
                                         <i class="fa fa-xmark"></i>
                                         İptal
                                     </button>
@@ -2401,7 +2401,7 @@ $(document).ready(function() {
                     });
                     
                     // Kapatma butonuna tıklandığında
-                    $('.close-menu-update, .close-menu-update-btn').click(function() {
+                    $('.close-menu-update, .mum-btn-cancel').click(function() {
                         $('.menu-update-modal').fadeOut(300, function() {
                             $(this).remove();
                         });
@@ -2550,7 +2550,7 @@ $(document).ready(function() {
                                 <i class="fa fa-utensils" style="color: #10B981"></i>
                                 Menü Adı
                             </label>
-                            <input type="text" class="mum-field-input field-add menu-value" placeholder="Menü adını giriniz...">
+                            <input type="text" class="mum-field-input mum-field-add menu-value" placeholder="Menü adını giriniz...">
                         </div>
                     </div>
 
@@ -2826,7 +2826,7 @@ $(document).ready(function() {
                     <td>
                         <div class="table-actions-scroll">
                             <button class="btn-delete-product" data-product-id="${product.id}">
-                                <i class="fa-solid fa-trash"></i>
+                                <i class="fa fa-trash"></i>
                                 Sil
                             </button>
                             <button class="btn-edit-product" data-product-id="${product.id}">
@@ -3331,7 +3331,7 @@ $(document).ready(function() {
     // Ürün detaylarını getiren fonksiyon
     function getProductDetails(productId) {
         const token = localStorage.getItem('token');
-        
+
         $.ajax({
             url: `${baseUrl}products/getForAdmin?productId=${productId}`,
             type: 'GET',
@@ -3342,71 +3342,117 @@ $(document).ready(function() {
                 if (response.success && response.data) {
                     const product = response.data;
                     const createDate = new Date(product.createDate);
-                    
+
                     // Tarihleri formatla
                     const formattedCreateDate = `${createDate.getDate().toString().padStart(2, '0')}.${(createDate.getMonth() + 1).toString().padStart(2, '0')}.${createDate.getFullYear()}`;
-                    
+
+                    // Durum badge renkleri
+                    const statusClass = product.isActive ? 'pdm-status-active' : 'pdm-status-inactive';
+                    const statusText = product.isActive ? 'Aktif' : 'Pasif';
+                    const statusIcon = product.isActive ? 'fa-circle-check' : 'fa-circle-xmark';
+
+                    // Hero gradient rengi
+                    const heroColor = product.isActive ? '#06B6D4' : '#64748B';
+
                     let productDetailsHTML = `
                     <div class="product-details-modal">
-                        <div class="product-details-content">
-                            <div class="product-details-header">
-                                <h2>Ürün Detayı</h2>
-                                <span class="close-product-details">&times;</span>
-                            </div>
-                            <div class="product-details-body">
-                                <div class="product-image-container">
-                                    <img src="${product.imagePath}" alt="${product.name}" class="product-detail-image">
+                        <div class="pdm-panel">
+                            <!-- Hero Header -->
+                            <div class="pdm-hero" style="--pdm-hero-color: ${heroColor}">
+                                <button class="pdm-close close-product-details"><i class="fa fa-xmark"></i></button>
+                                <div class="pdm-image-wrapper">
+                                    <img src="${product.imagePath}" alt="${product.name}" class="pdm-image">
                                 </div>
-                                <div class="product-info">
-                                    <div class="product-info-item">
-                                        <div class="product-label">
-                                            <strong>Ürün Adı</strong> 
-                                            <span>:</span>
-                                        </div>
-                                        <p class="product-value">${product.name}</p>
+                                <div class="pdm-identity">
+                                    <h2 class="pdm-name">${product.name}</h2>
+                                    <div class="pdm-badges">
+                                        <span class="pdm-status-pill ${statusClass}">
+                                            <i class="fa ${statusIcon}"></i> ${statusText}
+                                        </span>
+                                        <span class="pdm-id-pill">
+                                            <i class="fa fa-hashtag"></i> ID: ${product.id}
+                                        </span>
                                     </div>
-                                    <div class="product-info-item">
-                                        <div class="product-label">
-                                            <strong>Fiyatı</strong> 
-                                            <span>:</span>
+                                </div>
+                            </div>
+
+                            <!-- Bilgi Kartları -->
+                            <div class="pdm-body">
+                                <div class="pdm-info-grid">
+                                    <div class="pdm-info-card">
+                                        <div class="pdm-info-icon" style="background: #EFF6FF; color: #3B82F6;">
+                                            <i class="fa-solid fa-burger"></i>
                                         </div>
-                                        <p class="product-value">${formatPriceInputLive(product.price.toFixed(2).replace('.', ','))}₺</p>
-                                    </div>
-                                    <div class="product-info-item">
-                                        <div class="product-label">
-                                            <strong>Durum</strong> 
-                                            <span>:</span>
+                                        <div class="pdm-info-data">
+                                            <span class="pdm-info-label">Ürün Adı</span>
+                                            <span class="pdm-info-value">${product.name}</span>
                                         </div>
-                                        <p class="product-value">${product.isActive ? 'Aktif' : 'Pasif'}</p>
                                     </div>
-                                    <div class="product-info-item">
-                                        <div class="product-label">
-                                            <strong>Oluşturulma Tarihi</strong> 
-                                            <span>:</span>
+                                    <div class="pdm-info-card">
+                                        <div class="pdm-info-icon" style="background: ${product.isActive ? '#F0FDF4' : '#FEF2F2'}; color: ${product.isActive ? '#22C55E' : '#EF4444'};">
+                                            <i class="fa ${statusIcon}"></i>
                                         </div>
-                                        <p class="product-value">${formattedCreateDate}</p>
+                                        <div class="pdm-info-data">
+                                            <span class="pdm-info-label">Durum</span>
+                                            <span class="pdm-info-value">${statusText}</span>
+                                        </div>
                                     </div>
+                                    <div class="pdm-info-card">
+                                        <div class="pdm-info-icon" style="background: #FFF7ED; color: #F97316;">
+                                            <i class="fa fa-turkish-lira-sign"></i>
+                                        </div>
+                                        <div class="pdm-info-data">
+                                            <span class="pdm-info-label">Fiyat</span>
+                                            <span class="pdm-info-value">${formatPriceInputLive(product.price.toFixed(2).replace('.', ','))}₺</span>
+                                        </div>
+                                    </div>
+                                    <div class="pdm-info-card">
+                                        <div class="pdm-info-icon" style="background: #F5F3FF; color: #8B5CF6;">
+                                            <i class="fa fa-calendar-plus"></i>
+                                        </div>
+                                        <div class="pdm-info-data">
+                                            <span class="pdm-info-label">Oluşturulma Tarihi</span>
+                                            <span class="pdm-info-value">${formattedCreateDate}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Aksiyon Butonları -->
+                                <div class="pdm-actions">
+                                    <button class="pdm-action-btn pdm-btn-delete" data-product-id="${product.id}">
+                                        <i class="fa fa-trash"></i>
+                                        Sil
+                                    </button>
+                                    <button class="pdm-action-btn pdm-btn-edit" data-product-id="${product.id}">
+                                        <i class="fa fa-pen-to-square"></i>
+                                        Düzenle
+                                    </button>
+                                    ${product.mealCategoryId ? `
+                                    <button class="pdm-action-btn pdm-btn-menu" data-menu-id="${product.mealCategoryId}" data-menu-name="${product.mealCategoryName || ''}">
+                                        <i class="fa fa-list"></i>
+                                        Menüye Git
+                                    </button>` : ''}
                                 </div>
                             </div>
                         </div>
                     </div>`;
-                    
+
                     // Eğer detay modülü zaten varsa kaldır
                     $('.product-details-modal').remove();
-                    
+
                     // Detay modülünü ekle
                     $('body').append(productDetailsHTML);
-                    
+
                     // Detay modülünü göster
                     $('.product-details-modal').fadeIn(300);
-                    
+
                     // Kapatma butonuna tıklandığında
                     $('.close-product-details').click(function() {
                         $('.product-details-modal').fadeOut(300, function() {
                             $(this).remove();
                         });
                     });
-                    
+
                     // Modül dışına tıklandığında kapat
                     $('.product-details-modal').click(function(e) {
                         if ($(e.target).hasClass('product-details-modal')) {
@@ -3415,6 +3461,42 @@ $(document).ready(function() {
                             });
                         }
                     });
+
+                    // Modal içi aksiyon butonları
+                    $('.pdm-btn-edit').click(function(e) {
+                        e.stopPropagation();
+                        const id = $(this).data('product-id');
+                        $('.product-details-modal').fadeOut(300, function() {
+                            $(this).remove();
+                            updateProduct(id);
+                        });
+                    });
+
+                    $('.pdm-btn-menu').click(function(e) {
+                        e.stopPropagation();
+                        const menuId = $(this).data('menu-id');
+                        const menuName = $(this).data('menu-name');
+                        $('.product-details-modal').fadeOut(300, function() {
+                            $(this).remove();
+                            if (menuId) {
+                                selectEntity(menuId, menuName, Entity.MENU);
+                                localStorage.setItem('selectedMenuId', menuId);
+                                localStorage.setItem('selectedMenuName', menuName);
+                                getProductsByMenu(menuId, menuName);
+                            }
+                        });
+                    });
+
+                    $('.pdm-btn-delete').click(function(e) {
+                        e.stopPropagation();
+                        const id = $(this).data('product-id');
+                        $('.product-details-modal').fadeOut(300, function() {
+                            $(this).remove();
+                        });
+                        // Silme butonunu tetikle
+                        $(`.btn-delete-product[data-product-id="${id}"]`).click();
+                    });
+
                 } else {
                     showToast('error', 'Hata', 'Ürün detayı alınırken hata oluştu!');
                 }
@@ -3450,7 +3532,7 @@ $(document).ready(function() {
 
     function updateProduct(productId) {
         const token = localStorage.getItem('token');
-        
+
         $.ajax({
             url: `${baseUrl}products/getForAdmin?productId=${productId}`,
             type: 'GET',
@@ -3460,60 +3542,83 @@ $(document).ready(function() {
             success: function(response) {
                 if (response.success && response.data) {
                     const product = response.data;
-                              
+
                     let productUpdateHTML = `
                     <div class="product-update-modal" data-product-id="${product.id}">
-                        <div class="product-update-content">
-                            <div class="product-update-header">
-                                <h2>Ürün Güncelleme</h2>
-                                <span class="close-product-update">&times;</span>
+                        <div class="pum-panel">
+                            <!-- Hero Header -->
+                            <div class="pum-hero">
+                                <button class="pum-close close-product-update"><i class="fa fa-xmark"></i></button>
+                                <h2 class="pum-title">Ürün Güncelleme</h2>
+                                <p class="pum-subtitle">Ürün bilgilerini düzenleyin.</p>
                             </div>
-                            <div class="product-update-body">
-                                <div class="product-image-container">
-                                    <img src="${product.imagePath}" alt="${product.name}" class="product-update-image" id="previewImage">
 
-                                    <label for="productImage" class="custom-upload-button">Resim Seç</label>
+                            <!-- Body -->
+                            <div class="pum-body">
+                                <!-- Image Section -->
+                                <div class="pum-image-section">
+                                    <label class="pum-image-label">Ürün Görseli</label>
+                                    <div class="pum-image-wrapper">
+                                        <img src="${product.imagePath}" alt="${product.name}" class="pum-image" id="previewImage">
+                                        <label for="productImage" class="pum-image-overlay">
+                                            <i class="fa fa-camera"></i>
+                                            <span>Değiştir</span>
+                                        </label>
+                                    </div>
                                     <input type="file" id="productImage" accept="image/*" class="image-input">
                                 </div>
-                                <div class="product-info">
-                                    <div class="product-info-item">
-                                        <div class="product-label">
-                                            <strong>Ürün Adı</strong> 
-                                            <span>:</span>
-                                        </div>
-                                        <input type="text" class="product-value product-name" value="${product.name}">
+
+                                <!-- Form Section -->
+                                <div class="pum-form-section">
+                                    <div class="pum-field">
+                                        <label class="pum-field-label">
+                                            <i class="fa-solid fa-burger"></i>
+                                            Ürün Adı
+                                        </label>
+                                        <input type="text" class="pum-field-input pum-field-update product-name" value="${product.name}" placeholder="Ürün adını giriniz...">
                                     </div>
-                                    <div class="product-info-item">
-                                        <div class="product-label">
-                                            <strong>Fiyatı (₺)</strong> 
-                                            <span>:</span>
-                                        </div>
-                                        <input type="text" class="product-value product-price price-value" value="${formatPriceInputLive(product.price.toFixed(2).replace('.', ','))}">    
+                                    <div class="pum-field">
+                                        <label class="pum-field-label">
+                                            <i class="fa fa-turkish-lira-sign"></i>
+                                            Fiyat (₺)
+                                        </label>
+                                        <input type="text" class="pum-field-input pum-field-update product-price price-value" value="${formatPriceInputLive(product.price.toFixed(2).replace('.', ','))}" placeholder="Fiyat giriniz...">
                                     </div>
                                 </div>
-                                <button class="btn-update-product">Güncelle</button>
+
+                                <!-- Actions -->
+                                <div class="pum-actions">
+                                    <button class="pum-btn-cancel">
+                                        <i class="fa fa-xmark"></i>
+                                        İptal
+                                    </button>
+                                    <button class="pum-btn-update btn-update-product">
+                                        <i class="fa fa-check"></i>
+                                        Güncelle
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>`;
-                    
+
                     // Eğer detay modülü zaten varsa kaldır
                     $('.product-update-modal').remove();
-                    
+
                     // Detay modülünü ekle
                     $('body').append(productUpdateHTML);
-                    
+
                     // Detay modülünü göster
                     $('.product-update-modal').fadeIn(300, function() {
                         checkIfItemsAreOnNewLine(true);
                     });
-                    
+
                     // Kapatma butonuna tıklandığında
-                    $('.close-product-update').click(function() {
+                    $('.close-product-update, .pum-btn-cancel').click(function() {
                         $('.product-update-modal').fadeOut(300, function() {
                             $(this).remove();
                         });
                     });
-                    
+
                     // Modül dışına tıklandığında kapat
                     $('.product-update-modal').click(function(e) {
                         if ($(e.target).hasClass('product-update-modal')) {
@@ -3723,63 +3828,87 @@ $(document).ready(function() {
     function createProduct(showMenuList) {
         let productCreateHTML = `
         <div class="product-create-modal">
-            <div class="product-create-content">
-                <div class="product-create-header">
-                    <h2>Ürün Ekleme</h2>
-                    <span class="close-product-create">&times;</span>
+            <div class="pum-panel">
+                <!-- Hero Header -->
+                <div class="pum-hero" style="background: linear-gradient(135deg,rgb(66, 182, 143),rgb(15, 122, 88));">
+                    <button class="pum-close close-product-create"><i class="fa fa-xmark"></i></button>
+                    <h2 class="pum-title">Yeni Ürün Ekle</h2>
+                    <p class="pum-subtitle">Yeni bir ürün oluşturun.</p>
                 </div>
-                <div class="product-create-body">
-                    <div class="product-image-container">
-                        <img src="../../icons/default-menu-image-placeholder.png" alt="default-product-image" class="product-create-image" id="previewImage">
-                        <label for="productImage" class="custom-upload-button">Resim Seç</label>
+
+                <!-- Body -->
+                <div class="pum-body">
+                    <!-- Image Section -->
+                    <div class="pum-image-section">
+                        <label class="pum-image-label">Ürün Görseli</label>
+                        <div class="pum-image-wrapper pum-image-placeholder-wrapper">
+                            <img src="../../icons/default-menu-image-placeholder.png" alt="default-product-image" class="pum-image" id="previewImage">
+                            <label for="productImage" class="pum-image-overlay pum-image-overlay-visible">
+                                <i class="fa fa-cloud-arrow-up"></i>
+                                <span>Görsel Yükle</span>
+                            </label>
+                        </div>
                         <input type="file" id="productImage" accept="image/*" class="image-input">
                     </div>
-                    <div class="product-info">
+
+                    <!-- Form Section -->
+                    <div class="pum-form-section">
                         ${showMenuList ? `
-                        <div class="product-info-item">
-                            <div class="product-label">
-                                <strong>Menü Listesi</strong> 
-                                <span>:</span>
-                            </div>
-                            <select class="product-value" id="menuSelect">
+                        <div class="pum-field">
+                            <label class="pum-field-label">
+                                <i class="fa fa-utensils" style="color: #10B981"></i>
+                                Menü Listesi
+                            </label>
+                            <select class="pum-field-select" id="menuSelect">
                             </select>
                         </div>` : ''}
-                        <div class="product-info-item">
-                            <div class="product-label">
-                                <strong>Ürün Adı</strong> 
-                                <span>:</span>
-                            </div>
-                            <input type="text" class="product-value product-name">
+                        <div class="pum-field">
+                            <label class="pum-field-label">
+                                <i class="fa-solid fa-burger" style="color: #10B981"></i>
+                                Ürün Adı
+                            </label>
+                            <input type="text" class="pum-field-input pum-field-add product-name" placeholder="Ürün adını giriniz...">
                         </div>
-                        <div class="product-info-item">
-                            <div class="product-label">
-                                <strong>Fiyatı (₺)</strong> 
-                                <span>:</span>
-                            </div>
-                            <input type="text" class="product-value product-price price-value">    
+                        <div class="pum-field">
+                            <label class="pum-field-label">
+                                <i class="fa fa-turkish-lira-sign" style="color: #10B981"></i>
+                                Fiyat (₺)
+                            </label>
+                            <input type="text" class="pum-field-input pum-field-add product-price price-value" placeholder="Fiyat giriniz...">
                         </div>
                     </div>
-                    <button class="btn-add-product">Ekle</button>
+
+                    <!-- Actions -->
+                    <div class="pum-actions">
+                        <button class="pum-btn-cancel close-product-create-btn">
+                            <i class="fa fa-xmark"></i>
+                            İptal
+                        </button>
+                        <button class="pum-btn-save btn-add-product">
+                            <i class="fa fa-plus"></i>
+                            Ekle
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>`;
-        
-        
+
+
         // Detay modülünü ekle
         $('body').append(productCreateHTML);
-        
+
         // Detay modülünü göster
         $('.product-create-modal').fadeIn(300, function() {
             checkIfItemsAreOnNewLine(false);
         });
-        
+
         // Kapatma butonuna tıklandığında
-        $('.close-product-create').click(function() {
+        $('.close-product-create, .close-product-create-btn').click(function() {
             $('.product-create-modal').fadeOut(300, function() {
                 $(this).remove();
             });
         });
-        
+
         // Modül dışına tıklandığında kapat
         $('.product-create-modal').click(function(e) {
             if ($(e.target).hasClass('product-create-modal')) {
@@ -3980,14 +4109,6 @@ $(document).ready(function() {
             cancelButtonColor: '#3085d6',
             confirmButtonText: 'Evet, Sil!',
             cancelButtonText: 'İptal',
-            customClass: {
-                popup: 'swal2-popup-custom',
-                icon: 'swal2-icon-custom',
-                title: 'swal2-title-custom',
-                htmlContainer: 'swal2-content-custom',
-                confirmButton: 'swal2-confirm-custom',
-                cancelButton: 'swal2-cancel-custom'
-            }
         }).then((result) => {
             if (result.isConfirmed) {
                 const token = localStorage.getItem('token');
