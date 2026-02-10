@@ -988,6 +988,9 @@ $(document).ready(function() {
     // Menü grafik instance'ları
     let menuStatusChartInstance = null;
     let menuTimelineChartInstance = null;
+    let productStatusChartInstance = null;
+    let productTimelineChartInstance = null;
+    let productPriceChartInstance = null;
 
     // Deterministik pseudo-random (user.id bazlı, her yenilemede aynı sonuç)
     function seededRandom(seed) {
@@ -2896,14 +2899,206 @@ $(document).ready(function() {
 
 
 
+    // Ürün grafiklerini yok et
+    function destroyProductCharts() {
+        if (productStatusChartInstance) { productStatusChartInstance.destroy(); productStatusChartInstance = null; }
+        if (productTimelineChartInstance) { productTimelineChartInstance.destroy(); productTimelineChartInstance = null; }
+        if (productPriceChartInstance) { productPriceChartInstance.destroy(); productPriceChartInstance = null; }
+    }
+
+
+
+    // Ürün istatistiklerini çek ve grafikleri oluştur
+    function fetchProductStats() {
+        $.ajax({
+            url: `${baseUrl}products/getAllForAdmin?pageNumber=1&pageSize=10000`,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                const products = response.data || [];
+                const total = products.length;
+                const active = products.filter(p => p.isActive === true).length;
+                const inactive = total - active;
+
+                // Bu ay eklenen ürünler
+                const now = new Date();
+                const thisMonth = products.filter(p => {
+                    const d = new Date(p.createDate);
+                    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+                }).length;
+
+                // İstatistik kartlarını güncelle
+                animateCount($('#statTotalProducts'), total);
+                animateCount($('#statActiveProducts'), active);
+                animateCount($('#statInactiveProducts'), inactive);
+                animateCount($('#statNewProducts'), thisMonth);
+
+                // Grafikleri oluştur
+                initProductCharts(products);
+            },
+            error: function() {
+                $('#statTotalProducts').text('-');
+                $('#statActiveProducts').text('-');
+                $('#statInactiveProducts').text('-');
+                $('#statNewProducts').text('-');
+            }
+        });
+    }
+
+
+
+    // Ürün grafiklerini oluştur
+    function initProductCharts(products) {
+        const active = products.filter(p => p.isActive === true).length;
+        const inactive = products.length - active;
+
+        // 1. Aktif/Pasif Dağılımı (Doughnut Chart)
+        const statusCtx = document.getElementById('productStatusChart');
+        if (statusCtx) {
+            productStatusChartInstance = new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Aktif', 'Pasif'],
+                    datasets: [{
+                        data: [active, inactive],
+                        backgroundColor: ['#10B95C', '#EF4444'],
+                        borderWidth: 0,
+                        hoverOffset: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '68%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true,
+                                pointStyleWidth: 17,
+                                font: { size: 13, family: 'Poppins' }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 2. Aylık Ürün Ekleme Trendi (Bar Chart)
+        const months = ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'];
+        const now = new Date();
+        const year = now.getFullYear();
+        const monthCounts = new Array(12).fill(0);
+
+        products.forEach(p => {
+            const d = new Date(p.createDate);
+            if (d.getFullYear() === year) {
+                monthCounts[d.getMonth()]++;
+            }
+        });
+
+        const timelineCtx = document.getElementById('productTimelineChart');
+        if (timelineCtx) {
+            productTimelineChartInstance = new Chart(timelineCtx, {
+                type: 'bar',
+                data: {
+                    labels: months,
+                    datasets: [{
+                        label: 'Eklenen Ürün',
+                        data: monthCounts,
+                        backgroundColor: '#06B6D4',
+                        borderRadius: 6,
+                        barThickness: 28
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1,
+                                font: { size: 12, family: 'Poppins' }
+                            },
+                            grid: { color: 'rgba(0,0,0,0.05)' }
+                        },
+                        x: {
+                            ticks: { font: { size: 12, family: 'Poppins' } },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 3. Fiyat Aralığı Dağılımı (Bar Chart)
+        const priceRanges = { '0-50₺': 0, '50-100₺': 0, '100-200₺': 0, '200-500₺': 0, '500₺+': 0 };
+        products.forEach(p => {
+            const price = p.price;
+            if (price <= 50) priceRanges['0-50₺']++;
+            else if (price <= 100) priceRanges['50-100₺']++;
+            else if (price <= 200) priceRanges['100-200₺']++;
+            else if (price <= 500) priceRanges['200-500₺']++;
+            else priceRanges['500₺+']++;
+        });
+
+        const priceCtx = document.getElementById('productPriceChart');
+        if (priceCtx) {
+            productPriceChartInstance = new Chart(priceCtx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(priceRanges),
+                    datasets: [{
+                        label: 'Ürün Sayısı',
+                        data: Object.values(priceRanges),
+                        backgroundColor: ['#06B6D4', '#10B95C', '#F59E0B', '#EF4444', '#8B5CF6'],
+                        borderRadius: 6,
+                        barThickness: 36
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1,
+                                font: { size: 12, family: 'Poppins' }
+                            },
+                            grid: { color: 'rgba(0,0,0,0.05)' }
+                        },
+                        x: {
+                            ticks: { font: { size: 12, family: 'Poppins' } },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+
+
     // Ürünleri getiren ortak fonksiyon
     function renderProductsList(options = {}) {
         const {
             title = 'Ürün Listesi',
             showGoToMenuButton = false
         } = options;
-    
+
         // Ortak HTML yapısı
+        destroyProductCharts();
         $('.dashboard-content').empty();
 
         currentPage = 1;
@@ -2917,8 +3112,62 @@ $(document).ready(function() {
                     Ürün Ekle
                 </button>
             </div>
+
+            <!-- İstatistik Kartları -->
+            <div class="products-stats-grid">
+                <div class="products-stat-card" style="--accent-color: #06B6D4;">
+                    <div class="products-stat-icon">
+                        <i class="fa-solid fa-burger"></i>
+                    </div>
+                    <div class="products-stat-info">
+                        <span class="products-stat-count" id="statTotalProducts">-</span>
+                        <span class="products-stat-label">Toplam Ürün</span>
+                    </div>
+                </div>
+                <div class="products-stat-card" style="--accent-color: #10b95c;">
+                    <div class="products-stat-icon">
+                        <i class="fa fa-circle-check"></i>
+                    </div>
+                    <div class="products-stat-info">
+                        <span class="products-stat-count" id="statActiveProducts">-</span>
+                        <span class="products-stat-label">Aktif Ürün</span>
+                    </div>
+                </div>
+                <div class="products-stat-card" style="--accent-color: #EF4444;">
+                    <div class="products-stat-icon">
+                        <i class="fa fa-circle-xmark"></i>
+                    </div>
+                    <div class="products-stat-info">
+                        <span class="products-stat-count" id="statInactiveProducts">-</span>
+                        <span class="products-stat-label">Pasif Ürün</span>
+                    </div>
+                </div>
+                <div class="products-stat-card" style="--accent-color: #F59E0B;">
+                    <div class="products-stat-icon">
+                        <i class="fa fa-calendar-plus"></i>
+                    </div>
+                    <div class="products-stat-info">
+                        <span class="products-stat-count" id="statNewProducts">-</span>
+                        <span class="products-stat-label">Bu Ay Eklenen</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Arama ve Filtre Çubuğu -->
+            <div class="products-toolbar">
+                <div class="products-search-box">
+                    <i class="fa fa-search"></i>
+                    <input type="text" id="productsSearchInput" placeholder="Ürün adı ile ara...">
+                </div>
+                <div class="products-filter-group">
+                    <button class="products-filter-btn active" data-filter="all">Tümü</button>
+                    <button class="products-filter-btn" data-filter="active"><i class="fa fa-circle-check" style="color:#10B95C"></i>Aktif</button>
+                    <button class="products-filter-btn" data-filter="inactive"><i class="fa fa-circle-xmark" style="color:#EF4444"></i>Pasif</button>
+                </div>
+            </div>
+
             <div class="products-body">
-                <div class="products-table-wrapper px-7"> 
+                <div class="products-table-wrapper px-7">
                     <table class="products-table">
                         <thead>
                             <tr>
@@ -2932,6 +3181,36 @@ $(document).ready(function() {
                         </thead>
                         <tbody id="productsTableBody"></tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grafikler -->
+        <div class="products-charts-section">
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <h3>Aylık Ürün Ekleme Trendi</h3>
+                    </div>
+                    <div class="chart-card-body">
+                        <canvas id="productTimelineChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <h3>Aktif / Pasif Dağılımı</h3>
+                    </div>
+                    <div class="chart-card-body">
+                        <canvas id="productStatusChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <h3>Fiyat Aralığı Dağılımı</h3>
+                    </div>
+                    <div class="chart-card-body">
+                        <canvas id="productPriceChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>`;
@@ -2948,8 +3227,9 @@ $(document).ready(function() {
         renderProductsList({ title: menuName, showGoToMenuButton: false })
 
         const request = `${baseUrl}products/getAllForAdminByMealCategoryId?mealCategoryId=${menuId}&pageNumber=${currentPage}&pageSize=${pageItems}`
-        
+
         fetchProducts(request, false, "pagination-productsByMenu-table");
+        fetchProductStats();
     }
     
 
@@ -2981,6 +3261,7 @@ $(document).ready(function() {
         const request = `${baseUrl}products/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`;
 
         fetchProducts(request, true, "pagination-products-table");
+        fetchProductStats();
     }
 
 
@@ -3012,6 +3293,39 @@ $(document).ready(function() {
 
         getProductsByMenu(menuId, menuName);
     });
+
+
+    // Ürün arama
+    $(document).on('input', '#productsSearchInput', function() {
+        const searchTerm = $(this).val().toLowerCase().trim();
+        $('.product-row').each(function() {
+            const productName = $(this).find('td:nth-child(2)').text().toLowerCase();
+            if (productName.includes(searchTerm)) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    });
+
+    // Ürün filtre butonları
+    $(document).on('click', '.products-filter-btn', function() {
+        $('.products-filter-btn').removeClass('active');
+        $(this).addClass('active');
+        const filter = $(this).data('filter');
+
+        $('.product-row').each(function() {
+            const isChecked = $(this).find('.product-toggle-switch input').is(':checked');
+            if (filter === 'all') {
+                $(this).show();
+            } else if (filter === 'active') {
+                $(this).toggle(isChecked);
+            } else if (filter === 'inactive') {
+                $(this).toggle(!isChecked);
+            }
+        });
+    });
+
 
 
     // Ürün detaylarını getiren fonksiyon
