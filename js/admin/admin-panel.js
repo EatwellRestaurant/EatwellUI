@@ -96,8 +96,76 @@ $(document).ready(function() {
     
 
     
+    /**
+     * Dinamik silme işlemi
+     * @param {Object} options
+     * @param {string} options.entityName - Varlık adı (örn: "menü", "ürün", "şube", "masa")
+     * @param {string} options.deleteUrl - API silme endpoint URL'i
+     * @param {string} options.successMessage - Başarılı silme mesajı
+     * @param {string} options.errorMessage - Hata mesajı
+     * @param {Function} options.onSuccess - Başarılı silme sonrası çalışacak fonksiyon
+     * @param {string|string[]} [options.modalsToClose] - Başarılı silme sonrası kapatılacak modal seçicileri
+     */
+    function confirmAndDelete({ entityName, deleteUrl, successMessage, errorMessage, onSuccess, modalsToClose }) {
+        Swal.fire({
+            title: 'Emin misiniz?',
+            text: `Bu ${entityName} silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Evet, Sil!',
+            cancelButtonText: 'İptal',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const token = localStorage.getItem('token');
+
+                $.ajax({
+                    url: deleteUrl,
+                    type: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            showToast('success', 'Başarılı', successMessage);
+
+                            // Modalları kapat
+                            if (modalsToClose) {
+                                const modals = Array.isArray(modalsToClose) ? modalsToClose : [modalsToClose];
+                                modals.forEach(function(selector) {
+                                    $(selector).fadeOut(300, function() {
+                                        $(this).remove();
+                                    });
+                                });
+                            }
+
+                            // Listeyi yenile
+                            if (typeof onSuccess === 'function') {
+                                onSuccess();
+                            }
+                        } else {
+                            showToast('error', 'Hata', errorMessage);
+                        }
+                    },
+                    error: function(xhr) {
+                        const errMsg = xhr.responseJSON?.Message;
+
+                        if (xhr.status === 401) {
+                            handleLogout(errMsg);
+                            return;
+                        }
+
+                        showToast('error', 'Hata', errMsg ? errMsg : errorMessage);
+                    }
+                });
+            }
+        });
+    }
+
+
     // Token kontrolü
-    try {    
+    try {
         // Token'ı decode et
         const tokenPayload = JSON.parse(atob(token.split('.')[1]));
         
@@ -2228,12 +2296,18 @@ $(document).ready(function() {
 
                     $('.mdm-btn-delete').click(function(e) {
                         e.stopPropagation();
-                        const id = $(this).data('menu-id');
-                        $('.menu-details-modal').fadeOut(300, function() {
-                            $(this).remove();
+                        const menuId = $(this).data('menu-id');
+
+                        confirmAndDelete({
+                            entityName: 'menüyü',
+                            deleteUrl: `${baseUrl}mealCategories/delete?mealCategoryId=${menuId}`,
+                            successMessage: 'Menü başarıyla silindi!',
+                            errorMessage: 'Menü silinirken hata oluştu!',
+                            modalsToClose: '.menu-details-modal',
+                            onSuccess: function() {
+                                getMenus();
+                            }
                         });
-                        // Silme butonunu tetikle
-                        $(`.btn-delete-menu[data-menu-id="${id}"]`).click();
                     });
 
                 } else {
@@ -2668,54 +2742,17 @@ $(document).ready(function() {
     $(document).on('click', '.btn-delete-menu', function(e) {
         e.preventDefault();
         e.stopPropagation();
-        
+
         const menuId = $(this).closest('.menu-row').data('menu-id');
-        
-        // SweetAlert2 ile özelleştirilmiş onay kutusu
-        Swal.fire({
-            title: 'Emin misiniz?',
-            text: "Bu menüyü silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Evet, Sil!',
-            cancelButtonText: 'İptal',
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const token = localStorage.getItem('token');
-                
-                $.ajax({
-                    url: `${baseUrl}mealCategories/delete?mealCategoryId=${menuId}`,
-                    type: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            showToast('success', 'Başarılı', 'Menü başarıyla silindi!');
 
-                            $('.menu-update-modal').fadeOut(300, function() {
-                                $(this).remove();
-                            });
-
-                            getMenus(); // Menü listesini yenile
-                        } else {
-                            showToast('error', 'Hata', 'Menü silinirken hata oluştu!');
-                        }
-                    },
-                    error: function(xhr) {
-                        const errorMessage = xhr.responseJSON?.Message;
-
-                        if (xhr.status === 401) {
-                            // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
-                            handleLogout(errorMessage);
-                            return;
-                        }
-
-                        showToast('error', 'Hata', errorMessage ? errorMessage : 'Menü silinirken hata oluştu!');
-                    }
-                });
+        confirmAndDelete({
+            entityName: 'menüyü',
+            deleteUrl: `${baseUrl}mealCategories/delete?mealCategoryId=${menuId}`,
+            successMessage: 'Menü başarıyla silindi!',
+            errorMessage: 'Menü silinirken hata oluştu!',
+            modalsToClose: '.menu-update-modal',
+            onSuccess: function() {
+                getMenus();
             }
         });
     });
@@ -3471,30 +3508,30 @@ $(document).ready(function() {
                             updateProduct(id);
                         });
                     });
-
-                    $('.pdm-btn-menu').click(function(e) {
-                        e.stopPropagation();
-                        const menuId = $(this).data('menu-id');
-                        const menuName = $(this).data('menu-name');
-                        $('.product-details-modal').fadeOut(300, function() {
-                            $(this).remove();
-                            if (menuId) {
-                                selectEntity(menuId, menuName, Entity.MENU);
-                                localStorage.setItem('selectedMenuId', menuId);
-                                localStorage.setItem('selectedMenuName', menuName);
-                                getProductsByMenu(menuId, menuName);
-                            }
-                        });
-                    });
-
+                    
                     $('.pdm-btn-delete').click(function(e) {
                         e.stopPropagation();
-                        const id = $(this).data('product-id');
-                        $('.product-details-modal').fadeOut(300, function() {
-                            $(this).remove();
+                        const productId = $(this).data('product-id');
+
+                        confirmAndDelete({
+                            entityName: 'ürünü',
+                            deleteUrl: `${baseUrl}products/delete?productId=${productId}`,
+                            successMessage: 'Ürün başarıyla silindi!',
+                            errorMessage: 'Ürün silinirken hata oluştu!',
+                            modalsToClose: '.product-details-modal',
+                            onSuccess: function() {
+                                const currentParams = new URLSearchParams(window.location.search);
+                                const currentPage = currentParams.get('page');
+
+                                if (currentPage === 'productsByMenu') {
+                                    const currentMenuId = currentParams.get('menuId') || localStorage.getItem('selectedMenuId');
+                                    const currentMenuName = localStorage.getItem('selectedMenuName');
+                                    getProductsByMenu(currentMenuId, currentMenuName);
+                                } else {
+                                    getAllProducts();
+                                }
+                            }
                         });
-                        // Silme butonunu tetikle
-                        $(`.btn-delete-product[data-product-id="${id}"]`).click();
                     });
 
                 } else {
@@ -3794,17 +3831,20 @@ $(document).ready(function() {
             success: function(response) {
                 if (response.success) {
                     showToast('success', 'Başarılı', 'Ürün başarıyla güncellendi!');
+                    
                     $('.product-update-modal').fadeOut(300, function() {
                         $(this).remove();
                     });
 
-                    const menuId = localStorage.getItem('selectedMenuId');
-                    const menuName = localStorage.getItem('selectedMenuName');
+                    const currentParams = new URLSearchParams(window.location.search);
+                    const currentPage = currentParams.get('page');
 
-                    if (menuName === null){
+                    if (currentPage === 'productsByMenu') {
+                        const currentMenuId = currentParams.get('menuId') || localStorage.getItem('selectedMenuId');
+                        const currentMenuName = localStorage.getItem('selectedMenuName');
+                        getProductsByMenu(currentMenuId, currentMenuName); 
+                    } else{
                         getAllProducts();
-                    }else{
-                        getProductsByMenu(menuId, menuName); 
                     }
                 } else {
                     showToast('error', 'Hata', 'Ürün güncellenirken hata oluştu!');
@@ -4034,7 +4074,7 @@ $(document).ready(function() {
         const token = localStorage.getItem('token');
         
         $.ajax({
-            url: `${baseUrl}api/products/add`,
+            url: `${baseUrl}products/add`,
             type: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -4045,14 +4085,18 @@ $(document).ready(function() {
             success: function(response) {
                 if (response.success) {
                     showToast('success', 'Başarılı', 'Ürün başarıyla eklendi!');
+                    
                     $('.product-create-modal').fadeOut(300, function() {
                         $(this).remove();
                     });
 
-                    if (menuName === null){
-                        getAllProducts();
-                    }else{
+                    const currentParams = new URLSearchParams(window.location.search);
+                    const currentPage = currentParams.get('page');
+
+                    if (currentPage === 'productsByMenu') {
                         getProductsByMenu(menuId, menuName); 
+                    } else{
+                        getAllProducts();
                     }
                 } else {
                     showToast('error', 'Hata', response.message);
@@ -4067,7 +4111,7 @@ $(document).ready(function() {
                     return;
                 }
 
-                showToast('error', 'Hata', errorMessage ? errorMessage : "Menü eklenirken hata oluştu!");
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Ürün eklenirken hata oluştu!");
             }
         });
     });
@@ -4096,60 +4140,30 @@ $(document).ready(function() {
     $(document).on('click', '.btn-delete-product', function(e) {
         e.preventDefault();
         e.stopPropagation();
-        
+
         const productId = $(this).closest('.product-row').data('product-id');
-        
-        // SweetAlert2 ile özelleştirilmiş onay kutusu
-        Swal.fire({
-            title: 'Emin misiniz?',
-            text: "Bu ürünü silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Evet, Sil!',
-            cancelButtonText: 'İptal',
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const token = localStorage.getItem('token');
-                
-                $.ajax({
-                    url: `${baseUrl}products/delete?productId=${productId}`,
-                    type: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            showToast('success', 'Başarılı', 'Ürün başarıyla silindi!');
 
-                            $('.product-update-modal').fadeOut(300, function() {
-                                $(this).remove();
-                            });
+        confirmAndDelete({
+            entityName: 'ürünü',
+            deleteUrl: `${baseUrl}products/delete?productId=${productId}`,
+            successMessage: 'Ürün başarıyla silindi!',
+            errorMessage: 'Ürün silinirken hata oluştu!',
+            modalsToClose: '.product-update-modal',
+            onSuccess: function() {
+                const currentParams = new URLSearchParams(window.location.search);
+                const currentPage = currentParams.get('page');
 
-                            const menuId = localStorage.getItem('selectedMenuId');
-                            const menuName = localStorage.getItem('selectedMenuName');
-
-                            getProductsByMenu(menuId, menuName); // Ürün listesini yenile
-                        } else {
-                            showToast('error', 'Hata', 'Ürün silinirken hata oluştu!');
-                        }
-                    },
-                    error: function(xhr) {
-                        const errorMessage = xhr.responseJSON?.Message;
-                        
-                        if (xhr.status === 401) {
-                            // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
-                            handleLogout(errorMessage);
-                            return;
-                        }
-
-                        showToast('error', 'Hata', errorMessage ? errorMessage : 'Ürün silinirken hata oluştu!');
-                    }
-                });
+                if (currentPage === 'productsByMenu') {
+                    const currentMenuId = currentParams.get('menuId') || localStorage.getItem('selectedMenuId');
+                    const currentMenuName = localStorage.getItem('selectedMenuName');
+                    getProductsByMenu(currentMenuId, currentMenuName);
+                } else {
+                    getAllProducts();
+                }
             }
         });
     });
+
 
 
 
@@ -4497,7 +4511,7 @@ $(document).ready(function() {
                         <div class="table-actions-scroll">
                             ${!showGoToReservationsButton ? `
                             <button class="btn-delete-branch" data-branch-id="${branch.id}">
-                                <i class="fa-solid fa-trash"></i>
+                                <i class="fa fa-trash"></i>
                                 Sil
                             </button>
                             <button class="btn-edit-branch" data-branch-id="${branch.id}">
@@ -5422,7 +5436,7 @@ $(document).ready(function() {
     // Şube detaylarını getiren fonksiyon
     function getBranchDetails(branchId) {
         const token = localStorage.getItem('token');
-        
+
         $.ajax({
             url: `${baseUrl}branches/getForAdmin?branchId=${branchId}`,
             type: 'GET',
@@ -5432,100 +5446,142 @@ $(document).ready(function() {
             success: function(response) {
                 if (response.success && response.data) {
                     const branch = response.data;
-                                        
+
+                    const emptyValue = '<span style="color: #94A3B8; font-weight: 400;">—</span>';
+
                     let branchDetailsHTML = `
                     <div class="branch-details-modal">
-                        <div class="branch-details-content">
-                            <div class="branch-details-header">
-                                <h2>Şube Detayı</h2>
-                                <span class="close-branch-details">&times;</span>
+                        <div class="bdm-panel">
+                            <div class="bdm-hero">
+                                <button class="bdm-close close-branch-details"><i class="fa fa-xmark"></i></button>
+                                <div class="bdm-identity">
+                                    <div class="bdm-icon-wrapper">
+                                        <i class="fa fa-store"></i>
+                                    </div>
+                                    <h2 class="bdm-name">${branch.name}</h2>
+                                    <div class="bdm-badges">
+                                        <span class="bdm-id-pill">
+                                            <i class="fa fa-hashtag"></i> ID: ${branch.id}
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="branch-details-body">
-                                <div class="branch-info">
-                                    <div class="branch-info-item">
-                                        <div class="branch-label">
-                                            <strong>Şube Adı</strong> 
-                                            <span>:</span>
+
+                            <div class="bdm-body">
+                                <div class="bdm-info-grid">
+                                    <div class="bdm-info-card">
+                                        <div class="bdm-info-icon" style="background: #EFF6FF; color: #3B82F6;">
+                                            <i class="fa fa-store"></i>
                                         </div>
-                                        <p class="branch-value">${branch.name}</p>
-                                    </div>
-                                    <div class="branch-info-item">
-                                        <div class="branch-label">
-                                            <strong>Adres</strong> 
-                                            <span>:</span>
+                                        <div class="bdm-info-data">
+                                            <span class="bdm-info-label">Şube Adı</span>
+                                            <span class="bdm-info-value">${branch.name}</span>
                                         </div>
-                                        <p class="branch-value">${branch.address}</p>   
                                     </div>
-                                    <div class="branch-info-item">
-                                        <div class="branch-label">
-                                            <strong>Email</strong> 
-                                            <span>:</span>
+                                    <div class="bdm-info-card">
+                                        <div class="bdm-info-icon" style="background: #F0FDF4; color: #22C55E;">
+                                            <i class="fa fa-location-dot"></i>
                                         </div>
-                                        <p class="branch-value">${branch.email}</p>    
-                                    </div>
-                                    <div class="branch-info-item">
-                                        <div class="branch-label">
-                                            <strong>Telefon</strong> 
-                                            <span>:</span>
+                                        <div class="bdm-info-data">
+                                            <span class="bdm-info-label">Adres</span>
+                                            <span class="bdm-info-value" title="${branch.address}">${branch.address}</span>
                                         </div>
-                                        <p class="branch-value">${branch.phone}</p>   
                                     </div>
-                                    <div class="branch-info-item">
-                                        <div class="branch-label">
-                                            <strong>Web Site</strong> 
-                                            <span>:</span>
+                                    <div class="bdm-info-card">
+                                        <div class="bdm-info-icon" style="background: #FFF7ED; color: #F97316;">
+                                            <i class="fa fa-envelope"></i>
                                         </div>
-                                        <p class="branch-value">${branch.webSite || '<span style="color: gray;">—</span>'}</p> 
-                                    </div>
-                                    <div class="branch-info-item">
-                                        <div class="branch-label">
-                                            <strong>Facebook</strong> 
-                                            <span>:</span>
+                                        <div class="bdm-info-data">
+                                            <span class="bdm-info-label">E-posta</span>
+                                            <span class="bdm-info-value">${branch.email}</span>
                                         </div>
-                                        <p class="branch-value">${branch.facebook || '<span style="color: gray;">—</span>'}</p>    
                                     </div>
-                                    <div class="branch-info-item">
-                                        <div class="branch-label">
-                                            <strong>Instagram</strong> 
-                                            <span>:</span>
+                                    <div class="bdm-info-card">
+                                        <div class="bdm-info-icon" style="background: #F5F3FF; color: #8B5CF6;">
+                                            <i class="fa fa-phone"></i>
                                         </div>
-                                        <p class="branch-value">${branch.instagram || '<span style="color: gray;">—</span>'}</p>    
-                                    </div>
-                                    <div class="branch-info-item">
-                                        <div class="branch-label">
-                                            <strong>Twitter</strong> 
-                                            <span>:</span>
+                                        <div class="bdm-info-data">
+                                            <span class="bdm-info-label">Telefon</span>
+                                            <span class="bdm-info-value">${branch.phone}</span>
                                         </div>
-                                        <p class="branch-value">${branch.twitter || '<span style="color: gray;">—</span>'}</p>    
                                     </div>
-                                    <div class="branch-info-item">
-                                        <div class="branch-label">
-                                            <strong>Gmail</strong> 
-                                            <span>:</span>
+                                    <div class="bdm-info-card">
+                                        <div class="bdm-info-icon" style="background: #ECFEFF; color: #06B6D4;">
+                                            <i class="fa fa-globe"></i>
                                         </div>
-                                        <p class="branch-value">${branch.gmail || '<span style="color: gray;">—</span>' }</p>    
+                                        <div class="bdm-info-data">
+                                            <span class="bdm-info-label">Web Site</span>
+                                            <span class="bdm-info-value">${branch.webSite || emptyValue}</span>
+                                        </div>
                                     </div>
+                                    <div class="bdm-info-card">
+                                        <div class="bdm-info-icon" style="background: #EFF6FF; color: #3B82F6;">
+                                            <i class="fa-brands fa-facebook-f"></i>
+                                        </div>
+                                        <div class="bdm-info-data">
+                                            <span class="bdm-info-label">Facebook</span>
+                                            <span class="bdm-info-value">${branch.facebook || emptyValue}</span>
+                                        </div>
+                                    </div>
+                                    <div class="bdm-info-card">
+                                        <div class="bdm-info-icon" style="background: linear-gradient(135deg, #FDF2F8, #FAE8FF); color: #D946EF;">
+                                            <i class="fa-brands fa-instagram"></i>
+                                        </div>
+                                        <div class="bdm-info-data">
+                                            <span class="bdm-info-label">Instagram</span>
+                                            <span class="bdm-info-value">${branch.instagram || emptyValue}</span>
+                                        </div>
+                                    </div>
+                                    <div class="bdm-info-card">
+                                        <div class="bdm-info-icon" style="background: #F0F9FF; color: #0EA5E9;">
+                                            <i class="fa-brands fa-twitter"></i>
+                                        </div>
+                                        <div class="bdm-info-data">
+                                            <span class="bdm-info-label">Twitter</span>
+                                            <span class="bdm-info-value">${branch.twitter || emptyValue}</span>
+                                        </div>
+                                    </div>
+                                    <div class="bdm-info-card bdm-info-card-full">
+                                        <div class="bdm-info-icon" style="background: #FEF2F2; color: #EF4444;">
+                                            <i class="fa fa-envelope"></i>
+                                        </div>
+                                        <div class="bdm-info-data">
+                                            <span class="bdm-info-label">Gmail</span>
+                                            <span class="bdm-info-value">${branch.gmail || emptyValue}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="bdm-actions">
+                                    <button class="bdm-action-btn bdm-btn-delete" data-branch-id="${branch.id}">
+                                        <i class="fa fa-trash"></i>
+                                        Sil
+                                    </button>
+                                    <button class="bdm-action-btn bdm-btn-edit" data-branch-id="${branch.id}">
+                                        <i class="fa fa-pen-to-square"></i>
+                                        Düzenle
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>`;
-                    
+
                     // Eğer detay modülü zaten varsa kaldır
                     $('.branch-details-modal').remove();
-                    
+
                     // Detay modülünü ekle
                     $('body').append(branchDetailsHTML);
-                    
+
                     // Detay modülünü göster
                     $('.branch-details-modal').fadeIn(300);
-                    
+
                     // Kapatma butonuna tıklandığında
                     $('.close-branch-details').click(function() {
                         $('.branch-details-modal').fadeOut(300, function() {
                             $(this).remove();
                         });
                     });
-                    
+
                     // Modül dışına tıklandığında kapat
                     $('.branch-details-modal').click(function(e) {
                         if ($(e.target).hasClass('branch-details-modal')) {
@@ -5556,7 +5612,7 @@ $(document).ready(function() {
     // Şube satırına tıklama olayı
     $(document).on('click', '.branch-row', function(e) {
         // Eğer tıklanan element düzenleme butonu, silme butonu, şehre git veya rezervasyonlara git butonu ise işlemi durdur
-        if ($(e.target).closest('.btn-edit-branch, .btn-delete-product, .btn-city, .btn-reservation').length) {
+        if ($(e.target).closest('.btn-edit-branch, .btn-delete-branch, .btn-delete-product, .btn-city, .btn-reservation').length) {
             return;
         }
 
@@ -5565,10 +5621,47 @@ $(document).ready(function() {
     });
 
 
+    // Şube detay modalından "Düzenle" butonuna tıklandığında
+    $(document).on('click', '.bdm-btn-edit', function(e) {
+        e.stopPropagation();
+        const branchId = $(this).data('branch-id');
+
+        $('.branch-details-modal').fadeOut(300, function() {
+            $(this).remove();
+        });
+
+        updateBranch(branchId);
+    });
+
+
+    // Şube detay modalından "Sil" butonuna tıklandığında
+    $(document).on('click', '.bdm-btn-delete', function(e) {
+        e.stopPropagation();
+        const branchId = $(this).data('branch-id');
+
+        confirmAndDelete({
+            entityName: 'şubeyi',
+            deleteUrl: `${baseUrl}branches/delete?branchId=${branchId}`,
+            successMessage: 'Şube başarıyla silindi!',
+            errorMessage: 'Şube silinirken hata oluştu!',
+            modalsToClose: '.branch-details-modal',
+            onSuccess: function() {
+                const cityId = localStorage.getItem('selectedCityId');
+                const cityName = localStorage.getItem('selectedCityName');
+
+                if (cityName === null) {
+                    getAllBranches();
+                } else {
+                    getBranchesByCity(cityId, cityName);
+                }
+            }
+        });
+    });
+
 
     function updateBranch(branchId) {
         const token = localStorage.getItem('token');
-        
+
         $.ajax({
             url: `${baseUrl}branches/getForAdmin?branchId=${branchId}`,
             type: 'GET',
@@ -5581,100 +5674,121 @@ $(document).ready(function() {
 
                     let branchUpdateHTML = `
                     <div class="branch-update-modal" data-branch-id="${branch.id}">
-                        <div class="branch-update-content">
-                            <div class="branch-update-header">
-                                <h2>Şube Güncelleme</h2>
-                                <span class="close-branch-update">&times;</span>
+                        <div class="bum-panel">
+                            <div class="bum-hero">
+                                <button class="bum-close close-branch-update"><i class="fa fa-xmark"></i></button>
+                                <h2 class="bum-title">Şube Güncelleme</h2>
+                                <p class="bum-subtitle">Şube bilgilerini düzenleyin.</p>
                             </div>
-                            <div class="branch-update-body">
-                                <div class="branch-info">
-                                    <div class="branch-info-item">
-                                        <div class="branch-label">
-                                            <strong>Şube Adı</strong> 
-                                            <span>:</span>
-                                        </div>
-                                        <input type="text" class="branch-value branch-name" value="${branch.name}">
+
+                            <div class="bum-body">
+                                <div class="bum-form-section">
+                                    <div class="bum-field">
+                                        <label class="bum-field-label">
+                                            <i class="fa fa-store"></i>
+                                            Şube Adı
+                                        </label>
+                                        <input type="text" class="bum-field-input bum-field-update branch-name" value="${branch.name}" placeholder="Şube adını giriniz...">
                                     </div>
-                                    <div class="branch-info-item">
-                                        <div class="branch-label">
-                                            <strong>Adres</strong> 
-                                            <span>:</span>
-                                        </div>
-                                        <input type="text" class="branch-value branch-address" value="${branch.address}">    
+                                    <div class="bum-field">
+                                        <label class="bum-field-label">
+                                            <i class="fa fa-location-dot"></i>
+                                            Adres
+                                        </label>
+                                        <input type="text" class="bum-field-input bum-field-update branch-address" value="${branch.address}" placeholder="Adres giriniz...">
                                     </div>
-                                    <div class="branch-info-item">
-                                        <div class="branch-label">
-                                            <strong>E-posta</strong> 
-                                            <span>:</span>
+                                    <div class="bum-field-row">
+                                        <div class="bum-field">
+                                            <label class="bum-field-label">
+                                                <i class="fa fa-envelope"></i>
+                                                E-posta
+                                            </label>
+                                            <input type="email" class="bum-field-input bum-field-update branch-email" value="${branch.email}" placeholder="E-posta giriniz...">
                                         </div>
-                                        <input type="text" class="branch-value branch-email" value="${branch.email}">    
-                                    </div>
-                                    <div class="branch-info-item">
-                                        <div class="branch-label">
-                                            <strong>Telefon</strong> 
-                                            <span>:</span>
+                                        <div class="bum-field">
+                                            <label class="bum-field-label">
+                                                <i class="fa fa-phone"></i>
+                                                Telefon
+                                            </label>
+                                            <input type="text" id="branchPhone" class="bum-field-input bum-field-update branch-phone" placeholder="0___ ___ __ __" value="${branch.phone}">
                                         </div>
-                                        <input type="text" id="branchPhone" class="branch-value branch-phone" placeholder="0___ ___ __ __"  value="${branch.phone}">    
                                     </div>
-                                    <div class="branch-info-item">
-                                        <div class="branch-label">
-                                            <strong>Web Site</strong> 
-                                            <span>:</span>
+                                    <div class="bum-field">
+                                        <label class="bum-field-label">
+                                            <i class="fa fa-globe"></i>
+                                            Web Site
+                                        </label>
+                                        <input type="text" class="bum-field-input bum-field-update branch-web-site" value="${branch.webSite === null ? '' : branch.webSite}" placeholder="Web site giriniz...">
+                                    </div>
+
+                                    <div class="bum-section-divider">
+                                        <span>Sosyal Medya</span>
+                                    </div>
+
+                                    <div class="bum-field-row">
+                                        <div class="bum-field">
+                                            <label class="bum-field-label">
+                                                <i class="fa-brands fa-facebook-f"></i>
+                                                Facebook
+                                            </label>
+                                            <input type="text" class="bum-field-input bum-field-update branch-facebook" value="${branch.facebook === null ? '' : branch.facebook}" placeholder="Facebook linki...">
                                         </div>
-                                        <input type="text" class="branch-value branch-web-site" value="${branch.webSite}">    
-                                    </div>
-                                    <div class="branch-info-item">
-                                        <div class="branch-label">
-                                            <strong>Facebook</strong> 
-                                            <span>:</span>
+                                        <div class="bum-field">
+                                            <label class="bum-field-label">
+                                                <i class="fa-brands fa-instagram"></i>
+                                                Instagram
+                                            </label>
+                                            <input type="text" class="bum-field-input bum-field-update branch-instagram" value="${branch.instagram === null ? '' : branch.instagram}" placeholder="Instagram linki...">
                                         </div>
-                                        <input type="text" class="branch-value branch-facebook" value="${branch.facebook === null ? '' : branch.facebook}">    
                                     </div>
-                                    <div class="branch-info-item">
-                                        <div class="branch-label">
-                                            <strong>Instagram</strong> 
-                                            <span>:</span>
+                                    <div class="bum-field-row">
+                                        <div class="bum-field">
+                                            <label class="bum-field-label">
+                                                <i class="fa-brands fa-twitter"></i>
+                                                Twitter
+                                            </label>
+                                            <input type="text" class="bum-field-input bum-field-update branch-twitter" value="${branch.twitter === null ? '' : branch.twitter}" placeholder="Twitter linki...">
                                         </div>
-                                        <input type="text" class="branch-value branch-instagram" value="${branch.instagram === null ? '' : branch.instagram}">    
-                                    </div>
-                                    <div class="branch-info-item">
-                                        <div class="branch-label">
-                                            <strong>Twitter</strong> 
-                                            <span>:</span>
+                                        <div class="bum-field">
+                                            <label class="bum-field-label">
+                                                <i class="fa fa-envelope"></i>
+                                                Gmail
+                                            </label>
+                                            <input type="text" class="bum-field-input bum-field-update branch-gmail" value="${branch.gmail === null ? '' : branch.gmail}" placeholder="Gmail adresi...">
                                         </div>
-                                        <input type="text" class="branch-value branch-twitter" value="${branch.twitter === null ? '' : branch.twitter}">    
                                     </div>
-                                    <div class="branch-info-item">
-                                        <div class="branch-label">
-                                            <strong>Gmail</strong> 
-                                            <span>:</span>
-                                        </div>
-                                        <input type="text" class="branch-value branch-gmail" value="${branch.gmail === null ? '' : branch.gmail}">    
-                                    </div>
-                                    <button class="btn-update-branch">Güncelle</button>
+                                </div>
+
+                                <div class="bum-actions">
+                                    <button class="bum-btn-cancel">
+                                        <i class="fa fa-xmark"></i>
+                                        İptal
+                                    </button>
+                                    <button class="bum-btn-update btn-update-branch">
+                                        <i class="fa fa-check"></i>
+                                        Güncelle
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>`;
-                    
+
                     // Eğer detay modülü zaten varsa kaldır
                     $('.branch-update-modal').remove();
-                    
+
                     // Detay modülünü ekle
                     $('body').append(branchUpdateHTML);
-                    
+
                     // Detay modülünü göster
-                    $('.branch-update-modal').fadeIn(300, function() {
-                        checkIfItemsAreOnNewLine(true);
-                    });
-                    
+                    $('.branch-update-modal').fadeIn(300);
+
                     // Kapatma butonuna tıklandığında
-                    $('.close-branch-update').click(function() {
+                    $('.close-branch-update, .bum-btn-cancel').click(function() {
                         $('.branch-update-modal').fadeOut(300, function() {
                             $(this).remove();
                         });
                     });
-                    
+
                     // Modül dışına tıklandığında kapat
                     $('.branch-update-modal').click(function(e) {
                         if ($(e.target).hasClass('branch-update-modal')) {
@@ -5691,7 +5805,6 @@ $(document).ready(function() {
                 const errorMessage = xhr.responseJSON?.Message;
 
                 if (xhr.status === 401) {
-                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
                     handleLogout(errorMessage);
                     return;
                 }
@@ -5879,69 +5992,24 @@ $(document).ready(function() {
     $(document).on('click', '.btn-delete-branch', function(e) {
         e.preventDefault();
         e.stopPropagation();
-        
+
         const branchId = $(this).closest('.branch-row').data('branch-id');
-        
-        // SweetAlert2 ile özelleştirilmiş onay kutusu
-        Swal.fire({
-            title: 'Emin misiniz?',
-            text: "Bu şubeyi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Evet, Sil!',
-            cancelButtonText: 'İptal',
-            customClass: {
-                popup: 'swal2-popup-custom',
-                icon: 'swal2-icon-custom',
-                title: 'swal2-title-custom',
-                htmlContainer: 'swal2-content-custom',
-                confirmButton: 'swal2-confirm-custom',
-                cancelButton: 'swal2-cancel-custom'
-            }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const token = localStorage.getItem('token');
-                
-                $.ajax({
-                    url: `${baseUrl}branches/delete?branchId=${branchId}`,
-                    type: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            showToast('success', 'Başarılı', 'Şube başarıyla silindi!');
 
-                            $('.branch-update-modal').fadeOut(300, function() {
-                                $(this).remove();
-                            });
+        confirmAndDelete({
+            entityName: 'şubeyi',
+            deleteUrl: `${baseUrl}branches/delete?branchId=${branchId}`,
+            successMessage: 'Şube başarıyla silindi!',
+            errorMessage: 'Şube silinirken hata oluştu!',
+            modalsToClose: '.branch-update-modal',
+            onSuccess: function() {
+                const cityId = localStorage.getItem('selectedCityId');
+                const cityName = localStorage.getItem('selectedCityName');
 
-                            const cityId = localStorage.getItem('selectedCityId');
-                            const cityName = localStorage.getItem('selectedCityName');
-
-                            if (cityName === null){
-                                getAllBranches();
-                            }else{
-                                getBranchesByCity(cityId, cityName); 
-                            }
-                        } else {
-                            showToast('error', 'Hata', 'Şube silinirken hata oluştu!');
-                        }
-                    },
-                    error: function(xhr) {
-                        const errorMessage = xhr.responseJSON?.Message;
-
-                        if (xhr.status === 401) {
-                            // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
-                            handleLogout(errorMessage);
-                            return;
-                        }
-
-                        showToast('error', 'Hata', errorMessage ? errorMessage : 'Şube silinirken hata oluştu!');
-                    }
-                });
+                if (cityName === null) {
+                    getAllBranches();
+                } else {
+                    getBranchesByCity(cityId, cityName);
+                }
             }
         });
     });
@@ -5949,109 +6017,130 @@ $(document).ready(function() {
 
 
     function createBranch(showCityList) {
-        
+
         let branchCreateHTML = `
         <div class="branch-create-modal">
-            <div class="branch-create-content">
-                <div class="branch-create-header">
-                    <h2>Şube Ekleme</h2>
-                    <span class="close-branch-create">&times;</span>
+            <div class="bum-panel">
+                <div class="bum-hero" style="background: linear-gradient(135deg,rgb(66, 182, 143),rgb(15, 122, 88));">
+                    <button class="bum-close close-branch-create"><i class="fa fa-xmark"></i></button>
+                    <h2 class="bum-title">Yeni Şube Ekle</h2>
+                    <p class="bum-subtitle">Yeni bir şube oluşturun.</p>
                 </div>
-                <div class="branch-create-body">
-                    <div class="branch-info">
+
+                <div class="bum-body">
+                    <div class="bum-form-section">
                         ${showCityList ? `
-                        <div class="branch-info-item">
-                            <div class="branch-label">
-                                <strong>Şehirler</strong> 
-                                <span>:</span>
-                            </div>
-                            <select class="branch-value" id="citySelect">
+                        <div class="bum-field">
+                            <label class="bum-field-label">
+                                <i class="fa fa-city" style="color: #10B981"></i>
+                                Şehir
+                            </label>
+                            <select class="bum-field-select" id="citySelect">
                             </select>
                         </div>` : ''}
-                        <div class="branch-info-item">
-                            <div class="branch-label">
-                                <strong>Şube Adı</strong> 
-                                <span>:</span>
-                            </div>
-                            <input type="text" class="branch-value branch-name">
+                        <div class="bum-field">
+                            <label class="bum-field-label">
+                                <i class="fa fa-store" style="color: #10B981"></i>
+                                Şube Adı
+                            </label>
+                            <input type="text" class="bum-field-input bum-field-add branch-name" placeholder="Şube adını giriniz...">
                         </div>
-                        <div class="branch-info-item">
-                            <div class="branch-label">
-                                <strong>Adres</strong> 
-                                <span>:</span>
-                            </div>
-                            <input type="text" class="branch-value branch-address">    
+                        <div class="bum-field">
+                            <label class="bum-field-label">
+                                <i class="fa fa-location-dot" style="color: #10B981"></i>
+                                Adres
+                            </label>
+                            <input type="text" class="bum-field-input bum-field-add branch-address" placeholder="Adres giriniz...">
                         </div>
-                        <div class="branch-info-item">
-                            <div class="branch-label">
-                                <strong>E-posta</strong> 
-                                <span>:</span>
+                        <div class="bum-field-row">
+                            <div class="bum-field">
+                                <label class="bum-field-label">
+                                    <i class="fa fa-envelope" style="color: #10B981"></i>
+                                    E-posta
+                                </label>
+                                <input type="email" class="bum-field-input bum-field-add branch-email" placeholder="E-posta giriniz...">
                             </div>
-                            <input type="email" class="branch-value branch-email">    
-                        </div>
-                        <div class="branch-info-item">
-                            <div class="branch-label">
-                                <strong>Telefon</strong> 
-                                <span>:</span>
+                            <div class="bum-field">
+                                <label class="bum-field-label">
+                                    <i class="fa fa-phone" style="color: #10B981"></i>
+                                    Telefon
+                                </label>
+                                <input type="text" id="branchPhone" class="bum-field-input bum-field-add branch-phone" placeholder="0___ ___ __ __">
                             </div>
-                            <input type="text" id="branchPhone" class="branch-value branch-phone" placeholder="0___ ___ __ __" >    
                         </div>
-                        <div class="branch-info-item">
-                            <div class="branch-label">
-                                <strong>Web Site</strong> 
-                                <span>:</span>
+                        <div class="bum-field">
+                            <label class="bum-field-label">
+                                <i class="fa fa-globe" style="color: #10B981"></i>
+                                Web Site
+                            </label>
+                            <input type="text" class="bum-field-input bum-field-add branch-web-site" placeholder="Web site giriniz...">
+                        </div>
+
+                        <div class="bum-section-divider">
+                            <span>Sosyal Medya</span>
+                        </div>
+
+                        <div class="bum-field-row">
+                            <div class="bum-field">
+                                <label class="bum-field-label">
+                                    <i class="fa-brands fa-facebook-f" style="color: #10B981"></i>
+                                    Facebook
+                                </label>
+                                <input type="text" class="bum-field-input bum-field-add branch-facebook" placeholder="Facebook linki...">
                             </div>
-                            <input type="text" class="branch-value branch-web-site">    
-                        </div>
-                        <div class="branch-info-item">
-                            <div class="branch-label">
-                                <strong>Facebook</strong> 
-                                <span>:</span>
+                            <div class="bum-field">
+                                <label class="bum-field-label">
+                                    <i class="fa-brands fa-instagram" style="color: #10B981"></i>
+                                    Instagram
+                                </label>
+                                <input type="text" class="bum-field-input bum-field-add branch-instagram" placeholder="Instagram linki...">
                             </div>
-                            <input type="text" class="branch-value branch-facebook">    
                         </div>
-                        <div class="branch-info-item">
-                            <div class="branch-label">
-                                <strong>Instagram</strong> 
-                                <span>:</span>
+                        <div class="bum-field-row">
+                            <div class="bum-field">
+                                <label class="bum-field-label">
+                                    <i class="fa-brands fa-twitter" style="color: #10B981"></i>
+                                    Twitter
+                                </label>
+                                <input type="text" class="bum-field-input bum-field-add branch-twitter" placeholder="Twitter linki...">
                             </div>
-                            <input type="text" class="branch-value branch-instagram">    
-                        </div>
-                        <div class="branch-info-item">
-                            <div class="branch-label">
-                                <strong>Twitter</strong> 
-                                <span>:</span>
+                            <div class="bum-field">
+                                <label class="bum-field-label">
+                                    <i class="fa fa-envelope" style="color: #10B981"></i>
+                                    Gmail
+                                </label>
+                                <input type="text" class="bum-field-input bum-field-add branch-gmail" placeholder="Gmail adresi...">
                             </div>
-                            <input type="text" class="branch-value branch-twitter">    
                         </div>
-                        <div class="branch-info-item">
-                            <div class="branch-label">
-                                <strong>Gmail</strong> 
-                                <span>:</span>
-                            </div>
-                            <input type="text" class="branch-value branch-gmail">    
-                        </div>
-                        <button class="btn-add-branch">Ekle</button>
+                    </div>
+
+                    <div class="bum-actions">
+                        <button class="bum-btn-cancel close-branch-create-btn">
+                            <i class="fa fa-xmark"></i>
+                            İptal
+                        </button>
+                        <button class="bum-btn-save btn-add-branch">
+                            <i class="fa fa-plus"></i>
+                            Ekle
+                        </button>
                     </div>
                 </div>
             </div>
         </div>`;
-        
+
         // Detay modülünü ekle
         $('body').append(branchCreateHTML);
-        
-        if ($('#citySelect').length > 0) $('.btn-add-branch').css('margin-left', 'auto');
 
         // Detay modülünü göster
         $('.branch-create-modal').fadeIn(300);
-        
+
         // Kapatma butonuna tıklandığında
-        $('.close-branch-create').click(function() {
+        $('.close-branch-create, .close-branch-create-btn').click(function() {
             $('.branch-create-modal').fadeOut(300, function() {
                 $(this).remove();
             });
         });
-        
+
         // Modül dışına tıklandığında kapat
         $('.branch-create-modal').click(function(e) {
             if ($(e.target).hasClass('branch-create-modal')) {
@@ -7392,7 +7481,7 @@ $(document).ready(function() {
             tables.forEach(table => {
                 tablesHTML += `
                 <div class="table-item">
-                    <i class="fa-solid fa-trash" data-table-id="${table.id}"></i>
+                    <i class="fa fa-trash" data-table-id="${table.id}"></i>
                     <div class="table-number">
                         <span>${table.no}</span>
                     </div>
@@ -7433,64 +7522,18 @@ $(document).ready(function() {
     $(document).on('click', '.table-item i.fa-trash', function(e) {
         e.preventDefault();
         e.stopPropagation();
-        
+
         const tableId = $(this).data('table-id');
-        
-        // SweetAlert2 ile özelleştirilmiş onay kutusu
-        Swal.fire({
-            title: 'Emin misiniz?',
-            text: "Bu masayı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Evet, Sil!',
-            cancelButtonText: 'İptal',
-            customClass: {
-                popup: 'swal2-popup-custom',
-                icon: 'swal2-icon-custom',
-                title: 'swal2-title-custom',
-                htmlContainer: 'swal2-content-custom',
-                confirmButton: 'swal2-confirm-custom',
-                cancelButton: 'swal2-cancel-custom'
-            }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const token = localStorage.getItem('token');
-                
-                $.ajax({
-                    url: `${baseUrl}tables/delete?tableId=${tableId}`,
-                    type: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            showToast('success', 'Başarılı', 'Masa başarıyla silindi!');
 
-                            $('.table-update-modal').fadeOut(300, function() {
-                                $(this).remove();
-                            });
-
-                            showTableManagement();
-
-                            fetchTables();
-                        } else {
-                            showToast('error', 'Hata', 'Masa silinirken hata oluştu!');
-                        }
-                    },
-                    error: function(xhr) {
-                        const errorMessage = xhr.responseJSON?.Message;
-
-                        if (xhr.status === 401) {
-                            // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
-                            handleLogout(errorMessage);
-                            return;
-                        }
-
-                        showToast('error', 'Hata', errorMessage ? errorMessage : 'Masa silinirken hata oluştu!');
-                    }
-                });
+        confirmAndDelete({
+            entityName: 'masayı',
+            deleteUrl: `${baseUrl}tables/delete?tableId=${tableId}`,
+            successMessage: 'Masa başarıyla silindi!',
+            errorMessage: 'Masa silinirken hata oluştu!',
+            modalsToClose: '.table-update-modal',
+            onSuccess: function() {
+                showTableManagement();
+                fetchTables();
             }
         });
     });

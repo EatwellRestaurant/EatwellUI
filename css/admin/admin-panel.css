@@ -682,7 +682,6 @@ td, th {
 .table-actions-scroll {
   overflow-x: auto;
   white-space: nowrap;
-  display: block;
   display: flex;
   gap: 8px;
 }
@@ -1084,17 +1083,6 @@ td, th {
   background-color: #ffd760;
 }
 
-.btn-update-branch,
-.btn-add-branch {
-  margin-right: 15px;
-  padding: 1px 14px;
-  margin-top: 0px;
-  height: 40px;
-  border: none;
-  width: 150px;
-  font-size: 15px;
-}
-
 .custom-upload-button{
   margin-top: 25px;
   padding: 8px 16px;
@@ -1102,8 +1090,6 @@ td, th {
 }
 
 .custom-upload-button,
-.btn-update-branch,
-.btn-add-branch,
 .btn-add-table,
 .btn-update-table {
   font-family: 'Poppins', sans-serif;
@@ -1117,8 +1103,6 @@ td, th {
 }
 
 .custom-upload-button:hover,
-.btn-update-branch:hover,
-.btn-add-branch:hover,
 .btn-add-table:hover,
 .btn-update-table:hover,
 .btn-update-branch-settings:hover {
@@ -1289,72 +1273,99 @@ td, th {
   font-size: 14px;
 }
 
-
-/* Menü ve Ürün İşlemleri İçin Buton Stili */
-.btn-edit-menu,
-.btn-edit-product,
-.btn-edit-branch,
 .btn-delete-menu,
 .btn-delete-product,
 .btn-delete-branch,
+.mdm-btn-delete,
+.pdm-btn-delete,
+.btn-edit-menu,
+.btn-edit-product,
+.btn-edit-branch,
+.mdm-btn-edit,
+.pdm-btn-edit,
+.btn-products-menu,
+.mdm-btn-products,
+.btn-menu,
+.pdm-btn-menu,
 .btn-branches-city,
-.btn-city,
-.btn-reservation {
+.bdm-btn-delete,
+.bdm-btn-edit {
+  cursor: pointer;
+  background-color: transparent;
+  border-radius: 8px;
+  font-weight: 500;
   padding: 8px 10px;
   font-family: 'Poppins', sans-serif;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  transition: all .3s ease-in-out;
 }
 
 .btn-delete-menu,
 .btn-delete-product,
 .btn-delete-branch,
 .mdm-btn-delete,
-.pdm-btn-delete {
-  cursor: pointer;
-  background-color: transparent;
+.pdm-btn-delete, 
+.bdm-btn-delete {
   color: #EF4444;
   border: 1.5px solid #FCA5A5;
-  border-radius: 8px;
-  font-weight: 500;
-  transition: all 0.25s ease;
 }
 
 .btn-delete-menu:hover,
 .btn-delete-product:hover,
 .btn-delete-branch:hover,
 .mdm-btn-delete:hover,
-.pdm-btn-delete:hover {
+.pdm-btn-delete:hover,
+.bdm-btn-delete:hover {
   background-color: #FEE2E2;
   border-color: #EF4444;
   color: #DC2626;
 }
 
-.btn-edit-menu i,
-.btn-create-menu i,
-.btn-manage-table i,
-.btn-edit-product i,
-.btn-edit-branch i,
-.btn-delete-menu i,
-.btn-delete-product i,
-.btn-delete-branch i,
-.btn-create-product i,
-.btn-create-branch i,
-.btn-all-branches i,
-.btn-head-office i,
-.btn-products-menu i,
-.btn-branches-city i,
-.btn-menu i,
-.btn-city i,
-.btn-reservation i,
-.btn-filter-table i {
-  margin-right: 3px;
+.btn-edit-menu,
+.btn-edit-product,
+.btn-edit-branch,
+.mdm-btn-edit,
+.pdm-btn-edit,
+.bdm-btn-edit {
+  color: #06B6D4;
+  border: 1.5px solid #67E8F9;
+}
+
+.btn-edit-menu:hover,
+.btn-edit-product:hover,
+.btn-edit-branch:hover,
+.mdm-btn-edit:hover,
+.pdm-btn-edit:hover,
+.bdm-btn-edit:hover {
+  background-color: #d5f0f2;
+  border-color: #06B6D4;
+  color: #0891B2;
+}
+
+.btn-products-menu,
+.mdm-btn-products,
+.btn-menu,
+.pdm-btn-menu,
+.btn-branches-city {
+  color: #8B5CF6;
+  border: 1.5px solid #C4B5FD;
+}
+
+.btn-products-menu:hover,
+.mdm-btn-products:hover,
+.btn-menu:hover,
+.pdm-btn-menu:hover,
+.btn-branches-city:hover {
+  background-color: #EDE9FE;
+  border-color: #8B5CF6;
+  color: #7C3AED;
 }
 
 .branch-controls {
   display: flex;
-}
-
-.btn-head-office {
-  margin-right: 13px;
+  gap: 8px;
 }
 
 .btn-create-menu,
@@ -1363,7 +1374,6 @@ td, th {
 .btn-manage-table,
 .btn-all-branches,
 .btn-head-office,
-.btn-branches-city,
 .btn-city,
 .btn-reservation {
   background: linear-gradient(135deg, #10b95c, #08a950);
@@ -1378,6 +1388,9 @@ td, th {
   cursor: pointer;
   white-space: nowrap;
   font-family: 'Poppins', sans-serif;
+  display: flex;
+  gap: 7px;
+  align-items: center;
   background-position: left center;
   transition: background-position .3s ease, transform .3s ease, box-shadow .3s ease;
 }
@@ -1388,67 +1401,11 @@ td, th {
 .btn-create-branch:hover,
 .btn-all-branches:hover,
 .btn-head-office:hover,
-.btn-branches-city:hover,
 .btn-city:hover,
 .btn-reservation:hover {
   box-shadow: 0 4px 17px rgba(45, 180, 135, 0.35);
   background-position: right center;
   transform: translateY(-2px);
-}
-
-/* Düzenle Butonu */
-.btn-edit-menu,
-.btn-edit-product,
-.btn-edit-branch,
-.mdm-btn-edit,
-.pdm-btn-edit {
-  cursor: pointer;
-  background-color: transparent;
-  color: #06B6D4;
-  border: 1.5px solid #67E8F9;
-  border-radius: 8px;
-  font-weight: 500;
-  transition: all .3s ease-in-out;
-}
-
-.btn-edit-menu:hover,
-.btn-edit-product:hover,
-.btn-edit-branch:hover,
-.mdm-btn-edit:hover,
-.pdm-btn-edit:hover {
-  background-color: #d5f0f2;
-  border-color: #06B6D4;
-  color: #0891B2;
-}
-
-.btn-edit-menu i,
-.btn-edit-product i,
-.btn-edit-branch i {
-  color: #06B6D4;
-}
-
-.btn-products-menu,
-.mdm-btn-products,
-.btn-menu,
-.pdm-btn-menu {
-  cursor: pointer;
-  background-color: transparent;
-  color: #8B5CF6;
-  border: 1.5px solid #C4B5FD;
-  border-radius: 8px;
-  font-weight: 500;
-  transition: all .3s ease-in-out;
-  padding: 8px 10px;
-  font-family: 'Poppins', sans-serif;
-}
-
-.btn-products-menu:hover,
-.mdm-btn-products:hover,
-.btn-menu:hover,
-.pdm-btn-menu:hover {
-  background-color: #EDE9FE;
-  border-color: #8B5CF6;
-  color: #7C3AED;
 }
 
 .table-management {
@@ -3989,8 +3946,10 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 }
 
 .user-details-modal .udm-panel,
+.bdm-panel,
 .mdm-panel,
 .pdm-panel,
+.bum-panel,
 .mum-panel,
 .pum-panel {
   background: #fff;
@@ -4010,14 +3969,24 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   min-width: 380px;
 }
 
+.bdm-panel {
+  max-width: 800px;
+}
+
+.bum-panel {
+  max-width: 640px;
+}
+
 @keyframes mdmSlideIn {
   from { opacity: 0; transform: translateY(30px) scale(0.97); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .udm-hero,
+.bdm-hero,
 .mdm-hero,
 .pdm-hero,
+.bum-hero,
 .mum-hero,
 .pum-hero  {
   padding: 28px 28px 45px;
@@ -4033,6 +4002,11 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   background: linear-gradient(135deg, var(--pdm-hero-color), color-mix(in srgb, var(--pdm-hero-color) 55%, #1E293B));
 }
 
+.bdm-hero {
+  background: linear-gradient(135deg, #3B82F6, color-mix(in srgb, #3B82F6 55%, #1E293B));
+}
+
+.bum-hero,
 .mum-hero,
 .pum-hero {
   background: linear-gradient(135deg, #F59E0B, #D97706);
@@ -4043,8 +4017,10 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 }
 
 .udm-hero::after,
+.bdm-hero::after,
 .mdm-hero::after,
 .pdm-hero::after,
+.bum-hero::after,
 .mum-hero::after,
 .pum-hero::after {
   content: '';
@@ -4063,8 +4039,10 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
 /* Close Button */
 .udm-close,
+.bdm-close,
 .mdm-close,
 .pdm-close,
+.bum-close,
 .mum-close,
 .pum-close {
   position: absolute;
@@ -4087,9 +4065,11 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 }
 
 .udm-close:hover,
+.bdm-close:hover,
 .mdm-close:hover,
 .pdm-close:hover,
-.mum-close:hover, 
+.bum-close:hover,
+.mum-close:hover,
 .pum-close:hover {
   background: rgba(255,255,255,0.35);
   transform: rotate(90deg);
@@ -4102,6 +4082,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   object-fit: cover;
 }
 
+.bdm-identity,
 .mdm-identity,
 .pdm-identity {
   position: relative;
@@ -4111,6 +4092,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   gap: 12px;
 }
 
+.bdm-name,
 .mdm-name,
 .pdm-name {
   color: #fff;
@@ -4120,6 +4102,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   margin: 0;
 }
 
+.bdm-badges,
 .mdm-badges,
 .pdm-badges {
   display: flex;
@@ -4128,6 +4111,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   flex-wrap: wrap;
 }
 
+.bdm-id-pill,
 .mdm-status-pill,
 .mdm-id-pill,
 .pdm-status-pill,
@@ -4154,6 +4138,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   color: #FCA5A5;
 }
 
+.bdm-id-pill,
 .mdm-id-pill,
 .pdm-id-pill {
   background: rgba(255,255,255,0.15);
@@ -4161,6 +4146,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 }
 
 /* Body */
+.bdm-body,
 .mdm-body,
 .pdm-body {
   padding: 4px 24px 28px;
@@ -4168,6 +4154,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
 /* Info Grid */
 .udm-info-grid,
+.bdm-info-grid,
 .mdm-info-grid,
 .pdm-info-grid {
   display: grid;
@@ -4175,12 +4162,14 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   gap: 12px;
 }
 
+.bdm-info-grid,
 .mdm-info-grid,
 .pdm-info-grid {
   margin-bottom: 24px;
 }
 
 .udm-info-card,
+.bdm-info-card,
 .mdm-info-card,
 .pdm-info-card {
   display: flex;
@@ -4192,12 +4181,14 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 }
 
 .udm-info-card:hover,
+.bdm-info-card:hover,
 .mdm-info-card:hover,
 .pdm-info-card:hover {
   background: #F1F5F9;
 }
 
 .udm-info-icon,
+.bdm-info-icon,
 .mdm-info-icon,
 .pdm-info-icon {
   width: 40px;
@@ -4211,14 +4202,17 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 }
 
 .udm-info-data,
+.bdm-info-data,
 .mdm-info-data,
 .pdm-info-data {
   display: flex;
   flex-direction: column;
   min-width: 0;
+  gap: 2px;
 }
 
 .udm-info-label,
+.bdm-info-label,
 .mdm-info-label,
 .pdm-info-label {
   font-size: 11px;
@@ -4229,6 +4223,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 }
 
 .udm-info-value,
+.bdm-info-value,
 .mdm-info-value,
 .pdm-info-value {
   font-size: 14px;
@@ -4241,6 +4236,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 }
 
 /* Action Buttons */
+.bdm-actions,
 .mdm-actions,
 .pdm-actions {
   display: flex;
@@ -4249,6 +4245,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   flex-wrap: wrap;
 }
 
+.bdm-action-btn,
 .mdm-action-btn,
 .pdm-action-btn {
   display: inline-flex;
@@ -4259,6 +4256,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   font-family: 'Poppins', sans-serif;
 }
 
+.bum-title,
 .mum-title,
 .pum-title {
   color: #fff;
@@ -4268,6 +4266,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   margin: 0 0 4px;
 }
 
+.bum-subtitle,
 .mum-subtitle,
 .pum-subtitle {
   color: rgba(255,255,255,0.8);
@@ -4276,6 +4275,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   margin: 0;
 }
 
+.bum-body,
 .mum-body,
 .pum-body {
   padding: 8px 28px 28px;
@@ -4362,17 +4362,30 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   opacity: 1;
 }
 
+.bum-form-section,
 .mum-form-section,
 .pum-form-section {
   margin-bottom: 18px;
 }
 
+.bum-form-section,
 .pum-form-section {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 17px;
 }
 
+.bum-field-row {
+  display: flex;
+  gap: 17px;
+}
+
+.bum-field-row .bum-field {
+  flex: 1;
+  min-width: 0;
+}
+
+.bum-field,
 .mum-field,
 .pum-field {
   display: flex;
@@ -4380,6 +4393,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   gap: 8px;
 }
 
+.bum-field-label,
 .mum-field-label,
 .pum-field-label {
   display: flex;
@@ -4391,12 +4405,14 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   font-family: 'Poppins', sans-serif;
 }
 
+.bum-field-label i,
 .mum-field-label i,
 .pum-field-label i {
   color: #F59E0B;
   font-size: 14px;
 }
 
+.bum-field-input,
 .mum-field-input,
 .pum-field-input {
   width: 100%;
@@ -4411,6 +4427,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   box-sizing: border-box;
 }
 
+.bum-field-input:focus,
 .mum-field-input:focus,
 .pum-field-input:focus {
   outline: none;
@@ -4418,21 +4435,25 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.1);
 }
 
+.bum-field-add:focus,
 .mum-field-add:focus,
 .pum-field-add:focus {
   border-color: #10B981;
 }
 
+.bum-field-update:focus,
 .mum-field-update:focus,
 .pum-field-update:focus {
   border-color: #F59E0B;
 }
 
+.bum-field-input::placeholder,
 .mum-field-input::placeholder,
 .pum-field-input::placeholder {
   color: #9CA3AF;
 }
 
+.bum-actions,
 .mum-actions,
 .pum-actions {
   display: flex;
@@ -4440,6 +4461,9 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   justify-content: flex-end;
 }
 
+.bum-btn-cancel,
+.bum-btn-save,
+.bum-btn-update,
 .mum-btn-cancel,
 .mum-btn-save,
 .mum-btn-update,
@@ -4460,24 +4484,28 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   color: #fff;
 }
 
+.bum-btn-cancel,
 .mum-btn-cancel,
 .pum-btn-cancel {
   background: #dcdfe4;
   color: #556274;
 }
 
+.bum-btn-cancel:hover,
 .mum-btn-cancel:hover,
 .pum-btn-cancel:hover {
   background: #cacfd6;
   color: #38404d;
 }
 
+.bum-btn-update,
 .mum-btn-update,
 .pum-btn-update {
   background: #F59E0B;
   box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
 }
 
+.bum-btn-update:hover,
 .mum-btn-update:hover,
 .pum-btn-update:hover {
   background: #db7f16;
@@ -4485,12 +4513,14 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   transform: translateY(-2px);
 }
 
+.bum-btn-save,
 .mum-btn-save,
 .pum-btn-save {
   background-color: #10B981;
   box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
 }
 
+.bum-btn-save:hover,
 .mum-btn-save:hover,
 .pum-btn-save:hover {
   background-color: #0d8a60;
@@ -4508,6 +4538,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   opacity: 1;
 }
 
+.bum-field-select,
 .pum-field-select {
   width: 100%;
   padding: 12px 16px;
@@ -4527,11 +4558,68 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   background-position: right 16px center;
 }
 
+.bum-field-select:focus,
 .pum-field-select:focus {
   outline: none;
   border-color: #10B981;
   background-color: #fff;
   box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+}
+
+.bdm-icon-wrapper {
+  width: 75px;
+  height: 75px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  font-size: 30px;
+  color: #fff;
+}
+
+.bdm-info-card {
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.bdm-info-card-full {
+  grid-column: 1 / -1;
+}
+
+.bdm-info-value {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.bum-section-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 6px 0;
+}
+
+.bum-section-divider::before,
+.bum-section-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #E5E7EB;
+}
+
+.bum-section-divider span {
+  font-size: 12px;
+  font-weight: 600;
+  color: #94A3B8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-family: 'Poppins', sans-serif;
+  white-space: nowrap;
 }
 
 .users-table {
@@ -5490,12 +5578,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     width: 93%;
   }
 
-  .btn-update-branch,
-  .btn-add-branch {
-    margin-left: auto;
-    margin-top: 5px;
-  }
-
   .pages-body {
     row-gap: 55px;
   }
@@ -5616,6 +5698,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     padding: 15px;
   }
 
+  .bdm-panel,
   .mdm-panel,
   .pdm-panel {
     margin: 2% auto;
@@ -5623,12 +5706,20 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     min-width: 0;
   }
 
+  .bum-panel {
+    margin: 2% auto;
+    width: 95%;
+    min-width: 0;
+  }
+
+  .bdm-info-grid,
   .mdm-info-grid,
   .pdm-info-grid {
     grid-template-columns: 1fr;
     gap: 10px;
   }
 
+  .bdm-hero,
   .mdm-hero,
   .pdm-hero {
     padding: 22px 20px 42px;
@@ -5640,14 +5731,24 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     height: 155px;
   }
 
+  .bdm-name,
   .mdm-name,
   .pdm-name {
     font-size: 19px;
   }
 
+  .bdm-body,
   .mdm-body,
   .pdm-body {
     padding: 4px 18px 22px;
+  }
+
+  .bum-field-row {
+    flex-direction: column;
+  }
+
+  .bum-body {
+    padding: 8px 20px 20px;
   }
 
   .menu-detail-image,
@@ -5664,8 +5765,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     padding: 7px 14px;
   }
   
-  .btn-update-branch,
-  .btn-add-branch,
   .btn-add-table,
   .btn-update-table {
     padding: 12px 14px;
@@ -6080,12 +6179,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     font-size: 16px;
   }
 
-  .btn-create-menu, 
-  .btn-create-product, 
-  .btn-create-branch, 
   .btn-manage-table, 
-  .btn-all-branches, 
-  .btn-head-office, 
   .btn-branches-city, 
   .btn-menu, 
   .btn-city, 
@@ -6103,6 +6197,9 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     font-size: 14px;
   }
 
+  .bum-btn-cancel,
+  .bum-btn-save,
+  .bum-btn-update,
   .mum-btn-cancel,
   .mum-btn-save,
   .mum-btn-update,
@@ -6299,6 +6396,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     padding: 10px;
   }
 
+  .bdm-panel,
   .mdm-panel,
   .pdm-panel {
     margin: 1% auto;
@@ -6306,11 +6404,19 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     border-radius: 16px;
   }
 
+  .bum-panel {
+    margin: 1% auto;
+    width: 97%;
+    border-radius: 16px;
+  }
+
+  .bdm-hero,
   .mdm-hero,
   .pdm-hero {
     padding: 20px 16px 38px;
   }
 
+  .bdm-hero::after,
   .mdm-hero::after,
   .pdm-hero::after {
     height: 24px;
@@ -6323,11 +6429,13 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     height: 145px;
   }
 
+  .bdm-name,
   .mdm-name,
   .pdm-name {
     font-size: 17px;
   }
 
+  .bdm-id-pill,
   .mdm-status-pill,
   .mdm-id-pill,
   .pdm-status-pill,
@@ -6336,17 +6444,20 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     padding: 3px 10px;
   }
 
+  .bdm-body,
   .mdm-body,
   .pdm-body {
     padding: 2px 14px 20px;
   }
 
+  .bdm-info-card,
   .mdm-info-card,
   .pdm-info-card {
     padding: 11px;
     gap: 10px;
   }
 
+  .bdm-info-icon,
   .mdm-info-icon,
   .pdm-info-icon {
     width: 36px;
@@ -6354,14 +6465,26 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     font-size: 14px;
   }
 
+  .bdm-info-value,
   .mdm-info-value,
   .pdm-info-value {
     font-size: 13px;
   }
 
+  .bdm-info-label,
   .mdm-info-label,
   .pdm-info-label {
     font-size: 10px;
+  }
+
+  .bdm-icon-wrapper {
+    width: 67px;
+    height: 67px;
+    font-size: 27px;
+  }
+
+  .bum-actions {
+    flex-direction: column;
   }
 
   .menu-detail-image,
@@ -6379,21 +6502,19 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     font-size: 13px;
   }
 
-  .btn-create-menu {
-    padding: 9px 14px !important;
-    font-size: 13px !important;
-  }
-
-  .btn-manage-table,
+  .btn-create-menu,
   .btn-create-product,
   .btn-create-branch,
-  .btn-all-branches,
-  .btn-head-office {
+  .btn-head-office,
+  .btn-all-branches {
+    padding: 9px 14px;
+    font-size: 13px;
+  }
+
+  .btn-manage-table {
     padding: 8px 10px;
   }
 
-  .btn-update-branch,
-  .btn-add-branch,
   .btn-add-table,
   .btn-update-table {
     padding: 11px 13px;
@@ -6409,26 +6530,20 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .btn-delete-branch,
   .btn-products-menu,
   .btn-branches-city,
-  .mdm-btn-delete,
-  .mdm-btn-products,
-  .mdm-btn-edit,
-  .pdm-btn-delete,
-  .pdm-btn-edit,
-  .pdm-btn-menu,
   .btn-menu,
   .btn-city,
   .btn-reservation {
-    padding: 6px 8px;
+    padding: 6px 12px;
     font-size: 13px;
   }
 
-  .menus-header h2, 
+  .menus-header h2,
   .head-office-header h2,
   .employees-header h2,
   .pages-header h2,
-  .reservations-header h2, 
-  .cities-header h2, 
-  .branches-header h2, 
+  .reservations-header h2,
+  .cities-header h2,
+  .branches-header h2,
   .users-header h2, 
   .products-header h2 {
     font-size: 20px;
@@ -6624,14 +6739,17 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   } 
 
   .mdm-action-btn,
-  .pdm-action-btn {
+  .pdm-action-btn,
+  .bdm-action-btn {
     gap: 6px;
     padding: 8px 18px;
     font-size: 13px;
   }
 
+  .bdm-close,
   .mdm-close,
   .pdm-close,
+  .bum-close,
   .mum-close,
   .pum-close {
     font-size: 16px;
@@ -6643,31 +6761,26 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     font-size: 13.5px;
   }
 
+  .bum-title,
   .mum-title,
   .pum-title {
     font-size: 20px;
     padding: 0 30px;
   }
 
+  .bum-subtitle,
   .mum-subtitle,
   .pum-subtitle {
     font-size: 12px;
   }
 
+  .bum-field-input,
   .mum-field-input,
   .pum-field-input {
     font-size: 13px;
   }
 
-  .mum-btn-cancel,
-  .mum-btn-save,
-  .mum-btn-update,
-  .pum-btn-cancel,
-  .pum-btn-save,
-  .pum-btn-update {
-    font-size: 12px;
-  }
-
+  .bum-panel,
   .mum-panel,
   .pum-panel {
     margin: 2% auto;
@@ -6675,6 +6788,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     min-width: 290px;
   }
 
+  .bum-body,
   .mum-body,
   .pum-body {
     padding: 8px 20px 20px;
@@ -6685,11 +6799,15 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     height: 200px;
   }
 
+  .bum-actions,
   .mum-actions,
   .pum-actions {
     flex-direction: column;
   }
 
+  .bum-btn-cancel,
+  .bum-btn-save,
+  .bum-btn-update,
   .mum-btn-cancel,
   .mum-btn-save,
   .mum-btn-update,
@@ -6698,6 +6816,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .pum-btn-update {
     justify-content: center;
     width: 100%;
+    font-size: 12px;
   }
 }
 
@@ -6707,10 +6826,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     flex-direction: column;
     gap: 11px;
     align-items: flex-end;
-  }
-
-  .btn-head-office {
-    margin-right: 0;
   }
 }
 
@@ -6729,18 +6844,16 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     font-size: 29px;
   }
 
-  .btn-create-menu {
-    padding: 8px 12px !important;
-    font-size: 12px !important;
+  .btn-create-menu,
+  .btn-create-product, 
+  .btn-create-branch {
+    padding: 8px 12px;
+    font-size: 12px;
   }
 
-  .btn-manage-table,
-  .btn-create-product,
-  .btn-create-branch,
-  .btn-all-branches,
-  .btn-head-office {
-    padding: 8px 9px;
-    font-size: 13px;
+  .btn-head-office, 
+  .btn-all-branches {
+    font-size: 12px;
   }
 
   .btn-edit-menu,
@@ -6750,6 +6863,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .btn-delete-product,
   .btn-delete-branch,
   .btn-products-menu,
+  .bdm-btn-delete,
+  .bdm-btn-edit,
   .mdm-btn-delete,
   .mdm-btn-products,
   .mdm-btn-edit,
@@ -6760,7 +6875,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .btn-menu,
   .btn-city,
   .btn-reservation {
-    padding: 5px 8px;
+    padding: 6px 10px;
     font-size: 12px;
   }
 
