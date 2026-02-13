@@ -17,8 +17,7 @@ body{
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 10px 10px;
-  margin-bottom: 5px;
+  padding: 15px 10px 10px;
 }
 
 .welcome-text h2 {
@@ -56,10 +55,11 @@ body{
 .users-stats-grid,
 .menus-stats-grid,
 .products-stats-grid {
-  width: 100%;
+  width: 98.5%;
   display: grid;
   gap: 18px;
   padding: 10px 0;
+  margin: 0 auto;
 }
 
 .dash-stats-grid,
@@ -177,11 +177,11 @@ body{
 }
 
 .charts-grid {
-  width: 100%;
+  width: 98.5%;
   display: grid;
   grid-template-columns: 1.8fr 1fr;
   gap: 18px;
-  margin-top: 5px;
+  margin: 10px auto;
 }
 
 .chart-card {
@@ -372,7 +372,7 @@ body{
 	padding: 10px 30px;
   transition: padding-left 0.5s;
   width: 100%;
-  min-width: 340px;
+  min-width: 343px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -396,13 +396,6 @@ body{
   text-align: right;
 }
 
-#menuToggle {
-  display: flex;
-  align-items: center;
-  color: #000;
-  font-size:30px;
-}
-
 .profile{
   display: flex; 
   align-items: center; 
@@ -424,21 +417,14 @@ body{
 }
 
 .profile p{
-  margin: 0px;
 	color: #000;
 	font-weight: 700;
-	margin-top: 6px;
 	font-size: 15px;
 }
 
-.profile span{
+.adminDisplay{
   display: block;
   font-size: 14px;
-}
-
-.profile a{
-  font-size: 30px;
-  color: #4a5361;
 }
 
 .col-div-3{
@@ -482,12 +468,301 @@ body{
   background-color: #d8d9e1;
 }
 
-.menu-header{
-  cursor: pointer;
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.nav {
-  font-size: 27px;
+.navbar-icon-btn {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 10px;
+  background: #F1F5F9;
+  color: #64748B;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .3s ease-in-out;
+}
+
+.navbar-icon-btn:hover {
+  background: #E2E8F0;
+  color: #1E293B;
+  transform: translateY(-1px);
+}
+
+.notification-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: #EF4444;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  line-height: 1;
+  border: 2px solid #fff;
+}
+
+.notification-badge.hidden {
+  display: none;
+}
+
+.profile-divider {
+  width: 1px;
+  height: 30px;
+  background: #E2E8F0;
+  margin: 0 8px;
+}
+
+.admin-menu-wrapper {
+  position: relative;
+}
+
+.admin-menu-toggle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all .3s ease-in-out;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  background-color: #42526d;
+  color: #fff;
+  font-size: 16px;
+}
+
+.admin-menu-toggle:hover {
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  background-color: #707a87;
+}
+
+.admin-menu-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12), 0 2px 10px rgba(0, 0, 0, 0.08);
+  min-width: 200px;
+  padding: 8px 0;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: all .3s ease-in-out;
+  z-index: 1000;
+}
+
+.admin-menu-dropdown.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.admin-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 18px;
+  color: #334155;
+  text-decoration: none;
+  font-size: 14px;
+  font-family: 'Poppins', sans-serif;
+  transition: background .3s ease-in-out;
+}
+
+.admin-menu-item:hover {
+  background: #F1F5F9;
+}
+
+.admin-menu-item i {
+  font-size: 15px;
+  width: 20px;
+  text-align: center;
+  color: #64748B;
+}
+
+.admin-menu-item.logout {
+  color: #EF4444;
+}
+
+.admin-menu-item.logout i {
+  color: #EF4444;
+}
+
+.admin-menu-item.logout:hover {
+  background: #FEF2F2;
+}
+
+.admin-menu-divider {
+  height: 1px;
+  background: #E2E8F0;
+  margin: 6px 0;
+}
+
+.notification-wrapper {
+  position: relative;
+}
+
+.notification-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 360px;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid #E2E8F0;
+  z-index: 200;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: all .3s ease-in-out;
+}
+
+.notification-dropdown.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.notification-dropdown-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 18px 12px;
+  border-bottom: 1px solid #F1F5F9;
+}
+
+.notification-dropdown-header h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1E293B;
+}
+
+.mark-all-read {
+  background: none;
+  border: none;
+  color: #22C55E;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.mark-all-read:hover {
+  background: #F0FDF4;
+}
+
+.notification-list {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.notification-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 18px;
+  transition: background .3s ease-in-out;
+  cursor: pointer;
+  border-bottom: 1px solid #F8FAFC;
+}
+
+.notification-item:hover {
+  background: #F8FAFC;
+}
+
+.notification-item.unread {
+  background: #F0F9FF;
+}
+
+.notification-item.unread:hover {
+  background: #E0F2FE;
+}
+
+.notification-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.notification-icon.info {
+  background: #DBEAFE;
+  color: #3B82F6;
+}
+
+.notification-icon.success {
+  background: #DCFCE7;
+  color: #22C55E;
+}
+
+.notification-icon.warning {
+  background: #FEF3C7;
+  color: #F59E0B;
+}
+
+.notification-content p {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: #334155;
+  line-height: 1.4;
+}
+
+.notification-content span {
+  font-size: 11px;
+  color: #94A3B8;
+  margin-top: 3px;
+  display: block;
+}
+
+.notification-dropdown-footer {
+  padding: 12px 18px;
+  text-align: center;
+  border-top: 1px solid #F1F5F9;
+}
+
+.notification-dropdown-footer a {
+  color: #22C55E;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.notification-dropdown-footer a:hover {
+  color: #16A34A;
+}
+
+/* Theme Toggle Animation */
+.theme-toggle-btn i {
+  transition: transform .4s ease-in-out;
+}
+
+.theme-toggle-btn:hover i {
+  transform: rotate(20deg);
 }
 
 .dashboard-text {
@@ -1284,6 +1559,7 @@ td, th {
 .mdm-btn-edit,
 .pdm-btn-edit,
 .btn-products-menu,
+.btn-city,
 .mdm-btn-products,
 .btn-menu,
 .pdm-btn-menu,
@@ -1345,6 +1621,7 @@ td, th {
 }
 
 .btn-products-menu,
+.btn-city,
 .mdm-btn-products,
 .btn-menu,
 .pdm-btn-menu,
@@ -1354,6 +1631,7 @@ td, th {
 }
 
 .btn-products-menu:hover,
+.btn-city:hover,
 .mdm-btn-products:hover,
 .btn-menu:hover,
 .pdm-btn-menu:hover,
@@ -1374,7 +1652,6 @@ td, th {
 .btn-manage-table,
 .btn-all-branches,
 .btn-head-office,
-.btn-city,
 .btn-reservation {
   background: linear-gradient(135deg, #10b95c, #08a950);
   color: #fff;
@@ -1401,7 +1678,6 @@ td, th {
 .btn-create-branch:hover,
 .btn-all-branches:hover,
 .btn-head-office:hover,
-.btn-city:hover,
 .btn-reservation:hover {
   box-shadow: 0 4px 17px rgba(45, 180, 135, 0.35);
   background-position: right center;
@@ -5266,7 +5542,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
 @media screen and (max-width: 1834px){
   .head{
-    padding: 10px 25px;
+    padding: 10px 23px;
   }
   
   .products-table td:nth-child(6){
@@ -5539,7 +5815,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   }  
 
   .head {
-    padding: 10px 16px;
+    padding: 10px 17px;
   }
   
   .dashboard-content{
@@ -5599,7 +5875,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
 @media screen and (max-width: 768px) {
   .head {
-    padding: 10px 14px;
+    padding: 10px 16px;
   }
 
   .menus-table td:nth-child(1){
@@ -5674,11 +5950,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .menus-table th:first-child,
   .menus-table td:first-child {
     padding: 0px 13px;
-  }
-
-  .profile > div {
-    display: flex !important;
-    align-items: center !important;
   }
 
   .menu-details-content,
@@ -6209,6 +6480,14 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     font-size: 13px;
     padding: 10px 22px;
   }
+
+  .col-div-6 {
+    width: 25%;
+  }
+
+  .adminInfo {
+    width: 75%;
+  }
 }
 
 
@@ -6250,10 +6529,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .sidenav a {
     font-size: 16px;
     padding: 15px 8px;
-  }
-
-  .nav {
-    font-size: 23px;
   }
 
   .pro-img{
@@ -6332,17 +6607,17 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     font-size: 12px;
     margin-left: 0;
   }
+
+  .profile p{
+    font-size: 14px;
+  }
   
-  .profile span {
-    font-size: 10px;
+  .adminDisplay {
+    font-size: 13px;
   }
   
   .pro-img {
     width: 30px;
-  }
-
-  #menuToggle {
-    font-size: 27px;
   }
   
   .menu-details-header h2,
@@ -6361,23 +6636,12 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   }
 
   .head {
-    padding: 12px 3px;
+    padding: 10px 14px;
   }
 
   .col-div-6:first-child {
     flex: 1;
     min-width: 0;
-    padding-left: 10px;
-  }
-
-  .profile > div > div {
-    display: none;
-  }
-
-  .adminInfo {
-    padding-right: 10px;
-    margin-right: 0;
-    width: 30%;
   }
 
   .menu-details-content,
@@ -6817,6 +7081,25 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     justify-content: center;
     width: 100%;
     font-size: 12px;
+  }
+
+  .navbar-icon-btn {
+    width: 38px;
+    height: 38px;
+    font-size: 17px;
+  }
+
+  .notification-badge {
+    font-size: 9px;
+  }
+
+  .admin-menu-item {
+    font-size: 13px;
+    gap: 10px;
+  }
+
+  .admin-menu-item i {
+    font-size: 14px;
   }
 }
 

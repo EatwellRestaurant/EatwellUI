@@ -14,6 +14,7 @@
 	<link href="../../css/style.css" rel="stylesheet">
 	<link href="../../css/admin/auth.css" rel="stylesheet">
 	<link href="../../css/admin/admin-panel.css" rel="stylesheet">
+	<link href="../../css/admin/dark-theme.css" rel="stylesheet">
 </head>
 
 <body>
@@ -78,24 +79,91 @@
 		<div class="head">
 			<div class="col-div-6">
 				<div id="menuToggle">
-					<div class="menu-header">
-						<i class="fa-solid fa-bars nav"></i>
-						<span class="dashboard-text">Yönetim Paneli</span>
-					</div>
+					<button class="navbar-icon-btn menu-header">
+						<i class="fa-solid fa-bars nav" id="menuIcon"></i>
+					</button>
 				</div>
 			</div>
 			<div class="col-div-6 adminInfo">
 				<div class="profile">
-					<img src="../../images/user.png" class="pro-img">
-					<div style="display: flex; align-items: flex-end; gap: 14px;">
+					<!-- Bildirim & Tema Butonları -->
+					<div class="navbar-actions">
+						<div class="notification-wrapper" id="notificationWrapper">
+							<button class="navbar-icon-btn" id="notificationBtn" title="Bildirimler">
+								<i class="fa-solid fa-bell"></i>
+								<span class="notification-badge" id="notificationBadge">3</span>
+							</button>
+							<div class="notification-dropdown" id="notificationDropdown">
+								<div class="notification-dropdown-header">
+									<h4>Bildirimler</h4>
+									<button class="mark-all-read" id="markAllRead">Tümünü okundu işaretle</button>
+								</div>
+								<div class="notification-list" id="notificationList">
+									<div class="notification-item unread">
+										<div class="notification-icon info">
+											<i class="fa-solid fa-info-circle"></i>
+										</div>
+										<div class="notification-content">
+											<p>Yeni bir sipariş alındı</p>
+											<span>2 dakika önce</span>
+										</div>
+									</div>
+									<div class="notification-item unread">
+										<div class="notification-icon success">
+											<i class="fa-solid fa-check-circle"></i>
+										</div>
+										<div class="notification-content">
+											<p>Menü başarıyla güncellendi</p>
+											<span>1 saat önce</span>
+										</div>
+									</div>
+									<div class="notification-item unread">
+										<div class="notification-icon warning">
+											<i class="fa-solid fa-exclamation-triangle"></i>
+										</div>
+										<div class="notification-content">
+											<p>Stok uyarısı: 3 ürün azaldı</p>
+											<span>3 saat önce</span>
+										</div>
+									</div>
+								</div>
+								<div class="notification-dropdown-footer">
+									<a href="#">Tüm bildirimleri gör</a>
+								</div>
+							</div>
+						</div>
+						<button class="navbar-icon-btn theme-toggle-btn" id="themeToggle" title="Tema değiştir">
+							<i class="fa-solid fa-moon" id="themeIcon"></i>
+						</button>
+					</div>
+
+					<div class="profile-divider"></div>
+
+					<div style="display: flex; align-items: center; gap: 14px;">
 						<div>
 							<p id="userNameDisplay"></p>
-							<span>Yönetici</span>
+							<span class="adminDisplay">Yönetici</span>
 						</div>
-						<!-- Butonun href özelliğini # olarak değiştirdik (sayfa yenilenmesini engellemek için) -->
-						<a href="#" id="logoutBtn" title="Çıkış yap">
-							<i class="fas fa-sign-out-alt"></i>
-						</a>
+						<div class="admin-menu-wrapper" id="adminMenuWrapper">
+							<div class="admin-menu-toggle" id="adminMenuToggle" title="Yönetici menüsü">
+								<i class="fa-solid fa-user"></i>
+							</div>
+							<div class="admin-menu-dropdown" id="adminMenuDropdown">
+								<a href="#" class="admin-menu-item">
+									<i class="fa-solid fa-user"></i>
+									<span>Profil</span>
+								</a>
+								<a href="#" class="admin-menu-item">
+									<i class="fa-solid fa-gear"></i>
+									<span>Ayarlar</span>
+								</a>
+								<div class="admin-menu-divider"></div>
+								<a href="#" class="admin-menu-item logout" id="logoutBtn">
+									<i class="fa-solid fa-right-from-bracket"></i>
+									<span>Çıkış Yap</span>
+								</a>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>

@@ -190,22 +190,84 @@ $(document).ready(function() {
     $('#logoutBtn').click(function(e) {
         e.preventDefault();
 
-        handleLogout(); 
+        handleLogout();
     });
 
+    // ===== Bildirim Dropdown =====
+    $('#notificationBtn').on('click', function(e) {
+        e.stopPropagation();
+        $('#notificationDropdown').toggleClass('show');
+        $('#adminMenuDropdown').removeClass('active');
+    });
+
+    // Dışarı tıklayınca kapat
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('#notificationWrapper').length) {
+            $('#notificationDropdown').removeClass('show');
+        }
+    });
+
+    // Tümünü okundu işaretle
+    $('#markAllRead').on('click', function() {
+        $('.notification-item').removeClass('unread');
+        $('#notificationBadge').addClass('hidden');
+    });
+
+    // ===== Admin Menu Dropdown =====
+    $('#adminMenuToggle').on('click', function(e) {
+        e.stopPropagation();
+        $('#adminMenuDropdown').toggleClass('active');
+        $('#notificationDropdown').removeClass('show');
+    });
+
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('#adminMenuWrapper').length) {
+            $('#adminMenuDropdown').removeClass('active');
+        }
+    });
+
+
+
+    // ===== Dark / Light Tema Toggle =====
+    const savedTheme = localStorage.getItem('adminTheme');
+    /*
+    Dark / Light tema ile ilgili renklendirmeler yapıldıktan sonra bu yorum satırları kaldırılacak.
     
+    if (savedTheme === 'dark') {
+        $('body').addClass('dark-theme');
+        $('#themeIcon').removeClass('fa-moon').addClass('fa-sun');
+    }
+
+    $('#themeToggle').on('click', function() {
+        $('body').toggleClass('dark-theme');
+        const isDark = $('body').hasClass('dark-theme');
+
+        if (isDark) {
+            $('#themeIcon').removeClass('fa-moon').addClass('fa-sun');
+            localStorage.setItem('adminTheme', 'dark');
+        } else {
+            $('#themeIcon').removeClass('fa-sun').addClass('fa-moon');
+            localStorage.setItem('adminTheme', 'light');
+        }
+    });
+    */
+
 
     function openSidenavStyles() {
         $('#main').css('margin-left', '235px');
+
         $('.head').css({
             'margin-left': '235px',
             'width': 'calc(100% - 235px)'
         });
+        
         $('.sidenav a span').css({
             'margin-left': '36px',
             'opacity': '1'
         });
+        
         $('.sidenav a img').css('left', '17%');
+        $('#menuIcon').removeClass('fa-arrow-right').addClass('fa-bars');
     }
 
 
@@ -214,15 +276,19 @@ $(document).ready(function() {
             'transform': 'translateX(-100%)',
             'visibility': 'hidden'
         });
+
         $('.sidenav .sidenav-header .logo').css({
             'opacity': '0',
             'cursor': 'default'
         });
+        
         $('.sidenav a span').css({
             'margin-left': '0px',
             'opacity': '0'
         });
+        
         $('.sidenav a img').css('left', '17%');
+        $('#menuIcon').removeClass('fa-arrow-right').addClass('fa-bars');
     }
     
 
@@ -260,6 +326,7 @@ $(document).ready(function() {
             $('.sidenav .sidenav-header .logo ').css({'opacity': '0', 'cursor': 'default'});
             $('.sidenav a span').css({'margin-left': '-200px', 'opacity': '0'});
             $('.sidenav a img').css('left', '84%');
+            $('#menuIcon').removeClass('fa-bars').addClass('fa-arrow-right');
         }
     });
 
@@ -5646,13 +5713,16 @@ $(document).ready(function() {
             errorMessage: 'Şube silinirken hata oluştu!',
             modalsToClose: '.branch-details-modal',
             onSuccess: function() {
-                const cityId = localStorage.getItem('selectedCityId');
-                const cityName = localStorage.getItem('selectedCityName');
+                const currentParams = new URLSearchParams(window.location.search);
+                const currentPage = currentParams.get('page');
 
-                if (cityName === null) {
-                    getAllBranches();
-                } else {
+                if (currentPage === 'branchesByCity') {
+                    const cityId = localStorage.getItem('selectedCityId');
+                    const cityName = localStorage.getItem('selectedCityName');
+
                     getBranchesByCity(cityId, cityName);
+                } else {
+                    getAllBranches();
                 }
             }
         });
@@ -6002,13 +6072,16 @@ $(document).ready(function() {
             errorMessage: 'Şube silinirken hata oluştu!',
             modalsToClose: '.branch-update-modal',
             onSuccess: function() {
-                const cityId = localStorage.getItem('selectedCityId');
-                const cityName = localStorage.getItem('selectedCityName');
+                const currentParams = new URLSearchParams(window.location.search);
+                const currentPage = currentParams.get('page');
 
-                if (cityName === null) {
-                    getAllBranches();
-                } else {
+                if (currentPage === 'branchesByCity') {
+                    const cityId = localStorage.getItem('selectedCityId');
+                    const cityName = localStorage.getItem('selectedCityName');
+
                     getBranchesByCity(cityId, cityName);
+                } else {
+                    getAllBranches();
                 }
             }
         });
