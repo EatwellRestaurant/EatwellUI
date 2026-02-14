@@ -54,7 +54,8 @@ body{
 .dash-stats-grid,
 .users-stats-grid,
 .menus-stats-grid,
-.products-stats-grid {
+.products-stats-grid,
+.orders-stats-grid {
   width: 98.5%;
   display: grid;
   gap: 18px;
@@ -64,7 +65,8 @@ body{
 
 .dash-stats-grid,
 .menus-stats-grid,
-.products-stats-grid {
+.products-stats-grid,
+.orders-stats-grid {
   grid-template-columns: repeat(4, 1fr);
 }
 
@@ -75,7 +77,8 @@ body{
 .dash-card,
 .users-stat-card,
 .menus-stat-card,
-.products-stat-card {
+.products-stat-card,
+.orders-stat-card {
   background: #fff;
   border-radius: 14px;
   padding: 22px 20px;
@@ -93,7 +96,8 @@ body{
 .dash-card::before,
 .users-stat-card::before,
 .menus-stat-card::before,
-.products-stat-card::before {
+.products-stat-card::before,
+.orders-stat-card::before {
   content: '';
   position: absolute;
   top: 0;
@@ -110,7 +114,8 @@ body{
 .dash-card:hover,
 .users-stat-card:hover,
 .menus-stat-card:hover,
-.products-stat-card:hover {
+.products-stat-card:hover,
+.orders-stat-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
@@ -118,7 +123,8 @@ body{
 .dash-card:hover::before,
 .users-stat-card:hover::before,
 .menus-stat-card:hover::before,
-.products-stat-card:hover::before {
+.products-stat-card:hover::before,
+.orders-stat-card:hover::before {
   width: 120px;
   height: 120px;
   opacity: 0.08;
@@ -127,7 +133,8 @@ body{
 .dash-card-icon,
 .users-stat-icon,
 .menus-stat-icon,
-.products-stat-icon {
+.products-stat-icon,
+.orders-stat-icon {
   width: 50px;
   height: 50px;
   border-radius: 12px;
@@ -141,7 +148,8 @@ body{
 .dash-card-icon i,
 .users-stat-icon i,
 .menus-stat-icon i,
-.products-stat-icon i {
+.products-stat-icon i,
+.orders-stat-icon i {
   font-size: 22px;
   color: #fff;
 }
@@ -149,7 +157,8 @@ body{
 .dash-card-info,
 .users-stat-info,
 .menus-stat-info,
-.products-stat-info {
+.products-stat-info,
+.orders-stat-info {
   display: flex;
   flex-direction: column;
 }
@@ -157,7 +166,8 @@ body{
 .dash-card-count,
 .users-stat-count,
 .menus-stat-count,
-.products-stat-count {
+.products-stat-count,
+.orders-stat-count {
   font-size: 28px;
   font-weight: 700;
   color: #1E293B;
@@ -168,7 +178,8 @@ body{
 .dash-card-label,
 .users-stat-label,
 .menus-stat-label,
-.products-stat-label {
+.products-stat-label,
+.orders-stat-label {
   font-size: 15px;
   color: #64748B;
   margin-top: 4px;
@@ -181,7 +192,7 @@ body{
   display: grid;
   grid-template-columns: 1.8fr 1fr;
   gap: 18px;
-  margin: 10px auto;
+  margin: 0 auto;
 }
 
 .chart-card {
@@ -190,6 +201,16 @@ body{
   box-shadow: 0 4px 15px rgba(0,0,0,0.1);
   overflow: hidden;
   padding: 20px;
+}
+
+.users-charts-section .charts-grid {
+  padding: 0;
+  margin-bottom: 18px;
+}
+
+.users-vip-section .chart-card {
+  width: 98.5%;
+  margin: 0 auto;
 }
 
 .chart-card-header h3 {
@@ -223,7 +244,9 @@ body{
 }
 
 .order-status {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   padding: 4px 12px;
   border-radius: 20px;
   font-size: 12px;
@@ -248,6 +271,11 @@ body{
 .order-status.preparing {
   background: #DBEAFE;
   color: #1E40AF;
+}
+
+.order-status.delivered {
+  background: #E9D5FF;
+  color: #5B21B6;
 }
 
 .clearfix{
@@ -968,6 +996,7 @@ td, th {
 .cities-table-wrapper,
 .branches-table-wrapper,
 .reservations-table-wrapper,
+.orders-table-wrapper,
 .salary-section,
 .task-section {
   overflow-x: auto;
@@ -981,6 +1010,7 @@ td, th {
 .cities-table,
 .users-table,
 .products-table,
+.orders-table,
 .branches-table,
 .dashboard-table {
   font-family: "Open Sans", sans-serif;
@@ -996,6 +1026,7 @@ td, th {
 .users-table th,
 .menus-table th,
 .products-table th,
+.orders-table th,
 .cities-table th,
 .branches-table th,
 .reservations-table th,
@@ -1013,6 +1044,7 @@ td, th {
 .users-table td,
 .menus-table td,
 .products-table td,
+.orders-table td,
 .cities-table td,
 .branches-table td,
 .reservations-table td,
@@ -1161,7 +1193,8 @@ td, th {
 .branch-row,
 .user-row,
 .product-row,
-.recent-order-row {
+.recent-order-row,
+.order-row {
   cursor: pointer;
   transition: background-color 0.3s;
 }
@@ -1174,7 +1207,8 @@ td, th {
 .branch-row:hover,
 .user-row:hover,
 .product-row:hover,
-.recent-order-row:hover {
+.recent-order-row:hover,
+.order-row:hover {
   background-color: #f8f9fa;
 }
 
@@ -1565,7 +1599,8 @@ td, th {
 .pdm-btn-menu,
 .btn-branches-city,
 .bdm-btn-delete,
-.bdm-btn-edit {
+.bdm-btn-edit,
+.btn-view-order {
   cursor: pointer;
   background-color: transparent;
   border-radius: 8px;
@@ -1576,6 +1611,17 @@ td, th {
   gap: 6px;
   align-items: center;
   transition: all .3s ease-in-out;
+}
+
+.btn-view-order {
+  color: #10b95c;
+  border: 1.5px solid #6EE7B7;
+}
+
+.btn-view-order:hover {
+  background-color: #D1FAE5;
+  border-color: #10b95c;
+  color: #059669;
 }
 
 .btn-delete-menu,
@@ -1785,7 +1831,8 @@ td, th {
 .cities-container,
 .branches-container,
 .users-container,
-.products-container {
+.products-container,
+.orders-container {
   width: 98.5%;
   background-color: transparent;
   border-radius: 5px;
@@ -1807,7 +1854,8 @@ td, th {
 .cities-header,
 .branches-header,
 .users-header,
-.products-header {
+.products-header,
+.orders-header {
   margin: 0 7px 10px 7px;
   padding-bottom: 10px;
   border-bottom: 1px solid #81818140;
@@ -1825,7 +1873,8 @@ td, th {
 .cities-header h2,
 .branches-header h2,
 .users-header h2,
-.products-header h2 {
+.products-header h2,
+.orders-header h2 {
   color: #000;
   margin: 0;
   font-size: 24px;
@@ -4102,7 +4151,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
 .users-toolbar,
 .menus-toolbar,
-.products-toolbar {
+.products-toolbar,
+.orders-toolbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -4113,7 +4163,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
 .users-search-box,
 .menus-search-box,
-.products-search-box {
+.products-search-box,
+.orders-search-box {
   position: relative;
   flex: 1;
   max-width: 400px;
@@ -4122,7 +4173,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
 .users-search-box i,
 .menus-search-box i,
-.products-search-box i {
+.products-search-box i,
+.orders-search-box i {
   position: absolute;
   left: 14px;
   top: 50%;
@@ -4133,7 +4185,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
 .users-search-box input,
 .menus-search-box input,
-.products-search-box input {
+.products-search-box input,
+.orders-search-box input {
   width: 100%;
   padding: 11px 14px 11px 42px;
   border: 1.5px solid #E2E8F0;
@@ -4149,20 +4202,23 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
 .users-search-box input:focus,
 .menus-search-box input:focus,
-.products-search-box input:focus {
+.products-search-box input:focus,
+.orders-search-box input:focus {
   border-color: #06B6D4;
   box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
 }
 
 .users-search-box input::placeholder,
 .menus-search-box input::placeholder,
-.products-search-box input::placeholder {
+.products-search-box input::placeholder,
+.orders-search-box input::placeholder {
   color: #94A3B8;
 }
 
 .users-filter-group,
 .menus-filter-group,
-.products-filter-group {
+.products-filter-group,
+.orders-filter-group {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
@@ -4170,7 +4226,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
 .users-filter-btn,
 .menus-filter-btn,
-.products-filter-btn {
+.products-filter-btn,
+.orders-filter-btn {
   padding: 9px 18px;
   border: 1.5px solid #E2E8F0;
   border-radius: 8px;
@@ -4185,40 +4242,464 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
 .users-filter-btn:hover,
 .menus-filter-btn:hover,
-.products-filter-btn:hover {
+.products-filter-btn:hover,
+.orders-filter-btn:hover {
   border-color: #CBD5E1;
   color: #334155;
 }
 
 .users-filter-btn.active,
 .menus-filter-btn.active,
-.products-filter-btn.active {
+.products-filter-btn.active,
+.orders-filter-btn.active {
   background: #06B6D4;
   color: #fff;
   border-color: #06B6D4;
 }
 
 .menus-filter-btn i,
-.products-filter-btn i {
+.products-filter-btn i,
+.orders-filter-btn i {
   font-size: 14px;
   margin-right: 6px;
 }
 
 .menus-filter-btn.active i,
-.products-filter-btn.active i {
+.products-filter-btn.active i,
+.orders-filter-btn.active i {
   color: #fff !important;
 }
 
 /* Menüler & Ürünler Grafik Section */
+.users-charts-section,
+.users-vip-section,
 .menus-charts-section,
-.products-charts-section {
+.products-charts-section,
+.orders-charts-section {
+  width: 100%;
+  margin-top: 18px;
+  min-width: 347px;
+}
+
+.users-vip-section {
+  margin-top: 0;
+}
+
+.products-charts-section .charts-grid {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.orders-date-filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.orders-date-filter label {
+  font-size: 13px;
+  color: #64748B;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.orders-date-filter input[type="date"] {
+  padding: 9px 14px;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: 'Open Sans', sans-serif;
+  color: #334155;
+  background: #fff;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.orders-date-filter input[type="date"]:focus {
+  border-color: #06B6D4;
+  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
+}
+
+.orders-table td:nth-child(1) {
+  width: 10%;
+  font-weight: 600;
+}
+
+.orders-table td:nth-child(2),
+.orders-table td:nth-child(3) {
+  width: 18%;
+}
+
+.orders-table td:nth-child(4) {
+  width: 14%;
+}
+
+.orders-table td:nth-child(5) {
+  width: 14%;
+}
+
+.orders-table td:nth-child(6) {
+  width: 12%;
+}
+
+.orders-table td:nth-child(7) {
+  width: 14%;
+}
+
+.orders-charts-section {
   width: 98.5%;
   margin: 20px auto 0;
   min-width: 347px;
 }
 
-.products-charts-section .charts-grid {
+.orders-charts-section .charts-grid {
   grid-template-columns: 1fr 1fr 1fr;
+}
+
+/* Sipariş Detay Modal */
+.order-details-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.odm-panel {
+  width: 90%;
+  max-width: 620px;
+  max-height: 90vh;
+  border-radius: 20px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: #fff;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+  animation: odmSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes odmSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.odm-hero {
+  padding: 28px 28px 24px;
+  background: linear-gradient(135deg, var(--odm-hero-color), color-mix(in srgb, var(--odm-hero-color) 55%, #1E293B));
+  position: relative;
+  color: #fff;
+}
+
+.odm-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(4px);
+}
+
+.odm-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
+}
+
+.odm-identity {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.odm-order-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  margin-bottom: 8px;
+  backdrop-filter: blur(4px);
+}
+
+.odm-name {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+.odm-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.odm-status-pill {
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.odm-status-completed {
+  background: rgba(209, 250, 229, 0.9);
+  color: #065F46;
+}
+
+.odm-status-pending {
+  background: rgba(254, 243, 199, 0.9);
+  color: #92400E;
+}
+
+.odm-status-preparing {
+  background: rgba(219, 234, 254, 0.9);
+  color: #1E40AF;
+}
+
+.odm-status-cancelled {
+  background: rgba(254, 226, 226, 0.9);
+  color: #991B1B;
+}
+
+.odm-status-delivered {
+  background: rgba(233, 213, 255, 0.9);
+  color: #5B21B6;
+}
+
+.odm-id-pill {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  backdrop-filter: blur(4px);
+}
+
+.odm-body {
+  padding: 24px 28px;
+}
+
+.odm-section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 12px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.odm-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.odm-info-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  transition: background 0.2s ease;
+}
+
+.odm-info-card:hover {
+  background: #F1F5F9;
+}
+
+.odm-info-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 16px;
+}
+
+.odm-info-data {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.odm-info-label {
+  font-size: 11px;
+  color: #94A3B8;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.odm-info-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1E293B;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.odm-items-list {
+  margin-bottom: 24px;
+}
+
+.odm-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 8px;
+  transition: background 0.2s ease;
+}
+
+.odm-item-row:hover {
+  background: #F1F5F9;
+}
+
+.odm-item-name {
+  font-size: 14px;
+  color: #334155;
+  font-weight: 500;
+}
+
+.odm-item-qty {
+  font-size: 12px;
+  color: #94A3B8;
+  margin-left: 8px;
+}
+
+.odm-item-price {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1E293B;
+}
+
+.odm-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 12px;
+  border-top: 2px solid #E2E8F0;
+  margin-top: 8px;
+}
+
+.odm-total-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1E293B;
+}
+
+.odm-total-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #10b95c;
+  font-family: 'Poppins', sans-serif;
+}
+
+.odm-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.odm-action-btn {
+  flex: 1;
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Open Sans', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.odm-btn-approve {
+  background: #10b95c;
+  color: #fff;
+}
+
+.odm-btn-approve:hover {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+.odm-btn-cancel {
+  background: #FEE2E2;
+  color: #991B1B;
+}
+
+.odm-btn-cancel:hover {
+  background: #FECACA;
+  transform: translateY(-1px);
+}
+
+.odm-btn-status {
+  background: #EFF6FF;
+  color: #1E40AF;
+}
+
+.odm-btn-status:hover {
+  background: #DBEAFE;
+  transform: translateY(-1px);
+}
+
+.odm-note {
+  margin-top: 16px;
+  padding: 14px;
+  background: #FFFBEB;
+  border-radius: 10px;
+  border-left: 3px solid #F59E0B;
+}
+
+.odm-note-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #92400E;
+  margin-bottom: 4px;
+}
+
+.odm-note-text {
+  font-size: 13px;
+  color: #78350F;
+  line-height: 1.5;
 }
 
 .user-details-modal .udm-panel,
@@ -5402,27 +5883,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   background: #FFFBEB;
 }
 
-.users-charts-section {
-  width: 98.5%;
-  margin: 20px auto 0 auto;
-  min-width: 347px;
-}
-
-.users-charts-section .charts-grid {
-  padding: 0;
-  margin-bottom: 18px;
-}
-
-.users-vip-section {
-  width: 98.5%;
-  margin: 0 auto 20px auto;
-  min-width: 347px;
-}
-
-.users-vip-section .chart-card {
-  width: 100%;
-}
-
 .vip-card-body {
   height: auto !important;
   max-height: none !important;
@@ -5724,13 +6184,15 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
   .users-stats-grid,
   .menus-stats-grid,
-  .products-stats-grid {
+  .products-stats-grid,
+  .orders-stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 
   .users-charts-section .charts-grid,
   .menus-charts-section .charts-grid,
-  .products-charts-section .charts-grid {
+  .products-charts-section .charts-grid,
+  .orders-charts-section .charts-grid {
     grid-template-columns: 1fr;
   }
 }
@@ -6158,7 +6620,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
   .users-stats-grid,
   .menus-stats-grid,
-  .products-stats-grid {
+  .products-stats-grid,
+  .orders-stats-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
   }
@@ -6166,27 +6629,31 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .dash-card,
   .users-stat-card,
   .menus-stat-card,
-  .products-stat-card {
+  .products-stat-card,
+  .orders-stat-card {
     padding: 18px 16px;
   }
 
   .dash-card-count,
   .users-stat-count,
   .menus-stat-count,
-  .products-stat-count {
+  .products-stat-count,
+  .orders-stat-count {
     font-size: 22px;
   }
 
   .users-toolbar,
   .menus-toolbar,
-  .products-toolbar {
+  .products-toolbar,
+  .orders-toolbar {
     flex-direction: column;
     align-items: stretch;
   }
 
   .users-search-box,
   .menus-search-box,
-  .products-search-box {
+  .products-search-box,
+  .orders-search-box {
     max-width: 100%;
   }
 
@@ -6373,7 +6840,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
   .users-stats-grid,
   .menus-stats-grid,
-  .products-stats-grid {
+  .products-stats-grid,
+  .orders-stats-grid {
     grid-template-columns: 1fr;
     gap: 10px;
   }
@@ -6381,30 +6849,45 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .dash-card,
   .users-stat-card,
   .menus-stat-card,
-  .products-stat-card {
+  .products-stat-card,
+  .orders-stat-card {
     padding: 16px 14px;
   }
 
   .dash-card-count,
   .users-stat-count,
   .menus-stat-count,
-  .products-stat-count {
+  .products-stat-count,
+  .orders-stat-count {
     font-size: 20px;
   }
 
   .dash-card-label,
   .users-stat-label,
   .menus-stat-label,
-  .products-stat-label {
+  .products-stat-label,
+  .orders-stat-label {
     font-size: 13px;
   }
 
   .users-charts-section,
   .users-vip-section,
   .menus-charts-section,
-  .products-charts-section {
-    width: 100%;
+  .products-charts-section,
+  .orders-charts-section {
     min-width: 0;
+  }
+
+  .odm-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .odm-panel {
+    width: 97%;
+  }
+
+  .orders-date-filter {
+    flex-wrap: wrap;
   }
 
   .user-action-btn {
@@ -6496,11 +6979,12 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .head-office-header h2,
   .employees-header h2,
   .pages-header h2,
-  .reservations-header h2, 
-  .cities-header h2, 
-  .branches-header h2, 
-  .users-header h2, 
-  .products-header h2 {
+  .reservations-header h2,
+  .cities-header h2,
+  .branches-header h2,
+  .users-header h2,
+  .products-header h2,
+  .orders-header h2 {
     max-width: 200px;
   }
 
@@ -6575,7 +7059,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .cities-container,
   .branches-container,
   .users-container,
-  .products-container {
+  .products-container,
+  .orders-container {
     padding: 20px 10px;
   }
 
@@ -6808,8 +7293,9 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .reservations-header h2,
   .cities-header h2,
   .branches-header h2,
-  .users-header h2, 
-  .products-header h2 {
+  .users-header h2,
+  .products-header h2,
+  .orders-header h2 {
     font-size: 20px;
   }
 
@@ -6986,7 +7472,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
   .users-filter-btn,
   .menus-filter-btn,
-  .products-filter-btn {
+  .products-filter-btn,
+  .orders-filter-btn {
     padding: 7px 14px;
   }
 
@@ -7288,7 +7775,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   }
 
   .menus-filter-group,
-  .products-filter-group {
+  .products-filter-group,
+  .orders-filter-group {
     display: grid;
     grid-template-columns: repeat(1, 1fr);
   }

@@ -10532,6 +10532,11 @@ $(document).ready(function() {
             );
            
             getEmployeeDetails(employeeId, employeeName);
+        }else if (page === 'orders') {
+            history.replaceState({ page: 'orders' }, 'Siparişler', `?page=orders`);
+
+            getAllOrders();
+
         }else {
             // Hiç page değeri yoksa dashboard'u yükle.
 
@@ -10852,6 +10857,10 @@ $(document).ready(function() {
                     getAllProducts();
                     break;
 
+                case 'orders':
+                    getAllOrders();
+                    break;
+
                 case 'cities':
                     getCities();
                     break;
@@ -10924,6 +10933,7 @@ $(document).ready(function() {
         if (ordersChartInstance) { ordersChartInstance.destroy(); ordersChartInstance = null; }
         if (reservationsChartInstance) { reservationsChartInstance.destroy(); reservationsChartInstance = null; }
         if (categoriesChartInstance) { categoriesChartInstance.destroy(); categoriesChartInstance = null; }
+        destroyOrderCharts();
 
         // Dashboard içeriğini temizle
         $('.dashboard-content').empty();
@@ -11042,6 +11052,668 @@ $(document).ready(function() {
         // Dashboard içeriğini güncelle
         $('.dashboard-content').append(dashboardHTML);
     }
+
+    
+
+
+    let orderStatusChartInstance = null;
+    let orderTimelineChartInstance = null;
+    let orderAmountChartInstance = null;
+
+    // Navbar'daki "Siparişler" seçeneğine tıklandığında
+    $('.sidenav a:contains("Siparişler")').click(function(e) {
+        e.preventDefault();
+
+        history.pushState({ page: 'orders' }, 'Siparişler', '?page=orders');
+
+        getAllOrders();
+    });
+
+    // Sipariş arama
+    $(document).on('input', '#ordersSearchInput', function() {
+        const searchTerm = $(this).val().toLowerCase().trim();
+        $('.order-row').each(function() {
+            const orderNo = $(this).find('td:nth-child(1)').text().toLowerCase();
+            const customerName = $(this).find('td:nth-child(2)').text().toLowerCase();
+            if (orderNo.includes(searchTerm) || customerName.includes(searchTerm)) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
+    });
+
+    // Sipariş filtre butonları
+    $(document).on('click', '.orders-filter-btn', function() {
+        $('.orders-filter-btn').removeClass('active');
+        $(this).addClass('active');
+        const filter = $(this).data('filter');
+
+        $('.order-row').each(function() {
+            const status = $(this).data('status');
+            if (filter === 'all') {
+                $(this).show();
+            } else {
+                $(this).toggle(status === filter);
+            }
+        });
+    });
+
+    // Sipariş satırına tıklandığında detay modal
+    $(document).on('click', '.order-row', function() {
+        const orderId = $(this).data('order-id');
+        getOrderDetails(orderId);
+    });
+
+    // Sipariş detay modalını kapatma
+    $(document).on('click', '.close-order-details, .order-details-modal', function(e) {
+        if (e.target === this || $(this).hasClass('close-order-details')) {
+            $('.order-details-modal').remove();
+        }
+    });
+
+    // Sipariş grafiklerini yok et
+    function destroyOrderCharts() {
+        if (orderStatusChartInstance) { orderStatusChartInstance.destroy(); orderStatusChartInstance = null; }
+        if (orderTimelineChartInstance) { orderTimelineChartInstance.destroy(); orderTimelineChartInstance = null; }
+        if (orderAmountChartInstance) { orderAmountChartInstance.destroy(); orderAmountChartInstance = null; }
+    }
+
+    // Siparişlerin temel HTML yapısını oluştur
+    function renderOrdersList() {
+        destroyOrderCharts();
+        $('.dashboard-content').empty();
+
+        currentPage = 1;
+
+        let html = `
+        <div class="orders-container">
+            <div class="orders-header">
+                <h2>Sipariş Listesi</h2>
+            </div>
+
+            <!-- İstatistik Kartları -->
+            <div class="orders-stats-grid">
+                <div class="orders-stat-card" style="--accent-color: #06B6D4;">
+                    <div class="orders-stat-icon">
+                        <i class="fa-solid fa-receipt"></i>
+                    </div>
+                    <div class="orders-stat-info">
+                        <span class="orders-stat-count" id="statTotalOrders">-</span>
+                        <span class="orders-stat-label">Toplam Sipariş</span>
+                    </div>
+                </div>
+                <div class="orders-stat-card" style="--accent-color: #10b95c;">
+                    <div class="orders-stat-icon">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                    <div class="orders-stat-info">
+                        <span class="orders-stat-count" id="statCompletedOrders">-</span>
+                        <span class="orders-stat-label">Tamamlanan</span>
+                    </div>
+                </div>
+                <div class="orders-stat-card" style="--accent-color: #F59E0B;">
+                    <div class="orders-stat-icon">
+                        <i class="fa-solid fa-clock"></i>
+                    </div>
+                    <div class="orders-stat-info">
+                        <span class="orders-stat-count" id="statPendingOrders">-</span>
+                        <span class="orders-stat-label">Bekleyen</span>
+                    </div>
+                </div>
+                <div class="orders-stat-card" style="--accent-color: #EF4444;">
+                    <div class="orders-stat-icon">
+                        <i class="fa-solid fa-ban"></i>
+                    </div>
+                    <div class="orders-stat-info">
+                        <span class="orders-stat-count" id="statCancelledOrders">-</span>
+                        <span class="orders-stat-label">İptal Edilen</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Arama ve Filtre Çubuğu -->
+            <div class="orders-toolbar">
+                <div class="orders-search-box">
+                    <i class="fa fa-search"></i>
+                    <input type="text" id="ordersSearchInput" placeholder="Sipariş no veya müşteri adı ile ara...">
+                </div>
+                <div class="orders-filter-group">
+                    <button class="orders-filter-btn active" data-filter="all">Tümü</button>
+                    <button class="orders-filter-btn" data-filter="completed"><i class="fa fa-circle-check" style="color:#10B95C"></i>Tamamlandı</button>
+                    <button class="orders-filter-btn" data-filter="preparing"><i class="fa fa-fire-burner" style="color:#3B82F6"></i>Hazırlanıyor</button>
+                    <button class="orders-filter-btn" data-filter="pending"><i class="fa fa-clock" style="color:#F59E0B"></i>Bekliyor</button>
+                    <button class="orders-filter-btn" data-filter="cancelled"><i class="fa fa-ban" style="color:#EF4444"></i>İptal</button>
+                </div>
+            </div>
+
+            <div class="orders-body">
+                <div class="orders-table-wrapper px-7">
+                    <table class="orders-table">
+                        <thead>
+                            <tr>
+                                <th>Sipariş No</th>
+                                <th>Müşteri</th>
+                                <th>Şube</th>
+                                <th>Tutar</th>
+                                <th>Durum</th>
+                                <th>Tarih</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ordersTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grafikler -->
+        <div class="orders-charts-section">
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <h3>Aylık Sipariş Trendi</h3>
+                    </div>
+                    <div class="chart-card-body">
+                        <canvas id="orderTimelineChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <h3>Sipariş Durumu Dağılımı</h3>
+                    </div>
+                    <div class="chart-card-body">
+                        <canvas id="orderStatusChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <h3>Tutar Aralığı Dağılımı</h3>
+                    </div>
+                    <div class="chart-card-body">
+                        <canvas id="orderAmountChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+
+        $('.dashboard-content').append(html);
+    }
+
+    // Siparişleri göster
+    function displayOrders(response) {
+        $('#ordersTableBody').empty();
+
+        let tableHTML = '';
+
+        if (response.data.length > 0) {
+            response.data.forEach(order => {
+                const date = new Date(order.orderDate);
+                const formattedDate = `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`;
+
+                const statusMap = {
+                    'completed': { text: 'Tamamlandı', icon: 'fa-circle-check' },
+                    'pending': { text: 'Bekliyor', icon: 'fa-clock' },
+                    'preparing': { text: 'Hazırlanıyor', icon: 'fa-fire-burner' },
+                    'cancelled': { text: 'İptal', icon: 'fa-ban' },
+                    'delivered': { text: 'Teslim Edildi', icon: 'fa-truck' }
+                };
+
+                const status = statusMap[order.status] || { text: order.status, icon: 'fa-question' };
+
+                tableHTML += `
+                <tr class="order-row" data-order-id="${order.id}" data-status="${order.status}">
+                    <td><strong>#${order.orderNo}</strong></td>
+                    <td>${order.customerName}</td>
+                    <td>${order.branchName || '-'}</td>
+                    <td>${formatPriceInputLive(order.totalAmount.toFixed(2).replace('.', ','))}₺</td>
+                    <td><span class="order-status ${order.status}"><i class="fa ${status.icon}"></i> ${status.text}</span></td>
+                    <td>${formattedDate}</td>
+                    <td>
+                        <div class="table-actions-scroll">
+                            <button class="btn-view-order" data-order-id="${order.id}">
+                                <i class="fa fa-eye"></i>
+                                Detay
+                            </button>
+                        </div>
+                    </td>
+                </tr>`;
+            });
+        } else {
+            tableHTML = `
+                <tr>
+                    <td colspan="7" class="empty-table-row">Henüz sipariş bulunmamaktadır.</td>
+                </tr>`;
+        }
+
+        $('#ordersTableBody').html(tableHTML);
+
+        totalPages = response.totalPages;
+        totalItems = response.totalItems;
+
+        $('#orderPageInfo').text(`Sayfa ${currentPage} / ${totalPages}`);
+        $('#orderTotalItemsInfo').text(`Toplam Kayıt: ${totalItems}`);
+
+        $('#prevOrderPage').prop('disabled', !response.hasPrevious);
+        $('#nextOrderPage').prop('disabled', !response.hasNext);
+    }
+
+    // Sipariş verilerini çek
+    function fetchOrders(request) {
+        $.ajax({
+            url: request,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                paginationTemplate("orders-container", "prevOrderPage", "nextOrderPage", "orderPageInfo", "orderTotalItemsInfo", "pagination-orders-table");
+
+                displayOrders(response);
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    handleLogout(errorMessage);
+                    return;
+                }
+
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Siparişler alınırken hata oluştu!");
+            }
+        });
+    }
+
+    // Sipariş istatistiklerini çek ve grafikleri oluştur
+    function fetchOrderStats() {
+        $.ajax({
+            url: `${baseUrl}orders/getAllForAdmin?pageNumber=1&pageSize=10000`,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                const orders = response.data || [];
+                const total = orders.length;
+                const completed = orders.filter(o => o.status === 'completed').length;
+                const pending = orders.filter(o => o.status === 'pending').length;
+                const cancelled = orders.filter(o => o.status === 'cancelled').length;
+
+                animateCount($('#statTotalOrders'), total);
+                animateCount($('#statCompletedOrders'), completed);
+                animateCount($('#statPendingOrders'), pending);
+                animateCount($('#statCancelledOrders'), cancelled);
+
+                initOrderCharts(orders);
+            },
+            error: function() {
+                $('#statTotalOrders').text('-');
+                $('#statCompletedOrders').text('-');
+                $('#statPendingOrders').text('-');
+                $('#statCancelledOrders').text('-');
+            }
+        });
+    }
+
+    // Sipariş grafiklerini oluştur
+    function initOrderCharts(orders) {
+        const completed = orders.filter(o => o.status === 'completed').length;
+        const pending = orders.filter(o => o.status === 'pending').length;
+        const preparing = orders.filter(o => o.status === 'preparing').length;
+        const cancelled = orders.filter(o => o.status === 'cancelled').length;
+
+        // 1. Durum Dağılımı (Doughnut Chart)
+        const statusCtx = document.getElementById('orderStatusChart');
+        if (statusCtx) {
+            orderStatusChartInstance = new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Tamamlandı', 'Bekliyor', 'Hazırlanıyor', 'İptal'],
+                    datasets: [{
+                        data: [completed, pending, preparing, cancelled],
+                        backgroundColor: ['#10B95C', '#F59E0B', '#3B82F6', '#EF4444'],
+                        borderWidth: 0,
+                        hoverOffset: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '68%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true,
+                                pointStyleWidth: 17,
+                                font: { size: 13, family: 'Poppins' }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 2. Aylık Sipariş Trendi (Bar Chart)
+        const months = ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'];
+        const now = new Date();
+        const year = now.getFullYear();
+        const monthCounts = new Array(12).fill(0);
+
+        orders.forEach(o => {
+            const d = new Date(o.orderDate);
+            if (d.getFullYear() === year) {
+                monthCounts[d.getMonth()]++;
+            }
+        });
+
+        const timelineCtx = document.getElementById('orderTimelineChart');
+        if (timelineCtx) {
+            orderTimelineChartInstance = new Chart(timelineCtx, {
+                type: 'bar',
+                data: {
+                    labels: months,
+                    datasets: [{
+                        label: 'Sipariş Sayısı',
+                        data: monthCounts,
+                        backgroundColor: '#10b95c',
+                        borderRadius: 6,
+                        barThickness: 28
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1,
+                                font: { size: 12, family: 'Poppins' }
+                            },
+                            grid: { color: 'rgba(0,0,0,0.05)' }
+                        },
+                        x: {
+                            ticks: { font: { size: 12, family: 'Poppins' } },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 3. Tutar Aralığı Dağılımı (Bar Chart)
+        const amountRanges = { '0-100₺': 0, '100-250₺': 0, '250-500₺': 0, '500-1000₺': 0, '1000₺+': 0 };
+        orders.forEach(o => {
+            const amount = o.totalAmount;
+            if (amount <= 100) amountRanges['0-100₺']++;
+            else if (amount <= 250) amountRanges['100-250₺']++;
+            else if (amount <= 500) amountRanges['250-500₺']++;
+            else if (amount <= 1000) amountRanges['500-1000₺']++;
+            else amountRanges['1000₺+']++;
+        });
+
+        const amountCtx = document.getElementById('orderAmountChart');
+        if (amountCtx) {
+            orderAmountChartInstance = new Chart(amountCtx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(amountRanges),
+                    datasets: [{
+                        label: 'Sipariş Sayısı',
+                        data: Object.values(amountRanges),
+                        backgroundColor: ['#06B6D4', '#10B95C', '#F59E0B', '#EF4444', '#8B5CF6'],
+                        borderRadius: 6,
+                        barThickness: 36
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1,
+                                font: { size: 12, family: 'Poppins' }
+                            },
+                            grid: { color: 'rgba(0,0,0,0.05)' }
+                        },
+                        x: {
+                            ticks: { font: { size: 12, family: 'Poppins' } },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    // Tüm siparişleri getir
+    function getAllOrders() {
+        currentPage = 1;
+
+        renderOrdersList();
+
+        const request = `${baseUrl}orders/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`;
+
+        fetchOrders(request);
+        fetchOrderStats();
+    }
+
+    // Sipariş detaylarını getir
+    function getOrderDetails(orderId) {
+        const token = localStorage.getItem('token');
+
+        $.ajax({
+            url: `${baseUrl}orders/getForAdmin?orderId=${orderId}`,
+            type: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            success: function(response) {
+                if (response.success && response.data) {
+                    const order = response.data;
+                    const orderDate = new Date(order.orderDate);
+                    const formattedDate = `${orderDate.getDate().toString().padStart(2, '0')}.${(orderDate.getMonth() + 1).toString().padStart(2, '0')}.${orderDate.getFullYear()} ${orderDate.getHours().toString().padStart(2, '0')}:${orderDate.getMinutes().toString().padStart(2, '0')}`;
+
+                    const statusMap = {
+                        'completed': { text: 'Tamamlandı', class: 'odm-status-completed', icon: 'fa-circle-check', color: '#10b95c' },
+                        'pending': { text: 'Bekliyor', class: 'odm-status-pending', icon: 'fa-clock', color: '#F59E0B' },
+                        'preparing': { text: 'Hazırlanıyor', class: 'odm-status-preparing', icon: 'fa-fire-burner', color: '#3B82F6' },
+                        'cancelled': { text: 'İptal', class: 'odm-status-cancelled', icon: 'fa-ban', color: '#EF4444' },
+                        'delivered': { text: 'Teslim Edildi', class: 'odm-status-delivered', icon: 'fa-truck', color: '#8B5CF6' }
+                    };
+
+                    const status = statusMap[order.status] || { text: order.status, class: 'odm-status-pending', icon: 'fa-question', color: '#64748B' };
+
+                    // Sipariş ürünleri HTML
+                    let itemsHTML = '';
+                    if (order.items && order.items.length > 0) {
+                        order.items.forEach(item => {
+                            itemsHTML += `
+                            <div class="odm-item-row">
+                                <div>
+                                    <span class="odm-item-name">${item.productName}</span>
+                                    <span class="odm-item-qty">x${item.quantity}</span>
+                                </div>
+                                <span class="odm-item-price">${formatPriceInputLive((item.price * item.quantity).toFixed(2).replace('.', ','))}₺</span>
+                            </div>`;
+                        });
+                    }
+
+                    let detailsHTML = `
+                    <div class="order-details-modal">
+                        <div class="odm-panel">
+                            <div class="odm-hero" style="--odm-hero-color: ${status.color}">
+                                <button class="odm-close close-order-details"><i class="fa fa-xmark"></i></button>
+                                <div class="odm-identity">
+                                    <div class="odm-order-icon">
+                                        <i class="fa-solid fa-receipt"></i>
+                                    </div>
+                                    <h2 class="odm-name">Sipariş #${order.orderNo}</h2>
+                                    <div class="odm-badges">
+                                        <span class="odm-status-pill ${status.class}">
+                                            <i class="fa ${status.icon}"></i> ${status.text}
+                                        </span>
+                                        <span class="odm-id-pill">
+                                            <i class="fa fa-hashtag"></i> ID: ${order.id}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="odm-body">
+                                <h4 class="odm-section-title">Sipariş Bilgileri</h4>
+                                <div class="odm-info-grid">
+                                    <div class="odm-info-card">
+                                        <div class="odm-info-icon" style="background: #EFF6FF; color: #3B82F6;">
+                                            <i class="fa-solid fa-user"></i>
+                                        </div>
+                                        <div class="odm-info-data">
+                                            <span class="odm-info-label">Müşteri</span>
+                                            <span class="odm-info-value">${order.customerName}</span>
+                                        </div>
+                                    </div>
+                                    <div class="odm-info-card">
+                                        <div class="odm-info-icon" style="background: #F0FDF4; color: #16A34A;">
+                                            <i class="fa-solid fa-phone"></i>
+                                        </div>
+                                        <div class="odm-info-data">
+                                            <span class="odm-info-label">Telefon</span>
+                                            <span class="odm-info-value">${order.phone || '-'}</span>
+                                        </div>
+                                    </div>
+                                    <div class="odm-info-card">
+                                        <div class="odm-info-icon" style="background: #FFF7ED; color: #EA580C;">
+                                            <i class="fa-solid fa-store"></i>
+                                        </div>
+                                        <div class="odm-info-data">
+                                            <span class="odm-info-label">Şube</span>
+                                            <span class="odm-info-value">${order.branchName || '-'}</span>
+                                        </div>
+                                    </div>
+                                    <div class="odm-info-card">
+                                        <div class="odm-info-icon" style="background: #FDF2F8; color: #DB2777;">
+                                            <i class="fa-solid fa-calendar"></i>
+                                        </div>
+                                        <div class="odm-info-data">
+                                            <span class="odm-info-label">Tarih</span>
+                                            <span class="odm-info-value">${formattedDate}</span>
+                                        </div>
+                                    </div>
+                                    <div class="odm-info-card">
+                                        <div class="odm-info-icon" style="background: #ECFDF5; color: #059669;">
+                                            <i class="fa-solid fa-credit-card"></i>
+                                        </div>
+                                        <div class="odm-info-data">
+                                            <span class="odm-info-label">Ödeme Yöntemi</span>
+                                            <span class="odm-info-value">${order.paymentMethod || '-'}</span>
+                                        </div>
+                                    </div>
+                                    <div class="odm-info-card">
+                                        <div class="odm-info-icon" style="background: #F5F3FF; color: #7C3AED;">
+                                            <i class="fa-solid fa-location-dot"></i>
+                                        </div>
+                                        <div class="odm-info-data">
+                                            <span class="odm-info-label">Adres</span>
+                                            <span class="odm-info-value">${order.address || '-'}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                ${itemsHTML ? `
+                                <h4 class="odm-section-title">Sipariş Kalemleri</h4>
+                                <div class="odm-items-list">
+                                    ${itemsHTML}
+                                    <div class="odm-total-row">
+                                        <span class="odm-total-label">Toplam Tutar</span>
+                                        <span class="odm-total-value">${formatPriceInputLive(order.totalAmount.toFixed(2).replace('.', ','))}₺</span>
+                                    </div>
+                                </div>` : ''}
+
+                                ${order.note ? `
+                                <div class="odm-note">
+                                    <div class="odm-note-label">Müşteri Notu</div>
+                                    <div class="odm-note-text">${order.note}</div>
+                                </div>` : ''}
+
+                                <div class="odm-actions">
+                                    ${order.status === 'pending' ? `
+                                    <button class="odm-action-btn odm-btn-approve" data-order-id="${order.id}">
+                                        <i class="fa fa-check"></i> Onayla
+                                    </button>
+                                    <button class="odm-action-btn odm-btn-cancel" data-order-id="${order.id}">
+                                        <i class="fa fa-xmark"></i> İptal Et
+                                    </button>` : ''}
+                                    ${order.status === 'preparing' ? `
+                                    <button class="odm-action-btn odm-btn-approve" data-order-id="${order.id}">
+                                        <i class="fa fa-truck"></i> Teslim Edildi
+                                    </button>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+
+                    // Mevcut modal varsa kaldır
+                    $('.order-details-modal').remove();
+                    $('body').append(detailsHTML);
+                }
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    handleLogout(errorMessage);
+                    return;
+                }
+
+                showToast('error', 'Hata', errorMessage ? errorMessage : 'Sipariş detayı alınırken hata oluştu!');
+            }
+        });
+    }
+
+    // Detay butonuna tıklama
+    $(document).on('click', '.btn-view-order', function(e) {
+        e.stopPropagation();
+        const orderId = $(this).data('order-id');
+        getOrderDetails(orderId);
+    });
+
+    // Sipariş sayfalama - Önceki sayfa
+    $(document).on('click', '#prevOrderPage', function() {
+        if (currentPage > 1) {
+            currentPage--;
+            const request = `${baseUrl}orders/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`;
+            fetchOrders(request);
+        }
+    });
+
+    // Sipariş sayfalama - Sonraki sayfa
+    $(document).on('click', '#nextOrderPage', function() {
+        if (currentPage < totalPages) {
+            currentPage++;
+            const request = `${baseUrl}orders/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`;
+            fetchOrders(request);
+        }
+    });
+
+    // Sipariş tablosundaki "Göster" option kutusunda bir seçenek seçildiğinde
+    $(document).on('click', '.pagination-orders-table#paginationDropdown .dropdown-option', function() {
+        selectDropdownOption("#paginationDropdown", this, "pagination-id");
+        pageItems = $(this).text();
+        currentPage = 1;
+        const request = `${baseUrl}orders/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`;
+        fetchOrders(request);
+    });
+
 
     
     // Dash kartlarına tıklama - ilgili sidebar menüsüne yönlendir

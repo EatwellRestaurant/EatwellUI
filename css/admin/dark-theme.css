@@ -235,3 +235,138 @@ body.dark-theme {
   body.dark-theme .branch-card:hover {
     border-color: #475569;
   }
+
+  body.dark-theme .orders-container {
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  }
+
+  body.dark-theme .orders-header h2 {
+    color: #F1F5F9;
+  }
+
+  body.dark-theme .orders-stat-card,
+  body.dark-theme .orders-stat-card {
+    background: #1E293B;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  }
+
+  body.dark-theme .orders-stat-count {
+    color: #F1F5F9;
+  }
+
+  body.dark-theme .orders-stat-label {
+    color: #94A3B8;
+  }
+
+  body.dark-theme .orders-search-box input {
+    background: #1E293B;
+    border-color: #475569;
+    color: #E2E8F0;
+  }
+
+  body.dark-theme .orders-search-box input::placeholder {
+    color: #64748B;
+  }
+
+  body.dark-theme .orders-filter-btn {
+    background: #1E293B;
+    border-color: #475569;
+    color: #94A3B8;
+  }
+
+  body.dark-theme .orders-filter-btn:hover {
+    border-color: #64748B;
+    color: #E2E8F0;
+  }
+
+  body.dark-theme .orders-filter-btn.active {
+    background: #06B6D4;
+    color: #fff;
+    border-color: #06B6D4;
+  }
+
+  body.dark-theme .orders-date-filter input[type="date"] {
+    background: #1E293B;
+    border-color: #475569;
+    color: #E2E8F0;
+  }
+
+  body.dark-theme .orders-date-filter label {
+    color: #94A3B8;
+  }
+
+  body.dark-theme .btn-view-order {
+    color: #34D399;
+    border-color: #064E3B;
+  }
+
+  body.dark-theme .btn-view-order:hover {
+    background-color: rgba(16, 185, 92, 0.15);
+    border-color: #10b95c;
+  }
+
+  body.dark-theme .odm-panel {
+    background: #1E293B;
+  }
+
+  body.dark-theme .odm-body {
+    background: #1E293B;
+  }
+
+  body.dark-theme .odm-section-title {
+    color: #94A3B8;
+  }
+
+  body.dark-theme .odm-info-card:hover {
+    background: #334155;
+  }
+
+  body.dark-theme .odm-info-label {
+    color: #64748B;
+  }
+
+  body.dark-theme .odm-info-value {
+    color: #F1F5F9;
+  }
+
+  body.dark-theme .odm-item-row:hover {
+    background: #334155;
+  }
+
+  body.dark-theme .odm-item-name {
+    color: #E2E8F0;
+  }
+
+  body.dark-theme .odm-item-price {
+    color: #F1F5F9;
+  }
+
+  body.dark-theme .odm-total-row {
+    border-top-color: #475569;
+  }
+
+  body.dark-theme .odm-total-label {
+    color: #F1F5F9;
+  }
+
+  body.dark-theme .odm-note {
+    background: rgba(245, 158, 11, 0.1);
+    border-left-color: #F59E0B;
+  }
+
+  body.dark-theme .odm-note-label {
+    color: #FBBF24;
+  }
+
+  body.dark-theme .odm-note-text {
+    color: #FDE68A;
+  }
+
+  body.dark-theme .chart-card {
+    background: #1E293B;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  }
+
+  body.dark-theme .chart-card-header h3 {
+    color: #F1F5F9;
+  }
