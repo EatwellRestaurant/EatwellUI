@@ -10996,58 +10996,60 @@ $(document).ready(function() {
 			</div>
 
 			<!-- Grafikler Bölümü -->
-			<div class="charts-grid">
-				<div class="chart-card chart-large">
-					<div class="chart-card-header">
-						<h3>Aylık Sipariş Trendi</h3>
-					</div>
-					<div class="chart-card-body">
-						<canvas id="ordersChart"></canvas>
-					</div>
-				</div>
-				<div class="chart-card chart-small">
-					<div class="chart-card-header">
-						<h3>Rezervasyon Durumu</h3>
-					</div>
-					<div class="chart-card-body">
-						<canvas id="reservationsChart"></canvas>
-					</div>
-				</div>
-			</div>
+            <div class="dash-charts-section">
+                <div class="charts-grid">
+                    <div class="chart-card chart-large">
+                        <div class="chart-card-header">
+                            <h3>Aylık Sipariş Trendi</h3>
+                        </div>
+                        <div class="chart-card-body">
+                            <canvas id="ordersChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card chart-small">
+                        <div class="chart-card-header">
+                            <h3>Rezervasyon Durumu</h3>
+                        </div>
+                        <div class="chart-card-body">
+                            <canvas id="reservationsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
 
-			<!-- Alt Bölüm: Tablo + Grafik -->
-			<div class="charts-grid">
-				<div class="chart-card chart-large">
-					<div class="chart-card-header">
-						<h3>Son Siparişler</h3>
-					</div>
-					<div class="chart-card-body dashboard-table-body">
-						<div class="dashboard-table-wrapper">
-							<table class="dashboard-table">
-								<thead>
-									<tr>
-										<th>Sipariş No</th>
-										<th>Müşteri</th>
-										<th>Tutar</th>
-										<th>Durum</th>
-										<th>Tarih</th>
-									</tr>
-								</thead>
-								<tbody id="recentOrdersBody">
-								</tbody>
-							</table>
-						</div>
-					</div>
-				</div>
-				<div class="chart-card chart-small">
-					<div class="chart-card-header">
-						<h3>Popüler Menü Kategorileri</h3>
-					</div>
-					<div class="chart-card-body">
-						<canvas id="categoriesChart"></canvas>
-					</div>
-				</div>
-			</div>`;
+			    <!-- Alt Bölüm: Tablo + Grafik -->
+                <div class="charts-grid">
+                    <div class="chart-card chart-large">
+                        <div class="chart-card-header">
+                            <h3>Son Siparişler</h3>
+                        </div>
+                        <div class="chart-card-body dashboard-table-body">
+                            <div class="dashboard-table-wrapper">
+                                <table class="dashboard-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Sipariş No</th>
+                                            <th>Müşteri</th>
+                                            <th>Tutar</th>
+                                            <th>Durum</th>
+                                            <th>Tarih</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="recentOrdersBody">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-card chart-small">
+                        <div class="chart-card-header">
+                            <h3>Popüler Menü Kategorileri</h3>
+                        </div>
+                        <div class="chart-card-body">
+                            <canvas id="categoriesChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
 
         // Dashboard içeriğini güncelle
         $('.dashboard-content').append(dashboardHTML);

@@ -70,6 +70,10 @@ body{
   grid-template-columns: repeat(4, 1fr);
 }
 
+.dash-stats-grid {
+  margin-bottom: 8px;
+}
+
 .users-stats-grid {
   grid-template-columns: repeat(3, 1fr);
 }
@@ -201,11 +205,6 @@ body{
   box-shadow: 0 4px 15px rgba(0,0,0,0.1);
   overflow: hidden;
   padding: 20px;
-}
-
-.users-charts-section .charts-grid {
-  padding: 0;
-  margin-bottom: 18px;
 }
 
 .users-vip-section .chart-card {
@@ -1598,6 +1597,7 @@ td, th {
 .btn-menu,
 .pdm-btn-menu,
 .btn-branches-city,
+.btn-reservation,
 .bdm-btn-delete,
 .bdm-btn-edit,
 .btn-view-order {
@@ -1671,7 +1671,8 @@ td, th {
 .mdm-btn-products,
 .btn-menu,
 .pdm-btn-menu,
-.btn-branches-city {
+.btn-branches-city,
+.btn-reservation {
   color: #8B5CF6;
   border: 1.5px solid #C4B5FD;
 }
@@ -1681,7 +1682,8 @@ td, th {
 .mdm-btn-products:hover,
 .btn-menu:hover,
 .pdm-btn-menu:hover,
-.btn-branches-city:hover {
+.btn-branches-city:hover,
+.btn-reservation:hover {
   background-color: #EDE9FE;
   border-color: #8B5CF6;
   color: #7C3AED;
@@ -1697,8 +1699,7 @@ td, th {
 .btn-create-branch,
 .btn-manage-table,
 .btn-all-branches,
-.btn-head-office,
-.btn-reservation {
+.btn-head-office {
   background: linear-gradient(135deg, #10b95c, #08a950);
   color: #fff;
   border-radius: 10px;
@@ -1723,8 +1724,7 @@ td, th {
 .btn-create-product:hover,
 .btn-create-branch:hover,
 .btn-all-branches:hover,
-.btn-head-office:hover,
-.btn-reservation:hover {
+.btn-head-office:hover {
   box-shadow: 0 4px 17px rgba(45, 180, 135, 0.35);
   background-position: right center;
   transform: translateY(-2px);
@@ -1807,10 +1807,8 @@ td, th {
   color: #ff0000;
 }
 
-
-
 .btn-manage-table i {
-  transition: transform 0.3s ease;
+  transition: transform .3s ease;
 }
 
 .rotated-90 {
@@ -2346,11 +2344,11 @@ td, th {
 }
 
 .pages-body {
-  row-gap: 65px;
+  row-gap: 47px;
 }
 
 .page-box {
-  width: 45%;
+  width: 48%;
   background-color: transparent;
   position: relative;
 }
@@ -4275,10 +4273,18 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .users-vip-section,
 .menus-charts-section,
 .products-charts-section,
-.orders-charts-section {
+.orders-charts-section,
+.dash-charts-section {
   width: 100%;
   margin-top: 18px;
   min-width: 347px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.dash-charts-section {
+  margin-top: 8px;
 }
 
 .users-vip-section {
@@ -6111,11 +6117,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     width: 45%;
   }
 
-  .btn-home {
-    font-size: 23px;
-    padding: 15px 17px;
-  }
-
   .head-office-cards {
     display: flex;
     flex-wrap: wrap;
@@ -6147,6 +6148,16 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .count-box {
     padding: 20px;
     gap: 15px;
+  }
+
+  .pages-body {
+    flex-direction: column;
+    align-items: center;
+    row-gap: 45px;
+  }
+
+  .page-box {
+    width: 80%;
   }
 
   .filter-section {
@@ -6316,14 +6327,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     width: 93%;
   }
 
-  .pages-body {
-    row-gap: 55px;
-  }
-
-  .page-box {
-    width: 47%;
-  }
-
   .dash-stats-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 14px;
@@ -6390,6 +6393,14 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   
   #menuToggle {
     white-space: nowrap;
+  }
+
+  .page-box {
+    width: 90%;
+  }
+
+  .pages-body {
+    row-gap: 35px;
   }
   
   .menu-details-header h2,
@@ -6567,16 +6578,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   
   .pagination-total-info {
     font-size: 13px;
-  }
-
-  .pages-body {
-    flex-direction: column;
-    align-items: center;
-    row-gap: 45px;
-  }
-
-  .page-box {
-    width: 80%;
   }
 
   .stat-card {
@@ -6933,11 +6934,10 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     font-size: 16px;
   }
 
-  .btn-manage-table, 
   .btn-branches-city, 
+  .btn-reservation,
   .btn-menu, 
-  .btn-city, 
-  .btn-reservation {
+  .btn-city {
     padding: 8px 17px;
   }
 
@@ -7255,13 +7255,10 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .btn-create-product,
   .btn-create-branch,
   .btn-head-office,
-  .btn-all-branches {
+  .btn-all-branches,
+  .btn-manage-table {
     padding: 9px 14px;
     font-size: 13px;
-  }
-
-  .btn-manage-table {
-    padding: 8px 10px;
   }
 
   .btn-add-table,
@@ -7279,9 +7276,9 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .btn-delete-branch,
   .btn-products-menu,
   .btn-branches-city,
+  .btn-reservation,
   .btn-menu,
-  .btn-city,
-  .btn-reservation {
+  .btn-city {
     padding: 6px 12px;
     font-size: 13px;
   }
@@ -7304,7 +7301,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   }
 
   .pages-body {
-    row-gap: 32px;
+    row-gap: 25px;
   }
 
   .table-options {
@@ -7351,11 +7348,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .btn-undo {
     padding: 10px 20px;
     font-size: 14px;
-  }
-
-  .btn-home {
-    font-size: 21px;
-    padding: 13px 15px;
   }
 
   .filter-section {
@@ -7616,7 +7608,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
   .btn-create-menu,
   .btn-create-product, 
-  .btn-create-branch {
+  .btn-create-branch,
+  .btn-manage-table {
     padding: 8px 12px;
     font-size: 12px;
   }
@@ -7642,9 +7635,9 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .pdm-btn-edit,
   .pdm-btn-menu,
   .btn-branches-city,
+  .btn-reservation,
   .btn-menu,
-  .btn-city,
-  .btn-reservation {
+  .btn-city {
     padding: 6px 10px;
     font-size: 12px;
   }
@@ -7746,10 +7739,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   
   .pagination-total-info {
     font-size: 13px;
-  }
-
-  .page-box {
-    width: 93%;
   }
 
   .schedule-grid {
