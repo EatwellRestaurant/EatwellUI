@@ -55,23 +55,25 @@ body{
 .users-stats-grid,
 .menus-stats-grid,
 .products-stats-grid,
-.orders-stats-grid {
-  width: 98.5%;
+.orders-stats-grid,
+.reservations-stats-grid {
   display: grid;
   gap: 18px;
-  padding: 10px 0;
-  margin: 0 auto;
+  padding: 10px 7px;
 }
 
 .dash-stats-grid,
 .menus-stats-grid,
 .products-stats-grid,
-.orders-stats-grid {
+.orders-stats-grid,
+.reservations-stats-grid {
   grid-template-columns: repeat(4, 1fr);
 }
 
 .dash-stats-grid {
-  margin-bottom: 8px;
+  margin: 0 auto 8px;
+  width: 98.5%;
+  padding: 10px 0;
 }
 
 .users-stats-grid {
@@ -82,7 +84,8 @@ body{
 .users-stat-card,
 .menus-stat-card,
 .products-stat-card,
-.orders-stat-card {
+.orders-stat-card,
+.reservations-stat-card {
   background: #fff;
   border-radius: 14px;
   padding: 22px 20px;
@@ -101,7 +104,8 @@ body{
 .users-stat-card::before,
 .menus-stat-card::before,
 .products-stat-card::before,
-.orders-stat-card::before {
+.orders-stat-card::before,
+.reservations-stat-card::before {
   content: '';
   position: absolute;
   top: 0;
@@ -119,7 +123,8 @@ body{
 .users-stat-card:hover,
 .menus-stat-card:hover,
 .products-stat-card:hover,
-.orders-stat-card:hover {
+.orders-stat-card:hover,
+.reservations-stat-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
@@ -128,7 +133,8 @@ body{
 .users-stat-card:hover::before,
 .menus-stat-card:hover::before,
 .products-stat-card:hover::before,
-.orders-stat-card:hover::before {
+.orders-stat-card:hover::before,
+.reservations-stat-card:hover::before {
   width: 120px;
   height: 120px;
   opacity: 0.08;
@@ -138,7 +144,8 @@ body{
 .users-stat-icon,
 .menus-stat-icon,
 .products-stat-icon,
-.orders-stat-icon {
+.orders-stat-icon,
+.reservations-stat-icon {
   width: 50px;
   height: 50px;
   border-radius: 12px;
@@ -147,13 +154,6 @@ body{
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-}
-
-.dash-card-icon i,
-.users-stat-icon i,
-.menus-stat-icon i,
-.products-stat-icon i,
-.orders-stat-icon i {
   font-size: 22px;
   color: #fff;
 }
@@ -162,7 +162,8 @@ body{
 .users-stat-info,
 .menus-stat-info,
 .products-stat-info,
-.orders-stat-info {
+.orders-stat-info,
+.reservations-stat-info {
   display: flex;
   flex-direction: column;
 }
@@ -171,7 +172,8 @@ body{
 .users-stat-count,
 .menus-stat-count,
 .products-stat-count,
-.orders-stat-count {
+.orders-stat-count,
+.reservations-stat-count {
   font-size: 28px;
   font-weight: 700;
   color: #1E293B;
@@ -183,7 +185,8 @@ body{
 .users-stat-label,
 .menus-stat-label,
 .products-stat-label,
-.orders-stat-label {
+.orders-stat-label,
+.reservations-stat-label {
   font-size: 15px;
   color: #64748B;
   margin-top: 4px;
@@ -209,7 +212,7 @@ body{
 
 .users-vip-section .chart-card {
   width: 98.5%;
-  margin: 0 auto;
+  margin: 18px auto 0;
 }
 
 .chart-card-header h3 {
@@ -431,18 +434,6 @@ body{
   justify-content: flex-end;
 }
 
-.pro-img{
-	float: left;
-	width: 38px;
-	margin-top: 5px;
-  margin-right: 2px;
-}
-
-.menu-img{
-	width: 30px;
-  vertical-align: middle;
-}
-
 .profile p{
 	color: #000;
 	font-weight: 700;
@@ -452,47 +443,6 @@ body{
 .adminDisplay{
   display: block;
   font-size: 14px;
-}
-
-.col-div-3{
-	width: 25%;
-	float: left;
-  margin-bottom: 25px;
-  margin-top: 17px;
-}
-
-.col-div-8{
-	width: 70%;
-	float: left;
-}
-
-.col-div-4{
-	width: 30%;
-	float: left;
-}
-
-.content-box{
-	padding: 20px;
-}
-
-.content-box p{
-	margin: 0px;
-  font-size: 24px;
-  color: #000;
-  font-weight: 500;
-}
-
-.content-box p span{
-	float: right;
-  color: #fff;
-  background-color: #ffc515;
-  font-size: 15px;
-  padding: 3px 10px;
-  cursor: pointer;
-}
-
-.content-box th {
-  background-color: #d8d9e1;
 }
 
 .navbar-actions {
@@ -1077,7 +1027,6 @@ td, th {
 
 .user-details-modal,
 .menu-details-modal,
-.reservation-details-modal,
 .branch-details-modal,
 .product-details-modal,
 .menu-update-modal,
@@ -1087,7 +1036,8 @@ td, th {
 .product-create-modal,
 .branch-create-modal,
 .table-create-modal,
-.table-update-modal {
+.table-update-modal,
+.reservation-details-modal {
   display: none;
   position: fixed;
   z-index: 1001;
@@ -1099,16 +1049,6 @@ td, th {
   background-color: rgba(0, 0, 0, 0.6);
 }
 
-.menu-details-content,
-.branch-details-content,
-.reservation-details-content,
-.product-details-content,
-.menu-update-content,
-.product-update-content,
-.branch-update-content,
-.menu-create-content,
-.product-create-content,
-.branch-create-content,
 .table-create-content,
 .table-update-content {
   background-color: #edece1;
@@ -1122,28 +1062,11 @@ td, th {
   animation: modalFadeIn 0.3s;
 }
 
-.branch-update-content,
-.branch-details-content,
-.reservation-details-content,
-.branch-create-content {
-  max-width: 950px;
-}
-
 @keyframes modalFadeIn {
   from {opacity: 0; transform: translateY(-20px);}
   to {opacity: 1; transform: translateY(0);}
 }
 
-.menu-details-header,
-.branch-details-header,
-.reservation-details-header,
-.product-details-header,
-.menu-update-header,
-.product-update-header,
-.branch-update-header,
-.menu-create-header,
-.product-create-header,
-.branch-create-header,
 .table-create-header,
 .table-update-header {
   display: flex;
@@ -1154,16 +1077,6 @@ td, th {
   margin-bottom: 20px;
 }
 
-.menu-details-header h2,
-.branch-details-header h2,
-.reservation-details-header h2,
-.product-details-header h2,
-.menu-update-header h2,
-.product-update-header h2,
-.branch-update-header h2,
-.menu-create-header h2,
-.product-create-header h2,
-.branch-create-header h2,
 .table-create-header h2,
 .table-update-header h2 {
   color: #000;
@@ -1171,10 +1084,6 @@ td, th {
   font-size: 24px;
 }
 
-.close-branch-details,
-.close-reservation-details,
-.close-branch-update,
-.close-branch-create,
 .close-table-create,
 .close-table-update {
   color: #3a3a3a;
@@ -1218,6 +1127,7 @@ td, th {
   justify-content: space-between;
   margin-top: 5px;
   padding: 10px;
+  padding-bottom: 0;
 }
 
 .pagination {
@@ -1273,12 +1183,18 @@ td, th {
   cursor: pointer;
 }
 
-.pagination-page-size .dropdown i {
+.pagination-page-size .dropdown i,
+.filter-box .dropdown i,
+.permission-filter-year i {
   position: absolute;
   top: 50%;
-  left: 68%;
+  color: #233342;
   transform: translateY(-50%);
-  transition: all .4s ease-in-out;
+  transition: all .3s ease-in-out;
+}
+
+.pagination-page-size .dropdown i {
+  left: 68%;
 }
 
 .pagination-toggle {
@@ -1309,43 +1225,11 @@ td, th {
   font-weight: 500;
 }
 
-
-
-
-/* Entity Detayları Modal Stili */
-
-.menu-details-body,
-.branch-details-body,
-.reservation-details-body,
-.product-details-body,
-.menu-update-body,
-.product-update-body,
-.branch-update-body,
-.menu-create-body,
-.product-create-body,
-.branch-create-body,
 .table-create-body,
 .table-update-body {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  align-items: center;
-}
-
-.menu-image-container,
-.product-image-container {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
-}
-
-.menu-update-body .menu-image-container,
-.product-update-body .product-image-container,
-.menu-create-body .menu-image-container,
-.product-create-body .product-image-container {
-  display: flex;
-  flex-direction: column;
   align-items: center;
 }
 
@@ -1391,13 +1275,6 @@ td, th {
   background-color: #ffd760;
 }
 
-.custom-upload-button{
-  margin-top: 25px;
-  padding: 8px 16px;
-  font-size: 14px;
-}
-
-.custom-upload-button,
 .btn-add-table,
 .btn-update-table {
   font-family: 'Poppins', sans-serif;
@@ -1410,57 +1287,18 @@ td, th {
   transition: background-color 0.3s;
 }
 
-.custom-upload-button:hover,
 .btn-add-table:hover,
 .btn-update-table:hover,
 .btn-update-branch-settings:hover {
   background-color: #ffd760;;
 }
 
-.menu-detail-image,
-.product-detail-image,
-.menu-update-image,
-.product-update-image,
-.branch-update-image,
-.menu-create-image,
-.product-create-image {
-  max-width: 100%;
-  max-height: 300px;
-  object-fit: contain;
-  border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.menu-info,
-.user-info,
-.product-info,
-.branch-info,
-.reservation-info,
 .table-info {
   color: #000;
   border: 1px solid #81818140;
   width: 100%;
 }
 
-.branch-info,
-.reservation-info {
-  display: flex;
-  flex-wrap: wrap;              
-  gap: 6px;                    
-  justify-content: space-between;
-  align-items: center;
-}
-
-.branch-update-body .branch-info,
-.branch-create-body .branch-info {
-  border: none;
-}
-
-.menu-info-item,
-.user-info-item,
-.product-info-item,
-.branch-info-item,
-.reservation-info-item,
 .table-info-item {
   display: flex;
   align-items: center;
@@ -1468,31 +1306,10 @@ td, th {
   border-bottom: 1px solid #81818140;
 }
 
-.branch-info-item,
-.reservation-info-item {
-  flex: 0 0 auto;    /* Her eleman genişliğin yaklaşık %50'sini kaplasın */
-  width: 45%;
-}
-
-.branch-update-body .branch-info-item,
-.branch-create-body .branch-info-item {
-  border: none;
-}
-
-.menu-info-item:last-child,
-.user-info-item:last-child,
-.product-info-item:last-child,
-.branch-info-item:last-child,
-.reservation-info-item:last-child,
 .table-info-item:last-child {
   border-bottom: none;
 } 
 
-.menu-label,
-.user-label,
-.product-label,
-.branch-label,
-.reservation-label,
 .table-label {
   display: flex;
   align-items: center;
@@ -1501,16 +1318,6 @@ td, th {
   width: 40%;
 }
 
-.branch-label,
-.reservation-label {
-  width: 27%;
-}
-
-.menu-label strong,
-.user-label strong,
-.product-label strong,
-.branch-label strong,
-.reservation-label strong,
 .table-label strong {
   color: #000;
   margin-right: 10px;
@@ -1518,19 +1325,10 @@ td, th {
   width: 100%;
 }
 
-.menu-label span,
-.user-label span,
-.product-label span,
-.branch-label span,
-.reservation-label span,
 .table-label span {
   font-weight: bold;
 }
 
-.product-update-body .product-value,
-.branch-update-body .branch-value,
-.product-create-body .product-value,
-.branch-create-body .branch-value,
 .table-create-body .table-value,
 .table-update-body .table-value {
   border: 1px solid #ddd;
@@ -1540,33 +1338,17 @@ td, th {
   width: 60%;
 }
 
-.branch-value:focus-visible,
-.reservation-value:focus-visible,
-.table-value:focus-visible,
-.product-update-body .product-value:focus-visible,
-.product-create-body .product-value:focus-visible {
+.table-value:focus-visible {
   outline: none;
   border: 1px solid #ffc515;
 }
 
-.user-value,
-.product-value,
-.branch-value,
-.reservation-value,
 .table-value {
   margin: 10px 0;
   margin-left: 5px;
   font-size: 16px;
   line-height: 1.5;
   padding: 5px 10px;
-}
-
-.branch-value,
-.reservation-value {
-  width: 73% !important;
-  word-wrap: break-word;    
-  overflow-wrap: break-word; 
-  white-space: normal;   
 }
 
 .empty-table-row {
@@ -1600,7 +1382,8 @@ td, th {
 .btn-reservation,
 .bdm-btn-delete,
 .bdm-btn-edit,
-.btn-view-order {
+.btn-view-order,
+.rdm-action-btn {
   cursor: pointer;
   background-color: transparent;
   border-radius: 8px;
@@ -1840,10 +1623,6 @@ td, th {
   margin: 17px auto 0 auto;
 }
 
-.reservations-container.subdivision {
-  margin-top: 20px;
-}
-
 .menus-header,
 .head-office-header,
 .employees-header,
@@ -1854,7 +1633,7 @@ td, th {
 .users-header,
 .products-header,
 .orders-header {
-  margin: 0 7px 10px 7px;
+  margin: 0 7px 10px;
   padding-bottom: 10px;
   border-bottom: 1px solid #81818140;
   display: flex;
@@ -2343,6 +2122,10 @@ td, th {
   overflow-x: unset;
 }
 
+.reservations-body {
+  margin: 10px 7px 0;
+}
+
 .pages-body {
   row-gap: 47px;
 }
@@ -2408,6 +2191,7 @@ td, th {
 .subdivision .reservations-body {
   display: block;
   overflow-x: auto;
+  margin: 0;
 }
 
 .table-section {
@@ -2514,16 +2298,17 @@ td, th {
   width: 60%;
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  row-gap: 16px;
+  column-gap: 32px;
   justify-content: space-between;
 }
 
 .reservation-box {
-  width: 48%;
+  flex: 1 1 calc(50% - 32px);
+  min-width: 0;
 }
 
-.input-wrapper,
-.btn-filter-table {
+.input-wrapper {
   position: relative;
   display: inline-block;
   width: 100%;
@@ -2557,33 +2342,16 @@ td, th {
 
 .input-wrapper input:focus {
   outline: 0;
-  border-color: #ffc515;
+  border-color: #858d99;
 }
 
 .dropdown {
   position: relative;
-}
-
-.dropdown-toggle,
-.btn-filter-table {
   cursor: pointer;
 }
 
-.btn-filter-table {
-  width: 18%;
-  min-width: 72px;
-  background-color: #fee00a;
-  color: #fff;
-  padding: 10px 12px;
-  font-size: 14px;
-  border-radius: 4px;
-  border: none;
-  margin-left: auto;
-  transition: all 0.2s ease-in;
-}
-
-.btn-filter-table:hover{
-  background-color: #edd00a;
+.dropdown-toggle {
+  cursor: pointer;
 }
 
 .dropdown-menu {
@@ -2639,18 +2407,17 @@ td, th {
   right: 0px;
   padding: 0 10px;
   transform: translateY(-50%);
-  border: none;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
-  color: #fff;
   font-size: 1.8rem;
   height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-left: 1px solid #fee00a;
   transition: all .2s ease-in;
-  background-color: #fee00a;
+  background-color: #F1F5F9;
+  color: #64748B;
+  border: 2px solid #858d99;
 }
 
 .input-wrapper .location{
@@ -2874,13 +2641,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
 .filter-box .dropdown i,
 .permission-filter-year i {
-  position: absolute;
-  cursor: pointer;
   font-size: 13px;
   right: 7%;
-  top: 50%;
-  transform: translateY(-50%);
-  transition: all 0.4s ease-in-out;
 }
 
 .rotated-180 {
@@ -4146,7 +3908,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   transition: width .3s ease-in-out;
 }
 
-
 .users-toolbar,
 .menus-toolbar,
 .products-toolbar,
@@ -4155,7 +3916,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   justify-content: space-between;
   align-items: center;
   gap: 16px;
-  margin: 10px 0 20px;
+  margin: 10px 7px 20px;
   flex-wrap: wrap;
 }
 
@@ -4708,13 +4469,14 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   line-height: 1.5;
 }
 
-.user-details-modal .udm-panel,
+.udm-panel,
 .bdm-panel,
 .mdm-panel,
 .pdm-panel,
 .bum-panel,
 .mum-panel,
-.pum-panel {
+.pum-panel,
+.rdm-panel {
   background: #fff;
   margin: 3% auto;
   padding: 0;
@@ -4727,7 +4489,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   overflow: hidden;
 }
 
-.user-details-modal .udm-panel {
+.udm-panel,
+.rdm-panel {
   max-width: 610px;
   min-width: 380px;
 }
@@ -4751,7 +4514,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .pdm-hero,
 .bum-hero,
 .mum-hero,
-.pum-hero  {
+.pum-hero,
+.rdm-hero  {
   padding: 28px 28px 45px;
   position: relative;
   text-align: center;
@@ -4779,13 +4543,18 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   background: linear-gradient(135deg, var(--hero-color), color-mix(in srgb, var(--hero-color) 60%, #1E293B));
 }
 
+.rdm-hero {
+  background: linear-gradient(135deg, var(--rdm-hero-color), color-mix(in srgb, var(--rdm-hero-color) 60%, #1E293B));
+}
+
 .udm-hero::after,
 .bdm-hero::after,
 .mdm-hero::after,
 .pdm-hero::after,
 .bum-hero::after,
 .mum-hero::after,
-.pum-hero::after {
+.pum-hero::after,
+.rdm-hero::after {
   content: '';
   position: absolute;
   bottom: -1px;
@@ -4796,7 +4565,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   border-radius: 22px 22px 0 0;
 }
 
-.udm-hero::after {
+.udm-hero::after{
   height: 30px;
 }
 
@@ -4807,7 +4576,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .pdm-close,
 .bum-close,
 .mum-close,
-.pum-close {
+.pum-close,
+.rdm-close {
   position: absolute;
   top: 14px;
   right: 18px;
@@ -4833,7 +4603,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .pdm-close:hover,
 .bum-close:hover,
 .mum-close:hover,
-.pum-close:hover {
+.pum-close:hover,
+.rdm-close:hover {
   background: rgba(255,255,255,0.35);
   transform: rotate(90deg);
 }
@@ -4847,7 +4618,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
 .bdm-identity,
 .mdm-identity,
-.pdm-identity {
+.pdm-identity,
+.rdm-identity {
   position: relative;
   z-index: 1;
   display: flex;
@@ -4857,7 +4629,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
 .bdm-name,
 .mdm-name,
-.pdm-name {
+.pdm-name,
+.rdm-name {
   color: #fff;
   font-size: 22px;
   font-weight: 700;
@@ -4867,7 +4640,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
 .bdm-badges,
 .mdm-badges,
-.pdm-badges {
+.pdm-badges,
+.rdm-badges {
   display: flex;
   justify-content: center;
   gap: 8px;
@@ -4878,7 +4652,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .mdm-status-pill,
 .mdm-id-pill,
 .pdm-status-pill,
-.pdm-id-pill {
+.pdm-id-pill,
+.rdm-date-pill{
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -4903,7 +4678,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
 .bdm-id-pill,
 .mdm-id-pill,
-.pdm-id-pill {
+.pdm-id-pill,
+.rdm-date-pill {
   background: rgba(255,255,255,0.15);
   color: rgba(255,255,255,0.85);
 }
@@ -4911,7 +4687,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 /* Body */
 .bdm-body,
 .mdm-body,
-.pdm-body {
+.pdm-body,
+.rdm-body {
   padding: 4px 24px 28px;
 }
 
@@ -4919,7 +4696,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .udm-info-grid,
 .bdm-info-grid,
 .mdm-info-grid,
-.pdm-info-grid {
+.pdm-info-grid,
+.rdm-info-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
@@ -4934,7 +4712,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .udm-info-card,
 .bdm-info-card,
 .mdm-info-card,
-.pdm-info-card {
+.pdm-info-card,
+.rdm-info-card {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -4946,14 +4725,16 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .udm-info-card:hover,
 .bdm-info-card:hover,
 .mdm-info-card:hover,
-.pdm-info-card:hover {
+.pdm-info-card:hover,
+.rdm-info-card:hover {
   background: #F1F5F9;
 }
 
 .udm-info-icon,
 .bdm-info-icon,
 .mdm-info-icon,
-.pdm-info-icon {
+.pdm-info-icon,
+.rdm-info-icon {
   width: 40px;
   height: 40px;
   border-radius: 10px;
@@ -4967,7 +4748,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .udm-info-data,
 .bdm-info-data,
 .mdm-info-data,
-.pdm-info-data {
+.pdm-info-data,
+.rdm-info-data {
   display: flex;
   flex-direction: column;
   min-width: 0;
@@ -4977,7 +4759,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .udm-info-label,
 .bdm-info-label,
 .mdm-info-label,
-.pdm-info-label {
+.pdm-info-label,
+.rdm-info-label {
   font-size: 11px;
   color: #94A3B8;
   font-weight: 500;
@@ -4988,7 +4771,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .udm-info-value,
 .bdm-info-value,
 .mdm-info-value,
-.pdm-info-value {
+.pdm-info-value,
+.rdm-info-value {
   font-size: 14px;
   font-weight: 600;
   color: #1E293B;
@@ -5329,7 +5113,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
 }
 
-.bdm-icon-wrapper {
+.bdm-icon-wrapper,
+.rdm-icon-wrapper {
   width: 75px;
   height: 75px;
   border-radius: 50%;
@@ -5343,16 +5128,14 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   color: #fff;
 }
 
-.bdm-info-card {
+.bdm-info-card,
+.rdm-info-card {
   align-items: flex-start;
   min-width: 0;
 }
 
-.bdm-info-card-full {
-  grid-column: 1 / -1;
-}
-
-.bdm-info-value {
+.bdm-info-value,
+.rdm-info-value {
   white-space: normal;
   overflow: visible;
   text-overflow: unset;
@@ -5994,6 +5777,59 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   color: #64748B;
 }
 
+.rdm-note {
+  padding: 14px 16px;
+  background: #fef9e6;
+  border-left: 3px solid #F59E0B;
+  border-radius: 0 8px 8px 0;
+  margin-top: 10px;
+}
+
+.rdm-note-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #92400E;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.rdm-note-label i {
+  margin-right: 1px;
+}
+
+.rdm-note-text {
+  font-size: 14px;
+  color: #78350F;
+  line-height: 1.6;
+}
+
+.rdm-actions {
+  display: flex;
+  margin-top: 24px;
+}
+
+.rdm-action-btn {
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.rdm-btn-cancel {
+  background: #FEE2E2;
+  color: #991B1B;
+}
+
+.rdm-btn-cancel:hover {
+  background: #FCA5A5;
+  color: #7F1D1D;
+}
 
 
 
@@ -6064,6 +5900,24 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
   .filter-section {
     width: 80%;
+  }
+
+  .users-toolbar,
+  .menus-toolbar,
+  .products-toolbar,
+  .orders-toolbar {
+    width: 98.5%;
+    margin: 10px auto 20px;
+  }
+
+  .users-stats-grid, 
+  .menus-stats-grid, 
+  .products-stats-grid, 
+  .orders-stats-grid, 
+  .reservations-stats-grid {
+    width: 98.5%;
+    margin: 0 auto;
+    padding: 10px 0;
   }
 }
 
@@ -6193,10 +6047,15 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     grid-template-columns: 1.5fr 1fr;
   }
 
+  .reservation-section{
+    column-gap: 20px;
+  }
+
   .users-stats-grid,
   .menus-stats-grid,
   .products-stats-grid,
-  .orders-stats-grid {
+  .orders-stats-grid,
+  .reservations-stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 
@@ -6307,26 +6166,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     width: 97%;
   }
 
-  .branch-update-content,
-  .branch-details-content,
-  .reservation-details-content,
-  .branch-create-content {
-    max-width: 570px;
-  }
-
-  .branch-info,
-  .reservation-info {
-    flex-wrap: nowrap;
-    justify-content: space-between;
-    align-items: center;
-    flex-direction: column;
-  }
-
-  .branch-info-item,
-  .reservation-info-item {
-    width: 93%;
-  }
-
   .dash-stats-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 14px;
@@ -6403,16 +6242,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     row-gap: 35px;
   }
   
-  .menu-details-header h2,
-  .branch-details-header h2,
-  .reservation-details-header h2,
-  .product-details-header h2,
-  .menu-update-header h2,
-  .product-update-header h2,
-  .branch-update-header h2,
-  .menu-create-header h2,
-  .product-create-header h2,
-  .branch-create-header h2,
   .table-create-header h2,
   .table-update-header h2 {
     font-size: 20px;
@@ -6425,16 +6254,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     padding: 0px 13px;
   }
 
-  .menu-details-content,
-  .branch-details-content,
-  .reservation-details-content,
-  .product-details-content,
-  .menu-update-content,
-  .product-update-content,
-  .branch-update-content,
-  .menu-create-content,
-  .product-create-content,
-  .branch-create-content,
   .table-create-content,
   .table-update-content {
     margin: 10% auto;
@@ -6444,7 +6263,9 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
   .bdm-panel,
   .mdm-panel,
-  .pdm-panel {
+  .pdm-panel,
+  .udm-panel,
+  .rdm-panel {
     margin: 2% auto;
     width: 95%;
     min-width: 0;
@@ -6458,14 +6279,15 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
   .bdm-info-grid,
   .mdm-info-grid,
-  .pdm-info-grid {
+  .pdm-info-grid{
     grid-template-columns: 1fr;
     gap: 10px;
   }
 
   .bdm-hero,
   .mdm-hero,
-  .pdm-hero {
+  .pdm-hero,
+  .rdm-hero {
     padding: 22px 20px 42px;
   }
 
@@ -6477,13 +6299,15 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
   .bdm-name,
   .mdm-name,
-  .pdm-name {
+  .pdm-name,
+  .rdm-name {
     font-size: 19px;
   }
 
   .bdm-body,
   .mdm-body,
-  .pdm-body {
+  .pdm-body,
+  .rdm-body {
     padding: 4px 18px 22px;
   }
 
@@ -6493,20 +6317,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
   .bum-body {
     padding: 8px 20px 20px;
-  }
-
-  .menu-detail-image,
-  .product-detail-image,
-  .menu-update-image,
-  .product-update-image,
-  .branch-update-image,
-  .menu-create-image,
-  .product-create-image {
-    max-height: 250px;
-  }
-
-  .custom-upload-button {
-    padding: 7px 14px;
   }
   
   .btn-add-table,
@@ -6522,11 +6332,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     font-size: 15px;
   } 
 
-  .menu-info,
-  .user-info,
-  .product-info,
-  .branch-info,
-  .reservation-info,
   .table-info {
     width: 95%;
   }
@@ -6549,6 +6354,18 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   input:checked + .toggle-slider:after,
   input:not(:checked) + .toggle-slider:after {
     content: "";
+  }
+
+  .reservation-section {
+    width: 100%;
+    order: 2;
+    row-gap: 20px;
+  }
+
+  .table-section {
+    width: 100%;
+    order: 1;
+    margin-bottom: 20px;
   }
 
   .reservation-box {
@@ -6622,7 +6439,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .users-stats-grid,
   .menus-stats-grid,
   .products-stats-grid,
-  .orders-stats-grid {
+  .orders-stats-grid,
+  .reservations-stats-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
   }
@@ -6631,7 +6449,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .users-stat-card,
   .menus-stat-card,
   .products-stat-card,
-  .orders-stat-card {
+  .orders-stat-card,
+  .reservations-stat-card {
     padding: 18px 16px;
   }
 
@@ -6639,7 +6458,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .users-stat-count,
   .menus-stat-count,
   .products-stat-count,
-  .orders-stat-count {
+  .orders-stat-count,
+  .reservations-stat-count {
     font-size: 22px;
   }
 
@@ -6674,11 +6494,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     margin-bottom: 20px;
   }
 
-  .udm-panel {
-    margin: 2% auto;
-    width: 95%;
-  }
-
   .udm-stats-row {
     grid-template-columns: 1fr;
     gap: 8px;
@@ -6694,7 +6509,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   }
 
   .udm-hero {
-    padding: 24px 20px 22px;
+    padding: 24px 20px 26px;
   }
 
   .udm-fullname {
@@ -6721,15 +6536,9 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
 
 @media screen and (max-width: 600px) {
-  .reservation-section {
-    width: 100%;
-    order: 2;
-  }
-
-  .table-section {
-    width: 100%;
-    order: 1;
-    margin-bottom: 20px;
+  .reservation-box {
+    flex: none;
+    min-width: auto;
   }
 
   .pagination-container {
@@ -6808,15 +6617,12 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
   .dash-card-icon,
   .users-stat-icon,
-  .menus-stat-icon {
+  .menus-stat-icon,
+  .products-stat-icon,
+  .reservations-stat-icon {
     width: 44px;
     height: 44px;
     border-radius: 10px;
-  }
-
-  .dash-card-icon i,
-  .users-stat-icon i,
-  .menus-stat-icon i {
     font-size: 18px;
   }
 
@@ -6842,7 +6648,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .users-stats-grid,
   .menus-stats-grid,
   .products-stats-grid,
-  .orders-stats-grid {
+  .orders-stats-grid,
+  .reservations-stats-grid {
     grid-template-columns: 1fr;
     gap: 10px;
   }
@@ -6851,7 +6658,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .users-stat-card,
   .menus-stat-card,
   .products-stat-card,
-  .orders-stat-card {
+  .orders-stat-card,
+  .reservations-stat-card {
     padding: 16px 14px;
   }
 
@@ -6859,7 +6667,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .users-stat-count,
   .menus-stat-count,
   .products-stat-count,
-  .orders-stat-count {
+  .orders-stat-count,
+  .reservations-stat-count {
     font-size: 20px;
   }
 
@@ -6867,7 +6676,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .users-stat-label,
   .menus-stat-label,
   .products-stat-label,
-  .orders-stat-label {
+  .orders-stat-label,
+  .reservations-stat-label {
     font-size: 13px;
   }
 
@@ -6895,10 +6705,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     width: 30px;
     height: 30px;
     font-size: 12px;
-  }
-
-  .user-details-modal .udm-panel {
-    width: 97%;
   }
 
   .udm-avatar {
@@ -6971,6 +6777,11 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .adminInfo {
     width: 75%;
   }
+
+  .rdm-info-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
 }
 
 
@@ -7019,33 +6830,14 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     margin-top: 0px;
   }
 
-  .menu-label, 
-  .user-label,
-  .product-label,
-  .branch-label,
-  .reservation-label,
   .table-label {
     font-size: 14px;
   }
 
-  .user-value,
-  .product-value,
-  .branch-value,
-  .reservation-value,
   .table-value {
     font-size: 14px;
   }
   
-  .menu-details-body,
-  .branch-details-body,
-  .reservation-details-body,
-  .product-details-body,
-  .menu-update-body,
-  .product-update-body,
-  .branch-update-body,
-  .menu-create-body,
-  .product-create-body,
-  .branch-create-body,
   .table-create-body,
   .table-update-body {
     align-items: center;
@@ -7080,14 +6872,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     font-size: 30px!important;
   }
 
-  .content-box {
-    overflow-x: auto;
-  }
-  
-  .content-box p {
-    font-size: 18px;
-  }
-
   .profile {
     font-size: 12px;
     margin-left: 0;
@@ -7105,16 +6889,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     width: 30px;
   }
   
-  .menu-details-header h2,
-  .branch-details-header h2,
-  .reservation-details-header h2,
-  .product-details-header h2,
-  .menu-update-header h2,
-  .product-update-header h2,
-  .branch-update-header h2,
-  .menu-create-header h2,
-  .product-create-header h2,
-  .branch-create-header h2,
   .table-create-header h2,
   .table-update-header h2 {
     font-size: 18px;
@@ -7129,16 +6903,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     min-width: 0;
   }
 
-  .menu-details-content,
-  .branch-details-content,
-  .reservation-details-content,
-  .product-details-content,
-  .menu-update-content,
-  .product-update-content,
-  .branch-update-content,
-  .menu-create-content,
-  .product-create-content,
-  .branch-create-content,
   .table-create-content,
   .table-update-content {
     margin: 15% auto;
@@ -7161,13 +6925,15 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
   .bdm-hero,
   .mdm-hero,
-  .pdm-hero {
+  .pdm-hero,
+  .rdm-hero {
     padding: 20px 16px 38px;
   }
 
   .bdm-hero::after,
   .mdm-hero::after,
-  .pdm-hero::after {
+  .pdm-hero::after,
+  .rdm-hero::after {
     height: 24px;
     border-radius: 18px 18px 0 0;
   }
@@ -7180,7 +6946,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
   .bdm-name,
   .mdm-name,
-  .pdm-name {
+  .pdm-name,
+  .rdm-name {
     font-size: 17px;
   }
 
@@ -7188,27 +6955,31 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .mdm-status-pill,
   .mdm-id-pill,
   .pdm-status-pill,
-  .pdm-id-pill {
+  .pdm-id-pill,
+  .rdm-date-pill {
     font-size: 11px;
     padding: 3px 10px;
   }
 
   .bdm-body,
   .mdm-body,
-  .pdm-body {
+  .pdm-body,
+  .rdm-body {
     padding: 2px 14px 20px;
   }
 
   .bdm-info-card,
   .mdm-info-card,
-  .pdm-info-card {
+  .pdm-info-card,
+  .rdm-info-card {
     padding: 11px;
     gap: 10px;
   }
 
   .bdm-info-icon,
   .mdm-info-icon,
-  .pdm-info-icon {
+  .pdm-info-icon,
+  .rdm-info-icon {
     width: 36px;
     height: 36px;
     font-size: 14px;
@@ -7216,17 +6987,20 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
   .bdm-info-value,
   .mdm-info-value,
-  .pdm-info-value {
+  .pdm-info-value,
+  .rdm-info-value {
     font-size: 13px;
   }
 
   .bdm-info-label,
   .mdm-info-label,
-  .pdm-info-label {
+  .pdm-info-label,
+  .rdm-info-label {
     font-size: 10px;
   }
 
-  .bdm-icon-wrapper {
+  .bdm-icon-wrapper,
+  .rdm-icon-wrapper {
     width: 67px;
     height: 67px;
     font-size: 27px;
@@ -7234,21 +7008,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
   .bum-actions {
     flex-direction: column;
-  }
-
-  .menu-detail-image,
-  .product-detail-image,
-  .menu-update-image,
-  .product-update-image,
-  .branch-update-image,
-  .menu-create-image,
-  .product-create-image {
-    max-height: 200px;
-  }
-
-  .custom-upload-button {
-    padding: 6px 13px;
-    font-size: 13px;
   }
 
   .btn-create-menu,
@@ -7494,7 +7253,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .pdm-close,
   .bum-close,
   .mum-close,
-  .pum-close {
+  .pum-close,
+  .rdm-close {
     font-size: 16px;
     width: 34px;
     height: 34px;
@@ -7688,10 +7448,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     letter-spacing: .05rem;
   }
 
-  .btn-filter-table {
-    font-size: 13px;
-  }
-
   #filter-start-date, 
   #filter-end-date {
     font-size: 1.5rem;
@@ -7768,6 +7524,12 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .orders-filter-group {
     display: grid;
     grid-template-columns: repeat(1, 1fr);
+  }
+
+  .rdm-action-btn {
+    gap: 8px;
+    padding: 10px;
+    font-size: 13px;
   }
 }
 

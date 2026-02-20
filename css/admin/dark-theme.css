@@ -362,6 +362,102 @@ body.dark-theme {
     color: #FDE68A;
   }
 
+  /* RDM — Reservation Detail Modal dark theme */
+  body.dark-theme .rdm-panel {
+    background: #1E293B;
+  }
+
+  body.dark-theme .rdm-body {
+    background: #1E293B;
+  }
+
+  body.dark-theme .rdm-section-title {
+    color: #64748B;
+  }
+
+  body.dark-theme .rdm-info-card {
+    background: #273549;
+    border-color: #334155;
+  }
+
+  body.dark-theme .rdm-info-card:hover {
+    background: #334155;
+  }
+
+  body.dark-theme .rdm-info-label {
+    color: #64748B;
+  }
+
+  body.dark-theme .rdm-info-value {
+    color: #F1F5F9;
+  }
+
+  body.dark-theme .rdm-note {
+    background: rgba(245, 158, 11, 0.1);
+    border-left-color: #F59E0B;
+  }
+
+  body.dark-theme .rdm-note-label {
+    color: #FBBF24;
+  }
+
+  body.dark-theme .rdm-note-text {
+    color: #FDE68A;
+  }
+
+  /* Reservations table dropdown dark theme */
+  body.dark-theme .reservations-table-toggle {
+    background: #1E293B;
+    border-color: #475569;
+    color: #94A3B8;
+  }
+
+  body.dark-theme .reservations-table-toggle:hover {
+    border-color: #64748B;
+    color: #E2E8F0;
+  }
+
+  /* Reservations stats + toolbar dark theme */
+  body.dark-theme .reservations-stat-card {
+    background: #1E293B;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  }
+
+  body.dark-theme .reservations-stat-count {
+    color: #F1F5F9;
+  }
+
+  body.dark-theme .reservations-stat-label {
+    color: #94A3B8;
+  }
+
+  body.dark-theme .reservations-search-box input {
+    background: #1E293B;
+    border-color: #475569;
+    color: #E2E8F0;
+  }
+
+  body.dark-theme .reservations-search-box input::placeholder {
+    color: #64748B;
+  }
+
+  body.dark-theme .reservations-filter-btn {
+    background: #1E293B;
+    border-color: #475569;
+    color: #94A3B8;
+  }
+
+  body.dark-theme .reservations-filter-btn:hover {
+    border-color: #64748B;
+    color: #E2E8F0;
+  }
+
+  body.dark-theme .reservations-filter-btn.active {
+    background: #06B6D4;
+    color: #fff;
+    border-color: #06B6D4;
+  }
+
   body.dark-theme .chart-card {
     background: #1E293B;
     box-shadow: 0 4px 15px rgba(0,0,0,0.3);

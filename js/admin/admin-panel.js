@@ -2406,64 +2406,7 @@ $(document).ready(function() {
         getMenuDetails(menuId);
     });
 
-
-    // Modal açıldığında, öğelerin alt alta gelip gelmediğini kontrol et
-    function checkIfItemsAreOnNewLine(isUpdateModal) {
-        if (isUpdateModal) {
-            var menuItem = $(".menu-update-modal .menu-info .menu-info-item");
-        } else {
-            var menuItem = $(".menu-create-modal .menu-info .menu-info-item");
-        }
-
-        var label = menuItem.find(".menu-label");
-        var value = menuItem.find(".menu-value");
-        
-        if (label.length === 0 || value.length === 0) return;
-
-        var labelOffset = label.offset().top;
-        var valueOffset = value.offset().top;
-        
-        // Eğer value, label'ın altındaysa margin-top uygula
-        if (valueOffset > labelOffset) {
-            menuItem.css("margin", "10px 15px");
-        } else {
-            menuItem.css("margin", "0 15px");
-        }
-    }
-
-    // Modal açıldığında fonksiyonu çağır
-    $(document).on('shown.bs.modal', '.menu-update-modal', function() {
-        setTimeout(function() {
-            checkIfItemsAreOnNewLine(true);
-        }, 1);
-    });
-
-    // Modal açıldığında fonksiyonu çağır
-    $(document).on('shown.bs.modal', '.menu-create-modal', function() {
-        setTimeout(function() {
-            checkIfItemsAreOnNewLine(false);
-        }, 1);
-    });
-
-    // Ekran boyutu değiştiğinde kontrol et (sadece modal açıkken)
-    var resizeTimer;
-    $(window).resize(function() {
-        if ($('.menu-update-modal').is(':visible')) {
-            clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(function() {
-                checkIfItemsAreOnNewLine(true);
-            }, 250);
-        }else if($('.menu-create-modal').is(':visible')){
-            clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(function() {
-                checkIfItemsAreOnNewLine(false);
-            }, 250);
-        }else{
-            clearTimeout(resizeTimer);
-        }
-    });
-
-
+  
 
 
     function updateMenu(menuId) {
@@ -2537,9 +2480,7 @@ $(document).ready(function() {
                     $('body').append(menuUpdateHTML);
                     
                     // Detay modülünü göster
-                    $('.menu-update-modal').fadeIn(300, function() {
-                        checkIfItemsAreOnNewLine(true);
-                    });
+                    $('.menu-update-modal').fadeIn(300);
                     
                     // Kapatma butonuna tıklandığında
                     $('.close-menu-update, .mum-btn-cancel').click(function() {
@@ -2715,9 +2656,7 @@ $(document).ready(function() {
         $('body').append(menuCreateHTML);
         
         // Detay modülünü göster
-        $('.menu-create-modal').fadeIn(300, function() {
-            checkIfItemsAreOnNewLine(false);
-        });
+        $('.menu-create-modal').fadeIn(300);
         
         // Kapatma butonuna tıklandığında
         $('.close-menu-create, .close-menu-create-btn').click(function() {
@@ -3712,9 +3651,7 @@ $(document).ready(function() {
                     $('body').append(productUpdateHTML);
 
                     // Detay modülünü göster
-                    $('.product-update-modal').fadeIn(300, function() {
-                        checkIfItemsAreOnNewLine(true);
-                    });
+                    $('.product-update-modal').fadeIn(300);
 
                     // Kapatma butonuna tıklandığında
                     $('.close-product-update, .pum-btn-cancel').click(function() {
@@ -4005,9 +3942,7 @@ $(document).ready(function() {
         $('body').append(productCreateHTML);
 
         // Detay modülünü göster
-        $('.product-create-modal').fadeIn(300, function() {
-            checkIfItemsAreOnNewLine(false);
-        });
+        $('.product-create-modal').fadeIn(300);
 
         // Kapatma butonuna tıklandığında
         $('.close-product-create, .close-product-create-btn').click(function() {
@@ -5537,15 +5472,6 @@ $(document).ready(function() {
                             <div class="bdm-body">
                                 <div class="bdm-info-grid">
                                     <div class="bdm-info-card">
-                                        <div class="bdm-info-icon" style="background: #EFF6FF; color: #3B82F6;">
-                                            <i class="fa fa-store"></i>
-                                        </div>
-                                        <div class="bdm-info-data">
-                                            <span class="bdm-info-label">Şube Adı</span>
-                                            <span class="bdm-info-value">${branch.name}</span>
-                                        </div>
-                                    </div>
-                                    <div class="bdm-info-card">
                                         <div class="bdm-info-icon" style="background: #F0FDF4; color: #22C55E;">
                                             <i class="fa fa-location-dot"></i>
                                         </div>
@@ -6463,80 +6389,88 @@ $(document).ready(function() {
         $('#reservationsTableBody').empty();
 
         let reservationsTableHTML = '';
-        
+
         // Rezervasyonları tabloya ekle
         if (response.data.length > 0) {
             response.data.forEach(reservation => {
                 // Tarihi formatla (gün.ay.yıl şeklinde)
                 const date = new Date(reservation.reservationDate);
-                const formattedDate = `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}\t${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
-                                                
+                const formattedDate = `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+
                 reservationsTableHTML += `
                     <tr class="reservation-row" data-reservation-id="${reservation.id}">
-                        <td>${reservation.tableNo}</td>
-                        <td>${reservation.personCount}</td>
+                        <td><strong>${reservation.tableNo}</strong></td>
+                        <td>${reservation.personCount} kişi</td>
                         <td>${formattedDate}</td>
                         <td>${reservation.fullName}</td>
                         <td>${reservation.phone}</td>
                     </tr>`;
             });
         } else {
-            // Rezervasyon yoksa bilgi mesajı göster
             reservationsTableHTML = `
                 <tr>
                     <td colspan="5" class="empty-table-row">Rezervasyon bulunmamaktadır.</td>
                 </tr>`;
         }
-        
+
         // Tabloyu güncelle
         $('#reservationsTableBody').html(reservationsTableHTML);
 
         totalPages = response.totalPages;
         totalItems = response.totalItems;
 
+        // Toplam stat kartını güncelle
+        animateCount($('#statResTotal'), totalItems);
+
         // Sayfa bilgisini güncelle
         $('#reservationPageInfo').text(`Sayfa ${currentPage} / ${totalPages}`);
         $('#reservationTotalItemsInfo').text(`Toplam Kayıt: ${totalItems}`);
 
         // Sayfalama butonlarının durumunu güncelle
-        $('#prevReservationPage').prop('disabled', !response.hasPrevious); // İlk sayfada geri butonu devre dışı
-        $('#nextReservationPage').prop('disabled', !response.hasNext); // Son sayfada ileri butonu devre dışı
+        $('#prevReservationPage').prop('disabled', !response.hasPrevious);
+        $('#nextReservationPage').prop('disabled', !response.hasNext);
     }
 
 
 
     function fetchReservations(branchId) {
-        // Bugünün tarihi
-        const today = new Date();
-        const todayStr = today.toISOString().split('T')[0];
-        
+        const startDate = $('#filter-start-date').val();
+        const endDate = $('#filter-end-date').val();
+
+        let url = `${baseUrl}reservations/getAdminDashboardReservationData?pageNumber=${currentPage}&pageSize=${pageItems}&branchId=${branchId}`;
+        if (startDate) url += `&DateRangeFilter.StartDate=${startDate}`;
+        if (endDate) url += `&DateRangeFilter.EndDate=${endDate}`;
+
         $.ajax({
-            url: `${baseUrl}reservations/getAdminDashboardReservationData?pageNumber=${currentPage}&pageSize=${pageItems}&branchId=${branchId}&DateRangeFilter.StartDate=${todayStr}&DateRangeFilter.EndDate=${todayStr}`,
+            url: url,
             type: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
             },
             success: function(response) {
-                
+
                 paginationTemplate("reservations-container.subdivision", "prevReservationPage", "nextReservationPage", "reservationPageInfo", "reservationTotalItemsInfo", "pagination-reservations-table");
-                
-                $('#filter-start-date').val(todayStr);
-                $('#filter-end-date').val(todayStr);
 
                 tables = response.tableResponse.data;
 
                 displayTables();
-
                 updateTableList();
-                
+
                 // Rezervasyonları göster
                 displayReservations(response.reservationResponse);
+
+                // Masa sayısını stat kartına yaz
+                if (tables) {
+                    animateCount($('#statResTables'), tables.length);
+                }
+
+                // Bugünkü ve bu haftaki rezervasyonları hesapla
+                updateReservationStats(branchId);
             },
             error: function(xhr) {
                 const errorMessage = xhr.responseJSON?.Message;
 
                 if (xhr.status === 401) {
-                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
                     handleLogout(errorMessage);
                     return;
                 }
@@ -6547,15 +6481,49 @@ $(document).ready(function() {
     }
 
 
+    // Bugünkü ve haftaki rezervasyon sayılarını stat kartlarına yazan yardımcı fonksiyon
+    function updateReservationStats(branchId) {
+        const today = new Date();
+        const todayStr = today.toISOString().split('T')[0];
+
+        // Haftanın başı (Pazartesi)
+        const dayOfWeek = today.getDay();
+        const diff = today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+        const weekStart = new Date(today.setDate(diff));
+        const weekStartStr = weekStart.toISOString().split('T')[0];
+        const weekEndStr = new Date().toISOString().split('T')[0];
+
+        // Bugünkü rezervasyonlar
+        $.ajax({
+            url: `${baseUrl}reservations/getAllForAdmin?pageNumber=1&pageSize=1&branchId=${branchId}&DateRangeFilter.StartDate=${todayStr}&DateRangeFilter.EndDate=${todayStr}`,
+            type: 'GET',
+            headers: { 'Authorization': `Bearer ${token}` },
+            success: function(response) {
+                animateCount($('#statResToday'), response.totalItems || 0);
+            }
+        });
+
+        // Bu haftaki rezervasyonlar
+        $.ajax({
+            url: `${baseUrl}reservations/getAllForAdmin?pageNumber=1&pageSize=1&branchId=${branchId}&DateRangeFilter.StartDate=${weekStartStr}&DateRangeFilter.EndDate=${weekEndStr}`,
+            type: 'GET',
+            headers: { 'Authorization': `Bearer ${token}` },
+            success: function(response) {
+                animateCount($('#statResWeek'), response.totalItems || 0);
+            }
+        });
+    }
+
+
 
     // Rezervasyonlar sayfasının taslağını getiren fonksiyon
     function getReservationTemplate(branchId, branchName, page = 1) {
-        
+
         // Dashboard içeriğini temizle
         $('.dashboard-content').empty();
-                
+
         currentPage = page;
-        
+
         // Rezervasyonlar için temel HTML yapısı
         let reservationsHTML = `
         <div class="reservations-container">
@@ -6583,6 +6551,47 @@ $(document).ready(function() {
                     Geri Dön
                 </div>
             </div>
+
+            <!-- Stats Grid -->
+            <div class="reservations-stats-grid">
+                <div class="reservations-stat-card" style="--accent-color: #06B6D4;">
+                    <div class="reservations-stat-icon">
+                        <i class="fa-solid fa-calendar-days"></i>
+                    </div>
+                    <div class="reservations-stat-info">
+                        <span class="reservations-stat-count" id="statResTotal">-</span>
+                        <span class="reservations-stat-label">Toplam Rezervasyon</span>
+                    </div>
+                </div>
+                <div class="reservations-stat-card" style="--accent-color: #10b95c;">
+                    <div class="reservations-stat-icon">
+                        <i class="fa-solid fa-calendar-week"></i>
+                    </div>
+                    <div class="reservations-stat-info">
+                        <span class="reservations-stat-count" id="statResWeek">-</span>
+                        <span class="reservations-stat-label">Bu Haftaki</span>
+                    </div>
+                </div>
+                <div class="reservations-stat-card" style="--accent-color: #F59E0B;">
+                    <div class="reservations-stat-icon">
+                        <i class="fa-solid fa-calendar-check"></i>
+                    </div>
+                    <div class="reservations-stat-info">
+                        <span class="reservations-stat-count" id="statResToday">-</span>
+                        <span class="reservations-stat-label">Bugünkü</span>
+                    </div>
+                </div>
+                <div class="reservations-stat-card" style="--accent-color: #8B5CF6;">
+                    <div class="reservations-stat-icon">
+                        <i class="fa-solid fa-chair"></i>
+                    </div>
+                    <div class="reservations-stat-info">
+                        <span class="reservations-stat-count" id="statResTables">-</span>
+                        <span class="reservations-stat-label">Toplam Masa</span>
+                    </div>
+                </div>
+            </div>
+
             <div class="reservations-body">
                 <div class="reservation-section">
                     <div class="reservation-box">
@@ -6660,6 +6669,13 @@ $(document).ready(function() {
 
         // Rezervasyon taslağını dashboard'a ekle
         $('.dashboard-content').append(reservationsHTML);
+
+        // Bugün filtresi varsayılan olarak aktif
+        const today = new Date();
+        const todayStr = today.toISOString().split('T')[0];
+        $('#filter-start-date').val(todayStr);
+        $('#filter-end-date').val(todayStr);
+        $('#resFilterToday').addClass('active');
 
         fetchReservations(branchId);
     }
@@ -6750,8 +6766,16 @@ $(document).ready(function() {
 
     // Rezervasyon listesinde "Masalarda Ara" option kutusunda bir seçenek seçildiğinde
     $(document).on('click', '#tablesDropdown .dropdown-option', function() {
+        const label = $(this).text();
+        const selectedId = $(this).data('table-id');
 
-        selectDropdownOption("#tablesDropdown", this, "table-id");
+        // Toggle metnini güncelle
+        const $toggle = $('#tableSelectedId');
+        $toggle.html(`<i class="fa-solid fa-chair"></i> ${label}`);
+        $toggle.attr('data-selected-id', selectedId);
+
+        // Menüyü kapat
+        $('#tablesDropdown .dropdown-menu').removeClass('active');
 
         applyReservationFilters();
     });
@@ -6759,8 +6783,8 @@ $(document).ready(function() {
 
 
     // Rezervasyonlar sayfasındaki "Masalarda Ara" option'ına tıklandığında
-    $(document).on('click', '#tablesDropdown .dropdown-toggle', function(e) {
-        e.stopPropagation(); 
+    $(document).on('click', '#tablesDropdown .dropdown-toggle, #tablesDropdown .reservations-table-toggle', function(e) {
+        e.stopPropagation();
 
         toggleDropdown("#tablesDropdown");
     });
@@ -6771,19 +6795,17 @@ $(document).ready(function() {
     $(document).on('change', '#filter-start-date, #filter-end-date', function () {
         applyReservationFilters();
     });
-    
+
 
 
     // Rezervasyon filtreleme seçeneklerinden "Takvim" ikonuna veya input'una tıklandığında takvim listesinin görüntülenmesi için...
     $(document).on('click', '.calendar, .custom-date', function(e) {
         e.stopPropagation();
 
-        // Eğer tıklanan zaten input ise direkt onu kullan
-        const input = $(this).hasClass('custom-date') 
-            ? this 
+        const input = $(this).hasClass('custom-date')
+            ? this
             : $(this).siblings('.custom-date')[0];
 
-            
         if (input && typeof input.showPicker === 'function') {
             input.showPicker();
         } else {
@@ -6794,10 +6816,11 @@ $(document).ready(function() {
 
 
 
+
     // Rezervasyon detaylarını getiren fonksiyon
     function getReservationDetails(reservationId) {
         const token = localStorage.getItem('token');
-        
+
         $.ajax({
             url: `${baseUrl}reservations/get?reservationId=${reservationId}`,
             type: 'GET',
@@ -6808,90 +6831,116 @@ $(document).ready(function() {
                 if (response.success && response.data) {
                     const reservation = response.data;
                     const date = new Date(reservation.reservationDate);
-                    
-                    // Tarihleri formatla
-                    const formattedReservationDate = `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}\t${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
 
+                    const formattedDate = `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`;
+                    const formattedTime = `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
 
-                    let reservationDetailsHTML = `
+                    const noteHTML = reservation.note
+                        ? `<div class="rdm-note">
+                               <div class="rdm-note-label"><i class="fa-solid fa-note-sticky"></i> Not</div>
+                               <div class="rdm-note-text">${reservation.note}</div>
+                           </div>`
+                        : '';
+
+                    const reservationDetailsHTML = `
                     <div class="reservation-details-modal">
-                        <div class="reservation-details-content">
-                            <div class="reservation-details-header">
-                                <h2>Rezervasyon Detayı</h2>
-                                <span class="close-reservation-details">&times;</span>
+                        <div class="rdm-panel">
+                            <div class="rdm-hero" style="--rdm-hero-color: #06B6D4;">
+                                <button class="rdm-close close-reservation-details">
+                                    <i class="fa fa-xmark"></i>
+                                </button>
+                                <div class="rdm-identity">
+                                    <div class="rdm-icon-wrapper">
+                                        <i class="fa-solid fa-calendar-check"></i>
+                                    </div>
+                                    <h2 class="rdm-name">${reservation.fullName}</h2>
+                                    <div class="rdm-badges">
+                                        <span class="rdm-date-pill">
+                                            <i class="fa-solid fa-calendar-days"></i> ${formattedDate} ${formattedTime}
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="reservation-details-body">
-                                <div class="reservation-info">
-                                    <div class="reservation-info-item">
-                                        <div class="reservation-label">
-                                            <strong>Müşteri Adı</strong> 
-                                            <span>:</span>
+                            <div class="rdm-body">
+                                <div class="rdm-info-grid">
+                                    <div class="rdm-info-card">
+                                        <div class="rdm-info-icon" style="background:#EFF6FF;color:#3B82F6;">
+                                            <i class="fa-solid fa-user"></i>
                                         </div>
-                                        <p class="reservation-value">${reservation.fullName}</p>
-                                    </div>
-                                    <div class="reservation-info-item">
-                                        <div class="reservation-label">
-                                            <strong>E-posta</strong> 
-                                            <span>:</span>
+                                        <div class="rdm-info-data">
+                                            <span class="rdm-info-label">Müşteri Adı</span>
+                                            <span class="rdm-info-value">${reservation.fullName}</span>
                                         </div>
-                                        <p class="reservation-value">${reservation.email}</p>
                                     </div>
-                                    <div class="reservation-info-item">
-                                        <div class="reservation-label">
-                                            <strong>Rezervasyon Tarihi</strong> 
-                                            <span>:</span>
+                                    <div class="rdm-info-card">
+                                        <div class="rdm-info-icon" style="background:#F5F3FF;color:#8B5CF6;">
+                                            <i class="fa-solid fa-envelope"></i>
                                         </div>
-                                        <p class="reservation-value">${formattedReservationDate}</p>
-                                    </div>
-                                    <div class="reservation-info-item">
-                                        <div class="reservation-label">
-                                            <strong>Telefon</strong> 
-                                            <span>:</span>
+                                        <div class="rdm-info-data">
+                                            <span class="rdm-info-label">E-posta</span>
+                                            <span class="rdm-info-value" title="${reservation.email}">${reservation.email || '—'}</span>
                                         </div>
-                                        <p class="reservation-value">${reservation.phone}</p>
                                     </div>
-                                    <div class="reservation-info-item">
-                                        <div class="reservation-label">
-                                            <strong>Masa No</strong> 
-                                            <span>:</span>
+                                    <div class="rdm-info-card">
+                                        <div class="rdm-info-icon" style="background:#F0FDF4;color:#10b95c;">
+                                            <i class="fa-solid fa-calendar-days"></i>
                                         </div>
-                                        <p class="reservation-value">${reservation.tableNo}</p>
-                                    </div>
-                                    <div class="reservation-info-item">
-                                        <div class="reservation-label">
-                                            <strong>Kişi Sayısı</strong> 
-                                            <span>:</span>
+                                        <div class="rdm-info-data">
+                                            <span class="rdm-info-label">Tarih &amp; Saat</span>
+                                            <span class="rdm-info-value">${formattedDate} ${formattedTime}</span>
                                         </div>
-                                        <p class="reservation-value">${reservation.personCount}</p>
                                     </div>
-                                    <div class="reservation-info-item">
-                                        <div class="reservation-label">
-                                            <strong>Not</strong> 
-                                            <span>:</span>
+                                    <div class="rdm-info-card">
+                                        <div class="rdm-info-icon" style="background:#FFF7ED;color:#F97316;">
+                                            <i class="fa-solid fa-phone"></i>
                                         </div>
-                                        <p class="reservation-value">${reservation.note || '<span style="color: gray;">—</span>'}</p>
+                                        <div class="rdm-info-data">
+                                            <span class="rdm-info-label">Telefon</span>
+                                            <span class="rdm-info-value">${reservation.phone}</span>
+                                        </div>
                                     </div>
+                                    <div class="rdm-info-card">
+                                        <div class="rdm-info-icon" style="background:#ECFEFF;color:#06B6D4;">
+                                            <i class="fa-solid fa-chair"></i>
+                                        </div>
+                                        <div class="rdm-info-data">
+                                            <span class="rdm-info-label">Masa No</span>
+                                            <span class="rdm-info-value">Masa ${reservation.tableNo}</span>
+                                        </div>
+                                    </div>
+                                    <div class="rdm-info-card">
+                                        <div class="rdm-info-icon" style="background:#EEF2FF;color:#6366F1;">
+                                            <i class="fa-solid fa-users"></i>
+                                        </div>
+                                        <div class="rdm-info-data">
+                                            <span class="rdm-info-label">Kişi Sayısı</span>
+                                            <span class="rdm-info-value">${reservation.personCount} kişi</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                ${noteHTML}
+                                <div class="rdm-actions">
+                                    <button class="rdm-action-btn rdm-btn-cancel" data-reservation-id="${reservation.id}">
+                                        <i class="fa-solid fa-ban"></i> Rezervasyonu İptal Et
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>`;
-                    
+
                     // Eğer detay modülü zaten varsa kaldır
                     $('.reservation-details-modal').remove();
-                    
-                    // Detay modülünü ekle
-                    $('body').append(reservationDetailsHTML);
-                    
                     // Detay modülünü göster
+                    $('body').append(reservationDetailsHTML);
                     $('.reservation-details-modal').fadeIn(300);
-                    
+
                     // Kapatma butonuna tıklandığında
                     $('.close-reservation-details').click(function() {
                         $('.reservation-details-modal').fadeOut(300, function() {
                             $(this).remove();
                         });
                     });
-                    
+
                     // Modül dışına tıklandığında kapat
                     $('.reservation-details-modal').click(function(e) {
                         if ($(e.target).hasClass('reservation-details-modal')) {
@@ -6900,6 +6949,7 @@ $(document).ready(function() {
                             });
                         }
                     });
+
                 } else {
                     showToast('error', 'Hata', 'Rezervasyon detayı alınırken hata oluştu!');
                 }
@@ -6908,7 +6958,6 @@ $(document).ready(function() {
                 const errorMessage = xhr.responseJSON?.Message;
 
                 if (xhr.status === 401) {
-                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
                     handleLogout(errorMessage);
                     return;
                 }
@@ -7729,7 +7778,7 @@ $(document).ready(function() {
         menu.toggleClass("active");
     
         if (menu.hasClass("active")) {
-            toggle.css("border-color", "#1E293B");
+            toggle.css("border-color", "#858d99");
             dropdown.find('i').addClass('rotated-180');
         } else {
             toggle.css("border-color", "#dedbdb");
