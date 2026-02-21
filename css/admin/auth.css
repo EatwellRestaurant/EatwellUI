@@ -85,7 +85,7 @@
     width: 100%;
     max-width: 440px;
     background: #fff;
-    padding: 48px 40px;
+    padding: 48px 40px 40px;
     border-radius: 16px;
     box-shadow: 0 4px 24px rgba(0, 0, 0, .06);
     animation: fadeInUp .7s ease-out;
@@ -303,6 +303,69 @@
 .auth-form .btn-primary span {
     position: relative;
     z-index: 1;
+}
+
+.auth-social {
+    margin-top: 24px;
+}
+
+.auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    color: #bbb;
+    font-size: 13px;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #e8e8e8;
+}
+
+.btn-social {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all .3s ease-in-out;
+    border: 1.5px solid #e0e0e0;
+    margin-bottom: 10px;
+}
+
+.btn-social:last-child {
+    margin-bottom: 0;
+}
+
+.btn-google {
+    background: #fff;
+    color: #3c4043;
+}
+
+.btn-social:hover {
+    background: #f0f0f0;
+    border-color: #c8c8c8;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+}
+
+.btn-facebook {
+    background: #fff;
+    color: #3c4043;
+    border-color: #e0e0e0;
+}
+
+.btn-facebook img {
+    width: 25px;
+    height: 26px;
 }
 
 

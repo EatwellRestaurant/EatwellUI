@@ -6787,16 +6787,7 @@ $(document).ready(function() {
 
     // Rezervasyon listesinde "Masalarda Ara" option kutusunda bir seçenek seçildiğinde
     $(document).on('click', '#tablesDropdown .dropdown-option', function() {
-        const label = $(this).text();
-        const selectedId = $(this).data('table-id');
-
-        // Toggle metnini güncelle
-        const $toggle = $('#tableSelectedId');
-        $toggle.html(`<i class="fa-solid fa-chair"></i> ${label}`);
-        $toggle.attr('data-selected-id', selectedId);
-
-        // Menüyü kapat
-        $('#tablesDropdown .dropdown-menu').removeClass('active');
+        selectDropdownOption("#tablesDropdown", this, "table-id");
 
         applyReservationFilters();
     });

@@ -130,6 +130,22 @@ $(document).ready(function() {
 
 
 
+    // Social login handlers
+    $('#googleLogin, #googleRegister').on('click', function() {
+        // TODO: Backend'de Google OAuth endpoint'i hazır olduğunda buraya yönlendirme eklenecek
+        // window.location.href = `${baseUrl}auths/google`;
+        showToast('error', 'Yakında', 'Google ile giriş özelliği yakında kullanıma girecek.');
+    });
+
+    $('#facebookLogin, #facebookRegister').on('click', function() {
+        // TODO: Backend'de Facebook OAuth endpoint'i hazır olduğunda buraya yönlendirme eklenecek
+        // window.location.href = `${baseUrl}auths/facebook`;
+        showToast('error', 'Yakında', 'Facebook ile giriş özelliği yakında kullanıma girecek.');
+    });
+
+
+
+
     // Form validasyonları
     $('input[type="email"]').on('input', function() {
         const email = $(this).val();
