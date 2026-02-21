@@ -2606,7 +2606,7 @@ $(document).ready(function() {
                 <!-- Hero Header -->
                 <div class="mum-hero" style="background: linear-gradient(135deg,rgb(66, 182, 143),rgb(15, 122, 88));">
                     <button class="mum-close close-menu-create"><i class="fa fa-xmark"></i></button>
-                    <h2 class="mum-title">Yeni Menü Ekle</h2>
+                    <h2 class="mum-title">Menü Ekle</h2>
                     <p class="mum-subtitle">Yeni bir menü kategorisi oluşturun.</p>
                 </div>
 
@@ -3876,7 +3876,7 @@ $(document).ready(function() {
                 <!-- Hero Header -->
                 <div class="pum-hero" style="background: linear-gradient(135deg,rgb(66, 182, 143),rgb(15, 122, 88));">
                     <button class="pum-close close-product-create"><i class="fa fa-xmark"></i></button>
-                    <h2 class="pum-title">Yeni Ürün Ekle</h2>
+                    <h2 class="pum-title">Ürün Ekle</h2>
                     <p class="pum-subtitle">Yeni bir ürün oluşturun.</p>
                 </div>
 
@@ -6397,19 +6397,36 @@ $(document).ready(function() {
                 const date = new Date(reservation.reservationDate);
                 const formattedDate = `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
 
+                const nameParts = (reservation.fullName || '').trim().split(' ');
+                const resInitials = ((nameParts[0]?.[0] || '') + (nameParts[1]?.[0] || '')).toUpperCase() || '?';
+                const resAvatarColor = getAvatarColor(reservation.fullName || '');
+
                 reservationsTableHTML += `
                     <tr class="reservation-row" data-reservation-id="${reservation.id}">
+                        <td class="res-customer-cell">
+                            <div class="user-cell-wrapper">
+                                <div class="user-avatar-sm" style="background: ${resAvatarColor};">${resInitials}</div>
+                                <div class="user-cell-info">
+                                    <div class="user-cell-name">${reservation.fullName}</div>
+                                </div>
+                            </div>
+                        </td>
                         <td><strong>${reservation.tableNo}</strong></td>
                         <td>${reservation.personCount} kişi</td>
                         <td>${formattedDate}</td>
-                        <td>${reservation.fullName}</td>
                         <td>${reservation.phone}</td>
+                        <td class="res-actions-cell">
+                            <div class="actions-wrapper">
+                                <button class="user-action-btn btn-view-reservation" data-reservation-id="${reservation.id}" title="Detay"><i class="fa fa-eye"></i></button>
+                                <button class="user-action-btn btn-cancel-reservation" data-reservation-id="${reservation.id}" title="İptal Et"><i class="fa-solid fa-ban"></i></button>
+                            </div>
+                        </td>
                     </tr>`;
             });
         } else {
             reservationsTableHTML = `
                 <tr>
-                    <td colspan="5" class="empty-table-row">Rezervasyon bulunmamaktadır.</td>
+                    <td colspan="6" class="empty-table-row">Rezervasyon bulunmamaktadır.</td>
                 </tr>`;
         }
 
@@ -6536,12 +6553,15 @@ $(document).ready(function() {
                     </button>
                     <div class="table-options">
                         <button class="btn-create-table table-manage-button">
+                            <i class="fa-solid fa-plus"></i>
                             Ekle
                         </button>
                         <button class="btn-edit-table table-manage-button">
+                            <i class="fa-solid fa-pen-to-square"></i>
                             Düzenle
                         </button>
                         <button class="btn-delete-table table-manage-button">
+                            <i class="fa fa-trash"></i>
                             Sil
                         </button>
                     </div>
@@ -6653,11 +6673,12 @@ $(document).ready(function() {
                     <table class="reservations-table">
                         <thead>
                             <tr>
+                                <th class="customer-name-col">Müşteri</th>
                                 <th class="table-col">Masa No</th>
                                 <th class="actions-col">Kişi Sayısı</th>
                                 <th class="actions-col">Rezervasyon Tarihi</th>
-                                <th class="customer-name-col">Müşteri Adı</th>
                                 <th class="address-col">Telefon</th>
+                                <th class="res-actions-col">İşlemler</th>
                             </tr>
                         </thead>
                         <tbody id="reservationsTableBody"></tbody>
@@ -6969,11 +6990,64 @@ $(document).ready(function() {
 
 
     
+    // Rezervasyon iptal fonksiyonu
+    function cancelReservation(reservationId) {
+        Swal.fire({
+            title: 'Emin misiniz?',
+            text: `Bu rezervasyonu iptal etmek istediğinizden emin misiniz? Bu işlem geri alınamaz!`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Evet, iptal et!',
+            cancelButtonText: 'Vazgeç',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const token = localStorage.getItem('token');
+
+                $.ajax({
+                    url: `${baseUrl}reservations/cancel/${reservationId}`,
+                    type: 'PUT',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    success: function() {
+                        showToast('success', 'Başarılı', 'Rezervasyon başarıyla iptal edildi.');
+                        $('.reservation-details-modal').fadeOut(200, function() { $(this).remove(); });
+                        fetchReservations(selectedBranchId);
+                    },
+                    error: function(xhr) {
+                        const errorMessage = xhr.responseJSON?.Message;
+                        if (xhr.status === 401) { handleLogout(errorMessage); return; }
+                        showToast('error', 'Hata', errorMessage ? errorMessage : 'Rezervasyon iptal edilirken hata oluştu!');
+                    }
+                });
+            }
+        });
+    }
+
+    // Detay modalındaki İptal butonu
+    $(document).on('click', '.rdm-btn-cancel', function() {
+        const reservationId = $(this).data('reservation-id');
+        cancelReservation(reservationId);
+    });
+
+    // Rezervasyon Detay butonu
+    $(document).on('click', '.btn-view-reservation', function(e) {
+        e.stopPropagation();
+        const reservationId = $(this).data('reservation-id');
+        getReservationDetails(reservationId);
+    });
+    
     // Rezervasyon satırına tıklama olayı
     $(document).on('click', '.reservation-row', function() {
         const reservationId = $(this).data('reservation-id');
-
         getReservationDetails(reservationId);
+    });
+
+    // Rezervasyon İptal butonu
+    $(document).on('click', '.btn-cancel-reservation', function(e) {
+        e.stopPropagation();
+        const reservationId = $(this).data('reservation-id');
+        cancelReservation(reservationId);
     });
 
     
@@ -7103,36 +7177,49 @@ $(document).ready(function() {
         let tableCreateHTML = `
         <div class="table-create-modal">
             <div class="table-create-content">
-                <div class="table-create-header">
-                    <h2>Masa Ekleme</h2>
-                    <span class="close-table-create">&times;</span>
-                </div>
-                <div class="table-create-body">
-                    <div class="table-info">
-                        <div class="table-info-item">
-                            <div class="table-label">
-                                <strong>Masa Adı</strong> 
-                                <span>:</span>
-                            </div>
-                            <input type="text" class="table-value table-name">
-                        </div>
-                        <div class="table-info-item">
-                            <div class="table-label">
-                                <strong>Masa No</strong> 
-                                <span>:</span>
-                            </div>
-                            <input type="text" class="table-value table-no">
-                        </div>
-                        <div class="table-info-item">
-                            <div class="table-label">
-                                <strong>Kapasite</strong> 
-                                <span>:</span>
-                            </div>
-                            <input type="text" class="table-value table-capacity">
-                        </div>
+                <div class="tcm-header" style="background: linear-gradient(135deg,rgb(66, 182, 143),rgb(15, 122, 88));">
+                    <div class="tcm-header-icon-wrap">
+                        <i class="fas fa-chair"></i>
                     </div>
-                    
-                    <button class="btn-add-table">Ekle</button>
+                    <div class="tcm-header-text">
+                        <h2 class="tcm-title">Masa Ekle</h2>
+                        <p class="tcm-subtitle">Şubeye yeni masa tanımlayın.</p>
+                    </div>
+                    <button class="close-table-create tcm-close-btn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="tcm-body">
+                    <div class="tcm-form-group">
+                        <label class="tcm-label">
+                            <i class="fas fa-tag" style="color: #10B981"></i> 
+                            Masa Adı
+                        </label>
+                        <input type="text" class="tcm-input tcm-input-add table-name" placeholder="Örn: Pencere Kenarı">
+                    </div>
+                    <div class="tcm-form-group">
+                        <label class="tcm-label">
+                            <i class="fas fa-hashtag" style="color: #10B981"></i> 
+                            Masa No
+                        </label>
+                        <input type="text" class="tcm-input tcm-input-add table-no" placeholder="Örn: 1">
+                    </div>
+                    <div class="tcm-form-group">
+                        <label class="tcm-label">
+                            <i class="fas fa-users" style="color: #10B981"></i> 
+                            Kapasite
+                        </label>
+                        <input type="text" class="tcm-input tcm-input-add table-capacity" placeholder="Örn: 4">
+                    </div>
+                    <div class="tcm-actions">
+                        <button class="tcm-btn-cancel close-table-create">
+                            <i class="fa fa-xmark" aria-hidden="true"></i>    
+                            İptal
+                        </button>
+                        <button class="tcm-btn-save btn-add-table">
+                            <i class="fas fa-plus"></i> Ekle
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>`;
@@ -7350,36 +7437,40 @@ $(document).ready(function() {
                     let tableUpdateHTML = `
                         <div class="table-update-modal" data-table-id="${table.id}">
                             <div class="table-update-content">
-                                <div class="table-update-header">
-                                    <h2>Masa Güncelleme</h2>
-                                    <span class="close-table-update">&times;</span>
-                                </div>
-                                <div class="table-update-body">
-                                    <div class="table-info">
-                                        <div class="table-info-item">
-                                            <div class="table-label">
-                                                <strong>Masa Adı</strong> 
-                                                <span>:</span>
-                                            </div>
-                                            <input type="text" class="table-value table-name" value="${table.name}">
-                                        </div>
-                                        <div class="table-info-item">
-                                            <div class="table-label">
-                                                <strong>Masa No</strong> 
-                                                <span>:</span>
-                                            </div>
-                                            <input type="text" class="table-value table-no" value="${table.no}">
-                                        </div>
-                                        <div class="table-info-item">
-                                            <div class="table-label">
-                                                <strong>Kapasite</strong> 
-                                                <span>:</span>
-                                            </div>
-                                            <input type="text" class="table-value table-capacity" value="${table.capacity}">
-                                        </div>
+                                <div class="tcm-header">
+                                    <div class="tcm-header-icon-wrap">
+                                        <i class="fas fa-pen"></i>
                                     </div>
-
-                                    <button class="btn-update-table">Güncelle</button>
+                                    <div class="tcm-header-text">
+                                        <h2 class="tcm-title">Masa Güncelle</h2>
+                                        <p class="tcm-subtitle">Masa bilgilerini düzenleyin</p>
+                                    </div>
+                                    <button class="close-table-update tcm-close-btn">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                <div class="tcm-body">
+                                    <div class="tcm-form-group">
+                                        <label class="tcm-label"><i class="fas fa-tag"></i> Masa Adı</label>
+                                        <input type="text" class="tcm-input tcm-input-update table-name" value="${table.name}" placeholder="Masa adı">
+                                    </div>
+                                    <div class="tcm-form-group">
+                                        <label class="tcm-label"><i class="fas fa-hashtag"></i> Masa No</label>
+                                        <input type="text" class="tcm-input tcm-input-update table-no" value="${table.no}" placeholder="Masa no">
+                                    </div>
+                                    <div class="tcm-form-group">
+                                        <label class="tcm-label"><i class="fas fa-users"></i> Kapasite</label>
+                                        <input type="text" class="tcm-input tcm-input-update table-capacity" value="${table.capacity}" placeholder="Kapasite">
+                                    </div>
+                                    <div class="tcm-actions">
+                                        <button class="tcm-btn-cancel close-table-update">
+                                            <i class="fa fa-xmark" aria-hidden="true"></i>
+                                            İptal
+                                        </button>
+                                        <button class="tcm-btn-update btn-update-table">
+                                            <i class="fas fa-check"></i> Güncelle
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>`;

@@ -816,78 +816,6 @@ td, th {
   font-size: 2em;
 }
 
-.col-div-3{
-	width: 25%;
-	float: left;
-  margin-bottom: 25px;
-  margin-top: 17px;
-}
-
-.box{
-	width: 95%;
-	background-color: transparent;
-	margin: 0 auto;
-	padding:10px;
-  border-radius: 3%;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  min-height: 120px;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 0 10px 4px rgba(0, 0, 0, 0.2);
-}
-
-.box:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-}
-
-.box-8, .box-4{
-	width: 95%;
-	background-color: transparent;
-  box-shadow: 0 0 10px 4px rgba(0, 0, 0, 0.2);
-	height: auto;
-  min-height: 330px;
-  border-radius: 2%;
-  margin-left: 10px;
-}
-
-.box p{
-	font-size: 35px;
-  color: #000;
-  font-weight: bold;
-  line-height: 30px;
-  padding-left: 10px;
-  margin-top: 20px;
-  display: inline-block;
-}
-
-.box p span{
-	font-size: 20px;
-	font-weight: 500;
-	color: #000;
-}
-
-.box-icon{
-	font-size: 40px!important;
-  float: right;
-  margin-top: 35px!important;
-  color: #322e2e;
-  padding-right: 10px;
-}
-
-.col-div-8{
-	width: 70%;
-	float: left;
-}
-
-.col-div-4{
-	width: 30%;
-	float: left;
-}
-
 .menus-table td:nth-child(1),
 .products-table td:nth-child(1),
 .branches-table .city-col {
@@ -1009,7 +937,7 @@ td, th {
 .employees-table td,
 .salary-table td,
 .dashboard-table td {
-  padding: 12px 18px;
+  padding: 14px 18px;
 }
 
 .cities-table th,
@@ -1049,48 +977,24 @@ td, th {
   background-color: rgba(0, 0, 0, 0.6);
 }
 
-.table-create-content,
-.table-update-content {
-  background-color: #edece1;
-  margin: 5% auto;
-  padding: 20px;
-  border-radius: 5px;
-  width: 90%;
-  max-width: 500px;
-  min-width: 317px;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-  animation: modalFadeIn 0.3s;
-}
-
-@keyframes modalFadeIn {
-  from {opacity: 0; transform: translateY(-20px);}
-  to {opacity: 1; transform: translateY(0);}
-}
-
-.table-create-header,
-.table-update-header {
+.tcm-header-icon-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.2);
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #81818140;
-  margin-bottom: 20px;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
-.table-create-header h2,
-.table-update-header h2 {
-  color: #000;
-  margin: 0;
-  font-size: 24px;
+.tcm-header-icon-wrap i {
+  font-size: 19px;
+  color: #fff;
 }
 
-.close-table-create,
-.close-table-update {
-  color: #3a3a3a;
-  font-size: 28px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: color 0.3s;
+.tcm-header-text {
+  flex: 1;
 }
 
 .menu-row,
@@ -1225,26 +1129,11 @@ td, th {
   font-weight: 500;
 }
 
-.table-create-body,
-.table-update-body {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  align-items: center;
-}
 
 .image-input{
   display: none;
 }
 
-.btn-add-table,
-.btn-update-table {
-  margin-top: 15px;
-  border: none;
-  padding: 13px 16px;
-  width: 150px;
-  font-size: 17px;
-}
 
 .btn-undo,
 .btn-update-branch-settings {
@@ -1275,81 +1164,10 @@ td, th {
   background-color: #ffd760;
 }
 
-.btn-add-table,
-.btn-update-table {
-  font-family: 'Poppins', sans-serif;
-  display: inline-block;
-  background-color: #ffc515;
-  color: #000;
-  border-radius: 6px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.btn-add-table:hover,
-.btn-update-table:hover,
 .btn-update-branch-settings:hover {
-  background-color: #ffd760;;
+  background-color: #ffd760;
 }
 
-.table-info {
-  color: #000;
-  border: 1px solid #81818140;
-  width: 100%;
-}
-
-.table-info-item {
-  display: flex;
-  align-items: center;
-  margin: 0 15px;
-  border-bottom: 1px solid #81818140;
-}
-
-.table-info-item:last-child {
-  border-bottom: none;
-} 
-
-.table-label {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 16px;
-  width: 40%;
-}
-
-.table-label strong {
-  color: #000;
-  margin-right: 10px;
-  display: inline-block;
-  width: 100%;
-}
-
-.table-label span {
-  font-weight: bold;
-}
-
-.table-create-body .table-value,
-.table-update-body .table-value {
-  border: 1px solid #ddd;
-  padding: 5px 8px;
-  border-radius: 6px;
-  transition: all 0.3s ease;
-  width: 60%;
-}
-
-.table-value:focus-visible {
-  outline: none;
-  border: 1px solid #ffc515;
-}
-
-.table-value {
-  margin: 10px 0;
-  margin-left: 5px;
-  font-size: 16px;
-  line-height: 1.5;
-  padding: 5px 10px;
-}
 
 .empty-table-row {
   text-align: center;
@@ -1526,43 +1344,71 @@ td, th {
   display: flex;
   flex-direction: column;
   visibility: hidden;
-  width: 180px;
-  border-radius: 5px;
-  border: 2px solid #ffc515;
+  width: 190px;
+  border-radius: 14px;
+  background: #fff;
+  border: none;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.13), 0 2px 8px rgba(0, 0, 0, 0.07);
   position: absolute;
   z-index: 8;
-  left: 36%;
-  top: 116%;
-  transform: translateX(-50%);
+  left: 45%;
+  top: calc(100% + 8px);
+  transform: translateX(-50%) translateY(-6px);
   opacity: 0;
-  transition: all .3s ease-in-out;
+  transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s;
+  padding: 6px;
+  gap: 2px;
 }
 
 .table-manage-button {
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 700;
-  font-family: "Mulish", sans-serif;
-  color: #000;
-  padding: 10px 0;
-  background-color: #fff;
+  font-size: 13.5px;
+  font-weight: 500;
+  font-family: 'Poppins', sans-serif;
+  color: #374151;
+  padding: 11px 15px;
+  background-color: transparent;
   border: none;
-  border-bottom: 2px solid #ffc515;
-  transition: all .3s ease-in-out;
+  border-radius: 9px;
+  transition: all 0.18s ease;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  width: 100%;
 }
 
-.table-manage-button:last-child {
-  border-bottom: none;
+.btn-create-table i {
+  color: #06B6D4; 
 }
 
-.table-manage-button:hover {
-  background-color: #ffc515;
-  color: #fff;
+.btn-edit-table i {
+  color: #F59E0B; 
+}
+
+.btn-delete-table i {
+  color: #EF4444; 
+}
+
+.btn-create-table:hover {
+  background-color: rgba(6, 182, 212, 0.1);
+  color: #06B6D4;
+}
+
+.btn-edit-table:hover {
+  background-color: rgba(245, 158, 11, 0.1);
+  color: #F59E0B;
+}
+
+.btn-delete-table:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #EF4444;
 }
 
 .table-manage-show {
   opacity: 1;
   visibility: visible;
+  transform: translateX(-50%) translateY(0);
 }
 
 .table-exit-button {
@@ -2241,8 +2087,15 @@ td, th {
   opacity: 0;
   font-size: 18px;
   background-color: #fff;
-  color: #ffc515;
   transition: all .3s ease-in-out;
+}
+
+.table-item .fa-trash {
+  color: #EF4444;
+}
+
+.table-item .fa-pen-to-square{
+  color: #F59E0B;
 }
 
 .table-item i::before {
@@ -4476,7 +4329,9 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .bum-panel,
 .mum-panel,
 .pum-panel,
-.rdm-panel {
+.rdm-panel,
+.table-create-content,
+.table-update-content {
   background: #fff;
   margin: 3% auto;
   padding: 0;
@@ -4501,6 +4356,13 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
 .bum-panel {
   max-width: 640px;
+}
+
+.table-create-content,
+.table-update-content {
+  margin: 6% auto;
+  width: 90%;
+  max-width: 460px;
 }
 
 @keyframes mdmSlideIn {
@@ -4535,7 +4397,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
 .bum-hero,
 .mum-hero,
-.pum-hero {
+.pum-hero,
+.tcm-header {
   background: linear-gradient(135deg, #F59E0B, #D97706);
 }
 
@@ -4547,6 +4410,14 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   background: linear-gradient(135deg, var(--rdm-hero-color), color-mix(in srgb, var(--rdm-hero-color) 60%, #1E293B));
 }
 
+.tcm-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 28px 28px 45px;
+  position: relative;
+}
+
 .udm-hero::after,
 .bdm-hero::after,
 .mdm-hero::after,
@@ -4554,7 +4425,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .bum-hero::after,
 .mum-hero::after,
 .pum-hero::after,
-.rdm-hero::after {
+.rdm-hero::after,
+.tcm-header::after {
   content: '';
   position: absolute;
   bottom: -1px;
@@ -4577,7 +4449,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .bum-close,
 .mum-close,
 .pum-close,
-.rdm-close {
+.rdm-close,
+.tcm-close-btn {
   position: absolute;
   top: 14px;
   right: 18px;
@@ -4604,7 +4477,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .bum-close:hover,
 .mum-close:hover,
 .pum-close:hover,
-.rdm-close:hover {
+.rdm-close:hover,
+.tcm-close-btn:hover {
   background: rgba(255,255,255,0.35);
   transform: rotate(90deg);
 }
@@ -4805,7 +4679,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
 .bum-title,
 .mum-title,
-.pum-title {
+.pum-title,
+.tcm-title {
   color: #fff;
   font-size: 22px;
   font-weight: 700;
@@ -4813,9 +4688,14 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   margin: 0 0 4px;
 }
 
+.tcm-title {
+  line-height: 1;
+}
+
 .bum-subtitle,
 .mum-subtitle,
-.pum-subtitle {
+.pum-subtitle,
+.tcm-subtitle {
   color: rgba(255,255,255,0.8);
   font-size: 13px;
   font-family: 'Poppins', sans-serif;
@@ -4824,13 +4704,12 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
 .bum-body,
 .mum-body,
-.pum-body {
+.pum-body,
+.tcm-body {
   padding: 8px 28px 28px;
-}
-
-.mum-image-section,
-.pum-image-section {
-  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
 .mum-image-label,
@@ -4910,16 +4789,10 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 }
 
 .bum-form-section,
-.mum-form-section,
-.pum-form-section {
-  margin-bottom: 18px;
-}
-
-.bum-form-section,
 .pum-form-section {
   display: flex;
   flex-direction: column;
-  gap: 17px;
+  gap: 20px;
 }
 
 .bum-field-row {
@@ -4934,7 +4807,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
 .bum-field,
 .mum-field,
-.pum-field {
+.pum-field,
+.tcm-form-group {
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -4942,7 +4816,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
 .bum-field-label,
 .mum-field-label,
-.pum-field-label {
+.pum-field-label,
+.tcm-label {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -4954,14 +4829,16 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
 .bum-field-label i,
 .mum-field-label i,
-.pum-field-label i {
+.pum-field-label i,
+.tcm-label i {
   color: #F59E0B;
   font-size: 14px;
 }
 
 .bum-field-input,
 .mum-field-input,
-.pum-field-input {
+.pum-field-input,
+.tcm-input {
   width: 100%;
   padding: 12px 16px;
   border: 2px solid #E5E7EB;
@@ -4976,7 +4853,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
 .bum-field-input:focus,
 .mum-field-input:focus,
-.pum-field-input:focus {
+.pum-field-input:focus,
+.tcm-input:focus {
   outline: none;
   background: #fff;
   box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.1);
@@ -4984,25 +4862,29 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
 .bum-field-add:focus,
 .mum-field-add:focus,
-.pum-field-add:focus {
+.pum-field-add:focus,
+.tcm-input-add:focus {
   border-color: #10B981;
 }
 
 .bum-field-update:focus,
 .mum-field-update:focus,
-.pum-field-update:focus {
+.pum-field-update:focus,
+.tcm-input-update:focus {
   border-color: #F59E0B;
 }
 
 .bum-field-input::placeholder,
 .mum-field-input::placeholder,
-.pum-field-input::placeholder {
+.pum-field-input::placeholder,
+.tcm-input::placeholder {
   color: #9CA3AF;
 }
 
 .bum-actions,
 .mum-actions,
-.pum-actions {
+.pum-actions,
+.tcm-actions {
   display: flex;
   gap: 12px;
   justify-content: flex-end;
@@ -5015,8 +4897,11 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .mum-btn-save,
 .mum-btn-update,
 .pum-btn-cancel,
+.tcm-btn-cancel,
 .pum-btn-save,
-.pum-btn-update {
+.pum-btn-update,
+.tcm-btn-save,
+.tcm-btn-update {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -5033,28 +4918,32 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
 .bum-btn-cancel,
 .mum-btn-cancel,
-.pum-btn-cancel {
+.pum-btn-cancel,
+.tcm-btn-cancel {
   background: #dcdfe4;
   color: #556274;
 }
 
 .bum-btn-cancel:hover,
 .mum-btn-cancel:hover,
-.pum-btn-cancel:hover {
+.pum-btn-cancel:hover,
+.tcm-btn-cancel:hover {
   background: #cacfd6;
   color: #38404d;
 }
 
 .bum-btn-update,
 .mum-btn-update,
-.pum-btn-update {
+.pum-btn-update,
+.tcm-btn-update {
   background: #F59E0B;
   box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
 }
 
 .bum-btn-update:hover,
 .mum-btn-update:hover,
-.pum-btn-update:hover {
+.pum-btn-update:hover,
+.tcm-btn-update:hover {
   background: #db7f16;
   box-shadow: 0 6px 20px rgba(245, 158, 11, 0.45);
   transform: translateY(-2px);
@@ -5062,14 +4951,16 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
 .bum-btn-save,
 .mum-btn-save,
-.pum-btn-save {
+.pum-btn-save,
+.tcm-btn-save {
   background-color: #10B981;
   box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
 }
 
 .bum-btn-save:hover,
 .mum-btn-save:hover,
-.pum-btn-save:hover {
+.pum-btn-save:hover,
+.tcm-btn-save:hover {
   background-color: #0d8a60;
   box-shadow: 0 4px 14px rgba(9, 124, 86, 0.35);
   transform: translateY(-2px);
@@ -5175,13 +5066,11 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
 .users-table th,
 .users-table td {
-  vertical-align: middle;
   white-space: nowrap;
   padding: 14px 12px;
 }
 
 .users-table td.user-cell {
-  padding: 10px 12px;
   white-space: normal;
   min-width: 220px;
 }
@@ -5192,7 +5081,30 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   gap: 10px;
 }
 
-.users-table td.user-actions-cell {
+.reservations-table td.res-customer-cell {
+  padding: 10px 12px;
+  white-space: normal;
+}
+
+.reservations-table td.res-customer-cell .user-cell-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-action-btn.btn-cancel-reservation:hover {
+  color: #EF4444;
+  border-color: #EF4444;
+  background: #FEF2F2;
+}
+
+.res-actions-col {
+  width: 100px;
+}
+
+.users-table td.user-actions-cell,
+.res-actions-col,
+.reservations-table td.res-actions-cell {
   min-width: 130px;
 }
 
@@ -5624,11 +5536,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   color: #F59E0B;
 }
 
-.user-actions-cell {
-  vertical-align: middle;
-}
-
-.user-actions-cell .actions-wrapper {
+.user-actions-cell .actions-wrapper,
+.res-actions-cell .actions-wrapper {
   display: flex;
   gap: 6px;
   align-items: center;
@@ -5645,17 +5554,12 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: all .3s ease-in-out;
   font-size: 13px;
 }
 
-.user-action-btn:hover {
-  border-color: #CBD5E1;
-  color: #334155;
-  background: #F8FAFC;
-}
-
-.user-action-btn.btn-view-user:hover {
+.user-action-btn.btn-view-user:hover,
+.user-action-btn.btn-view-reservation:hover {
   color: #06B6D4;
   border-color: #06B6D4;
 }
@@ -5946,18 +5850,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
 
 @media screen and (max-width: 1200px) {
-  .col-div-3 {
-    width: 50%;
-  }
-  
-  .col-div-8 {
-    width: 60%;
-  }
-  
-  .col-div-4 {
-    width: 40%;
-  }
-
   .menus-table td:nth-child(1){
     width: 15%;
   }
@@ -6049,6 +5941,10 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
   .reservation-section{
     column-gap: 20px;
+  }
+
+  .reservations-table td.res-customer-cell {
+    min-width: 200px;
   }
 
   .users-stats-grid,
@@ -6153,18 +6049,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .dashboard-content{
     margin-top: 55px;
   }
-  
-  .col-div-8, 
-  .col-div-4 {
-    width: 100%;
-    margin-top: 20px;
-  }
-  
-  .box-8, 
-  .box-4 {
-    margin-bottom: 20px;
-    width: 97%;
-  }
 
   .dash-stats-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -6194,32 +6078,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .menus-table td:nth-child(4){
     width: 50%;
   }
-
-  .col-div-8, 
-  .col-div-4 {
-    margin-top: 10px;
-  }
-
-  .box-8, 
-  .box-4 {
-    margin-bottom: 10px;
-    width: 97%;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  .box {
-    margin: 0 auto;
-    margin-bottom: 15px;
-  }
-  
-  .box p {
-    font-size: 30px;
-  }
-  
-  .box-icon {
-    font-size: 35px!important;
-  }
   
   .profile {
     float: none;
@@ -6242,11 +6100,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     row-gap: 35px;
   }
   
-  .table-create-header h2,
-  .table-update-header h2 {
-    font-size: 20px;
-  }
-
   .products-table th:first-child,
   .products-table td:first-child,
   .menus-table th:first-child,
@@ -6258,7 +6111,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .table-update-content {
     margin: 10% auto;
     width: 95%;
-    padding: 15px;
   }
 
   .bdm-panel,
@@ -6319,22 +6171,11 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     padding: 8px 20px 20px;
   }
   
-  .btn-add-table,
-  .btn-update-table {
-    padding: 12px 14px;
-    width: 140px;
-    font-size: 15px;
-  }
-
   .btn-update-branch-settings,
   .btn-undo {
     padding: 10px 22px;
     font-size: 15px;
   } 
-
-  .table-info {
-    width: 95%;
-  }
 
   .toggle-switch {
     width: 50px;
@@ -6752,8 +6593,10 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     font-size: 21px;
   }
 
+  .bum-field-input,
   .mum-field-input,
-  .pum-field-input {
+  .pum-field-input,
+  .tcm-input {
     font-size: 14px;
   }
 
@@ -6765,7 +6608,10 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .mum-btn-update,
   .pum-btn-cancel,
   .pum-btn-save,
-  .pum-btn-update {
+  .pum-btn-update,
+  .tcm-btn-cancel,
+  .tcm-btn-save,
+  .tcm-btn-update {
     font-size: 13px;
     padding: 10px 22px;
   }
@@ -6830,19 +6676,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     margin-top: 0px;
   }
 
-  .table-label {
-    font-size: 14px;
-  }
-
-  .table-value {
-    font-size: 14px;
-  }
-  
-  .table-create-body,
-  .table-update-body {
-    align-items: center;
-  }
-
   .menus-container,
   .head-office-container,
   .employees-container,
@@ -6855,23 +6688,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .orders-container {
     padding: 20px 10px;
   }
-
-  .col-div-3 {
-    width: 100%;
-  }
-
-  .box p {
-    font-size: 25px;
-  }
   
-  .box p span {
-    font-size: 18px;
-  }
-  
-  .box-icon {
-    font-size: 30px!important;
-  }
-
   .profile {
     font-size: 12px;
     margin-left: 0;
@@ -6889,11 +6706,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     width: 30px;
   }
   
-  .table-create-header h2,
-  .table-update-header h2 {
-    font-size: 18px;
-  }
-
   .head {
     padding: 10px 14px;
   }
@@ -6901,12 +6713,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .col-div-6:first-child {
     flex: 1;
     min-width: 0;
-  }
-
-  .table-create-content,
-  .table-update-content {
-    margin: 15% auto;
-    padding: 10px;
   }
 
   .bdm-panel,
@@ -7020,13 +6826,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     font-size: 13px;
   }
 
-  .btn-add-table,
-  .btn-update-table {
-    padding: 11px 13px;
-    width: 130px;
-    font-size: 14px;
-  }
-
   .btn-edit-menu,
   .btn-edit-product,
   .btn-edit-branch,
@@ -7064,8 +6863,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   }
 
   .table-options {
-    width: 160px;
-    left: 41%;
+    width: 175px;
+    left: 43%;
   }
 
   .table-exit-button {
@@ -7254,7 +7053,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .bum-close,
   .mum-close,
   .pum-close,
-  .rdm-close {
+  .rdm-close,
+  .tcm-close-btn {
     font-size: 16px;
     width: 34px;
     height: 34px;
@@ -7266,34 +7066,48 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
   .bum-title,
   .mum-title,
-  .pum-title {
+  .pum-title,
+  .tcm-title {
     font-size: 20px;
     padding: 0 30px;
   }
 
+  .tcm-title {
+    padding: 0;
+  }
+
   .bum-subtitle,
   .mum-subtitle,
-  .pum-subtitle {
+  .pum-subtitle,
+  .tcm-subtitle {
     font-size: 12px;
   }
 
   .bum-field-input,
   .mum-field-input,
-  .pum-field-input {
+  .pum-field-input,
+  .tcm-input {
     font-size: 13px;
   }
 
   .bum-panel,
   .mum-panel,
-  .pum-panel {
+  .pum-panel,
+  .table-create-content,
+  .table-update-content {
     margin: 2% auto;
     border-radius: 16px;
-    min-width: 290px;
+  }
+
+  .table-create-content,
+  .table-update-content {
+    margin: 9% auto;
   }
 
   .bum-body,
   .mum-body,
-  .pum-body {
+  .pum-body,
+  .tcm-body {
     padding: 8px 20px 20px;
   }
 
@@ -7304,7 +7118,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
   .bum-actions,
   .mum-actions,
-  .pum-actions {
+  .pum-actions,
+  .tcm-actions {
     flex-direction: column;
   }
 
@@ -7316,10 +7131,11 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .mum-btn-update,
   .pum-btn-cancel,
   .pum-btn-save,
-  .pum-btn-update {
+  .pum-btn-update,
+  .tcm-btn-cancel,
+  .tcm-btn-save,
+  .tcm-btn-update {
     justify-content: center;
-    width: 100%;
-    font-size: 12px;
   }
 
   .navbar-icon-btn {
@@ -7458,12 +7274,13 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   }
 
   .table-options {
-    width: 145px;
-    left: 43%;
+    width: 165px;
+    left: 41%;
   }
 
   .table-manage-button {
-    font-size: 13px;
+    font-size: 12.5px;
+    padding: 9px 13px;
   }
 
   .table-item {
