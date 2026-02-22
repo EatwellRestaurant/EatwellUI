@@ -403,6 +403,33 @@ body{
   transition: margin-left 0.5s ease-in-out;
 }
 
+#mySidenav:not(.show) .icon-a::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%) translateX(6px);
+  background: #1E293B;
+  color: #E2E8F0;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  z-index: 200;
+}
+
+#mySidenav:not(.show) .icon-a:hover::after {
+  opacity: 1;
+  transform: translateY(-50%) translateX(16px);
+}
+
 #main {
   padding: 16px;
   transition: margin-left 0.5s ease-in-out;
