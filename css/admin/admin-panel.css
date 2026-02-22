@@ -55,6 +55,7 @@ body{
 .users-stats-grid,
 .menus-stats-grid,
 .products-stats-grid,
+.head-office-cards,
 .orders-stats-grid,
 .reservations-stats-grid {
   display: grid;
@@ -66,7 +67,8 @@ body{
 .menus-stats-grid,
 .products-stats-grid,
 .orders-stats-grid,
-.reservations-stats-grid {
+.reservations-stats-grid,
+.head-office-cards {
   grid-template-columns: repeat(4, 1fr);
 }
 
@@ -85,7 +87,8 @@ body{
 .menus-stat-card,
 .products-stat-card,
 .orders-stat-card,
-.reservations-stat-card {
+.reservations-stat-card,
+.head-office-stat-card {
   background: #fff;
   border-radius: 14px;
   padding: 22px 20px;
@@ -105,7 +108,8 @@ body{
 .menus-stat-card::before,
 .products-stat-card::before,
 .orders-stat-card::before,
-.reservations-stat-card::before {
+.reservations-stat-card::before,
+.head-office-stat-card::before {
   content: '';
   position: absolute;
   top: 0;
@@ -124,7 +128,8 @@ body{
 .menus-stat-card:hover,
 .products-stat-card:hover,
 .orders-stat-card:hover,
-.reservations-stat-card:hover {
+.reservations-stat-card:hover,
+.head-office-stat-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
@@ -134,7 +139,8 @@ body{
 .menus-stat-card:hover::before,
 .products-stat-card:hover::before,
 .orders-stat-card:hover::before,
-.reservations-stat-card:hover::before {
+.reservations-stat-card:hover::before,
+.head-office-stat-card:hover::before {
   width: 120px;
   height: 120px;
   opacity: 0.08;
@@ -145,7 +151,8 @@ body{
 .menus-stat-icon,
 .products-stat-icon,
 .orders-stat-icon,
-.reservations-stat-icon {
+.reservations-stat-icon,
+.head-office-stat-icon {
   width: 50px;
   height: 50px;
   border-radius: 12px;
@@ -163,7 +170,8 @@ body{
 .menus-stat-info,
 .products-stat-info,
 .orders-stat-info,
-.reservations-stat-info {
+.reservations-stat-info,
+.head-office-stat-info {
   display: flex;
   flex-direction: column;
 }
@@ -173,7 +181,8 @@ body{
 .menus-stat-count,
 .products-stat-count,
 .orders-stat-count,
-.reservations-stat-count {
+.reservations-stat-count,
+.head-office-stat-count {
   font-size: 28px;
   font-weight: 700;
   color: #1E293B;
@@ -186,7 +195,8 @@ body{
 .menus-stat-label,
 .products-stat-label,
 .orders-stat-label,
-.reservations-stat-label {
+.reservations-stat-label,
+.head-office-stat-label {
   font-size: 15px;
   color: #64748B;
   margin-top: 4px;
@@ -1129,45 +1139,9 @@ td, th {
   font-weight: 500;
 }
 
-
 .image-input{
   display: none;
 }
-
-
-.btn-undo,
-.btn-update-branch-settings {
-  font-size: 16px;
-  cursor: pointer;
-  border: none;
-  border-radius: 10px;
-  font-family: 'Poppins', sans-serif;
-  padding: 13px 25px;
-  transition: all .3s ease-in-out;
-}
-
-.btn-undo {
-  color: #fff;
-  background-color: #930a0a;
-}
-
-.btn-update-branch-settings {
-  color: #000 ;
-  background-color: #ffc515;
-}
-
-.btn-undo:hover {
-  background-color: #bc0e0e;
-}
-
-.btn-update-branch-settings:hover {
-  background-color: #ffd760;
-}
-
-.btn-update-branch-settings:hover {
-  background-color: #ffd760;
-}
-
 
 .empty-table-row {
   text-align: center;
@@ -1511,19 +1485,14 @@ td, th {
 .employees-body {
   display: flex;
   flex-direction: column;
-  gap: 25px;
+  gap: 18px;
 }
 
-.head-office-cards,
 .employee-cards {
   display: grid;
   gap: 20px;
   justify-content: space-between;
   justify-items: start;
-}
-
-.head-office-cards {
-  grid-template-columns: repeat(3, 1fr);
 }
 
 .employee-cards {
@@ -1611,8 +1580,13 @@ td, th {
 .branch-wrapper {
   display: flex;
   justify-content: space-between;
-  gap: 20px;
+  gap: 18px;
   max-height: 695px; 
+}
+
+.branch-wrapper,
+.company-settings {
+  margin: 0 7px;
 }
 
 .branch-chart, 
@@ -1640,9 +1614,13 @@ td, th {
 }
 
 .company-settings h3 {
-  padding-bottom: 7px;
-  margin-bottom: 15px;
-  border-bottom: 2px solid #f8d700;;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 16px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #f0f0f0;
+  color: #1E293B;
 }
 
 .chart-info {
@@ -1897,16 +1875,25 @@ td, th {
 
 .company-settings__subtitle {
   font-size: 19px;
-  font-weight: 500;
-  color: #dbc329;
+  font-weight: 600;
+  color: #1E293B;
   display: flex;
-  align-items: baseline;
-  gap: 6px;
+  align-items: center;
+  gap: 10px;
   margin-bottom: 15px;
 }
 
-.company-settings__subtitle i {
-  font-size: 16px;
+.settings-section-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--si-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 13px;
+  flex-shrink: 0;
 }
 
 .company-settings__field input,
@@ -1914,10 +1901,13 @@ td, th {
   width: 75%;
   outline: none;
   padding: 12px;
-  border: 1px solid #dee2e6;
-  border-radius: 6px;
-  font-size: 14px;
-  transition: border-color 0.2s ease-in-out;
+  border: 2px solid #E5E7EB;
+  font-size: 15px;
+  font-family: 'Poppins', sans-serif;
+  color: #1E293B;
+  border-radius: 12px;
+  background: #F8FAFC;
+  transition: all .3s ease-in-out;
 }
 
 .company-settings__field textarea {
@@ -1937,7 +1927,7 @@ td, th {
   display: flex;
   justify-content: flex-end;
   align-items: flex-end;
-  gap: 30px;
+  gap: 12px;
 }
 
 .company-settings__box:last-child {
@@ -4901,7 +4891,9 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .pum-btn-save,
 .pum-btn-update,
 .tcm-btn-save,
-.tcm-btn-update {
+.tcm-btn-update,
+.btn-undo,
+.btn-update-branch-settings {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -4919,7 +4911,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .bum-btn-cancel,
 .mum-btn-cancel,
 .pum-btn-cancel,
-.tcm-btn-cancel {
+.tcm-btn-cancel,
+.btn-undo {
   background: #dcdfe4;
   color: #556274;
 }
@@ -4927,7 +4920,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .bum-btn-cancel:hover,
 .mum-btn-cancel:hover,
 .pum-btn-cancel:hover,
-.tcm-btn-cancel:hover {
+.tcm-btn-cancel:hover,
+.btn-undo:hover {
   background: #cacfd6;
   color: #38404d;
 }
@@ -4952,7 +4946,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .bum-btn-save,
 .mum-btn-save,
 .pum-btn-save,
-.tcm-btn-save {
+.tcm-btn-save,
+.btn-update-branch-settings {
   background-color: #10B981;
   box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
 }
@@ -4960,7 +4955,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .bum-btn-save:hover,
 .mum-btn-save:hover,
 .pum-btn-save:hover,
-.tcm-btn-save:hover {
+.tcm-btn-save:hover,
+.btn-update-branch-settings:hover {
   background-color: #0d8a60;
   box-shadow: 0 4px 14px rgba(9, 124, 86, 0.35);
   transform: translateY(-2px);
@@ -5787,6 +5783,12 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     min-height: 500px;
   }
 
+  .branch-wrapper,
+  .company-settings {
+    width: 98.5%;
+    margin: 0 auto;
+  }
+
   .branch-chart {
     overflow: auto;
   }
@@ -5818,7 +5820,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .menus-stats-grid, 
   .products-stats-grid, 
   .orders-stats-grid, 
-  .reservations-stats-grid {
+  .reservations-stats-grid,
+  .head-office-cards {
     width: 98.5%;
     margin: 0 auto;
     padding: 10px 0;
@@ -5861,11 +5864,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   
   .menus-table td:nth-child(4){
     width: 45%;
-  }
-
-  .head-office-cards {
-    display: flex;
-    flex-wrap: wrap;
   }
 
   .stat-card {
@@ -5951,7 +5949,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .menus-stats-grid,
   .products-stats-grid,
   .orders-stats-grid,
-  .reservations-stats-grid {
+  .reservations-stats-grid,
+  .head-office-cards {
     grid-template-columns: repeat(2, 1fr);
   }
 
@@ -6170,12 +6169,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .bum-body {
     padding: 8px 20px 20px;
   }
-  
-  .btn-update-branch-settings,
-  .btn-undo {
-    padding: 10px 22px;
-    font-size: 15px;
-  } 
 
   .toggle-switch {
     width: 50px;
@@ -6281,8 +6274,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .menus-stats-grid,
   .products-stats-grid,
   .orders-stats-grid,
-  .reservations-stats-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .reservations-stats-grid,
+  .head-office-cards {
     gap: 12px;
   }
 
@@ -6291,7 +6284,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .menus-stat-card,
   .products-stat-card,
   .orders-stat-card,
-  .reservations-stat-card {
+  .reservations-stat-card,
+  .head-office-stat-card {
     padding: 18px 16px;
   }
 
@@ -6300,7 +6294,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .menus-stat-count,
   .products-stat-count,
   .orders-stat-count,
-  .reservations-stat-count {
+  .reservations-stat-count,
+  .head-office-stat-count {
     font-size: 22px;
   }
 
@@ -6410,10 +6405,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     font-size: 14px;
   }
 
-  .head-office-cards {
-    justify-content: center;
-  }
-
   .stat-card {
     width: 90%;
   }
@@ -6460,7 +6451,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .users-stat-icon,
   .menus-stat-icon,
   .products-stat-icon,
-  .reservations-stat-icon {
+  .reservations-stat-icon,
+  .head-office-stat-icon {
     width: 44px;
     height: 44px;
     border-radius: 10px;
@@ -6490,9 +6482,9 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .menus-stats-grid,
   .products-stats-grid,
   .orders-stats-grid,
-  .reservations-stats-grid {
+  .reservations-stats-grid,
+  .head-office-cards {
     grid-template-columns: 1fr;
-    gap: 10px;
   }
 
   .dash-card,
@@ -6500,7 +6492,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .menus-stat-card,
   .products-stat-card,
   .orders-stat-card,
-  .reservations-stat-card {
+  .reservations-stat-card,
+  .head-office-stat-card {
     padding: 16px 14px;
   }
 
@@ -6509,7 +6502,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .menus-stat-count,
   .products-stat-count,
   .orders-stat-count,
-  .reservations-stat-count {
+  .reservations-stat-count,
+  .head-office-stat-count {
     font-size: 20px;
   }
 
@@ -6518,7 +6512,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .menus-stat-label,
   .products-stat-label,
   .orders-stat-label,
-  .reservations-stat-label {
+  .reservations-stat-label,
+  .head-office-stat-label {
     font-size: 13px;
   }
 
@@ -6611,7 +6606,9 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .pum-btn-update,
   .tcm-btn-cancel,
   .tcm-btn-save,
-  .tcm-btn-update {
+  .tcm-btn-update,
+  .btn-undo,
+  .btn-update-branch-settings {
     font-size: 13px;
     padding: 10px 22px;
   }
@@ -6898,13 +6895,13 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     font-size: 19px;
   }
 
-  .company-settings__button {
-    gap: 20px;
+  .company-settings__subtitle {
+    font-size: 18px;
   }
 
-  .btn-update-branch-settings, 
-  .btn-undo {
-    padding: 10px 20px;
+  .company-settings__field .form-label,
+  .company-settings__field input, 
+  .company-settings__field textarea {
     font-size: 14px;
   }
 
@@ -7134,7 +7131,9 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .pum-btn-update,
   .tcm-btn-cancel,
   .tcm-btn-save,
-  .tcm-btn-update {
+  .tcm-btn-update,
+  .btn-undo,
+  .btn-update-branch-settings {
     justify-content: center;
   }
 

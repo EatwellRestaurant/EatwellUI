@@ -5053,40 +5053,48 @@ $(document).ready(function() {
         firstEmailInfo = headOfficeDto.email;
         firstAddressInfo = headOfficeDto.address;
 
+        const activeBranchDto = data.branchOverviewDto.activeBranchDto;
+        const activeBranchCount = activeBranchDto.salesBranchDtos.length + activeBranchDto.nonSalesBranchDtos.length;
+
         let headOfficeHTML = `
             <div class="head-office-cards">
-                <div class="stat-card order-card">
-                    <div class="stat-card-icon">
-                        <img src="../../icons/shopping-cart.png" alt="siparişler">
+                <div class="head-office-stat-card" style="--accent-color: #06B6D4;">
+                    <div class="head-office-stat-icon">
+                        <i class="fa-solid fa-bag-shopping"></i>
                     </div>
-                    
-                    <div class="stat-card-content">
-                        <p class="stat-card-label">Toplam Siparişler</p>
-                        <p class="stat-card-value">${data.orderCount}</p>
-                    </div>
-                </div>
-
-                <div class="stat-card reservation-card">
-                    <div class="stat-card-icon">
-                        <img src="../../icons/restaurant-table.png" alt="rezervasyonlar">
-                    </div>
-                    
-                    <div class="stat-card-content">
-                        <p class="stat-card-label">Toplam Rezervasyonlar</p>
-                        <p class="stat-card-value">${data.reservationCount}</p>
+                    <div class="head-office-stat-info">
+                        <span class="head-office-stat-count">${data.orderCount}</span>
+                        <span class="head-office-stat-label">Toplam Sipariş</span>
                     </div>
                 </div>
 
-                <div class="stat-card sales-card">
-                    <div class="stat-card-icon">
-                        <img src="../../icons/money.png" alt="rezervasyonlar">
+                <div class="head-office-stat-card" style="--accent-color: #8B5CF6;">
+                    <div class="head-office-stat-icon">
+                        <i class="fa-solid fa-calendar-check"></i>
                     </div>
-                    
-                    <div class="stat-card-content">
-                        <p class="stat-card-label">Toplam Satışlar</p>
-                        <p class="stat-card-value">
-                            <i class="fa-solid fa-turkish-lira-sign"></i>${data.totalSales}
-                        </p>
+                    <div class="head-office-stat-info">
+                        <span class="head-office-stat-count">${data.reservationCount}</span>
+                        <span class="head-office-stat-label">Toplam Rezervasyon</span>
+                    </div>
+                </div>
+
+                <div class="head-office-stat-card" style="--accent-color: #10b95c;">
+                    <div class="head-office-stat-icon">
+                        <i class="fa-solid fa-turkish-lira-sign"></i>
+                    </div>
+                    <div class="head-office-stat-info">
+                        <span class="head-office-stat-count">${formatCurrency(data.totalSales)}</span>
+                        <span class="head-office-stat-label">Toplam Satış</span>
+                    </div>
+                </div>
+
+                <div class="head-office-stat-card" style="--accent-color: #F59E0B;">
+                    <div class="head-office-stat-icon">
+                        <i class="fa-solid fa-store"></i>
+                    </div>
+                    <div class="head-office-stat-info">
+                        <span class="head-office-stat-count">${activeBranchCount}</span>
+                        <span class="head-office-stat-label">Aktif Şube</span>
                     </div>
                 </div>
             </div>
@@ -5111,28 +5119,30 @@ $(document).ready(function() {
 
             <div class="company-settings">
                 <h3 class="company-settings__title">Şirket ayarları - footer bilgileri</h3>
-                
                 <div class="company-settings__form">
 
                     <h4 class="company-settings__subtitle">
-                        <i class="fa-solid fa-share-nodes"></i></i>Sosyal Medya
+                        <span class="settings-section-icon" style="--si-color: #8B5CF6;">
+                            <i class="fa-solid fa-share-nodes"></i>
+                        </span>
+                        Sosyal Medya
                     </h4>
                     <div class="company-settings__box">
                         <div class="company-settings__field">
                             <label for="company-instagram" class="form-label">Instagram</label>
                             <input id="company-instagram" type="url" placeholder="Instagram profil linki" value="${firstInstagramInfo}">
                         </div>
-                        
+
                         <div class="company-settings__field">
                             <label for="company-facebook" class="form-label">Facebook</label>
                             <input id="company-facebook" type="url" placeholder="Facebook sayfa linki" value="${firstFacebookInfo}">
                         </div>
-                        
+
                         <div class="company-settings__field">
                             <label for="company-x" class="form-label">X</label>
                             <input id="company-x" type="url" placeholder="X sayfa linki" value="${firstTwitterInfo}">
                         </div>
-                        
+
                         <div class="company-settings__field">
                             <label for="company-google" class="form-label">Google</label>
                             <input id="company-google" type="url" placeholder="Google business linki" value="${firstGoogleInfo}">
@@ -5141,24 +5151,27 @@ $(document).ready(function() {
 
 
                     <h4 class="company-settings__subtitle">
-                        <i class="fa-regular fa-clock"></i>Çalışma Saatleri
+                        <span class="settings-section-icon" style="--si-color: #06B6D4;">
+                            <i class="fa-regular fa-clock"></i>
+                        </span>
+                        Çalışma Saatleri
                     </h4>
                     <div class="company-settings__box">
                         <div class="company-settings__field">
                             <label for="weekdayStart" class="form-label">Hafta içi başlangıç</label>
                             <input type="time" id="weekdayStart" value="${firstWeekdayStartInfo}">
                         </div>
-                        
+
                         <div class="company-settings__field">
                             <label for="weekdayEnd" class="form-label">Hafta içi bitiş</label>
                             <input type="time" id="weekdayEnd" value="${firstWeekdayEndInfo}">
                         </div>
-                        
+
                         <div class="company-settings__field">
                             <label for="weekendStart" class="form-label">Hafta sonu başlangıç</label>
                             <input type="time" id="weekendStart" value="${firstWeekendStartInfo}">
                         </div>
-                        
+
                         <div class="company-settings__field">
                             <label for="weekendEnd" class="form-label">Hafta sonu bitiş</label>
                             <input type="time" id="weekendEnd" value="${firstWeekendEndInfo}">
@@ -5172,30 +5185,33 @@ $(document).ready(function() {
 
 
                     <h4 class="company-settings__subtitle">
-                        <i class="fa-regular fa-file-lines"></i>Diğer Bilgiler
+                        <span class="settings-section-icon" style="--si-color: #F59E0B;">
+                            <i class="fa-solid fa-circle-info"></i>
+                        </span>
+                        Diğer Bilgiler
                     </h4>
                     <div class="company-settings__box">
                         <div class="company-settings__field">
                             <label for="company-phone" class="form-label">Ana telefon</label>
                             <input id="company-phone" type="tel" placeholder="Ana telefon numarası" value="${firstPhoneInfo}">
                         </div>
-                        
+
                         <div class="company-settings__field">
                             <label for="company-email" class="form-label">Kurumsal e-posta</label>
                             <input id="company-email" type="email" placeholder="info@sirketiniz.com" value="${firstEmailInfo}">
                         </div>
-                            
+
                         <div class="company-settings__field">
                             <label for="company-address" class="form-label">Şirket adresi</label>
                             <textarea id="company-address" placeholder="Tam adres bilgisi">${firstAddressInfo}</textarea>
                         </div>
-                        
+
                         <div class="company-settings__button">
                             <button class="btn-undo">
-                                Geri Al
+                                <i class="fa-solid fa-rotate-left"></i> Geri Al
                             </button>
                             <button class="btn-update-branch-settings">
-                                Güncelle
+                                <i class="fa-solid fa-floppy-disk"></i> Kaydet
                             </button>
                         </div>
                     </div>
