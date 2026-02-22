@@ -6039,12 +6039,12 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   #main {
     margin-left: 0;
     padding: 10px;
-  }  
+  }
 
   .head {
     padding: 10px 17px;
   }
-  
+
   .dashboard-content{
     margin-top: 55px;
   }
@@ -6057,12 +6057,36 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .charts-grid {
     grid-template-columns: 1fr;
   }
+
+  .branch-chart {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #branchPerformance {
+    width: 680px !important;
+    height: 300px !important;
+  }
+
+  /* iOS Safari — saat inputu native görünümünü sıfırlıyoruz */
+  .company-settings__field input[type="time"] {
+    -webkit-appearance: none;
+    appearance: none;
+    text-align: left;
+    min-height: 44px;
+    box-sizing: border-box;
+  }
 }
 
 
 @media screen and (max-width: 768px) {
   .head {
     padding: 10px 16px;
+  }
+
+  #branchPerformance {
+    width: 560px !important;
+    height: 260px !important;
   }
 
   .menus-table td:nth-child(1){
@@ -6650,6 +6674,11 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
 
 @media screen and (max-width: 480px) {
+  #branchPerformance {
+    width: 480px !important;
+    height: 230px !important;
+  }
+
   .sidenav {
     width: 215px;
     padding-top: 13px;
