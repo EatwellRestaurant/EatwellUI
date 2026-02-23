@@ -2954,7 +2954,7 @@ $(document).ready(function() {
     // Ürün istatistiklerini çek ve grafikleri oluştur
     function fetchProductStats() {
         $.ajax({
-            url: `${baseUrl}products/getAllForAdmin?pageNumber=1&pageSize=10000`,
+            url: `${baseUrl}products/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`,
             type: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -8161,16 +8161,17 @@ $(document).ready(function() {
                 const date = new Date(employee.hireDate);
                 const formattedDate = `${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}.${date.getFullYear()}`;
 
+                const color = getAvatarColor(employee.firstName + employee.lastName);
+                const initials = getInitials(employee.firstName, employee.lastName);
+
                 employeesTableHTML += `
                     <tr class="employee-row" data-employee-id="${employee.id}">
-                        <td>
-                            <div class="user-card">
-                                <div class="user-avatar-table">
-                                    ${employee.firstName.charAt(0)}${employee.lastName.charAt(0)}
-                                </div>
-                                <div class="user-info-table">
-                                    <div class="user-name">${employee.firstName} ${employee.lastName}</div>
-                                    <div class="user-email">${employee.email}</div>
+                        <td class="user-cell">
+                            <div class="user-cell-wrapper">
+                                <div class="user-avatar-sm" style="background: ${color};">${initials}</div>
+                                <div class="user-cell-info">
+                                    <div class="user-cell-name">${employee.firstName} ${employee.lastName}</div>
+                                    <div class="user-cell-email">${employee.email}</div>
                                 </div>
                             </div>
                         </td>
@@ -8184,17 +8185,17 @@ $(document).ready(function() {
                             <span class="status-badge status-${employee.workStatusName.toLowerCase()}">${employee.workStatusDisplayName}</span>
                         </td>
                         <td>
-                            <div class="action-buttons">
-                                <button class="action-btn btn-view" title="Görüntüle" data-employee-id="${employee.id}" data-employee-name="${employee.name}">
+                            <div class="actions-wrapper">
+                                <button class="user-action-btn btn-view" title="Görüntüle" data-employee-id="${employee.id}" data-employee-name="${employee.name}">
                                     <i class="fas fa-eye"></i>
                                 </button>
                                 
-                                <button class="action-btn btn-edit" title="Düzenle" data-employee-id="${employee.id}" data-employee-name="${employee.name}">
-                                    <i class="fas fa-edit"></i>
+                                <button class="user-action-btn btn-delete" title="Sil" data-employee-id="${employee.id}" data-employee-name="${employee.name}">
+                                    <i class="fa fa-trash"></i>
                                 </button>
-                                
-                                <button class="action-btn btn-delete" title="Sil" data-employee-id="${employee.id}" data-employee-name="${employee.name}">
-                                    <i class="fas fa-trash"></i>
+
+                                <button class="user-action-btn btn-edit" title="Düzenle" data-employee-id="${employee.id}" data-employee-name="${employee.name}">
+                                    <i class="fas fa-edit"></i>
                                 </button>
                             </div>
                         </td>
@@ -8234,48 +8235,58 @@ $(document).ready(function() {
 
 
         let employeeHTML = `
-            <div class="employee-cards px-7">
-                <div class="count-box employee-card">
-                    <div class="count-box-content">
-                        <p class="count-box-value">${data.employeeCount}</p>
-                        <p class="count-box-label">Toplam Çalışan</p>
+            <div class="employees-stats-grid">
+                <div class="employees-stat-card" style="--accent-color: #06B6D4;">
+                    <div class="employees-stat-icon">
+                        <i class="fa-regular fa-address-card"></i>
                     </div>
-                    
-                    <div class="count-box-icon">
-                        <img src="../../icons/user.png" alt="Toplam Çalışan">
-                    </div>
-                </div>
-
-                <div class="count-box active-employee-card">
-                    <div class="count-box-content">
-                        <p class="count-box-value">${data.activeEmployeeCount}</p>
-                        <p class="count-box-label">Aktif Çalışan</p>
-                    </div>
-
-                    <div class="count-box-icon">
-                        <img src="../../icons/user-check.png" alt="Aktif Çalışan">
+                    <div class="employees-stat-info">
+                        <span class="employees-stat-count" id="statTotalEmployees">-</span>
+                        <span class="employees-stat-label">Toplam Çalışan</span>
                     </div>
                 </div>
 
-                <div class="count-box chef-card">
-                    <div class="count-box-content">
-                        <p class="count-box-value">${data.chefCount}</p>
-                        <p class="count-box-label">Şefler</p>
+                <div class="employees-stat-card" style="--accent-color: #10b95c;">
+                    <div class="employees-stat-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" 
+                            class="lucide lucide-user-check-icon lucide-user-check">
+                            <path d="m16 11 2 2 4-4"/>
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                        </svg>
                     </div>
-
-                    <div class="count-box-icon">
-                        <img src="../../icons/chef-hat.png" alt="Şefler">
+                    <div class="employees-stat-info">
+                        <span class="employees-stat-count" id="statActiveEmployees">-</span>
+                        <span class="employees-stat-label">Aktif Çalışan</span>
                     </div>
                 </div>
 
-                <div class="count-box waiter-card">
-                    <div class="count-box-content">
-                        <p class="count-box-value">${data.waiterCount}</p>
-                        <p class="count-box-label">Garsonlar</p>
+                <div class="employees-stat-card" style="--accent-color: #F59E0B;">
+                    <div class="employees-stat-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" 
+                            class="lucide lucide-chef-hat-icon lucide-chef-hat">
+                            <path d="M17 21a1 1 0 0 0 1-1v-5.35c0-.457.316-.844.727-1.041a4 4 0 0 0-2.134-7.589 5 5 0 0 0-9.186 0 4 4 0 0 0-2.134 7.588c.411.198.727.585.727 1.041V20a1 1 0 0 0 1 1Z"/>
+                            <path d="M6 17h12"/>
+                        </svg>
                     </div>
+                    <div class="employees-stat-info">
+                        <span class="employees-stat-count" id="statChefCount">-</span>
+                        <span class="employees-stat-label">Şefler</span>
+                    </div>
+                </div>
 
-                    <div class="count-box-icon">
-                        <img src="../../icons/hand-platter.png" alt="Garsonlar">
+                <div class="employees-stat-card" style="--accent-color: #8B5CF6;">
+                    <div class="employees-stat-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" 
+                            class="lucide lucide-hand-platter-icon lucide-hand-platter">
+                            <path d="M12 3V2"/>
+                            <path d="m15.4 17.4 3.2-2.8a2 2 0 1 1 2.8 2.9l-3.6 3.3c-.7.8-1.7 1.2-2.8 1.2h-4c-1.1 0-2.1-.4-2.8-1.2l-1.302-1.464A1 1 0 0 0 6.151 19H5"/>
+                            <path d="M2 14h12a2 2 0 0 1 0 4h-2"/><path d="M4 10h16"/><path d="M5 10a7 7 0 0 1 14 0"/><path d="M5 14v6a1 1 0 0 1-1 1H2"/>
+                        </svg>
+                    </div>
+                    <div class="employees-stat-info">
+                        <span class="employees-stat-count" id="statWaiterCount">-</span>
+                        <span class="employees-stat-label">Garsonlar</span>
                     </div>
                 </div>
             </div>
@@ -8355,6 +8366,11 @@ $(document).ready(function() {
         
         // İçeriği güncelle
         $('.employees-body').html(employeeHTML);
+
+        animateCount($('#statTotalEmployees'), data.employeeCount);
+        animateCount($('#statActiveEmployees'), data.activeEmployeeCount);
+        animateCount($('#statChefCount'), data.chefCount);
+        animateCount($('#statWaiterCount'), data.waiterCount);
 
         fetchEmployeeFilterOptions();
 
@@ -10567,7 +10583,7 @@ $(document).ready(function() {
     // Çalışan satırına tıklama olayı
     $(document).on('click', '.employee-row', function() {
         const employeeId = $(this).data('employee-id');
-        const employeeName = $(this).find(".user-name").text();
+        const employeeName = $(this).find(".user-cell-name").text();
 
         //URL'ye sahte bir adım ekliyoruz
         history.pushState(

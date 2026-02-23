@@ -57,7 +57,8 @@ body{
 .products-stats-grid,
 .head-office-cards,
 .orders-stats-grid,
-.reservations-stats-grid {
+.reservations-stats-grid,
+.employees-stats-grid {
   display: grid;
   gap: 18px;
   padding: 10px 7px;
@@ -68,7 +69,8 @@ body{
 .products-stats-grid,
 .orders-stats-grid,
 .reservations-stats-grid,
-.head-office-cards {
+.head-office-cards,
+.employees-stats-grid {
   grid-template-columns: repeat(4, 1fr);
 }
 
@@ -88,7 +90,8 @@ body{
 .products-stat-card,
 .orders-stat-card,
 .reservations-stat-card,
-.head-office-stat-card {
+.head-office-stat-card,
+.employees-stat-card {
   background: #fff;
   border-radius: 14px;
   padding: 22px 20px;
@@ -109,7 +112,8 @@ body{
 .products-stat-card::before,
 .orders-stat-card::before,
 .reservations-stat-card::before,
-.head-office-stat-card::before {
+.head-office-stat-card::before,
+.employees-stat-card::before {
   content: '';
   position: absolute;
   top: 0;
@@ -129,7 +133,8 @@ body{
 .products-stat-card:hover,
 .orders-stat-card:hover,
 .reservations-stat-card:hover,
-.head-office-stat-card:hover {
+.head-office-stat-card:hover,
+.employees-stat-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
@@ -140,7 +145,8 @@ body{
 .products-stat-card:hover::before,
 .orders-stat-card:hover::before,
 .reservations-stat-card:hover::before,
-.head-office-stat-card:hover::before {
+.head-office-stat-card:hover::before,
+.employees-stat-card:hover::before {
   width: 120px;
   height: 120px;
   opacity: 0.08;
@@ -152,7 +158,8 @@ body{
 .products-stat-icon,
 .orders-stat-icon,
 .reservations-stat-icon,
-.head-office-stat-icon {
+.head-office-stat-icon,
+.employees-stat-icon {
   width: 50px;
   height: 50px;
   border-radius: 12px;
@@ -171,7 +178,8 @@ body{
 .products-stat-info,
 .orders-stat-info,
 .reservations-stat-info,
-.head-office-stat-info {
+.head-office-stat-info,
+.employees-stat-info {
   display: flex;
   flex-direction: column;
 }
@@ -182,7 +190,8 @@ body{
 .products-stat-count,
 .orders-stat-count,
 .reservations-stat-count,
-.head-office-stat-count {
+.head-office-stat-count,
+.employees-stat-count {
   font-size: 28px;
   font-weight: 700;
   color: #1E293B;
@@ -196,7 +205,8 @@ body{
 .products-stat-label,
 .orders-stat-label,
 .reservations-stat-label,
-.head-office-stat-label {
+.head-office-stat-label,
+.employees-stat-label {
   font-size: 15px;
   color: #64748B;
   margin-top: 4px;
@@ -423,11 +433,6 @@ body{
   border: 1px solid rgba(148, 163, 184, 0.2);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
   z-index: 200;
-}
-
-#mySidenav:not(.show) .icon-a:hover::after {
-  opacity: 1;
-  transform: translateY(-50%) translateX(16px);
 }
 
 #main {
@@ -1512,96 +1517,14 @@ td, th {
 .employees-body {
   display: flex;
   flex-direction: column;
+}
+
+.employees-body {
+  gap: 10px;
+}
+
+.head-office-body {
   gap: 18px;
-}
-
-.employee-cards {
-  display: grid;
-  gap: 20px;
-  justify-content: space-between;
-  justify-items: start;
-}
-
-.employee-cards {
-  grid-template-columns: repeat(4, 1fr);
-}
-
-.stat-card,
-.count-box {
-  display: flex;
-  justify-content: flex-start;
-  gap: 15px;
-  border-radius: 8px;
-  width: 100%;
-}
-
-.stat-card {
-  padding: 23px;
-  border: 2px solid #ebe9e9;
-}
-
-.count-box {
-  padding: 20px;
-  border-left: 4px solid #fee00a;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.stat-card-icon,
-.count-box-icon {
-  background-color: #fffe7c;
-  color: #051b30;
-  display: flex;
-  align-items: center;
-  padding: 17px;
-}
-
-.stat-card-icon {
-  border-radius: 8px;
-}
-
-.count-box-icon {
-  border-radius: 50%;
-}
-
-.count-box-icon img{
-  width: 27px;
-  height: 27px;
-}
-
-.stat-card-content,
-.count-box-content {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  justify-content: center;
-  width: 100%;
-}
-
-.stat-card-label {
-  font-size: 18px;
-  font-weight: 500;
-  font-family: 'Poppins', sans-serif;
-}
-
-.count-box-label {
-  font-size: 15px;
-  font-weight: 300;
-  font-family: 'Poppins', sans-serif;
-}
-
-.stat-card-value {
-  font-size: 32px;
-  font-weight: 500;
-}
-
-.count-box-value {
-  font-size: 28px;
-  font-weight: 500;
-}
-
-.stat-card-value i {
-  font-size: 24px;
-  margin-right: 3px;
 }
 
 .branch-wrapper {
@@ -2492,6 +2415,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   gap: 17px;
   grid-template-columns: 2fr 1fr 1fr 1fr;
   justify-content: space-between;
+  margin-bottom: 8px;
 }
 
 .filter-box .input-wrapper input,
@@ -2772,51 +2696,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .payment-failed {
   background: #ffebee;
   color: #c62828;
-}
-
-/* Action Buttons */
-.action-buttons {
-  display: flex;
-  gap: 8px;
-}
-
-.action-btn {
-  width: 32px;
-  height: 32px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.3s;
-}
-
-.btn-edit {
-  background: #e3f2fd;
-  color: #1976d2;
-}
-
-.btn-edit:hover {
-  background: #bbdefb;
-}
-
-.btn-delete {
-  background: #ffebee;
-  color: #d32f2f;
-}
-
-.btn-delete:hover {
-  background: #ffcdd2;
-}
-
-.btn-view {
-  background: #f3e5f5;
-  color: #7b1fa2;
-}
-
-.btn-view:hover {
-  background: #e1bee7;
 }
 
 .header-content {
@@ -5098,7 +4977,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   min-width: 220px;
 }
 
-.users-table td.user-cell .user-cell-wrapper {
+.users-table td.user-cell .user-cell-wrapper,
+.employees-table td.user-cell .user-cell-wrapper {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -5113,12 +4993,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   display: flex;
   align-items: center;
   gap: 10px;
-}
-
-.user-action-btn.btn-cancel-reservation:hover {
-  color: #EF4444;
-  border-color: #EF4444;
-  background: #FEF2F2;
 }
 
 .res-actions-col {
@@ -5559,10 +5433,9 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   color: #F59E0B;
 }
 
-.user-actions-cell .actions-wrapper,
-.res-actions-cell .actions-wrapper {
+.actions-wrapper {
   display: flex;
-  gap: 6px;
+  gap: 8px;
   align-items: center;
 }
 
@@ -5581,10 +5454,22 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   font-size: 13px;
 }
 
-.user-action-btn.btn-view-user:hover,
-.user-action-btn.btn-view-reservation:hover {
+.btn-view-user:hover,
+.btn-view-reservation:hover,
+.btn-view:hover {
   color: #06B6D4;
   border-color: #06B6D4;
+}
+
+.btn-delete:hover,
+.btn-cancel-reservation:hover {
+  border-color: #EF4444;
+  color: #EF4444;
+}
+
+.btn-edit:hover {
+  border-color: #F59E0B;
+  color: #F59E0B;
 }
 
 .user-action-btn.btn-discount-user:hover {
@@ -5848,7 +5733,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .products-stats-grid, 
   .orders-stats-grid, 
   .reservations-stats-grid,
-  .head-office-cards {
+  .head-office-cards,
+  .employees-stats-grid {
     width: 98.5%;
     margin: 0 auto;
     padding: 10px 0;
@@ -5857,11 +5743,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
 
 @media screen and (max-width: 1353px) {
-  .count-box {
-    padding: 15px;
-    gap: 0;
-  }
-
   .filter-section {
     width: 100%;
   }
@@ -5893,14 +5774,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     width: 45%;
   }
 
-  .stat-card {
-    width: 45%;
-  }
-
-  .stat-card:last-child {
-    margin: 0 auto;
-  }
-
   .branch-wrapper {
     height: auto;
     max-height: none;
@@ -5910,15 +5783,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
   .sidebar-branches {
     max-height: 470px;
-  }
-
-  .employee-cards {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .count-box {
-    padding: 20px;
-    gap: 15px;
   }
 
   .pages-body {
@@ -5977,7 +5841,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .products-stats-grid,
   .orders-stats-grid,
   .reservations-stats-grid,
-  .head-office-cards {
+  .head-office-cards,
+  .employees-stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 
@@ -6058,6 +5923,14 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   
   .menus-table td:nth-child(4){
     width: 46%;
+  }
+}
+
+
+@media (min-width: 993px) {
+  #mySidenav:not(.show) .icon-a:hover::after {
+    opacity: 1;
+    transform: translateY(-50%) translateX(16px);
   }
 }
 
@@ -6282,15 +6155,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     font-size: 13px;
   }
 
-  .stat-card {
-    width: 48%;
-    padding: 19px;
-  }
-
-  .stat-card-icon {
-    padding: 14px;
-  }
-
   .filter-section {
     width: 100%;
     gap: 12px;
@@ -6326,7 +6190,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .products-stats-grid,
   .orders-stats-grid,
   .reservations-stats-grid,
-  .head-office-cards {
+  .head-office-cards,
+  .employees-stats-grid {
     gap: 12px;
   }
 
@@ -6336,7 +6201,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .products-stat-card,
   .orders-stat-card,
   .reservations-stat-card,
-  .head-office-stat-card {
+  .head-office-stat-card,
+  .employees-stat-card {
     padding: 18px 16px;
   }
 
@@ -6346,7 +6212,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .products-stat-count,
   .orders-stat-count,
   .reservations-stat-count,
-  .head-office-stat-count {
+  .head-office-stat-count,
+  .employees-stat-count {
     font-size: 22px;
   }
 
@@ -6456,18 +6323,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     font-size: 14px;
   }
 
-  .stat-card {
-    width: 90%;
-  }
-
-  .stat-card:last-child {
-    margin: 0;
-  }
-
-  .employee-cards {
-    grid-template-columns: repeat(1, 1fr);
-  }
-
   .benefits-grid {
     grid-template-columns: repeat(1, minmax(200px, 1fr));
   }
@@ -6503,7 +6358,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .menus-stat-icon,
   .products-stat-icon,
   .reservations-stat-icon,
-  .head-office-stat-icon {
+  .head-office-stat-icon,
+  .employees-stat-icon {
     width: 44px;
     height: 44px;
     border-radius: 10px;
@@ -6534,7 +6390,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .products-stats-grid,
   .orders-stats-grid,
   .reservations-stats-grid,
-  .head-office-cards {
+  .head-office-cards,
+  .employees-stats-grid {
     grid-template-columns: 1fr;
   }
 
@@ -6544,7 +6401,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .products-stat-card,
   .orders-stat-card,
   .reservations-stat-card,
-  .head-office-stat-card {
+  .head-office-stat-card,
+  .employees-stat-card {
     padding: 16px 14px;
   }
 
@@ -6554,7 +6412,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .products-stat-count,
   .orders-stat-count,
   .reservations-stat-count,
-  .head-office-stat-count {
+  .head-office-stat-count,
+  .employees-stat-count {
     font-size: 20px;
   }
 
@@ -6564,7 +6423,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .products-stat-label,
   .orders-stat-label,
   .reservations-stat-label,
-  .head-office-stat-label {
+  .head-office-stat-label,
+  .employees-stat-label {
     font-size: 13px;
   }
 
@@ -6927,23 +6787,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
   .table-exit-button i {
     font-size: 15px;
-  }
-
-  .stat-card {
-    width: 100%;
-  }
-
-  .stat-card-icon img {
-    width: 40px;
-    height: 40px;
-  }
-
-  .stat-card-label {
-    font-size: 17px;
-  }
-
-  .stat-card-value {
-    font-size: 29px;
   }
 
   .branch-chart h3, 
