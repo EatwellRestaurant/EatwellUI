@@ -8823,6 +8823,12 @@ $(document).ready(function() {
             <div class="permission-header chart-title">
                 <h2>İzin Geçmişi</h2>
 
+                <div style="display:flex; align-items:center; gap:12px;">
+                <button class="btn-add-leave" id="btnOpenAddLeaveModal">
+                    <i class="fa-solid fa-plus"></i>
+                    İzin Ekle
+                </button>
+
                 <div class="permission-filter-year">
                     <div class="input-wrapper">
                         <div class="dropdown" id="yearsDropdown">
@@ -8833,6 +8839,7 @@ $(document).ready(function() {
                             </div>
                         </div>        
                     </div>
+                </div>
                 </div>
             </div>
 
@@ -8852,6 +8859,210 @@ $(document).ready(function() {
 
         $('.permission-container').html(permissionHtml);
     }
+
+
+
+
+    function openAddLeaveModal(employeeId, employeeName) {
+
+        const today = new Date().toISOString().split('T')[0];
+
+        const leaveTypeOptions = Object.entries({
+            'Yıllık İzin'    : PermissionLeaveTypeEnum.AnnualLeave,
+            'Mazeret İzni'   : PermissionLeaveTypeEnum.ExcuseLeave,
+            'Ücretsiz İzin'  : PermissionLeaveTypeEnum.UnpaidLeave,
+            'Hastalık İzni'  : PermissionLeaveTypeEnum.SickLeave,
+            'Doğum İzni'     : PermissionLeaveTypeEnum.MaternityLeave,
+            'Babalık İzni'   : PermissionLeaveTypeEnum.PaternityLeave,
+            'Evlilik İzni'   : PermissionLeaveTypeEnum.MarriageLeave,
+            'Ölüm İzni'      : PermissionLeaveTypeEnum.BereavementLeave,
+        }).map(([label, val]) => `<option value="${val}">${label}</option>`).join('');
+
+        const statusOptions = `
+            <option value="${PermissionStatusEnum.Pending}">Beklemede</option>
+            <option value="${PermissionStatusEnum.Approved}">Onaylandı</option>
+            <option value="${PermissionStatusEnum.Rejected}">Reddedildi</option>
+        `;
+
+        const modalHTML = `
+            <div class="employee-leave-modal">
+                <div class="alm-panel">
+
+                    <div class="alm-header">
+                        <div class="alm-header-icon">
+                            <i class="fa-solid fa-calendar-plus"></i>
+                        </div>
+                        <div class="alm-header-text">
+                            <h2 class="alm-title">İzin Kaydı Ekle</h2>
+                            <p class="alm-subtitle">${employeeName}</p>
+                        </div>
+                        <button class="alm-close"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+
+                    <div class="alm-body">
+
+                        <div class="alm-field">
+                            <label>İzin Türü</label>
+                            <select id="alm-leave-type">${leaveTypeOptions}</select>
+                        </div>
+
+                        <div class="alm-date-row">
+                            <div class="alm-field">
+                                <label>Başlangıç Tarihi</label>
+                                <div class="alm-date-wrap">
+                                    <input type="date" id="alm-start-date" class="custom-date" value="${today}">
+                                    <i class="fa-regular fa-calendar alm-date-icon"></i>
+                                </div>
+                            </div>
+                            <div class="alm-field" id="alm-end-date-wrap">
+                                <label>Bitiş Tarihi</label>
+                                <div class="alm-date-wrap">
+                                    <input type="date" id="alm-end-date" class="custom-date" value="${today}">
+                                    <i class="fa-regular fa-calendar alm-date-icon"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <label class="alm-halfday-row">
+                            <input type="checkbox" id="alm-halfday">
+                            <span>Yarım gün izin</span>
+                        </label>
+
+                        <div class="alm-field">
+                            <label>Durum</label>
+                            <select id="alm-status">${statusOptions}</select>
+                        </div>
+
+                        <div class="alm-field">
+                            <label>Açıklama <span style="font-weight:400;text-transform:none;letter-spacing:0">(opsiyonel)</span></label>
+                            <textarea id="alm-description" placeholder="İzin nedeni veya ek bilgi..."></textarea>
+                        </div>
+
+                    </div>
+
+                    <div class="alm-divider"></div>
+
+                    <div class="alm-footer">
+                        <button class="alm-btn-cancel">
+                            <i class="fa-solid fa-rotate-left"></i>
+                            Vazgeç
+                        </button>
+                        <button class="alm-btn-submit" id="almSubmitBtn">
+                            <i class="fa-solid fa-check"></i>
+                            Kaydet
+                        </button>
+                    </div>
+
+                </div>
+            </div>`;
+
+        $('.employee-leave-modal').remove();
+        $('body').append(modalHTML);
+        $('.employee-leave-modal').fadeIn(250);
+
+        // Yarım gün seçilince bitiş tarihini gizle
+        $(document).on('change.alm', '#alm-halfday', function() {
+            if ($(this).is(':checked')) {
+                $('#alm-end-date-wrap').hide();
+            } else {
+                $('#alm-end-date-wrap').show();
+            }
+        });
+
+        // Kapat
+        $(document).on('click.alm', '.alm-close, .alm-btn-cancel', function() {
+            closeAddLeaveModal();
+        });
+
+        // Backdrop tıklama
+        $(document).on('click.alm', '.employee-leave-modal', function(e) {
+            if ($(e.target).hasClass('employee-leave-modal')) {
+                closeAddLeaveModal();
+            }
+        });
+
+        // Submit
+        $(document).on('click.alm', '#almSubmitBtn', function() {
+            submitLeave(employeeId);
+        });
+    }
+
+
+    function closeAddLeaveModal() {
+        $('.employee-leave-modal').fadeOut(220, function() { $(this).remove(); });
+        $(document).off('.alm');
+    }
+
+
+    function submitLeave(employeeId) {
+        const token = localStorage.getItem('token');
+
+        const leaveTypeId   = parseInt($('#alm-leave-type').val());
+        const startDate     = $('#alm-start-date').val();
+        const endDate       = $('#alm-halfday').is(':checked') ? startDate : $('#alm-end-date').val();
+        const isHalfDay     = $('#alm-halfday').is(':checked');
+        const status        = parseInt($('#alm-status').val());
+        const description   = $('#alm-description').val().trim();
+
+        if (!startDate) {
+            showToast('error', 'Uyarı', 'Başlangıç tarihi zorunludur.');
+            return;
+        }
+        if (!isHalfDay && endDate < startDate) {
+            showToast('error', 'Uyarı', 'Bitiş tarihi başlangıç tarihinden önce olamaz.');
+            return;
+        }
+
+        const $btn = $('#almSubmitBtn');
+        $btn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i> Kaydediliyor...');
+
+        $.ajax({
+            url: `${baseUrl}Employees/${employeeId}/Permissions`,
+            type: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify({
+                leaveTypeId,
+                startDate,
+                endDate,
+                isHalfDay,
+                status,
+                description: description || null
+            }),
+            success: function(response) {
+                if (response.success) {
+                    showToast('success', 'Başarılı', 'İzin kaydı eklendi.');
+                    closeAddLeaveModal();
+
+                    // Listeyi yenile
+                    const yearId      = $('#yearsSelectedId').attr('data-selected-id') || null;
+                    const leaveTypeId = $('.filter-tab.active').attr('data-leave-type') || null;
+                    fetchEmployeePermissions(employeeId, yearId, leaveTypeId);
+                } else {
+                    showToast('error', 'Hata', response.message || 'İzin kaydedilemedi.');
+                    $btn.prop('disabled', false).html('<i class="fa-solid fa-check"></i> Kaydet');
+                }
+            },
+            error: function(xhr) {
+                const msg = xhr.responseJSON?.Message;
+                if (xhr.status === 401) { handleLogout(msg); return; }
+                showToast('error', 'Hata', msg || 'İzin kaydedilemedi.');
+                $btn.prop('disabled', false).html('<i class="fa-solid fa-check"></i> Kaydet');
+            }
+        });
+    }
+
+
+    // "İzin Ekle" butonuna tıklandığında
+    $(document).on('click', '#btnOpenAddLeaveModal', function() {
+        const params = new URLSearchParams(window.location.search);
+        const employeeId   = params.get('id');
+        const employeeName = $('.profile-name').first().text().trim();
+        openAddLeaveModal(employeeId, employeeName);
+    });
+
 
 
 
@@ -10284,6 +10495,7 @@ $(document).ready(function() {
                 if (response.success && response.data) {
                     const employee = response.data;
                     const employeeName = `${employee.firstName} ${employee.lastName}`;
+                    const avatarColor = getAvatarColor(employee.firstName + employee.lastName);
                     shiftDayDtos = employee.shiftDayDtos;
                     permissionListDtos = employee.permissionListDtos;
 
@@ -10309,10 +10521,10 @@ $(document).ready(function() {
                     let employeeDetailHTML = `
                         <div class="main-grid px-7">
                             <div class="profile-card">
-                                <div class="profile-header">
-                                    <div class="profile-photo">
+                                <div class="profile-header" style="--avatar-color-tint: linear-gradient(135deg, ${avatarColor}30 0%, ${avatarColor}10 100%);">
+                                    <div class="profile-photo" ${employee.imagePath === null ? `style="background: ${avatarColor}; color: #fff; box-shadow: 0 0 0 4px rgba(255,255,255,0.15), 0 0 0 6px ${avatarColor}80;"` : 'style="box-shadow: 0 0 0 4px rgba(255,255,255,0.15);"'}>
                                         ${
-                                            employee.imagePath === null 
+                                            employee.imagePath === null
                                             ? `${employee.firstName.charAt(0)}${employee.lastName.charAt(0)}`
                                             : `<img src="${employee.imagePath}" alt="${employeeName}">`
                                         }
@@ -10343,7 +10555,7 @@ $(document).ready(function() {
                                         </div>
                                     </div>
                                     <div class="profile-item">
-                                        <i class="fas fa-calendar profile-item-icon"></i>
+                                        <i class="fas fa-calendar-days profile-item-icon"></i>
                                         <div class="profile-item-content">
                                             <div class="profile-item-label">İşe Başlama</div>
                                             <div class="profile-item-value">${formattedHireDate}</div>
