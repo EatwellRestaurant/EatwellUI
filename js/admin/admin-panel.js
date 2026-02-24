@@ -37,7 +37,7 @@ $(document).ready(function() {
     ];
 
 
-    const days = {
+    const shortDayNames  = {
         1: "PZT",
         2: "SAL",
         3: "ÇAR",
@@ -45,6 +45,17 @@ $(document).ready(function() {
         5: "CUM",
         6: "CMT",
         7: "PAZ"
+    };
+
+
+    const longDayNames = {
+        1: "Pazartesi",
+        2: "Salı",
+        3: "Çarşamba",
+        4: "Perşembe",
+        5: "Cuma",
+        6: "Cumartesi",
+        7: "Pazar"
     };
     
     
@@ -9097,11 +9108,11 @@ $(document).ready(function() {
 
         let shiftDayHtml = '';
 
-        shiftDayDtos.forEach(shiftDay => {
+        shiftDayDtos.forEach((shiftDay, i) => {
 
             let className = null;
             let displayText = null;
-            const dayName = days[shiftDay.shiftId];
+            const dayName = shortDayNames[shiftDay.shiftId];
 
             if (shiftDay.isHoliday){
                 className = "off";
@@ -9122,20 +9133,133 @@ $(document).ready(function() {
             }
 
             shiftDayHtml += `
-                <div class="schedule-day ${className}">
+                <div class="schedule-day ${className}" data-index="${i}">
                     <button class="edit-btn">
                         <i class="fa-solid fa-pencil"></i>
                     </button>
                     <strong>${dayName}</strong>
                     ${displayText}
                 </div>
-                `;            
+                `;
         });
 
         $('.schedule-grid').html(shiftDayHtml);
     }
 
 
+
+    function buildPermission(){
+        generatePermissionHtml();
+        fetchYears();
+        generateTimeLineHtml();
+    }
+
+
+
+    // Vardiya günü düzenleme: Edit butonuna tıklanınca kartı düzenleme moduna alıyoruz
+    $(document).on('click', '.schedule-day .edit-btn', function(e) {
+        e.stopPropagation();
+        const idx = parseInt($(this).closest('.schedule-day').data('index'));
+
+        // Açık başka bir edit formu varsa sıfırla
+        if ($('.schedule-day.editing').length > 0) {
+            generateShiftDayHtml();
+            buildPermission();
+        }
+
+        const shiftDay = shiftDayDtos[idx];
+        const dayName  = longDayNames[shiftDay.shiftId];
+        const isWorking = !shiftDay.isHoliday && !shiftDay.isLeave;
+        const startVal  = isWorking && shiftDay.startTime ? shiftDay.startTime.substring(0, 5) : '09:00';
+        const endVal    = isWorking && shiftDay.endTime   ? shiftDay.endTime.substring(0, 5)   : '18:00';
+
+        const $card = $(`.schedule-day[data-index="${idx}"]`);
+        $card.addClass('editing').html(`
+            <div class="shift-edit-form">
+                <div class="shift-edit-header">
+                    <strong>${dayName}</strong>
+                </div>
+                <div class="shift-type-toggle">
+                    <button class="stype-btn ${isWorking ? 'active' : ''}" data-type="working">Çalışıyor</button>
+                    <button class="stype-btn ${!isWorking ? 'active' : ''}" data-type="holiday">Tatil</button>
+                </div>
+                <div class="shift-times${isWorking ? '' : ' hidden'}">
+                    <input type="time" class="shift-start" value="${startVal}">
+                    <span>—</span>
+                    <input type="time" class="shift-end" value="${endVal}">
+                </div>
+                <div class="shift-edit-actions">
+                    <button class="shift-cancel-btn" title="İptal"><i class="fa-solid fa-xmark"></i></button>
+                    <button class="shift-save-btn" title="Kaydet"><i class="fa-solid fa-check"></i></button>
+                </div>
+            </div>
+        `);
+    });
+
+
+
+    // Vardiya tipini değiştirme (Çalışıyor / Tatil)
+    $(document).on('click', '.stype-btn', function() {
+        const $btn = $(this);
+        $btn.siblings('.stype-btn').removeClass('active');
+        $btn.addClass('active');
+        const $times = $btn.closest('.shift-edit-form').find('.shift-times');
+        if ($btn.data('type') === 'working') {
+            $times.removeClass('hidden');
+        } else {
+            $times.addClass('hidden');
+        }
+    });
+
+
+
+    // Vardiyada iptal butonuna tıklandığında
+    $(document).on('click', '.shift-cancel-btn', function() {
+        generateShiftDayHtml();
+        buildPermission();
+    });
+
+
+
+    // Vardiyayı Kaydetme
+    $(document).on('click', '.shift-save-btn', function() {
+        const $card = $(this).closest('.schedule-day');
+        const idx = parseInt($card.data('index'));
+        const $form = $card.find('.shift-edit-form');
+        const isHoliday = $form.find('.stype-btn.active').data('type') === 'holiday';
+        const startTime = $form.find('.shift-start').val() + ':00';
+        const endTime   = $form.find('.shift-end').val()   + ':00';
+
+        const payload = Object.assign({}, shiftDayDtos[idx], {
+            isHoliday,
+            isLeave: false,
+            startTime: !isHoliday ? startTime : shiftDayDtos[idx].startTime,
+            endTime:   !isHoliday ? endTime   : shiftDayDtos[idx].endTime
+        });
+
+        const $saveBtn = $form.find('.shift-save-btn');
+        $saveBtn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i>');
+
+        $.ajax({
+            url: `${baseUrl}employees/updateShiftDay`,
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify(payload),
+            success: function() {
+                shiftDayDtos[idx] = payload;
+                showToast('success', 'Başarılı', 'Vardiya güncellendi.');
+                buildPermission();
+            },
+            error: function() {
+                showToast('error', 'Hata', 'Vardiya güncellenirken hata oluştu!');
+                generateShiftDayHtml();
+                buildPermission();
+            }
+        });
+    });
 
 
 

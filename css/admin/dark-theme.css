@@ -524,3 +524,43 @@ body.dark-theme {
     border-color: #475569;
     color: #E2E8F0;
   }
+
+  body.dark-theme .schedule-day.editing {
+    background: #1E293B !important;
+    border-color: #06B6D4;
+    color: #E2E8F0;
+  }
+
+  body.dark-theme .shift-edit-header strong {
+    color: #06B6D4;
+  }
+
+  body.dark-theme .stype-btn {
+    border-color: #475569;
+    color: #94A3B8;
+  }
+
+  body.dark-theme .stype-btn.active {
+    background: #06B6D4;
+    border-color: #06B6D4;
+    color: #fff;
+  }
+
+  body.dark-theme .shift-times input[type="time"] {
+    background: #0F172A;
+    border-color: #475569;
+    color: #E2E8F0;
+  }
+
+  body.dark-theme .shift-times input[type="time"]:focus {
+    border-color: #06B6D4;
+  }
+
+  body.dark-theme .shift-cancel-btn {
+    background: #334155;
+    color: #94A3B8;
+  }
+
+  body.dark-theme .shift-cancel-btn:hover {
+    background: #475569;
+  }

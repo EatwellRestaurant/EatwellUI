@@ -3013,7 +3013,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .schedule-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 16px;
+  gap: 10px;
 }
 
 .schedule-day {
@@ -3056,6 +3056,124 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
 .schedule-day:hover .edit-btn {
   opacity: 1;
+}
+
+.schedule-day.editing {
+  height: auto;
+  max-height: 172px;
+  background: #fff !important;
+  border-color: #06B6D4;
+  color: #1E293B;
+  padding: 10px 8px;
+  justify-content: flex-start;
+  align-items: stretch;
+  gap: 0;
+}
+
+.shift-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.shift-edit-header strong {
+  font-size: 12px;
+  font-weight: 700;
+  color: #06B6D4;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.shift-type-toggle {
+  display: flex;
+  gap: 5px;
+}
+
+.stype-btn {
+  flex: 1;
+  padding: 6px 2px;
+  border: 1.5px solid #CBD5E1;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: 'Poppins', sans-serif;
+  color: #64748B;
+  transition: all .3s ease-in-out;
+  white-space: nowrap;
+}
+
+.stype-btn.active {
+  background: #06B6D4;
+  border-color: #06B6D4;
+  color: #fff;
+  font-weight: 600;
+}
+
+.shift-times {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.shift-times.hidden {
+  display: none;
+}
+
+.shift-times input[type="time"] {
+  flex: 1;
+  min-width: 0;
+  padding: 5px 8px;
+  border: 1.5px solid #CBD5E1;
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: 'Poppins', sans-serif;
+  color: #1E293B;
+  background: #F8FAFC;
+  text-align: center;
+}
+
+.shift-times input[type="time"]:focus {
+  outline: none;
+  border-color: #06B6D4;
+}
+
+.shift-times span {
+  color: #94A3B8;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.shift-edit-actions {
+  display: flex;
+  gap: 5px;
+  margin-top: 2px;
+}
+
+.shift-cancel-btn,
+.shift-save-btn {
+  flex: 1;
+  padding: 6px 4px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all .3s ease-in-out;
+}
+
+.shift-save-btn {
+  background: #10b95c;
+  color: #fff;
+}
+
+.shift-save-btn:hover:not(:disabled) {
+  background: #0da050;
+}
+
+.shift-save-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 .permission-container,
@@ -4866,7 +4984,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .pum-btn-cancel,
 .tcm-btn-cancel,
 .btn-undo,
-.alm-btn-cancel {
+.alm-btn-cancel,
+.shift-cancel-btn {
   background: #dcdfe4;
   color: #556274;
 }
@@ -4876,7 +4995,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .pum-btn-cancel:hover,
 .tcm-btn-cancel:hover,
 .btn-undo:hover,
-.alm-btn-cancel:hover {
+.alm-btn-cancel:hover,
+.shift-cancel-btn:hover {
   background: #cacfd6;
   color: #38404d;
 }
@@ -6016,7 +6136,11 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   }
 
   .schedule-grid {
-    gap: 6px;
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .schedule-day {
+    height: 100px;
   }
 
   .schedule-header .swap-info-box { 
@@ -6109,15 +6233,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .company-settings__field textarea,
   .company-settings__button {
     width: 100%;
-  }
-
-  .schedule-grid {
-    gap: 16px;
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  .schedule-day {
-    height: 100px;
   }
 }
 
@@ -6393,6 +6508,10 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     gap: 20px;
   }
 
+  .schedule-grid {
+    gap: 6px;
+  }
+
   .schedule-header .swap-info-box {
     width: 80%;
   }
@@ -6544,7 +6663,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   }
 
   .schedule-grid {
-    gap: 11px;
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .benefits-grid {
@@ -7073,8 +7192,15 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   }
 
   .schedule-grid {
-    gap: 9px;
-    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    grid-template-columns: repeat(1, 1fr);
+    justify-items: center;
+  }
+
+  .schedule-day {
+    font-size: 14px;
+    width: 75%;
+    height: 90px;
   }
 
   .schedule-header .swap-info-box {
@@ -7475,20 +7601,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     font-size: 13px;
   }
 
-  .schedule-grid {
-    gap: 12px;
-    grid-template-columns: repeat(1, 1fr);
-    justify-items: center;
-  }
-
   .schedule-header .swap-info-box {
     width: 100%;
-  }
-
-  .schedule-day {
-    font-size: 14px;
-    width: 75%;
-    height: 85px;
   }
 
   .mdm-action-btn,
