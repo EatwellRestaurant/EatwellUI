@@ -564,3 +564,89 @@ body.dark-theme {
   body.dark-theme .shift-cancel-btn:hover {
     background: #475569;
   }
+
+  body.dark-theme .sam-panel {
+    background: #1E293B;
+  }
+
+  body.dark-theme .sam-section {
+    background: #0F172A;
+    border-color: #334155;
+    border-left-width: 3px;
+  }
+
+  body.dark-theme .sam-section-label {
+    color: #94A3B8;
+  }
+
+  body.dark-theme .sam-select,
+  body.dark-theme .sam-currency-input,
+  body.dark-theme .sam-textarea {
+    background: #0F172A;
+    border-color: #334155;
+    color: #E2E8F0;
+  }
+
+  body.dark-theme .sam-select:focus,
+  body.dark-theme .sam-currency-input:focus,
+  body.dark-theme .sam-textarea:focus {
+    border-color: #06B6D4;
+    box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
+  }
+
+  body.dark-theme .sam-currency-symbol {
+    color: #94A3B8;
+  }
+
+  body.dark-theme .sam-allowance-item {
+    background: #0F172A;
+    border-color: #334155;
+  }
+
+  body.dark-theme .sam-allowance-info {
+    color: #E2E8F0;
+  }
+
+  body.dark-theme .sam-toggle-slider {
+    background: #475569;
+  }
+
+  body.dark-theme .sam-net-card {
+    background: linear-gradient(135deg, #064e3b, #065f46);
+    border-color: #059669;
+  }
+
+  body.dark-theme .sam-net-left {
+    color: #a7f3d0;
+  }
+
+  body.dark-theme .sam-divider {
+    background: #334155;
+  }
+
+  body.dark-theme .sam-btn-cancel {
+    background: #1E293B;
+    border-color: #334155;
+    color: #94A3B8;
+  }
+
+  body.dark-theme .sam-btn-cancel:hover {
+    background: #334155;
+    color: #E2E8F0;
+  }
+
+  body.dark-theme .sam-optional {
+    color: #475569;
+  }
+
+  body.dark-theme .sam-dynamic-item--card {
+    background: #0F172A;
+    border-color: #334155;
+  }
+
+  body.dark-theme .sam-item-top-row .sam-select,
+  body.dark-theme .sam-item-bottom-row .sam-currency-input {
+    background: #1E293B;
+    border-color: #475569;
+    color: #E2E8F0;
+  }

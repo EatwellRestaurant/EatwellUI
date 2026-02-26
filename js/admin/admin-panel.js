@@ -1178,7 +1178,14 @@ $(document).ready(function() {
     }
 
     function formatCurrency(amount) {
-        return '₺' + amount.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        return '₺' + formatNumberTR(amount);
+    }
+
+    function formatNumberTR(amount) {
+        return amount.toLocaleString('tr-TR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
     }
 
     // Chart instance'ları temizle
@@ -3697,6 +3704,17 @@ $(document).ready(function() {
         });
     }
 
+
+    function parseTrNumber(value) {
+        if (!value) return 0;
+        return parseFloat(
+            value
+                .replace(/\./g, '')   // binlik ayırıcıyı sil
+                .replace(',', '.')    // virgülü noktaya çevir
+        ) || 0;
+    }
+
+
     function formatPriceInputLive(value) {
 
         // Eğer kullanıcı hiçbir şey yazmadıysa (null, undefined, veya boş string) direkt boş string dönüyoruz. 
@@ -3705,31 +3723,35 @@ $(document).ready(function() {
     
         // Tüm noktaları siliyoruz. 
         value = value.replace(/\./g, '');
-
-        // Rakam ve virgül dışında kalan her şeyi siliyoruz.
+    
+        // Sadece rakam ve virgül kalsın
         value = value.replace(/[^\d,]/g, '');
     
-        // Virgülün solundaki ve sağındaki kısımları ayırıyoruz.
+        // Sadece ilk virgül geçerli olsun
         const parts = value.split(',');
+        const hasComma = value.includes(',');
     
-        let integerPart = parts[0]; //Ana para kısmı
-        let decimalPart = parts[1] || ''; //Kuruş kısmı
+        let integerPart = parts[0];
+        let decimalPart = parts[1] ?? '';
     
-
-        //Sayıyı sağdan sola doğru 3'erli gruplar haline getirip her 3'lünün önüne bir nokta koyuyoruz.
+        // Binlik ayırıcı
         integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     
-
-        // Eğer kullanıcı kuruş kısmını çok uzun yazdıysa, sadece ilk 2 karakterini alıyoruz.
+        // Kuruş kısmı max 2 hane
         if (decimalPart.length > 2) {
             decimalPart = decimalPart.substring(0, 2);
         }
     
-        return decimalPart.length > 0 ? `${integerPart},${decimalPart}` : integerPart;
+        // Kullanıcı virgül girdiyse virgülü koru
+        if (hasComma) {
+            return `${integerPart},${decimalPart}`;
+        }
+    
+        return integerPart;
     }
     
     // Kullanıcı yazarken CANLI formatlama
-    $(document).on('input', '.price-value', function () {
+    $(document).on('input', '.price-value, .sam-currency-input', function () {
         // İmlecin input içindeki tam pozisyonunu alıyoruz.
         let cursorPosition = this.selectionStart; 
 
@@ -3758,7 +3780,7 @@ $(document).ready(function() {
     });
     
     // Kullanıcı input'tan çıkınca (blur) ondalıklı hale getiriyoruz.
-    $(document).on('blur', '.price-value', function () {
+    $(document).on('blur', '.price-value, .sam-currency-input', function () {
         var value = $(this).val();
     
         // Eğer kullanıcı hiçbir şey yazmadıysa (null, undefined, veya boş string) direkt boş string dönüyoruz. 
@@ -7866,6 +7888,24 @@ $(document).ready(function() {
 
 
 
+    function selectDropdownOptionForPayment(dropdownSelector, optionElement, dataSelector) {
+        const dropdown = $(dropdownSelector);
+        const dropdownToggle = dropdown.find(".dropdown-toggle");
+    
+        const label = $(optionElement).text();
+        const selectedId = $(optionElement).data(dataSelector);
+    
+
+        dropdownToggle.text(label);
+        dropdownToggle.attr('data-selected-id', selectedId); // seçilen nesnenin id bilgisini saklıyoruz
+    
+
+        dropdown.find(".dropdown-menu").removeClass("active");
+        dropdown.find('i').removeClass('rotated-180');
+    }
+
+
+
     // Gönderilen dropdown kutusuna tıklandığında menüyü açıp kapatır, border rengini değiştirir ve ikonun yönünü günceller.
     function toggleDropdown(dropdownSelector) {
 
@@ -7891,6 +7931,31 @@ $(document).ready(function() {
             dropdown.find('i').addClass('rotated-180');
         } else {
             toggle.css("border-color", "#dedbdb");
+            dropdown.find('i').removeClass('rotated-180');
+        }
+    }
+
+
+
+    function toggleDropdownForPayment(dropdownSelector){
+        
+        const dropdown = $(dropdownSelector);
+        const menu = dropdown.find(".dropdown-menu");
+
+        // Önce diğer açık dropdown'ları kapatıyoruz
+        $(".dropdown").not(dropdown).each(function() {
+            const otherDropdown = $(this);
+            const menu = otherDropdown.find(".dropdown-menu");
+        
+            menu.removeClass("active");
+            otherDropdown.find("i").removeClass("rotated-180");
+        });
+
+        menu.toggleClass("active");
+    
+        if (menu.hasClass("active")) {
+            dropdown.find('i').addClass('rotated-180');
+        } else {
             dropdown.find('i').removeClass('rotated-180');
         }
     }
@@ -8835,22 +8900,22 @@ $(document).ready(function() {
                 <h2>İzin Geçmişi</h2>
 
                 <div style="display:flex; align-items:center; gap:12px;">
-                <button class="btn-add-leave" id="btnOpenAddLeaveModal">
-                    <i class="fa-solid fa-plus"></i>
-                    İzin Ekle
-                </button>
-
-                <div class="permission-filter-year">
-                    <div class="input-wrapper">
-                        <div class="dropdown" id="yearsDropdown">
-                            <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
-                            <div class="dropdown-toggle" id="yearsSelectedId" data-selected-id="">${year} Yılı</div>
-                            
-                            <div class="dropdown-menu">  
-                            </div>
-                        </div>        
+                    <div class="permission-filter-year">
+                        <div class="input-wrapper">
+                            <div class="dropdown" id="yearsDropdown">
+                                <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
+                                <div class="dropdown-toggle" id="yearsSelectedId" data-selected-id="">${year} Yılı</div>
+                                
+                                <div class="dropdown-menu">  
+                                </div>
+                            </div>        
+                        </div>
                     </div>
-                </div>
+
+                    <button class="btn-add-leave" id="btnOpenAddLeaveModal">
+                        <i class="fa-solid fa-plus"></i>
+                        İzin Ekle
+                    </button>
                 </div>
             </div>
 
@@ -9074,6 +9139,573 @@ $(document).ready(function() {
         openAddLeaveModal(employeeId, employeeName);
     });
 
+    
+
+    // "Maaş Ekle" butonuna tıklandığında
+    $(document).on('click', '#btnOpenAddSalaryModal', function() {
+        const params = new URLSearchParams(window.location.search);
+        const employeeId   = params.get('id');
+        const employeeName = $('.profile-name').first().text().trim();
+        openAddSalaryModal(employeeId, employeeName);
+    });
+
+
+    function openAddSalaryModal(employeeId, employeeName) {
+        const currentYear  = new Date().getFullYear();
+        const currentMonth = new Date().getMonth() + 1;
+
+        const months = [
+            [1,'Ocak'],[2,'Şubat'],[3,'Mart'],[4,'Nisan'],
+            [5,'Mayıs'],[6,'Haziran'],[7,'Temmuz'],[8,'Ağustos'],
+            [9,'Eylül'],[10,'Ekim'],[11,'Kasım'],[12,'Aralık']
+        ];
+        const monthOptions = months
+            .map(([v,l]) => `<option value="${v}"${v===currentMonth?' selected':''}>${l}</option>`)
+            .join('');
+
+        const yearOptions = Array.from({length:6},(_,i)=>currentYear-i)
+            .map(y=>`<option value="${y}"${y===currentYear?' selected':''}>${y}</option>`)
+            .join('');
+
+        const modalHTML = `
+            <div class="employee-salary-modal">
+                <div class="sam-panel">
+
+                    <div class="sam-header">
+                        <div class="sam-header-icon">
+                            <i class="fa-solid fa-money-bill-wave"></i>
+                        </div>
+                        <div class="sam-header-text">
+                            <h2 class="sam-title">Maaş Kaydı Ekle</h2>
+                            <p class="sam-subtitle">${employeeName}</p>
+                        </div>
+                        <button class="sam-close"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+
+                    <div class="sam-body">
+
+                        <div class="sam-section sam-section--period">
+                            <div class="sam-section-label">
+                                <i class="fa-regular fa-calendar"></i>
+                                Dönem
+                            </div>
+                            <div class="sam-period-row">
+                                <select id="sam-month" class="sam-select">${monthOptions}</select>
+                                <select id="sam-year" class="sam-select">${yearOptions}</select>
+                            </div>
+                        </div>
+
+                        <div class="sam-section sam-section--base">
+                            <div class="sam-section-label">
+                                <i class="fa-solid fa-coins"></i>
+                                Temel Maaş
+                            </div>
+                            <div class="sam-currency-wrap">
+                                <span class="sam-currency-symbol">₺</span>
+                                <input type="text" id="sam-base-salary" class="sam-currency-input" inputmode="decimal" placeholder="0,00" pattern="[0-9]*" autocomplete="off">
+                            </div>
+                        </div>
+
+                        <div class="sam-section sam-section--bonus">
+                            <div class="sam-section-label">
+                                <i class="fa-solid fa-arrow-trend-up"></i>
+                                Primler
+                                <span class="sam-count-badge sam-count-badge--green" id="sam-bonus-count">0</span>
+                            </div>
+                            <div class="sam-dynamic-list" id="sam-bonus-list"></div>
+                            <button class="sam-add-btn sam-add-btn--green" id="sam-add-bonus">
+                                <i class="fa-solid fa-plus"></i>
+                                Prim Ekle
+                            </button>
+                        </div>
+
+                        <div class="sam-section sam-section--allowance">
+                            <div class="sam-section-label">
+                                <i class="fa-solid fa-receipt"></i>
+                                Yan Ödemeler
+                            </div>
+                            <div class="sam-allowance-list">
+                                <div class="sam-allowance-item">
+                                    <div class="sam-allowance-info">
+                                        <i class="fa-solid fa-utensils"></i>
+                                        <span>Yemek Yardımı</span>
+                                    </div>
+                                    <div class="sam-allowance-controls">
+                                        <div class="sam-currency-wrap sam-currency-wrap--sm" id="sam-meal-input-wrap" style="display:none;">
+                                            <span class="sam-currency-symbol">₺</span>
+                                            <input type="text" id="sam-meal-amount" class="sam-currency-input" inputmode="decimal" placeholder="0,00" pattern="[0-9]*" autocomplete="off">
+                                        </div>
+                                        <label class="sam-toggle">
+                                            <input type="checkbox" id="sam-meal-toggle">
+                                            <span class="sam-toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="sam-allowance-item">
+                                    <div class="sam-allowance-info">
+                                        <i class="fa-solid fa-bus"></i>
+                                        <span>Ulaşım Yardımı</span>
+                                    </div>
+                                    <div class="sam-allowance-controls">
+                                        <div class="sam-currency-wrap sam-currency-wrap--sm" id="sam-transport-input-wrap" style="display:none;">
+                                            <span class="sam-currency-symbol">₺</span>
+                                            <input type="text" id="sam-transport-amount" class="sam-currency-input" inputmode="decimal" placeholder="0,00" pattern="[0-9]*" autocomplete="off">
+                                        </div>
+                                        <label class="sam-toggle">
+                                            <input type="checkbox" id="sam-transport-toggle">
+                                            <span class="sam-toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="sam-allowance-item">
+                                    <div class="sam-allowance-info">
+                                        <i class="fa-solid fa-graduation-cap"></i>
+                                        <span>Eğitim Desteği</span>
+                                    </div>
+                                    <div class="sam-allowance-controls">
+                                        <div class="sam-currency-wrap sam-currency-wrap--sm" id="sam-graduation-input-wrap" style="display:none;">
+                                            <span class="sam-currency-symbol">₺</span>
+                                            <input type="text" id="sam-graduation-amount" class="sam-currency-input" inputmode="decimal" placeholder="0,00" pattern="[0-9]*" autocomplete="off">
+                                        </div>
+                                        <label class="sam-toggle">
+                                            <input type="checkbox" id="sam-graduation-toggle">
+                                            <span class="sam-toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="sam-section sam-section--deduction">
+                            <div class="sam-section-label">
+                                <i class="fa-solid fa-circle-minus"></i>
+                                Kesintiler
+                                <span class="sam-count-badge sam-count-badge--red" id="sam-deduction-count">0</span>
+                            </div>
+                            <div class="sam-dynamic-list" id="sam-deduction-list"></div>
+                            <button class="sam-add-btn sam-add-btn--red" id="sam-add-deduction">
+                                <i class="fa-solid fa-plus"></i>
+                                Kesinti Ekle
+                            </button>
+                        </div>
+
+                        <div class="sam-net-card">
+                            <div class="sam-net-left">
+                                <i class="fa-solid fa-calculator"></i>
+                                <span>Net Maaş (Hesaplanan)</span>
+                            </div>
+                            <div class="sam-net-amount" id="sam-net-salary">₺0</div>
+                        </div>
+
+                        <div class="sam-section sam-section--status">
+                            <div class="sam-section-label">
+                                <i class="fa-solid fa-circle-check"></i>
+                                Ödeme Durumu
+                            </div>
+                            <select id="sam-payment-status" class="sam-select">
+                                <option value="1">Beklemede</option>
+                                <option value="2">Onaylandı</option>
+                                <option value="3">Ödendi</option>
+                                <option value="4">Reddedildi</option>
+                                <option value="5">İptal Edildi</option>
+                                <option value="6">Başarısız</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="sam-divider"></div>
+
+                    <div class="sam-footer">
+                        <button class="sam-btn-cancel">
+                            <i class="fa-solid fa-rotate-left"></i>
+                            Vazgeç
+                        </button>
+                        <button class="sam-btn-submit" id="samSubmitBtn">
+                            <i class="fa-solid fa-check"></i>
+                            Kaydet
+                        </button>
+                    </div>
+
+                </div>
+            </div>`;
+
+        $('.employee-salary-modal').remove();
+        $('body').append(modalHTML);
+        $('.employee-salary-modal').fadeIn(250);
+
+
+        $(document).on('change.sam', '#sam-meal-toggle', function() {
+            if ($(this).is(':checked')) {
+                $('#sam-meal-input-wrap').slideDown(200);
+            } else {
+                $('#sam-meal-input-wrap').slideUp(200);
+                $('#sam-meal-amount').val('');
+            }
+            calculateSamNetSalary();
+        });
+
+
+        $(document).on('change.sam', '#sam-transport-toggle', function() {
+            if ($(this).is(':checked')) {
+                $('#sam-transport-input-wrap').slideDown(200);
+            } else {
+                $('#sam-transport-input-wrap').slideUp(200);
+                $('#sam-transport-amount').val('');
+            }
+            calculateSamNetSalary();
+        });
+        
+
+        $(document).on('change.sam', '#sam-graduation-toggle', function() {
+            if ($(this).is(':checked')) {
+                $('#sam-graduation-input-wrap').slideDown(200);
+            } else {
+                $('#sam-graduation-input-wrap').slideUp(200);
+                $('#sam-graduation-amount').val('');
+            }
+            calculateSamNetSalary();
+        });
+
+
+        $(document).on('click.sam', '#sam-add-bonus', function() {
+            addSamBonusItem();
+            updatePaymentList("#bonusPaymentDropdown", "bonus-payment");
+        });
+        
+
+        $(document).on('click.sam', '#sam-add-deduction', function() {
+            addSamDeductionItem();
+            updatePaymentList("#deductionPaymentDropdown", "deduction-payment");
+        });
+
+
+        $(document).on('click.sam', '.sam-remove-item', function() {
+            $(this).closest('.sam-dynamic-item').remove();
+            updateSamCounts();
+            calculateSamNetSalary();
+        });
+
+
+        $(document).on('change.sam', '.sam-item-payment-status', function() {
+            applySamStatusColor(this);
+        });
+
+
+        $(document).on('input.sam', '#sam-base-salary, #sam-meal-amount, #sam-transport-amount, #sam-graduation-amount, .sam-income-input, .sam-deduction-input', function() {
+            calculateSamNetSalary();
+        });
+
+
+        $(document).on('click.sam', '.sam-close, .sam-btn-cancel', function() {
+            closeAddSalaryModal();
+        });
+
+
+        $(document).on('click.sam', '.employee-salary-modal', function(e) {
+            if ($(e.target).hasClass('employee-salary-modal')) {
+                closeAddSalaryModal();
+            }
+        });
+
+
+        $(document).on('click.sam', '#samSubmitBtn', function() {
+            submitSalary(employeeId);
+        });
+    }
+
+
+    function closeAddSalaryModal() {
+        $('.employee-salary-modal').fadeOut(220, function() { $(this).remove(); });
+        $(document).off('.sam');
+    }
+
+
+    const paymentDtos = [
+        { id: 1, name: "Beklemede" },
+        { id: 2, name: "Onaylandı" },
+        { id: 3, name: "Ödendi" },
+        { id: 4, name: "Reddedildi" },
+        { id: 5, name: "İptal Edildi" },
+        { id: 6, name: "Başarısız" }
+    ];
+
+
+    function updatePaymentList(dropdownSelector, selectorName){
+
+        const dropdown = $(dropdownSelector);
+        let $menu = dropdown.find('.dropdown-menu');
+
+        // İlk eleman hariç diğerlerini siliyoruz
+        $menu.children().not(':first').remove();
+
+        let paymentsHTML = '';
+
+        if (paymentDtos.length > 0) {
+
+            // Yılları ekle
+            paymentDtos.forEach(payment => {
+                paymentsHTML += `
+                    <div class="dropdown-option" data-${selectorName}-id="${payment.id}">${payment.name}</div>
+                `;
+            })
+        } 
+
+        $menu.append(paymentsHTML);
+    }
+
+
+    function applySamStatusColor(el) {
+        const colorMap = {
+            '1': { bg: '#FEF3C7', color: '#D97706', border: '#FCD34D' },
+            '2': { bg: '#E0F2FE', color: '#0891B2', border: '#7DD3FC' },
+            '3': { bg: '#D1FAE5', color: '#059669', border: '#6EE7B7' },
+            '4': { bg: '#FEE2E2', color: '#DC2626', border: '#FCA5A5' },
+            '5': { bg: '#F3F4F6', color: '#6B7280', border: '#D1D5DB' },
+            '6': { bg: '#FEE2E2', color: '#991B1B', border: '#FCA5A5' }
+        };
+        const c = colorMap[$(el).val()] || colorMap['1'];
+        $(el).css({ background: c.bg, color: c.color, borderColor: c.border });
+    }
+
+
+    function addSamBonusItem() {
+        const typeOpts = `
+            <option value="1">Performans Primi</option>
+            <option value="2">Vardiya Primi</option>
+            <option value="3">Hafta Sonu Primi</option>
+            <option value="4">Fazla Mesai</option>
+            <option value="5">Tatil Primi</option>
+            <option value="6">Satış Primi</option>
+            <option value="7">Proje Tamamlama</option>
+            <option value="8">Referans Primi</option>
+            <option value="9">Özel Prim</option>`;
+
+        const $item = $(`
+            <div class="sam-dynamic-item sam-dynamic-item--card">
+                <div class="sam-item-top-row">
+                    <select class="sam-select sam-item-type sam-bonus-type">${typeOpts}</select>
+                </div>
+                <div class="sam-item-bottom-row">
+                    <div class="sam-currency-wrap sam-currency-wrap--sm">
+                        <span class="sam-currency-symbol">₺</span>
+                        <input type="text" class="sam-currency-input sam-income-input" inputmode="decimal" placeholder="0,00" pattern="[0-9]*" autocomplete="off">
+                    </div>
+                    <div class="dropdown" id="bonusPaymentDropdown">
+                        <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
+                        
+                        <div class="dropdown-toggle sam-status-select" id="bonusPaymentSelectedId" data-selected-id="1">Beklemede</div>
+                        
+                        <div class="dropdown-menu">
+                        </div>
+                    </div>    
+                    <button class="sam-remove-item" title="Kaldır"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            </div>`);
+
+        $('#sam-bonus-list').append($item);
+        applySamStatusColor($item.find('.sam-item-payment-status')[0]);
+        updateSamCounts();
+        calculateSamNetSalary();
+    }
+
+
+    // Maaş kaydında Primler bölümündeki "Ödeme" dropdown'ına tıklandığında
+    $(document).on('click', '#bonusPaymentDropdown', function(e) {
+        e.stopPropagation(); 
+        
+        toggleDropdownForPayment("#bonusPaymentDropdown");
+    });
+
+
+
+    // "Ödeme" option kutusunda bir seçenek seçildiğinde
+    $(document).on('click', '#bonusPaymentDropdown .dropdown-option', function(e) {
+        e.stopPropagation();
+
+        selectDropdownOptionForPayment("#bonusPaymentDropdown", this, "bonus-payment-id");
+    });
+
+
+
+    // Dışarı tıklanınca Ödeme dropdown'ını kapat
+    $(document).on('click', function(e) {
+        const bonusPaymentDropdown = $("#bonusPaymentDropdown");
+        const deductionPaymentDropdown = $("#deductionPaymentDropdown");
+
+        [
+            bonusPaymentDropdown, 
+            deductionPaymentDropdown
+        ]
+            .forEach($dd => {
+            if (!$dd.is(e.target) && $dd.has(e.target).length === 0) {
+                $dd.find(".dropdown-menu").removeClass("active");
+                $dd.find("i").removeClass("rotated-180");
+            }
+        });
+    });
+
+
+
+    // "Ödeme" option kutusunda bir seçenek seçildiğinde
+    $(document).on('click', '#deductionPaymentDropdown .dropdown-option', function(e) {
+        e.stopPropagation();
+
+        selectDropdownOptionForPayment("#deductionPaymentDropdown", this, "deduction-payment-id");
+    });
+
+
+
+    // Maaş kaydında Kesintiler bölümündeki "Ödeme" dropdown'ına tıklandığında
+    $(document).on('click', '#deductionPaymentDropdown', function(e) {
+        e.stopPropagation(); 
+        
+        toggleDropdownForPayment("#deductionPaymentDropdown");
+    });
+
+
+
+    function addSamDeductionItem() {
+        const typeOpts = `
+            <option value="1">SGK Kesintisi</option>
+            <option value="2">Gelir Vergisi</option>
+            <option value="3">İşsizlik Sigortası</option>
+            <option value="4">Sendika Ücreti</option>
+            <option value="5">Özel Sağlık Sigortası</option>
+            <option value="6">Diğer</option>`;
+
+        const $item = $(`
+            <div class="sam-dynamic-item sam-dynamic-item--card">
+                <div class="sam-item-top-row">
+                    <select class="sam-select sam-item-type sam-deduction-type">${typeOpts}</select>
+                </div>
+                <div class="sam-item-bottom-row">
+                    <div class="sam-currency-wrap sam-currency-wrap--sm">
+                        <span class="sam-currency-symbol">₺</span>
+                        <input type="text" class="sam-currency-input sam-deduction-input" inputmode="decimal" placeholder="0,00" pattern="[0-9]*" autocomplete="off">
+                    </div>
+                    <div class="dropdown" id="deductionPaymentDropdown">
+                        <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
+                        
+                        <div class="dropdown-toggle sam-status-select" id="deductionPaymentSelectedId" data-selected-id="1">Beklemede</div>
+                        
+                        <div class="dropdown-menu">
+                        </div>
+                    </div>    
+                    <button class="sam-remove-item" title="Kaldır"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            </div>`);
+
+        $('#sam-deduction-list').append($item);
+        applySamStatusColor($item.find('.sam-item-payment-status')[0]);
+        updateSamCounts();
+        calculateSamNetSalary();
+    }
+
+
+    function updateSamCounts() {
+        $('#sam-bonus-count').text($('#sam-bonus-list .sam-dynamic-item').length);
+        $('#sam-deduction-count').text($('#sam-deduction-list .sam-dynamic-item').length);
+    }
+
+
+
+
+
+    function calculateSamNetSalary() {
+        const base = parseTrNumber($('#sam-base-salary').val()) || 0;
+
+        let bonusTotal = 0;
+        $('.sam-income-input').each(function() { bonusTotal += parseTrNumber($(this).val()) || 0; });
+
+        const meal      = $('#sam-meal-toggle').is(':checked')      ? (parseTrNumber($('#sam-meal-amount').val())      || 0) : 0;
+        const transport = $('#sam-transport-toggle').is(':checked')  ? (parseTrNumber($('#sam-transport-amount').val()) || 0) : 0;
+        const graduation = $('#sam-graduation-toggle').is(':checked')  ? (parseTrNumber($('#sam-graduation-amount').val()) || 0) : 0;
+
+        let deductionTotal = 0;
+        $('.sam-deduction-input').each(function() { deductionTotal += parseTrNumber($(this).val()) || 0; });
+
+        const net = base + bonusTotal + meal + transport + graduation - deductionTotal;
+        const formatted = net.toLocaleString('tr-TR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    
+        $('#sam-net-salary').text(`₺${formatted}`);
+    }
+
+
+    function submitSalary(employeeId) {
+        const monthId       = parseInt($('#sam-month').val());
+        const yearId        = parseInt($('#sam-year').val());
+        const baseSalary    = parseTrNumber($('#sam-base-salary').val());
+        const paymentStatus = parseInt($('#sam-payment-status').val());
+
+        if (!baseSalary || baseSalary <= 0) {
+            showToast('error', 'Uyarı', 'Temel maaş girilmelidir.');
+            return;
+        }
+
+        const bonuses = [];
+        $('#sam-bonus-list .sam-dynamic-item').each(function() {
+            const type          = parseInt($(this).find('.sam-bonus-type').val());
+            const amount        = parseTrNumber($(this).find('.sam-income-input').val());
+            const bonusStatus   = parseInt($(this).find('.sam-item-payment-status').val()) || 1;
+            if (amount > 0) bonuses.push({ bonusType: type, amount, paymentStatus: bonusStatus });
+        });
+
+        const deductions = [];
+        $('#sam-deduction-list .sam-dynamic-item').each(function() {
+            const type             = parseInt($(this).find('.sam-deduction-type').val());
+            const amount           = parseTrNumber($(this).find('.sam-deduction-input').val());
+            const deductionStatus  = parseInt($(this).find('.sam-item-payment-status').val()) || 1;
+            if (amount > 0) deductions.push({ deductionType: type, amount, paymentStatus: deductionStatus });
+        });
+
+        const mealAllowance      = $('#sam-meal-toggle').is(':checked')     ? (parseTrNumber($('#sam-meal-amount').val())      || 0) : 0;
+        const transportAllowance = $('#sam-transport-toggle').is(':checked') ? (parseTrNumber($('#sam-transport-amount').val()) || 0) : 0;
+        const graduationAllowance = $('#sam-graduation-toggle').is(':checked') ? (parseTrNumber($('#sam-graduation-amount').val()) || 0) : 0;
+
+        const $btn = $('#samSubmitBtn');
+        $btn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i> Kaydediliyor...');
+
+        $.ajax({
+            url: `${baseUrl}Employees/${employeeId}/Salaries`,
+            type: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify({
+                monthId,
+                yearId,
+                baseSalary,
+                mealAllowance,
+                transportAllowance,
+                graduationAllowance,
+                paymentStatus,
+                employeeBonusListDtos: bonuses,
+                employeeDeductionListDtos: deductions
+            }),
+            success: function(response) {
+                if (response.success) {
+                    showToast('success', 'Başarılı', 'Maaş kaydı eklendi.');
+                    closeAddSalaryModal();
+                    const selectedYearId   = $('#financeYearsSelectedId').attr('data-selected-id') || null;
+                    const selectedStatusId = $('#financePaymentStatusSelectedId').attr('data-selected-id') || null;
+                    searchEmployeeSalaries(employeeId, selectedYearId || null, selectedStatusId || null, false);
+                } else {
+                    showToast('error', 'Hata', response.message || 'Maaş kaydedilemedi.');
+                    $btn.prop('disabled', false).html('<i class="fa-solid fa-check"></i> Kaydet');
+                }
+            },
+            error: function(xhr) {
+                const msg = xhr.responseJSON?.Message;
+                if (xhr.status === 401) { handleLogout(msg); return; }
+                showToast('error', 'Hata', msg || 'Maaş kaydedilemedi.');
+                $btn.prop('disabled', false).html('<i class="fa-solid fa-check"></i> Kaydet');
+            }
+        });
+    }
 
 
 
@@ -9840,33 +10472,40 @@ $(document).ready(function() {
             </div>
 
             <div class="filter-group px-7"> 
-                <div class="filter-box">
-                    <div class="input-wrapper">
-                        <div class="dropdown" id="financeYearsDropdown">
-                            <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
-                            
-                            <div class="dropdown-toggle" id="financeYearsSelectedId" data-selected-id="">Tüm Yıllar</div>
-                            
-                            <div class="dropdown-menu">
-                                <div class="dropdown-option" data-year-id="">Tüm Yıllar</div>    
-                            </div>
-                        </div>        
+                <div class="filter-wrapper">
+                    <div class="filter-box">
+                        <div class="input-wrapper">
+                            <div class="dropdown" id="financeYearsDropdown">
+                                <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
+                                
+                                <div class="dropdown-toggle" id="financeYearsSelectedId" data-selected-id="">Tüm Yıllar</div>
+                                
+                                <div class="dropdown-menu">
+                                    <div class="dropdown-option" data-year-id="">Tüm Yıllar</div>    
+                                </div>
+                            </div>        
+                        </div>
+                    </div>
+
+                    <div class="filter-box">
+                        <div class="input-wrapper">
+                            <div class="dropdown" id="financePaymentStatusDropdown">
+                                <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
+                                
+                                <div class="dropdown-toggle" id="financePaymentStatusSelectedId" data-selected-id="">Tüm Durumlar</div>
+                                
+                                <div class="dropdown-menu">
+                                    <div class="dropdown-option" data-payment-status-id="">Tüm Durumlar</div>    
+                                </div>
+                            </div>        
+                        </div>
                     </div>
                 </div>
 
-                <div class="filter-box">
-                    <div class="input-wrapper">
-                        <div class="dropdown" id="financePaymentStatusDropdown">
-                            <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
-                            
-                            <div class="dropdown-toggle" id="financePaymentStatusSelectedId" data-selected-id="">Tüm Durumlar</div>
-                            
-                            <div class="dropdown-menu">
-                                <div class="dropdown-option" data-payment-status-id="">Tüm Durumlar</div>    
-                            </div>
-                        </div>        
-                    </div>
-                </div>
+                <button class="btn-add-salary" id="btnOpenAddSalaryModal">
+                    <i class="fa-solid fa-plus"></i>
+                    Maaş Ekle
+                </button>
             </div>
 
             <div class="salary-section px-7">
@@ -10256,33 +10895,40 @@ $(document).ready(function() {
             </div>
 
             <div class="filter-group px-7"> 
-                <div class="filter-box">
-                    <div class="input-wrapper">
-                        <div class="dropdown" id="priorityLevelDropdown">
-                            <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
-                            
-                            <div class="dropdown-toggle" id="priorityLevelSelectedId" data-selected-id="">Tüm Öncelikler</div>
-                            
-                            <div class="dropdown-menu">
-                                <div class="dropdown-option" data-priority-level-id="">Tüm Öncelikler</div>    
-                            </div>
-                        </div>        
+                <div class="filter-wrapper">
+                    <div class="filter-box">
+                        <div class="input-wrapper">
+                            <div class="dropdown" id="priorityLevelDropdown">
+                                <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
+                                
+                                <div class="dropdown-toggle" id="priorityLevelSelectedId" data-selected-id="">Tüm Öncelikler</div>
+                                
+                                <div class="dropdown-menu">
+                                    <div class="dropdown-option" data-priority-level-id="">Tüm Öncelikler</div>    
+                                </div>
+                            </div>        
+                        </div>
+                    </div>
+
+                    <div class="filter-box">
+                        <div class="input-wrapper">
+                            <div class="dropdown" id="taskStatusDropdown">
+                                <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
+                                
+                                <div class="dropdown-toggle" id="taskStatusSelectedId" data-selected-id="">Tüm Durumlar</div>
+                                
+                                <div class="dropdown-menu">
+                                    <div class="dropdown-option" data-task-status-id="">Tüm Durumlar</div>    
+                                </div>
+                            </div>        
+                        </div>
                     </div>
                 </div>
 
-                <div class="filter-box">
-                    <div class="input-wrapper">
-                        <div class="dropdown" id="taskStatusDropdown">
-                            <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
-                            
-                            <div class="dropdown-toggle" id="taskStatusSelectedId" data-selected-id="">Tüm Durumlar</div>
-                            
-                            <div class="dropdown-menu">
-                                <div class="dropdown-option" data-task-status-id="">Tüm Durumlar</div>    
-                            </div>
-                        </div>        
-                    </div>
-                </div>
+                <button class="btn-add-task" id="btnOpenAddTaskModal">
+                    <i class="fa-solid fa-plus"></i>
+                    Görev Ekle
+                </button>
             </div>
 
             <div class="task-list px-7">
