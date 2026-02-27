@@ -8523,6 +8523,8 @@ $(document).ready(function() {
 
     function openAddEmployeeModal() {
 
+        const today = new Date().toISOString().split('T')[0];
+
         const modalHTML = `
             <div class="add-employee-modal">
                 <div class="aem-panel">
@@ -8561,7 +8563,7 @@ $(document).ready(function() {
                                 <div class="aem-field">
                                     <label class="aem-label">Doğum Tarihi <span class="aem-required">*</span></label>
                                     <div class="input-date-wrap">
-                                        <input type="date" id="aem-birth-date" class="aem-input">
+                                        <input type="date" id="aem-birth-date" class="aem-input custom-date" value="${today}">
                                         <i class="fa-regular fa-calendar input-date-icon" aria-hidden="true"></i>
                                     </div>
                                 </div>
@@ -8648,7 +8650,10 @@ $(document).ready(function() {
                                 </div>
                                 <div class="aem-field">
                                     <label class="aem-label">İşe Başlama Tarihi <span class="aem-required">*</span></label>
-                                    <input type="date" id="aem-hire-date" class="aem-input">
+                                    <div class="input-date-wrap">
+                                        <input type="date" id="aem-hire-date" class="aem-input custom-date" value="${today}">
+                                        <i class="fa-regular fa-calendar input-date-icon" aria-hidden="true"></i>
+                                    </div>
                                 </div>
                                 <div class="aem-field">
                                     <label class="aem-label">Çalışma Durumu <span class="aem-required">*</span></label>

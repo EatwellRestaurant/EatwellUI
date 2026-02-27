@@ -6854,6 +6854,21 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     box-sizing: border-box;
     padding-left: 13px;
   }
+
+  /* iOS Safari shadow DOM — iç render katmanlarının padding'ini sıfırlıyoruz */
+  .alm-field input[type="date"]::-webkit-datetime-edit {
+    padding: 0;
+  }
+
+  .alm-field input[type="date"]::-webkit-datetime-edit-fields-wrapper {
+    padding: 0;
+  }
+
+  .alm-field input[type="date"]::-webkit-date-and-time-value {
+    text-align: left;
+    margin: 0;
+    padding: 0;
+  }
 }
 
 
