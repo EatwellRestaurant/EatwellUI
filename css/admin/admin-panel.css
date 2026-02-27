@@ -1008,7 +1008,9 @@ td, th {
 .table-create-modal,
 .table-update-modal,
 .reservation-details-modal,
-.employee-leave-modal {
+.employee-leave-modal,
+.employee-salary-modal,
+.add-employee-modal {
   display: none;
   position: fixed;
   z-index: 1001;
@@ -1022,7 +1024,8 @@ td, th {
 
 .tcm-header-icon-wrap,
 .alm-header-icon,
-.sam-header-icon {
+.sam-header-icon,
+.aem-header-icon {
   width: 44px;
   height: 44px;
   border-radius: 12px;
@@ -1035,14 +1038,16 @@ td, th {
 
 .tcm-header-icon-wrap i,
 .alm-header-icon i,
-.sam-header-icon i {
+.sam-header-icon i,
+.aem-header-icon i {
   font-size: 19px;
   color: #fff;
 }
 
 .tcm-header-text,
 .alm-header-text,
-.sam-header-text {
+.sam-header-text,
+.aem-header-text {
   flex: 1;
 }
 
@@ -1313,7 +1318,8 @@ td, th {
 .btn-create-branch,
 .btn-manage-table,
 .btn-all-branches,
-.btn-head-office {
+.btn-head-office,
+.employees-add-btn {
   background: linear-gradient(135deg, #10b95c, #08a950);
   color: #fff;
   border-radius: 10px;
@@ -1339,7 +1345,8 @@ td, th {
 .btn-create-product:hover,
 .btn-create-branch:hover,
 .btn-all-branches:hover,
-.btn-head-office:hover {
+.btn-head-office:hover,
+.employees-add-btn:hover {
   box-shadow: 0 4px 17px rgba(45, 180, 135, 0.35);
   background-position: right center;
   transform: translateY(-2px);
@@ -1856,9 +1863,12 @@ td, th {
 
 .company-settings__field input,
 .company-settings__field textarea,
+.aem-textarea,
 .alm-field input[type="date"],
 .alm-field textarea,
-.sam-currency-input {
+.sam-currency-input,
+.aem-input,
+.aem-currency-input {
   width: 75%;
   outline: none;
   padding: 12px;
@@ -1879,13 +1889,21 @@ td, th {
   box-sizing: border-box;
 }
 
-.sam-currency-input {
+.sam-currency-input,
+.aem-currency-input {
   width: 100%;
   padding: 9px 12px 9px 24px;
   font-size: 14px;
 }
 
+.aem-input,
+.aem-textarea {
+  width: 100%;
+  font-size: 14px;
+}
+
 .company-settings__field textarea,
+.aem-textarea,
 .alm-field textarea {
   min-height: 80px;
   resize: vertical;
@@ -4382,7 +4400,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .table-create-content,
 .table-update-content,
 .alm-panel,
-.sam-panel {
+.sam-panel,
+.aem-panel {
   background: #fff;
   margin: 3% auto;
   padding: 0;
@@ -4424,8 +4443,13 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
 .sam-panel {
   margin: 1.7% auto;
-  width: 95%;
   max-width: 620px;
+  min-width: 340px;
+}
+
+.aem-panel {
+  margin: 1.5% auto;
+  max-width: 730px;
   min-width: 340px;
 }
 
@@ -4516,7 +4540,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .rdm-close,
 .tcm-close-btn,
 .alm-close,
-.sam-close {
+.sam-close,
+.aem-close {
   position: absolute;
   top: 14px;
   right: 18px;
@@ -4546,7 +4571,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .rdm-close:hover,
 .tcm-close-btn:hover,
 .alm-close:hover,
-.sam-close:hover {
+.sam-close:hover,
+.aem-close:hover {
   background: rgba(255,255,255,0.35);
   transform: rotate(90deg);
 }
@@ -4750,7 +4776,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .pum-title,
 .tcm-title,
 .alm-title,
-.sam-title {
+.sam-title,
+.aem-title {
   color: #fff;
   font-size: 22px;
   font-weight: 700;
@@ -4760,12 +4787,14 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
 .tcm-title,
 .alm-title,
-.sam-title {
+.sam-title,
+.aem-title {
   line-height: 1;
 }
 
 .alm-title,
-.sam-title {
+.sam-title,
+.aem-title {
   font-size: 21px;
   margin-bottom: 2px;
 }
@@ -4775,7 +4804,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .pum-subtitle,
 .tcm-subtitle,
 .alm-subtitle,
-.sam-subtitle {
+.sam-subtitle,
+.aem-subtitle {
   color: rgba(255,255,255,0.8);
   font-size: 13px;
   font-family: 'Poppins', sans-serif;
@@ -4873,12 +4903,12 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .pum-form-section {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
 }
 
 .bum-field-row {
   display: flex;
-  gap: 17px;
+  gap: 20px;
 }
 
 .bum-field-row .bum-field {
@@ -4890,7 +4920,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .mum-field,
 .pum-field,
 .tcm-form-group,
-.alm-field {
+.alm-field,
+.aem-field {
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -4987,7 +5018,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .btn-undo,
 .btn-update-branch-settings,
 .alm-btn-cancel,
-.sam-btn-cancel {
+.sam-btn-cancel,
+.aem-btn-cancel {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -5008,6 +5040,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .tcm-btn-cancel,
 .btn-undo,
 .alm-btn-cancel,
+.aem-btn-cancel,
 .sam-btn-cancel,
 .shift-cancel-btn {
   background: #dcdfe4;
@@ -5020,6 +5053,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .tcm-btn-cancel:hover,
 .btn-undo:hover,
 .alm-btn-cancel:hover,
+.aem-btn-cancel:hover,
 .sam-btn-cancel:hover,
 .shift-cancel-btn:hover {
   background: #cacfd6;
@@ -5075,7 +5109,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .bum-field-select,
 .pum-field-select,
 .alm-field select,
-.sam-select {
+.sam-select,
+.aem-select {
   width: 100%;
   padding: 12px 16px;
   border: 2px solid #E5E7EB;
@@ -5095,7 +5130,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 }
 
 .alm-field select,
-.sam-select {
+.sam-select,
+.aem-select {
   font-size: 14px;
 }
 
@@ -5845,7 +5881,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 }
 
 .alm-header,
-.sam-header {
+.sam-header,
+.aem-header {
   background: linear-gradient(135deg, #06B6D4 0%, #0891B2 100%);
   padding: 25px 28px;
   display: flex;
@@ -5855,14 +5892,16 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 }
 
 .alm-body,
-.sam-body {
+.sam-body,
+.aem-body {
   padding: 24px 28px;
   display: flex;
   flex-direction: column;
   gap: 24px;
 }
 
-.sam-body {
+.sam-body,
+.aem-body {
   max-height: 68vh;
   overflow-y: auto;
   scrollbar-width: thin;
@@ -5880,9 +5919,13 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .alm-field input[type="date"]:focus,
 .alm-field textarea:focus,
 .sam-select:focus,
+.aem-select:focus,
 .sam-currency-input:focus,
+.aem-currency-input:focus,
+.aem-input:focus,
 .company-settings__field input:focus,
-.company-settings__field textarea:focus {
+.company-settings__field textarea:focus,
+.aem-textarea:focus {
   border-color: #06B6D4;
   box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.12);
   outline: none;
@@ -5894,18 +5937,18 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   gap: 24px;
 }
 
-.alm-date-wrap {
+.input-date-wrap {
   position: relative;
 }
 
-.alm-date-wrap input[type="date"] {
+.input-date-wrap input[type="date"] {
   padding-right: 38px;
   cursor: pointer;
 }
 
-.alm-date-icon {
+.input-date-icon {
   position: absolute;
-  right: 12px;
+  right: 15px;
   top: 50%;
   transform: translateY(-50%);
   color: #06B6D4;
@@ -5939,7 +5982,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 }
 
 .alm-footer,
-.sam-footer {
+.sam-footer,
+.aem-footer {
   padding: 16px 24px 24px;
   display: flex;
   gap: 10px;
@@ -5947,7 +5991,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 }
 
 .alm-btn-submit,
-.sam-btn-submit {
+.sam-btn-submit,
+.aem-btn-submit {
   padding: 10px 24px;
   border-radius: 9px;
   border: none;
@@ -5958,34 +6003,38 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   cursor: pointer;
   display: flex;
   align-items: center;
+  font-family: 'Poppins', sans-serif;
   gap: 8px;
-  transition: opacity 0.2s, transform 0.15s;
+  transition: all .3s ease;
   box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
 }
 
 .alm-btn-submit:hover,
-.sam-btn-submit:hover {
+.sam-btn-submit:hover,
+.aem-btn-submit:hover {
   opacity: 0.9;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
 .alm-btn-submit:disabled,
-.sam-btn-submit:disabled {
+.sam-btn-submit:disabled,
+.aem-btn-submit:disabled {
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
 }
 
 .alm-btn-submit i,
-.sam-btn-submit i {
+.sam-btn-submit i,
+.aem-btn-submit i {
   font-size: 13px;
 }
 
 .alm-divider,
-.sam-divider {
+.sam-divider,
+.aem-divider {
   height: 1px;
   background: #E5E7EB;
-  margin: 0 -24px;
 }
 
 .btn-add-leave,
@@ -6021,28 +6070,53 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   font-size: 12px;
 }
 
-.employee-salary-modal {
-  display: none;
-  position: fixed;
-  z-index: 1001;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0, 0, 0, 0.6);
+.aem-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 12px;
 }
 
-.sam-body::-webkit-scrollbar {
-  width: 5px;
+.aem-field--full {
+  grid-column: 1 / -1;
 }
 
-.sam-body::-webkit-scrollbar-thumb {
-  background: #e2e8f0;
-  border-radius: 4px;
+.aem-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+  font-family: 'Poppins', sans-serif;
 }
 
-.sam-section {
+.aem-required {
+  color: #EF4444;
+  margin-left: 1px;
+}
+
+.aem-input--pw {
+  padding-right: 40px;
+}
+
+.aem-toggle-pw {
+  position: absolute;
+  right: 13px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #94a3b8;
+  font-size: 14px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+
+.aem-toggle-pw:hover {
+  color: #475569;
+}
+
+.sam-section,
+.aem-section {
   border: 1.5px solid #f1f5f9;
   border-radius: 12px;
   padding: 14px 16px;
@@ -6050,15 +6124,40 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   border-left-width: 3px;
 }
 
-.sam-section--period    { border-left-color: #6366f1; }
-.sam-section--base      { border-left-color: #06b6d4; }
-.sam-section--bonus     { border-left-color: #10b981; }
-.sam-section--allowance { border-left-color: #f59e0b; }
-.sam-section--deduction { border-left-color: #ef4444; }
-.sam-section--status    { border-left-color: #8b5cf6; }
-.sam-section--notes     { border-left-color: #94a3b8; }
+.sam-section--period { 
+  border-left-color: #6366f1; 
+}
 
-.sam-section-label {
+.sam-section--base,
+.aem-section--contact  { 
+  border-left-color: #06b6d4; 
+}
+
+.sam-section--bonus,
+.aem-section--work { 
+  border-left-color: #10b981; 
+}
+
+.sam-section--allowance,
+.aem-section--password { 
+  border-left-color: #f59e0b; 
+}
+
+.sam-section--deduction { 
+  border-left-color: #ef4444; 
+}
+
+.sam-section--status,
+.aem-section--personal { 
+  border-left-color: #8b5cf6; 
+}
+
+.sam-section--notes { 
+  border-left-color: #94a3b8; 
+}
+
+.sam-section-label,
+.aem-section-label {
   display: flex;
   align-items: center;
   gap: 7px;
@@ -6070,7 +6169,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   margin-bottom: 10px;
 }
 
-.sam-section-label i {
+.sam-section-label i,
+.aem-section-label i {
   font-size: 12px;
 }
 
@@ -6087,7 +6187,9 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   gap: 18px;
 }
 
-.sam-currency-wrap {
+.sam-currency-wrap,
+.aem-currency-wrap,
+.aem-password-wrap {
   position: relative;
   display: flex;
   align-items: center;
@@ -6097,7 +6199,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   min-width: 90px;
 }
 
-.sam-currency-symbol {
+.sam-currency-symbol,
+.aem-currency-symbol {
   position: absolute;
   transform: translateY(-50%);
   top: 46%;
@@ -6749,6 +6852,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     text-align: left;
     min-height: 44px;
     box-sizing: border-box;
+    padding-left: 13px;
   }
 }
 
@@ -6811,9 +6915,9 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   }
 
   .alm-panel,
-  .sam-panel {
+  .sam-panel,
+  .aem-panel {
     margin: 3% auto;
-    width: 95%;
   }
 
   .bdm-panel,
@@ -6822,7 +6926,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .udm-panel,
   .rdm-panel {
     margin: 2% auto;
-    width: 95%;
     min-width: 0;
   }
 
@@ -7314,6 +7417,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .btn-undo,
   .btn-update-branch-settings,
   .alm-btn-cancel,
+  .aem-btn-cancel,
   .sam-btn-cancel,
   .alm-btn-submit,
   .sam-btn-submit {
@@ -7339,7 +7443,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .pum-body,
   .tcm-body,
   .alm-footer,
-  .sam-footer {
+  .sam-footer,
+  .aem-footer {
     padding-bottom: 22px;
   }
 
@@ -7559,7 +7664,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .btn-create-branch,
   .btn-head-office,
   .btn-all-branches,
-  .btn-manage-table {
+  .btn-manage-table,
+  .employees-add-btn {
     padding: 9px 14px;
     font-size: 13px;
   }
@@ -7790,7 +7896,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .rdm-close,
   .tcm-close-btn,
   .alm-close,
-  .sam-close {
+  .sam-close,
+  .aem-close {
     font-size: 16px;
     width: 34px;
     height: 34px;
@@ -7813,7 +7920,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   }
   
   .alm-title,
-  .sam-title {
+  .sam-title,
+  .aem-title {
     font-size: 19px;
   }
 
@@ -7822,7 +7930,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .pum-subtitle,
   .tcm-subtitle,
   .alm-subtitle,
-  .sam-subtitle {
+  .sam-subtitle,
+  .aem-subtitle {
     font-size: 12px;
   }
 
@@ -7834,7 +7943,10 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .alm-field input[type="date"], 
   .alm-field textarea,
   .sam-select,
-  .sam-currency-input {
+  .sam-currency-input,
+  .aem-currency-input,
+  .aem-textarea,
+  .aem-input {
     font-size: 13px;
   }
   
@@ -7854,7 +7966,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   }
 
   .alm-panel,
-  .sam-panel {
+  .sam-panel,
+  .aem-panel {
     margin: 5% auto;
   }
 
@@ -7867,7 +7980,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   }
 
   .alm-footer,
-  .sam-footer {
+  .sam-footer,
+  .aem-footer {
     padding-bottom: 20px;
   }
 
@@ -7898,6 +8012,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .btn-undo,
   .btn-update-branch-settings,
   .alm-btn-cancel,
+  .aem-btn-cancel,
   .sam-btn-cancel {
     justify-content: center;
   }
@@ -7922,7 +8037,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   }
 
   .alm-body,
-  .sam-body {
+  .sam-body,
+  .aem-body {
     padding: 24px 20px;
     gap: 20px;
   }
@@ -7955,6 +8071,11 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .sam-net-amount {
     font-size: 18px;
   }
+
+  .aem-form-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
 }
 
 
@@ -7984,7 +8105,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .btn-create-menu,
   .btn-create-product, 
   .btn-create-branch,
-  .btn-manage-table {
+  .btn-manage-table,
+  .employees-add-btn {
     padding: 8px 12px;
     font-size: 12px;
   }
@@ -8141,7 +8263,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     gap: 18px;
   }
   
-  .alm-date-wrap input[type="date"] {
+  .input-date-wrap input[type="date"] {
     padding-right: 0;
   }
 

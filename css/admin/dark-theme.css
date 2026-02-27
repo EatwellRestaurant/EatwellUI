@@ -650,3 +650,68 @@ body.dark-theme {
     border-color: #475569;
     color: #E2E8F0;
   }
+
+  body.dark-theme .aem-panel {
+    background: #1E293B;
+  }
+
+  body.dark-theme .aem-section {
+    background: #0F172A;
+    border-color: #334155;
+    border-left-width: 3px;
+  }
+
+  body.dark-theme .aem-section-label {
+    color: #94A3B8;
+  }
+
+  body.dark-theme .aem-label {
+    color: #94A3B8;
+  }
+
+  body.dark-theme .aem-input,
+  body.dark-theme .aem-select,
+  body.dark-theme .aem-currency-input,
+  body.dark-theme .aem-textarea {
+    background: #0F172A;
+    border-color: #334155;
+    color: #E2E8F0;
+  }
+
+  body.dark-theme .aem-input:focus,
+  body.dark-theme .aem-select:focus,
+  body.dark-theme .aem-currency-input:focus,
+  body.dark-theme .aem-textarea:focus {
+    border-color: #06B6D4;
+    box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
+  }
+
+  body.dark-theme .aem-currency-symbol {
+    color: #94A3B8;
+  }
+
+  body.dark-theme .aem-toggle-pw {
+    color: #64748B;
+  }
+
+  body.dark-theme .aem-toggle-pw:hover {
+    color: #94A3B8;
+  }
+
+  body.dark-theme .aem-divider {
+    background: #334155;
+  }
+
+  body.dark-theme .aem-btn-cancel {
+    background: #1E293B;
+    color: #94A3B8;
+  }
+
+  body.dark-theme .aem-btn-cancel:hover {
+    background: #334155;
+    color: #E2E8F0;
+  }
+
+  body.dark-theme .employees-header h2 {
+    color: #E2E8F0;
+  }

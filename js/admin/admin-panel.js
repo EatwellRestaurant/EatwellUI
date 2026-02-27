@@ -5226,7 +5226,7 @@ $(document).ready(function() {
                     <div class="company-settings__box">
                         <div class="company-settings__field">
                             <label for="company-phone" class="form-label">Ana telefon</label>
-                            <input id="company-phone" type="tel" placeholder="Ana telefon numarası" value="${firstPhoneInfo}">
+                            <input id="company-phone" type="tel" placeholder="05XX XXX XX XX" value="${firstPhoneInfo}">
                         </div>
 
                         <div class="company-settings__field">
@@ -5755,7 +5755,7 @@ $(document).ready(function() {
                                                 <i class="fa fa-phone"></i>
                                                 Telefon
                                             </label>
-                                            <input type="text" id="branchPhone" class="bum-field-input bum-field-update branch-phone" placeholder="0___ ___ __ __" value="${branch.phone}">
+                                            <input type="text" id="branchPhone" class="bum-field-input bum-field-update branch-phone" placeholder="05XX XXX XX XX" value="${branch.phone}">
                                         </div>
                                     </div>
                                     <div class="bum-field">
@@ -5860,44 +5860,43 @@ $(document).ready(function() {
     }
 
 
-    $(document).on('input', '#branchPhone', function () {
-        
+    $(document).on('input', '#branchPhone, #company-phone, #aem-phone', function () {
+
         let $this = $(this);
         let inputElement = this;
-        
+
         // İmlecin mevcut pozisyonunu alıyoruz
         let cursorPosition = inputElement.selectionStart;
         let oldValue = $this.val();
         let oldLength = oldValue.length;
-        
+
         // Eğer input tamamen boşsa, formatlama yapmadan çık
         if (oldValue.trim() === '') {
             return;
         }
-        
-        // Eğer inputta rakam dışı (boşluk hariç) karakter varsa uyarı veriyoruz
-        if (/[^0-9\s]/.test(oldValue)) {
-            showToast('error', 'Hata', 'Lütfen yalnızca sayısal karakter kullanın.');
+
+        // Tüm rakamları al (boşluk dahil değil), max 11 hane
+        let digitsOnly = oldValue.replace(/\D/g, '').substring(0, 11);
+
+        // İlk karakter her zaman '0' olmalı
+        if (digitsOnly.length > 0 && digitsOnly.charAt(0) !== '0') {
+            digitsOnly = '0' + digitsOnly.substring(0, 10);
         }
-        
-        // Tüm rakamları al (boşluk dahil değil)
-        let digitsOnly = oldValue.replace(/\D/g, '').substring(0, 12);
-        
-        
-        // En başta her zaman sıfır olmasını sağlıyoruz
-        if (digitsOnly.charAt(0) !== '0') {
-            digitsOnly = '0' + digitsOnly; // Eğer sıfır yoksa başa ekliyoruz
+
+        // İkinci karakter her zaman '5' olmalı
+        if (digitsOnly.length > 1 && digitsOnly.charAt(1) !== '5') {
+            digitsOnly = '0' + '5' + digitsOnly.substring(2);
         }
-        
-        // Formatlama: 0xxx xxx xx xx
+
+        // Formatlama: 05XX XXX XX XX
         let formatted = '';
         if (digitsOnly.length > 0) formatted += digitsOnly.substring(0, 4);
         if (digitsOnly.length > 4) formatted += ' ' + digitsOnly.substring(4, 7);
         if (digitsOnly.length > 7) formatted += ' ' + digitsOnly.substring(7, 9);
         if (digitsOnly.length > 9) formatted += ' ' + digitsOnly.substring(9, 11);
-        
+
         $(this).val(formatted);
-        
+
         // Yeni uzunluğu alıp imleç pozisyonunu ayarlıyoruz
         let newLength = formatted.length;
         cursorPosition += newLength - oldLength;
@@ -5905,20 +5904,19 @@ $(document).ready(function() {
     });
     
     
-    // Sıfırın silinmesini engelliyoruz
-    $(document).on('keydown', '#branchPhone', function (e) {
-        let input = $(this).val();
-        
-        // Eğer imleç 0'ın olduğu yerdeyse ve silme tuşuna basılmışsa (Backspace veya Delete)
-        let cursorPosition = this.selectionStart;
-        
-        if ((e.key === 'Backspace' && cursorPosition === 1) ||
-        (e.key === 'Delete' && cursorPosition === 0)) {
-            
-            // İlk karakter 0 ise silinmesini engelle
-            if (input.charAt(0) === '0') {
-                e.preventDefault();
-            }
+    
+    // Rakam olmayan tuş girişlerini engelliyoruz
+    $(document).on('keydown', '#branchPhone, #company-phone, #aem-phone', function (e) {
+
+        const allowedKeys      = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Tab', 'Home', 'End'];
+        const isDigit          = e.key >= '0' && e.key <= '9';
+        const isAllowedKey     = allowedKeys.includes(e.key);
+        const isCtrlShortcut   = (e.ctrlKey || e.metaKey) && ['a', 'c', 'v', 'x'].includes(e.key.toLowerCase());
+
+        // Rakam, kontrol tuşu veya kısayol değilse girişi engelle
+        if (!isDigit && !isAllowedKey && !isCtrlShortcut) {
+            e.preventDefault();
+            return;
         }
     });
 
@@ -5950,7 +5948,7 @@ $(document).ready(function() {
         const branchInstagram = updateModal.find('.branch-instagram').val();
         const branchTwitter = updateModal.find('.branch-twitter').val();
         const branchGmail = updateModal.find('.branch-gmail').val();
-        const phoneRegex = /^0\d{3}\s\d{3}\s\d{2}\s\d{2}$/;
+        const phoneRegex = /^05\d{2}\s\d{3}\s\d{2}\s\d{2}$/;
         
         if (branchName.trim() === '') {
             showToast('error', 'Hata', 'Lütfen şube adını giriniz!');
@@ -6071,7 +6069,7 @@ $(document).ready(function() {
             <div class="bum-panel">
                 <div class="bum-hero" style="background: linear-gradient(135deg,rgb(66, 182, 143),rgb(15, 122, 88));">
                     <button class="bum-close close-branch-create"><i class="fa fa-xmark"></i></button>
-                    <h2 class="bum-title">Yeni Şube Ekle</h2>
+                    <h2 class="bum-title">Şube Ekle</h2>
                     <p class="bum-subtitle">Yeni bir şube oluşturun.</p>
                 </div>
 
@@ -6113,7 +6111,7 @@ $(document).ready(function() {
                                     <i class="fa fa-phone" style="color: #10B981"></i>
                                     Telefon
                                 </label>
-                                <input type="text" id="branchPhone" class="bum-field-input bum-field-add branch-phone" placeholder="0___ ___ __ __">
+                                <input type="text" id="branchPhone" class="bum-field-input bum-field-add branch-phone" placeholder="05XX XXX XX XX">
                             </div>
                         </div>
                         <div class="bum-field">
@@ -6283,7 +6281,7 @@ $(document).ready(function() {
         const branchInstagram = createModal.find('.branch-instagram').val();
         const branchTwitter = createModal.find('.branch-twitter').val();
         const branchGmail = createModal.find('.branch-gmail').val();
-        const phoneRegex = /^0\d{3}\s\d{3}\s\d{2}\s\d{2}$/;
+        const phoneRegex = /^05\d{2}\s\d{3}\s\d{2}\s\d{2}$/;
 
         if (branchName.trim() === '') {
             showToast('error', 'Hata', 'Lütfen şube adını giriniz!');
@@ -8500,9 +8498,13 @@ $(document).ready(function() {
         <div class="employees-container">
             <div class="employees-header">
                 <h2>Çalışanlar</h2>
+                <button class="employees-add-btn">
+                    <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                    Çalışan Ekle
+                </button>
             </div>
             <div class="employees-body">
-                
+
             </div>
         </div>`;
 
@@ -8510,6 +8512,386 @@ $(document).ready(function() {
         $('.dashboard-content').append(employeeSectionHTML);
 
         fetchAllEmployeeStatistics();
+    }
+
+
+    // "Çalışan Ekle" butonuna tıklandığında
+    $(document).on('click', '.employees-add-btn', function() {
+        openAddEmployeeModal();
+    });
+
+
+    function openAddEmployeeModal() {
+
+        const modalHTML = `
+            <div class="add-employee-modal">
+                <div class="aem-panel">
+
+                    <div class="aem-header">
+                        <div class="aem-header-icon">
+                            <i class="fa-solid fa-user-plus"></i>
+                        </div>
+                        <div class="aem-header-text">
+                            <h2 class="aem-title">Çalışan Ekle</h2>
+                            <p class="aem-subtitle">Çalışan bilgilerini eksiksiz doldurun.</p>
+                        </div>
+                        <button class="aem-close"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+
+                    <div class="aem-body">
+
+                        <div class="aem-section aem-section--personal">
+                            <div class="aem-section-label">
+                                <i class="fa-solid fa-user"></i>
+                                Kişisel Bilgiler
+                            </div>
+                            <div class="aem-form-grid">
+                                <div class="aem-field">
+                                    <label class="aem-label">Ad <span class="aem-required">*</span></label>
+                                    <input type="text" id="aem-first-name" class="aem-input" placeholder="Adı">
+                                </div>
+                                <div class="aem-field">
+                                    <label class="aem-label">Soyad <span class="aem-required">*</span></label>
+                                    <input type="text" id="aem-last-name" class="aem-input" placeholder="Soyadı">
+                                </div>
+                                <div class="aem-field">
+                                    <label class="aem-label">TC Kimlik No <span class="aem-required">*</span></label>
+                                    <input type="text" id="aem-national-id" class="aem-input" maxlength="11" placeholder="11 haneli TC kimlik no">
+                                </div>
+                                <div class="aem-field">
+                                    <label class="aem-label">Doğum Tarihi <span class="aem-required">*</span></label>
+                                    <div class="input-date-wrap">
+                                        <input type="date" id="aem-birth-date" class="aem-input">
+                                        <i class="fa-regular fa-calendar input-date-icon" aria-hidden="true"></i>
+                                    </div>
+                                </div>
+                                <div class="aem-field">
+                                    <label class="aem-label">Cinsiyet <span class="aem-required">*</span></label>
+                                    <select id="aem-gender" class="aem-select">
+                                        <option value="">Seçiniz</option>
+                                        <option value="Erkek">Erkek</option>
+                                        <option value="Kadın">Kadın</option>
+                                    </select>
+                                </div>
+                                <div class="aem-field" id="aem-military-field" style="display:none;">
+                                    <label class="aem-label">Askerlik Durumu <span class="aem-required">*</span></label>
+                                    <select id="aem-military-status" class="aem-select">
+                                        <option value="">Seçiniz</option>
+                                        <option value="Yapıldı">Yapıldı</option>
+                                        <option value="Ertelenmiş">Ertelenmiş</option>
+                                        <option value="Muaf">Muaf</option>
+                                    </select>
+                                </div>
+                                <div class="aem-field">
+                                    <label class="aem-label">Medeni Durum <span class="aem-required">*</span></label>
+                                    <select id="aem-marital-status" class="aem-select">
+                                        <option value="">Seçiniz</option>
+                                        <option value="Bekar">Bekar</option>
+                                        <option value="Evli">Evli</option>
+                                        <option value="Boşanmış">Boşanmış</option>
+                                    </select>
+                                </div>
+                                <div class="aem-field">
+                                    <label class="aem-label">Eğitim Durumu <span class="aem-required">*</span></label>
+                                    <select id="aem-education-level" class="aem-select">
+                                        <option value="">Seçiniz</option>
+                                        <option value="İlkokul">İlkokul</option>
+                                        <option value="Ortaokul">Ortaokul</option>
+                                        <option value="Lise">Lise</option>
+                                        <option value="Önlisans">Önlisans</option>
+                                        <option value="Lisans">Lisans</option>
+                                        <option value="Yüksek Lisans">Yüksek Lisans</option>
+                                        <option value="Doktora">Doktora</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="aem-section aem-section--contact">
+                            <div class="aem-section-label">
+                                <i class="fa-solid fa-address-book"></i>
+                                İletişim Bilgileri
+                            </div>
+                            <div class="aem-form-grid">
+                                <div class="aem-field">
+                                    <label class="aem-label">E-posta <span class="aem-required">*</span></label>
+                                    <input type="email" id="aem-email" class="aem-input" placeholder="ornek@mail.com">
+                                </div>
+                                <div class="aem-field">
+                                    <label class="aem-label">Telefon <span class="aem-required">*</span></label>
+                                    <input type="tel" id="aem-phone" class="aem-input" placeholder="05XX XXX XX XX">
+                                </div>
+                                <div class="aem-field aem-field--full">
+                                    <label class="aem-label">Adres</label>
+                                    <textarea id="aem-address" class="aem-textarea" placeholder="Açık adres"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="aem-section aem-section--work">
+                            <div class="aem-section-label">
+                                <i class="fa-solid fa-briefcase"></i>
+                                İş Bilgileri
+                            </div>
+                            <div class="aem-form-grid">
+                                <div class="aem-field">
+                                    <label class="aem-label">Pozisyon <span class="aem-required">*</span></label>
+                                    <select id="aem-position" class="aem-select">
+                                        <option value="">Yükleniyor...</option>
+                                    </select>
+                                </div>
+                                <div class="aem-field">
+                                    <label class="aem-label">Şube <span class="aem-required">*</span></label>
+                                    <select id="aem-branch" class="aem-select">
+                                        <option value="">Yükleniyor...</option>
+                                    </select>
+                                </div>
+                                <div class="aem-field">
+                                    <label class="aem-label">İşe Başlama Tarihi <span class="aem-required">*</span></label>
+                                    <input type="date" id="aem-hire-date" class="aem-input">
+                                </div>
+                                <div class="aem-field">
+                                    <label class="aem-label">Çalışma Durumu <span class="aem-required">*</span></label>
+                                    <select id="aem-work-status" class="aem-select">
+                                        <option value="">Yükleniyor...</option>
+                                    </select>
+                                </div>
+                                <div class="aem-field">
+                                    <label class="aem-label">Çalışma Tipi <span class="aem-required">*</span></label>
+                                    <select id="aem-employment-type" class="aem-select">
+                                        <option value="">Seçiniz</option>
+                                        <option value="Tam Zamanlı">Tam Zamanlı</option>
+                                        <option value="Yarı Zamanlı">Yarı Zamanlı</option>
+                                        <option value="Sözleşmeli">Sözleşmeli</option>
+                                        <option value="Stajyer">Stajyer</option>
+                                    </select>
+                                </div>
+                                <div class="aem-field">
+                                    <label class="aem-label">Maaş (₺) <span class="aem-required">*</span></label>
+                                    <div class="aem-currency-wrap">
+                                        <span class="aem-currency-symbol">₺</span>
+                                        <input type="text" id="aem-salary" class="aem-currency-input" inputmode="decimal" placeholder="0,00" pattern="[0-9]*" autocomplete="new-password">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="aem-section aem-section--password">
+                            <div class="aem-section-label">
+                                <i class="fa-solid fa-lock"></i>
+                                Hesap Bilgileri
+                            </div>
+                            <div class="aem-form-grid">
+                                <div class="aem-field">
+                                    <label class="aem-label">Şifre <span class="aem-required">*</span></label>
+                                    <div class="aem-password-wrap">
+                                        <input type="password" id="aem-password" class="aem-input aem-input--pw" placeholder="Şifre" autocomplete="new-password">
+                                        <button type="button" class="aem-toggle-pw" data-target="aem-password">
+                                            <i class="fa-regular fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="aem-field">
+                                    <label class="aem-label">Şifre Tekrar <span class="aem-required">*</span></label>
+                                    <div class="aem-password-wrap">
+                                        <input type="password" id="aem-confirm-password" class="aem-input aem-input--pw" placeholder="Şifre tekrar">
+                                        <button type="button" class="aem-toggle-pw" data-target="aem-confirm-password">
+                                            <i class="fa-regular fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="aem-divider"></div>
+
+                    <div class="aem-footer">
+                        <button class="aem-btn-cancel">
+                            <i class="fa fa-xmark" aria-hidden="true"></i>
+                            İptal
+                        </button>
+                        <button class="aem-btn-submit" id="aemSubmitBtn">
+                            <i class="fa fa-plus" aria-hidden="true"></i>
+                            Ekle
+                        </button>
+                    </div>
+
+                </div>
+            </div>`;
+
+        $('.add-employee-modal').remove();
+        $('body').append(modalHTML);
+        $('.add-employee-modal').fadeIn(250);
+
+        // Dropdown verilerini yükle
+        loadAemFilterOptions();
+
+        // Cinsiyet değiştiğinde askerlik alanını göster/gizle
+        $(document).on('change.aem', '#aem-gender', function() {
+            if ($(this).val() === 'Erkek') {
+                $('#aem-military-field').slideDown(200);
+            } else {
+                $('#aem-military-field').slideUp(200);
+                $('#aem-military-status').val('');
+            }
+        });
+
+        // Şifre göster/gizle
+        $(document).on('click.aem', '.aem-toggle-pw', function() {
+            const targetId = $(this).data('target');
+            const $input = $('#' + targetId);
+            const isPassword = $input.attr('type') === 'password';
+            $input.attr('type', isPassword ? 'text' : 'password');
+            $(this).find('i').toggleClass('fa-eye fa-eye-slash');
+        });
+
+        // Kapat
+        $(document).on('click.aem', '.aem-close, .aem-btn-cancel', function() {
+            closeAddEmployeeModal();
+        });
+
+        $(document).on('click.aem', '.add-employee-modal', function(e) {
+            if ($(e.target).hasClass('add-employee-modal')) {
+                closeAddEmployeeModal();
+            }
+        });
+
+        // Kaydet
+        $(document).on('click.aem', '#aemSubmitBtn', function() {
+            submitAddEmployee();
+        });
+    }
+
+
+    function loadAemFilterOptions() {
+        $.ajax({
+            url: `${baseUrl}EmployeeStatistics/GetEmployeeFilterOptions`,
+            type: 'GET',
+            headers: { 'Authorization': `Bearer ${token}` },
+            success: function(response) {
+                const opts = response.data;
+
+                // Pozisyon
+                let posHTML = '<option value="">Seçiniz</option>';
+                (opts.operationClaimListDtos || []).forEach(r => {
+                    posHTML += `<option value="${r.id}">${r.name}</option>`;
+                });
+                $('#aem-position').html(posHTML);
+
+                // Şube
+                let branchHTML = '<option value="">Seçiniz</option>';
+                (opts.branchDtos || []).forEach(b => {
+                    branchHTML += `<option value="${b.id}">${b.name}</option>`;
+                });
+                $('#aem-branch').html(branchHTML);
+
+                // Çalışma Durumu
+                let statusHTML = '<option value="">Seçiniz</option>';
+                (opts.workStatusDtos || []).forEach(s => {
+                    statusHTML += `<option value="${s.id}">${s.name}</option>`;
+                });
+                $('#aem-work-status').html(statusHTML);
+            },
+            error: function() {
+                showToast('error', 'Hata', 'Seçenek verileri yüklenemedi.');
+            }
+        });
+    }
+
+
+    function closeAddEmployeeModal() {
+        $('.add-employee-modal').fadeOut(220, function() { $(this).remove(); });
+        $(document).off('.aem');
+    }
+
+
+    function submitAddEmployee() {
+        const firstName      = $('#aem-first-name').val().trim();
+        const lastName       = $('#aem-last-name').val().trim();
+        const nationalId     = $('#aem-national-id').val().trim();
+        const birthDate      = $('#aem-birth-date').val();
+        const gender         = $('#aem-gender').val();
+        const militaryStatus = $('#aem-military-status').val();
+        const maritalStatus  = $('#aem-marital-status').val();
+        const educationLevel = $('#aem-education-level').val();
+        const email          = $('#aem-email').val().trim();
+        const phone          = $('#aem-phone').val().trim();
+        const address        = $('#aem-address').val().trim();
+        const positionId     = $('#aem-position').val();
+        const branchId       = $('#aem-branch').val();
+        const hireDate       = $('#aem-hire-date').val();
+        const workStatusId   = $('#aem-work-status').val();
+        const employmentType = $('#aem-employment-type').val();
+        const salaryRaw      = $('#aem-salary').val().replace(/\./g, '').replace(',', '.');
+        const salary         = parseFloat(salaryRaw) || 0;
+        const password       = $('#aem-password').val();
+        const confirmPw      = $('#aem-confirm-password').val();
+
+        // Zorunlu alan kontrolü
+        if (!firstName || !lastName || !nationalId || !birthDate || !gender || !militaryStatus ||
+            !maritalStatus || !educationLevel || !email || !phone ||
+            !positionId || !branchId || !hireDate || !workStatusId || !employmentType ||
+            !salary || !password || !confirmPw) {
+            showToast('error', 'Eksik Alan', 'Lütfen tüm zorunlu alanları doldurun.');
+            return;
+        }
+
+        if (password !== confirmPw) {
+            showToast('error', 'Şifre Hatası', 'Girilen şifreler eşleşmiyor.');
+            return;
+        }
+
+        const payload = {
+            firstName,
+            lastName,
+            nationalId,
+            birthDate,
+            gender,
+            militaryStatus: gender === 'Erkek' ? militaryStatus : null,
+            maritalStatus,
+            educationLevel,
+            email,
+            phone,
+            address,
+            operationClaimId: parseInt(positionId),
+            branchId: parseInt(branchId),
+            hireDate,
+            workStatusId: parseInt(workStatusId),
+            employmentType,
+            salary,
+            password
+        };
+
+        const $btn = $('#aemSubmitBtn');
+        $btn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i> Kaydediliyor...');
+
+        $.ajax({
+            url: `${baseUrl}employees/add`,
+            type: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify(payload),
+            success: function(response) {
+                if (response.success) {
+                    closeAddEmployeeModal();
+                    showToast('success', 'Başarılı', 'Çalışan başarıyla eklendi.');
+                    getEmployees();
+                } else {
+                    showToast('error', 'Hata', response.message || 'Çalışan eklenemedi.');
+                    $btn.prop('disabled', false).html('<i class="fa-solid fa-user-plus"></i> Çalışan Ekle');
+                }
+            },
+            error: function(xhr) {
+                const msg = xhr.responseJSON?.Message || xhr.responseJSON?.message || 'Çalışan eklenirken hata oluştu.';
+                if (xhr.status === 401) { handleLogout(msg); return; }
+                showToast('error', 'Hata', msg);
+                $btn.prop('disabled', false).html('<i class="fa-solid fa-user-plus"></i> Çalışan Ekle');
+            }
+        });
     }
 
 
@@ -8985,16 +9367,16 @@ $(document).ready(function() {
                         <div class="alm-date-row">
                             <div class="alm-field">
                                 <label>Başlangıç Tarihi</label>
-                                <div class="alm-date-wrap">
+                                <div class="input-date-wrap">
                                     <input type="date" id="alm-start-date" class="custom-date" value="${today}">
-                                    <i class="fa-regular fa-calendar alm-date-icon"></i>
+                                    <i class="fa-regular fa-calendar input-date-icon"></i>
                                 </div>
                             </div>
                             <div class="alm-field" id="alm-end-date-wrap">
                                 <label>Bitiş Tarihi</label>
-                                <div class="alm-date-wrap">
+                                <div class="input-date-wrap">
                                     <input type="date" id="alm-end-date" class="custom-date" value="${today}">
-                                    <i class="fa-regular fa-calendar alm-date-icon"></i>
+                                    <i class="fa-regular fa-calendar input-date-icon"></i>
                                 </div>
                             </div>
                         </div>
