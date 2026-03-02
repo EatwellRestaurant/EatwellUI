@@ -1010,6 +1010,7 @@ td, th {
 .reservation-details-modal,
 .employee-leave-modal,
 .employee-salary-modal,
+.employee-task-modal,
 .add-employee-modal {
   display: none;
   position: fixed;
@@ -1024,6 +1025,7 @@ td, th {
 
 .tcm-header-icon-wrap,
 .alm-header-icon,
+.atm-header-icon,
 .sam-header-icon,
 .aem-header-icon {
   width: 44px;
@@ -1038,6 +1040,7 @@ td, th {
 
 .tcm-header-icon-wrap i,
 .alm-header-icon i,
+.atm-header-icon i,
 .sam-header-icon i,
 .aem-header-icon i {
   font-size: 19px;
@@ -1046,6 +1049,7 @@ td, th {
 
 .tcm-header-text,
 .alm-header-text,
+.atm-header-text,
 .sam-header-text,
 .aem-header-text {
   flex: 1;
@@ -1865,7 +1869,10 @@ td, th {
 .company-settings__field textarea,
 .aem-textarea,
 .alm-field input[type="date"],
+.atm-field input[type="date"],
 .alm-field textarea,
+.atm-field textarea,
+.atm-field input[type="text"],
 .sam-currency-input,
 .aem-input,
 .aem-currency-input {
@@ -1882,7 +1889,10 @@ td, th {
 }
 
 .alm-field input[type="date"],
-.alm-field textarea {
+.atm-field input[type="date"],
+.alm-field textarea,
+.atm-field textarea,
+.atm-field input[type="text"] {
   width: 100%;
   padding: 10px 13px;
   font-size: 14px;
@@ -1904,7 +1914,8 @@ td, th {
 
 .company-settings__field textarea,
 .aem-textarea,
-.alm-field textarea {
+.alm-field textarea,
+.atm-field textarea {
   min-height: 80px;
   resize: vertical;
 }
@@ -4400,6 +4411,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .table-create-content,
 .table-update-content,
 .alm-panel,
+.atm-panel,
 .sam-panel,
 .aem-panel {
   background: #fff;
@@ -4435,10 +4447,11 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   max-width: 460px;
 }
 
-.alm-panel {
+.alm-panel,
+.atm-panel {
   margin: 1.7% auto;
   width: 100%;
-  max-width: 520px;
+  max-width: 540px;
 }
 
 .sam-panel {
@@ -4540,6 +4553,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .rdm-close,
 .tcm-close-btn,
 .alm-close,
+.atm-close,
 .sam-close,
 .aem-close {
   position: absolute;
@@ -4571,6 +4585,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .rdm-close:hover,
 .tcm-close-btn:hover,
 .alm-close:hover,
+.atm-close:hover,
 .sam-close:hover,
 .aem-close:hover {
   background: rgba(255,255,255,0.35);
@@ -4776,6 +4791,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .pum-title,
 .tcm-title,
 .alm-title,
+.atm-title,
 .sam-title,
 .aem-title {
   color: #fff;
@@ -4785,18 +4801,17 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   margin-bottom: 4px;
 }
 
-.tcm-title,
-.alm-title,
-.sam-title,
-.aem-title {
+.tcm-title {
   line-height: 1;
 }
 
 .alm-title,
+.atm-title,
 .sam-title,
 .aem-title {
   font-size: 21px;
   margin-bottom: 2px;
+  line-height: 1;
 }
 
 .bum-subtitle,
@@ -4804,6 +4819,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .pum-subtitle,
 .tcm-subtitle,
 .alm-subtitle,
+.atm-subtitle,
 .sam-subtitle,
 .aem-subtitle {
   color: rgba(255,255,255,0.8);
@@ -4921,6 +4937,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .pum-field,
 .tcm-form-group,
 .alm-field,
+.atm-field,
 .aem-field {
   display: flex;
   flex-direction: column;
@@ -5018,6 +5035,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .btn-undo,
 .btn-update-branch-settings,
 .alm-btn-cancel,
+.atm-btn-cancel,
 .sam-btn-cancel,
 .aem-btn-cancel {
   display: inline-flex;
@@ -5040,6 +5058,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .tcm-btn-cancel,
 .btn-undo,
 .alm-btn-cancel,
+.atm-btn-cancel,
 .aem-btn-cancel,
 .sam-btn-cancel,
 .shift-cancel-btn {
@@ -5053,6 +5072,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .tcm-btn-cancel:hover,
 .btn-undo:hover,
 .alm-btn-cancel:hover,
+.atm-btn-cancel:hover,
 .aem-btn-cancel:hover,
 .sam-btn-cancel:hover,
 .shift-cancel-btn:hover {
@@ -5109,6 +5129,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 .bum-field-select,
 .pum-field-select,
 .alm-field select,
+.atm-field select,
 .sam-select,
 .aem-select {
   width: 100%;
@@ -5130,6 +5151,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 }
 
 .alm-field select,
+.atm-field select,
 .sam-select,
 .aem-select {
   font-size: 14px;
@@ -5881,6 +5903,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 }
 
 .alm-header,
+.atm-header,
 .sam-header,
 .aem-header {
   background: linear-gradient(135deg, #06B6D4 0%, #0891B2 100%);
@@ -5892,6 +5915,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 }
 
 .alm-body,
+.atm-body,
 .sam-body,
 .aem-body {
   padding: 24px 28px;
@@ -5900,6 +5924,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   gap: 24px;
 }
 
+.atm-body,
 .sam-body,
 .aem-body {
   max-height: 68vh;
@@ -5907,7 +5932,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   scrollbar-width: thin;
 }
 
-.alm-field label {
+.alm-field label,
+.atm-field label {
   font-size: 12px;
   font-weight: 600;
   color: #64748B;
@@ -5916,8 +5942,12 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 }
 
 .alm-field select:focus,
+.atm-field select:focus,
 .alm-field input[type="date"]:focus,
+.atm-field input[type="date"]:focus,
 .alm-field textarea:focus,
+.atm-field textarea:focus,
+.atm-field input[type="text"]:focus,
 .sam-select:focus,
 .aem-select:focus,
 .sam-currency-input:focus,
@@ -5931,7 +5961,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   outline: none;
 }
 
-.alm-date-row {
+.alm-date-row,
+.atm-date-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 24px;
@@ -5982,6 +6013,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 }
 
 .alm-footer,
+.atm-footer,
 .sam-footer,
 .aem-footer {
   padding: 16px 24px 24px;
@@ -5991,6 +6023,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 }
 
 .alm-btn-submit,
+.atm-btn-submit,
 .sam-btn-submit,
 .aem-btn-submit {
   padding: 10px 24px;
@@ -6010,6 +6043,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 }
 
 .alm-btn-submit:hover,
+.atm-btn-submit:hover,
 .sam-btn-submit:hover,
 .aem-btn-submit:hover {
   opacity: 0.9;
@@ -6017,6 +6051,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 }
 
 .alm-btn-submit:disabled,
+.atm-btn-submit:disabled,
 .sam-btn-submit:disabled,
 .aem-btn-submit:disabled {
   opacity: 0.6;
@@ -6024,13 +6059,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   transform: none;
 }
 
-.alm-btn-submit i,
-.sam-btn-submit i,
-.aem-btn-submit i {
-  font-size: 13px;
-}
-
 .alm-divider,
+.atm-divider,
 .sam-divider,
 .aem-divider {
   height: 1px;
@@ -6520,6 +6550,154 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   transition: color 0.2s;
 }
 
+.optional {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.atm-priority-group {
+  display: flex;
+  gap: 10px;
+}
+
+.atm-priority-btn {
+  flex: 1;
+  padding: 9px 10px;
+  border-radius: 10px;
+  border: 2px solid #E5E7EB;
+  background: #F8FAFC;
+  color: #64748B;
+  font-size: 12.5px;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all .3s ease-in-out;
+  white-space: nowrap;
+}
+
+.atm-priority-btn i {
+  font-size: 11px;
+}
+
+.atm-priority-btn:hover {
+  transform: translateY(-2px);
+}
+
+/* Öncelik seviyesi: Düşük */
+.atm-priority-btn[data-priority="1"]:hover,
+.atm-priority-btn[data-priority="1"].atm-priority-active {
+  border-color: #3B82F6;
+  background: #EFF6FF;
+  color: #1D4ED8;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.22);
+}
+
+/* Öncelik seviyesi: Orta */
+.atm-priority-btn[data-priority="2"]:hover,
+.atm-priority-btn[data-priority="2"].atm-priority-active {
+  border-color: #F59E0B;
+  background: #FFFBEB;
+  color: #92400E;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.22);
+}
+
+/* Öncelik seviyesi: Yüksek */
+.atm-priority-btn[data-priority="3"]:hover,
+.atm-priority-btn[data-priority="3"].atm-priority-active {
+  border-color: #F97316;
+  background: #FFF7ED;
+  color: #C2410C;
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.22);
+}
+
+/* Öncelik seviyesi: Acil */
+.atm-priority-btn[data-priority="4"]:hover,
+.atm-priority-btn[data-priority="4"].atm-priority-active {
+  border-color: #EF4444;
+  background: #FEF2F2;
+  color: #B91C1C;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.22);
+}
+
+.atm-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.atm-progress-header label {
+  margin-bottom: 0 !important;
+}
+
+.atm-progress-badge {
+  font-size: 12px;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+  color: #0891B2;
+  background: #F0FDFE;
+  border: 1.5px solid #BAE6FD;
+  padding: 3px 10px;
+  border-radius: 20px;
+  min-width: 42px;
+  text-align: center;
+}
+
+.atm-range-wrap {
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.atm-range {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 999px;
+  outline: none;
+  cursor: pointer;
+  background: linear-gradient(
+    to right,
+    #06B6D4 0%,
+    #06B6D4 var(--atm-range-pct, 0%),
+    #E5E7EB var(--atm-range-pct, 0%),
+    #E5E7EB 100%
+  );
+}
+
+.atm-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2.5px solid #06B6D4;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(6, 182, 212, 0.35);
+  transition: all .3s ease-in-out;
+}
+
+.atm-range::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.2);
+}
+
+.atm-range::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2.5px solid #06B6D4;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(6, 182, 212, 0.35);
+}
+
 
 
 /* Responsive Tasarım Media Queries */
@@ -6846,7 +7024,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
 
   /* iOS Safari — saat inputu native görünümünü sıfırlıyoruz */
   .company-settings__field input[type="time"],
-  .alm-field input[type="date"] {
+  .alm-field input[type="date"],
+  .atm-field input[type="date"] {
     -webkit-appearance: none;
     appearance: none;
     text-align: left;
@@ -6856,15 +7035,18 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   }
 
   /* iOS Safari shadow DOM — iç render katmanlarının padding'ini sıfırlıyoruz */
-  .alm-field input[type="date"]::-webkit-datetime-edit {
+  .alm-field input[type="date"]::-webkit-datetime-edit,
+  .atm-field input[type="date"]::-webkit-datetime-edit {
     padding: 0;
   }
 
-  .alm-field input[type="date"]::-webkit-datetime-edit-fields-wrapper {
+  .alm-field input[type="date"]::-webkit-datetime-edit-fields-wrapper,
+  .atm-field input[type="date"]::-webkit-datetime-edit-fields-wrapper {
     padding: 0;
   }
 
-  .alm-field input[type="date"]::-webkit-date-and-time-value {
+  .alm-field input[type="date"]::-webkit-date-and-time-value,
+  .atm-field input[type="date"]::-webkit-date-and-time-value {
     text-align: left;
     margin: 0;
     padding: 0;
@@ -6930,6 +7112,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   }
 
   .alm-panel,
+  .atm-panel,
   .sam-panel,
   .aem-panel {
     margin: 3% auto;
@@ -7432,9 +7615,11 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .btn-undo,
   .btn-update-branch-settings,
   .alm-btn-cancel,
+  .atm-btn-cancel,
   .aem-btn-cancel,
   .sam-btn-cancel,
   .alm-btn-submit,
+  .atm-btn-submit,
   .sam-btn-submit {
     font-size: 13px;
     padding: 10px 22px;
@@ -7458,6 +7643,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .pum-body,
   .tcm-body,
   .alm-footer,
+  .atm-footer,
   .sam-footer,
   .aem-footer {
     padding-bottom: 22px;
@@ -7911,6 +8097,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .rdm-close,
   .tcm-close-btn,
   .alm-close,
+  .atm-close,
   .sam-close,
   .aem-close {
     font-size: 16px;
@@ -7935,6 +8122,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   }
   
   .alm-title,
+  .atm-title,
   .sam-title,
   .aem-title {
     font-size: 19px;
@@ -7945,6 +8133,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .pum-subtitle,
   .tcm-subtitle,
   .alm-subtitle,
+  .atm-subtitle,
   .sam-subtitle,
   .aem-subtitle {
     font-size: 12px;
@@ -7955,8 +8144,12 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .pum-field-input,
   .tcm-input,
   .alm-field select,
+  .atm-field select,
   .alm-field input[type="date"], 
+  .atm-field input[type="date"],
   .alm-field textarea,
+  .atm-field textarea,
+  .atm-field input[type="text"],
   .sam-select,
   .sam-currency-input,
   .aem-currency-input,
@@ -7965,7 +8158,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     font-size: 13px;
   }
   
-  .alm-field label {
+  .alm-field label,
+  .atm-field label {
     font-size: 11px;
   }
 
@@ -7981,6 +8175,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   }
 
   .alm-panel,
+  .atm-panel,
   .sam-panel,
   .aem-panel {
     margin: 5% auto;
@@ -7994,7 +8189,15 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     gap: 20px;
   }
 
+  .alm-header, 
+  .atm-header, 
+  .sam-header,
+  .aem-header {
+    padding: 22px 20px;
+  }
+
   .alm-footer,
+  .atm-footer,
   .sam-footer,
   .aem-footer {
     padding-bottom: 20px;
@@ -8027,6 +8230,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .btn-undo,
   .btn-update-branch-settings,
   .alm-btn-cancel,
+  .atm-btn-cancel,
   .aem-btn-cancel,
   .sam-btn-cancel {
     justify-content: center;
@@ -8052,6 +8256,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   }
 
   .alm-body,
+  .atm-body,
   .sam-body,
   .aem-body {
     padding: 24px 20px;
@@ -8090,6 +8295,11 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .aem-form-grid {
     grid-template-columns: 1fr;
     gap: 20px;
+  }
+
+  .atm-priority-group {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -8274,7 +8484,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     font-size: 13px;
   }
 
-  .alm-date-row {
+  .alm-date-row,
+  .atm-date-row {
     gap: 18px;
   }
   
@@ -8290,7 +8501,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     font-size: 16px;
   }
 }
-
 
 
 

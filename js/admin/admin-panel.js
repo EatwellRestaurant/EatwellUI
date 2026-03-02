@@ -9397,7 +9397,7 @@ $(document).ready(function() {
                         </div>
 
                         <div class="alm-field">
-                            <label>Açıklama <span style="font-weight:400;text-transform:none;letter-spacing:0">(opsiyonel)</span></label>
+                            <label>Açıklama <span class="optional">(opsiyonel)</span></label>
                             <textarea id="alm-description" placeholder="İzin nedeni veya ek bilgi..."></textarea>
                         </div>
 
@@ -9534,6 +9534,15 @@ $(document).ready(function() {
         const employeeId   = params.get('id');
         const employeeName = $('.profile-name').first().text().trim();
         openAddSalaryModal(employeeId, employeeName);
+    });
+
+
+    // "Görev Ekle" butonuna tıklandığında
+    $(document).on('click', '#btnOpenAddTaskModal', function() {
+        const params = new URLSearchParams(window.location.search);
+        const employeeId   = params.get('id');
+        const employeeName = $('.profile-name').first().text().trim();
+        openAddTaskModal(employeeId, employeeName);
     });
 
 
@@ -10089,6 +10098,222 @@ $(document).ready(function() {
                 const msg = xhr.responseJSON?.Message;
                 if (xhr.status === 401) { handleLogout(msg); return; }
                 showToast('error', 'Hata', msg || 'Maaş kaydedilemedi.');
+                $btn.prop('disabled', false).html('<i class="fa-solid fa-check"></i> Kaydet');
+            }
+        });
+    }
+
+
+
+    function openAddTaskModal(employeeId, employeeName) {
+        const today = new Date().toISOString().split('T')[0];
+
+        const modalHTML = `
+            <div class="employee-task-modal">
+                <div class="atm-panel">
+
+                    <div class="atm-header">
+                        <div class="atm-header-icon">
+                            <i class="fa-solid fa-list-check"></i>
+                        </div>
+                        <div class="atm-header-text">
+                            <h2 class="atm-title">Görev Ekle</h2>
+                            <p class="atm-subtitle">${employeeName}</p>
+                        </div>
+                        <button class="atm-close"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+
+                    <div class="atm-body">
+
+                        <div class="atm-field">
+                            <label>Görev Başlığı</label>
+                            <input type="text" id="atm-title-input" placeholder="Görev başlığı girin..." maxlength="120" autocomplete="off">
+                        </div>
+
+                        <div class="atm-field">
+                            <label>Açıklama <span class="optional">(opsiyonel)</span></label>
+                            <textarea id="atm-description" placeholder="Görev hakkında detaylı bilgi..." maxlength="500"></textarea>
+                        </div>
+
+                        <div class="atm-field">
+                            <label>Öncelik Seviyesi</label>
+                            <div class="atm-priority-group">
+                                <button type="button" class="atm-priority-btn" data-priority="1">
+                                    <i class="fa-solid fa-arrow-down"></i> Düşük
+                                </button>
+                                <button type="button" class="atm-priority-btn atm-priority-active" data-priority="2">
+                                    <i class="fa-solid fa-minus"></i> Orta
+                                </button>
+                                <button type="button" class="atm-priority-btn" data-priority="3">
+                                    <i class="fa-solid fa-arrow-up"></i> Yüksek
+                                </button>
+                                <button type="button" class="atm-priority-btn" data-priority="4">
+                                    <i class="fa-solid fa-fire"></i> Acil
+                                </button>
+                            </div>
+                            <input type="hidden" id="atm-priority" value="2">
+                        </div>
+
+                        <div class="atm-field">
+                            <label>Durum</label>
+                            <select id="atm-status">
+                                <option value="1">Beklemede</option>
+                                <option value="2">Devam Ediyor</option>
+                                <option value="3">Tamamlandı</option>
+                                <option value="4">İptal Edildi</option>
+                            </select>
+                        </div>
+
+                        <div class="atm-date-row">
+                            <div class="atm-field">
+                                <label>Başlangıç Tarihi</label>
+                                <div class="input-date-wrap">
+                                    <input type="date" id="atm-start-date" class="custom-date" value="${today}">
+                                    <i class="fa-regular fa-calendar input-date-icon"></i>
+                                </div>
+                            </div>
+                            <div class="atm-field">
+                                <label>Bitiş Tarihi</label>
+                                <div class="input-date-wrap">
+                                    <input type="date" id="atm-end-date" class="custom-date" value="${today}">
+                                    <i class="fa-regular fa-calendar input-date-icon"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="atm-field">
+                            <div class="atm-progress-header">
+                                <label>İlerleme</label>
+                                <span class="atm-progress-badge" id="atm-progress-badge">%0</span>
+                            </div>
+                            <div class="atm-range-wrap">
+                                <input type="range" class="atm-range" id="atm-progress" min="0" max="100" value="0" step="5">
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="atm-divider"></div>
+
+                    <div class="atm-footer">
+                        <button class="atm-btn-cancel">
+                            <i class="fa-solid fa-rotate-left"></i>
+                            Vazgeç
+                        </button>
+                        <button class="atm-btn-submit" id="atmSubmitBtn">
+                            <i class="fa-solid fa-check"></i>
+                            Kaydet
+                        </button>
+                    </div>
+
+                </div>
+            </div>`;
+
+        $('.employee-task-modal').remove();
+        $('body').append(modalHTML);
+        $('.employee-task-modal').fadeIn(250);
+
+
+        // Öncelik seviyesi seçimi
+        $(document).on('click.atm', '.atm-priority-btn', function() {
+            $('.atm-priority-btn').removeClass('atm-priority-active');
+            $(this).addClass('atm-priority-active');
+            $('#atm-priority').val($(this).data('priority'));
+        });
+
+        // İlerleme slider
+        $(document).on('input.atm', '#atm-progress', function() {
+            const val = $(this).val();
+            $('#atm-progress-badge').text(`%${val}`);
+            this.style.setProperty('--atm-range-pct', `${val}%`);
+        });
+
+        // Kapat
+        $(document).on('click.atm', '.atm-close, .atm-btn-cancel', function() {
+            closeAddTaskModal();
+        });
+
+        // Backdrop tıklama
+        $(document).on('click.atm', '.employee-task-modal', function(e) {
+            if ($(e.target).hasClass('employee-task-modal')) {
+                closeAddTaskModal();
+            }
+        });
+
+        // Submit
+        $(document).on('click.atm', '#atmSubmitBtn', function() {
+            submitTask(employeeId);
+        });
+    }
+
+
+    function closeAddTaskModal() {
+        $('.employee-task-modal').fadeOut(220, function() { $(this).remove(); });
+        $(document).off('.atm');
+    }
+
+
+    function submitTask(employeeId) {
+        const token = localStorage.getItem('token');
+
+        const title               = $('#atm-title-input').val().trim();
+        const description         = $('#atm-description').val().trim();
+        const priorityLevelId     = parseInt($('#atm-priority').val());
+        const taskStatusId        = parseInt($('#atm-status').val());
+        const startDate           = $('#atm-start-date').val();
+        const endDate             = $('#atm-end-date').val();
+        const completionPercentage = parseInt($('#atm-progress').val());
+
+        if (!title) {
+            showToast('error', 'Uyarı', 'Görev başlığı zorunludur.');
+            return;
+        }
+        if (!startDate) {
+            showToast('error', 'Uyarı', 'Başlangıç tarihi zorunludur.');
+            return;
+        }
+        if (!endDate) {
+            showToast('error', 'Uyarı', 'Bitiş tarihi zorunludur.');
+            return;
+        }
+        if (endDate < startDate) {
+            showToast('error', 'Uyarı', 'Bitiş tarihi başlangıç tarihinden önce olamaz.');
+            return;
+        }
+
+        const $btn = $('#atmSubmitBtn');
+        $btn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i> Kaydediliyor...');
+
+        $.ajax({
+            url: `${baseUrl}Employees/${employeeId}/Tasks`,
+            type: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify({
+                title,
+                description: description || null,
+                priorityLevelId,
+                taskStatusId,
+                startDate,
+                endDate,
+                completionPercentage
+            }),
+            success: function(response) {
+                if (response.success) {
+                    showToast('success', 'Başarılı', 'Görev başarıyla eklendi.');
+                    closeAddTaskModal();
+                    fetchEmployeeTaskOverview();
+                } else {
+                    showToast('error', 'Hata', response.message || 'Görev eklenemedi.');
+                    $btn.prop('disabled', false).html('<i class="fa-solid fa-check"></i> Kaydet');
+                }
+            },
+            error: function(xhr) {
+                const msg = xhr.responseJSON?.Message;
+                if (xhr.status === 401) { handleLogout(msg); return; }
+                showToast('error', 'Hata', msg || 'Görev eklenemedi.');
                 $btn.prop('disabled', false).html('<i class="fa-solid fa-check"></i> Kaydet');
             }
         });

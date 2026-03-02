@@ -715,3 +715,96 @@ body.dark-theme {
   body.dark-theme .employees-header h2 {
     color: #E2E8F0;
   }
+
+  body.dark-theme .atm-panel {
+    background: #1E293B;
+  }
+
+  body.dark-theme .atm-field input[type="text"],
+  body.dark-theme .atm-field input[type="date"],
+  body.dark-theme .atm-field select,
+  body.dark-theme .atm-field textarea {
+    background: #0F172A;
+    border-color: #334155;
+    color: #E2E8F0;
+  }
+
+  body.dark-theme .atm-field input[type="text"]:focus,
+  body.dark-theme .atm-field input[type="date"]:focus,
+  body.dark-theme .atm-field select:focus,
+  body.dark-theme .atm-field textarea:focus {
+    border-color: #06B6D4;
+    box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
+  }
+
+  body.dark-theme .atm-field label {
+    color: #94A3B8;
+  }
+
+  body.dark-theme .atm-priority-btn {
+    background: #0F172A;
+    border-color: #334155;
+    color: #64748B;
+  }
+
+  body.dark-theme .atm-priority-btn[data-priority="1"].atm-priority-active {
+    background: #1e3a5f;
+    border-color: #3B82F6;
+    color: #93C5FD;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+  }
+
+  body.dark-theme .atm-priority-btn[data-priority="2"].atm-priority-active {
+    background: #3d2500;
+    border-color: #F59E0B;
+    color: #FCD34D;
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.2);
+  }
+
+  body.dark-theme .atm-priority-btn[data-priority="3"].atm-priority-active {
+    background: #3a1800;
+    border-color: #F97316;
+    color: #FDBA74;
+    box-shadow: 0 2px 8px rgba(249, 115, 22, 0.2);
+  }
+
+  body.dark-theme .atm-priority-btn[data-priority="4"].atm-priority-active {
+    background: #3d0a0a;
+    border-color: #EF4444;
+    color: #FCA5A5;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+  }
+
+  body.dark-theme .atm-progress-badge {
+    background: #0c2030;
+    border-color: #1E3A5F;
+    color: #38BDF8;
+  }
+
+  body.dark-theme .atm-range {
+    background: linear-gradient(
+      to right,
+      #06B6D4 0%,
+      #06B6D4 var(--atm-range-pct, 0%),
+      #334155 var(--atm-range-pct, 0%),
+      #334155 100%
+    );
+  }
+
+  body.dark-theme .atm-divider {
+    background: #334155;
+  }
+
+  body.dark-theme .atm-btn-cancel {
+    background: #1E293B;
+    color: #94A3B8;
+  }
+
+  body.dark-theme .atm-btn-cancel:hover {
+    background: #334155;
+    color: #E2E8F0;
+  }
+
+  body.dark-theme .atm-char-count {
+    color: #475569;
+  }
