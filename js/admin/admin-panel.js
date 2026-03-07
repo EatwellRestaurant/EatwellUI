@@ -818,7 +818,7 @@ $(document).ready(function() {
     // Kullanıcı istatistiklerini getir (büyük sayfa ile tüm kullanıcıları çek)
     function fetchUserStats() {
         $.ajax({
-            url: `${baseUrl}users/getall?pageNumber=1&pageSize=10000`,
+            url: `${baseUrl}users/getall?pageNumber=${currentPage}&pageSize=${pageItems}`,
             type: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -858,10 +858,24 @@ $(document).ready(function() {
                 // Grafikleri oluştur
                 initUserCharts(users);
 
+                paginationTemplate("users-container", "prevUserPage", "nextUserPage", "userPageInfo", "userTotalItemsInfo", "pagination-users-table");
+
+                // Kullanıcıları göster
+                displayUsers(response);
+
                 // VIP Top 5 listesi oluştur
                 renderVipTopList(users);
             },
-            error: function() {
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    handleLogout(errorMessage);
+                    return;
+                }
+
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Kullanıcılar alınırken hata oluştu!");
+
                 $('#statTotalUsers').text('-');
                 $('#statVerifiedUsers').text('-');
                 $('#statUnverifiedUsers').text('-');
@@ -1360,7 +1374,6 @@ $(document).ready(function() {
         // Dashboard'a ekle
         $('.dashboard-content').append(usersHTML);
 
-        fetchUsers();
         fetchUserStats();
     }
 
@@ -1773,10 +1786,12 @@ $(document).ready(function() {
         if (menuTimelineChartInstance) { menuTimelineChartInstance.destroy(); menuTimelineChartInstance = null; }
     }
 
+
+    
     // Menü istatistiklerini getir
     function fetchMenuStats() {
         $.ajax({
-            url: `${baseUrl}mealCategories/getAllForAdmin?pageNumber=1&pageSize=10000`,
+            url: `${baseUrl}mealCategories/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`,
             type: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -1802,8 +1817,22 @@ $(document).ready(function() {
 
                 // Grafikleri oluştur
                 initMenuCharts(menus);
+
+                paginationTemplate("menus-container", "prevMenuPage", "nextMenuPage", "menuPageInfo", "menuTotalItemsInfo", "pagination-menus-table");
+
+                // Menüleri göster
+                displayMenus(response);
             },
-            error: function() {
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+                
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+                
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Menüler alınırken hata oluştu!");
                 $('#statTotalMenus').text('-');
                 $('#statActiveMenus').text('-');
                 $('#statInactiveMenus').text('-');
@@ -2150,7 +2179,6 @@ $(document).ready(function() {
         // Menüleri dashboard'a ekle
         $('.dashboard-content').append(menusHTML);
 
-        fetchMenus();
         fetchMenuStats();
     }
 
@@ -2970,9 +2998,9 @@ $(document).ready(function() {
 
 
     // Ürün istatistiklerini çek ve grafikleri oluştur
-    function fetchProductStats() {
+    function fetchProductStats(request, showGoToMenuButton, paginationTable) {
         $.ajax({
-            url: `${baseUrl}products/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`,
+            url: request,
             type: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -2998,8 +3026,23 @@ $(document).ready(function() {
 
                 // Grafikleri oluştur
                 initProductCharts(products);
+
+                paginationTemplate("products-container", "prevProductPage", "nextProductPage", "productPageInfo", "productTotalItemsInfo", `${paginationTable}`);
+
+                // Ürünleri göster
+                displayProducts(response, showGoToMenuButton);
             },
-            error: function() {
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+
+                if (xhr.status === 401) {
+                    // Token geçersiz veya süresi dolmuş. Otomatik çıkış yapılıyor.
+                    handleLogout(errorMessage);
+                    return;
+                }
+
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Ürünler alınırken hata oluştu!");
+
                 $('#statTotalProducts').text('-');
                 $('#statActiveProducts').text('-');
                 $('#statInactiveProducts').text('-');
@@ -3289,8 +3332,7 @@ $(document).ready(function() {
 
         const request = `${baseUrl}products/getAllForAdminByMealCategoryId?mealCategoryId=${menuId}&pageNumber=${currentPage}&pageSize=${pageItems}`
 
-        fetchProducts(request, false, "pagination-productsByMenu-table");
-        fetchProductStats();
+        fetchProductStats(request, false, "pagination-productsByMenu-table");
     }
     
 
@@ -3321,8 +3363,7 @@ $(document).ready(function() {
 
         const request = `${baseUrl}products/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`;
 
-        fetchProducts(request, true, "pagination-products-table");
-        fetchProductStats();
+        fetchProductStats(request, true, "pagination-products-table");
     }
 
 
@@ -4386,7 +4427,7 @@ $(document).ready(function() {
                     <table class="cities-table">
                         <thead>
                             <tr>
-                                <th>ID</th>
+                                <th>Kod</th>
                                 <th>Şehir Adı</th>
                                 <th>Şube Sayısı</th>
                                 <th>İşlemler</th>
@@ -13086,7 +13127,7 @@ $(document).ready(function() {
     // Sipariş istatistiklerini çek ve grafikleri oluştur
     function fetchOrderStats() {
         $.ajax({
-            url: `${baseUrl}orders/getAllForAdmin?pageNumber=1&pageSize=10000`,
+            url: `${baseUrl}orders/getAllForAdmin?pageNumber=${currentPage}&pageSize=${pageItems}`,
             type: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
