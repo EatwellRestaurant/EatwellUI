@@ -14,6 +14,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link href="../../css/style.css" rel="stylesheet">
   <link href="../../css/index.css" rel="stylesheet">
+  <link href="../../css/pagination.css" rel="stylesheet">
   <link href="../../css/public/products.css" rel="stylesheet">
 
 </head>
@@ -62,7 +63,37 @@
           <h2>Ürünlerimiz</h2>
         </div>
 
-        <div class="products"></div>
+        <div class="products">
+
+          <div class="product-grid"></div>
+  
+          <div class="pagination-container">
+            <div class="pagination-page-size">
+              <span class="page-size-label">Göster: </span>
+              <div class="dropdown" id="paginationDropdown">
+                <i class="fa-solid fa-caret-down"></i>
+                
+                <div class="dropdown-toggle pagination-toggle" id="selectedValue">10</div>
+                
+                <div class="dropdown-menu">
+                  <div class="dropdown-option pagination-option" data-pagination-id="10">10</div>
+                  <div class="dropdown-option pagination-option" data-pagination-id="15">15</div>
+                  <div class="dropdown-option pagination-option" data-pagination-id="20">20</div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="pagination">
+              <button id="prevProductPage" class="pagination-btn" disabled><i class="fas fa-chevron-left"></i></button>
+              <span id="productPageInfo">Sayfa 1 / 1</span>
+              <button id="nextProductPage" class="pagination-btn" disabled><i class="fas fa-chevron-right"></i></button>
+            </div>
+            
+            <div class="pagination-total-info">
+              <span id="productTotalItemsInfo">Toplam Kayıt: 0</span>
+            </div>
+          </div>
+      </div>
 
     </section>
   </main>

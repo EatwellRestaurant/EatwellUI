@@ -1082,71 +1082,7 @@ td, th {
   background-color: #f8f9fa;
 }
 
-
-/* Sayfalama Stilleri */
-.pagination-container {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 5px;
-  padding: 10px;
-  padding-bottom: 0;
-}
-
-.pagination {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.pagination-btn {
-  background-color: #c8cbdd;
-  color: #000;
-  border: none;
-  padding: 8px 15px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.pagination-btn:hover:not(:disabled) {
-  background-color: #1E293B;
-  color: #fff;
-}
-
-.pagination-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.pagination span {
-  color: #000;
-  font-size: 14px;
-  min-width: 100px;
-  text-align: center;
-}
-
-.pagination-page-size {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-family: "Mulish", sans-serif;
-  font-size: 1.4rem;
-}
-
-.page-size-label {
-  min-width: 55px;
-}
-
-.pagination-page-size .dropdown {
-  min-width: 55px;
-  cursor: pointer;
-}
-
 .dropdown i,
-.pagination-page-size .dropdown i,
 .filter-box .dropdown i {
   position: absolute;
   top: 50%;
@@ -1155,36 +1091,8 @@ td, th {
   transition: all .3s ease-in-out;
 }
 
-.pagination-page-size .dropdown i {
-  left: 68%;
-}
-
-.pagination-toggle {
-  padding: 5px !important;
-  padding-left: 7px !important;
-  color: #000 !important;
-  display: block !important;
-  margin-bottom: 0 !important;
-  min-height: max-content !important;
-  font-size: 1.4rem !important;
-}
-
-.pagination-option {
-  padding: 7px !important;
-  font-size: 1.4rem !important;
-}
-
 .dropdown-pagination.active {
   display: block;
-}
-
-.pagination-total-info{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 14px;
-  color: #797878;
-  font-weight: 500;
 }
 
 .image-input{
@@ -2155,8 +2063,7 @@ td, th {
   width: 100%;
 }
 
-.input-wrapper input,
-.dropdown-toggle {
+.input-wrapper input {
   display: flex;
   align-items: center;
   width: 100%;
@@ -2184,44 +2091,6 @@ td, th {
 .input-wrapper input:focus {
   outline: 0;
   border-color: #858d99;
-}
-
-.dropdown {
-  position: relative;
-  cursor: pointer;
-}
-
-.dropdown-toggle {
-  cursor: pointer;
-}
-
-.dropdown-menu {
-  position: absolute;
-  top: 112%;
-  left: 0;
-  right: 0;
-  background: #fff;
-  border: 2px solid #dedbdb;
-  display: none;
-  z-index: 10;
-  border-radius: 4px;
-  max-height: 160px;
-  overflow-x: auto;
-}
-
-.dropdown-menu.active {
-  display: block;
-}
-
-.dropdown-option {
-  padding: 10px;
-  cursor: pointer;
-  font-size: 1.6rem;
-  font-family: "Mulish", sans-serif;
-}
-
-.dropdown-option:hover {
-  background: #f0f0f0;
 }
 
 .input-wrapper label {
@@ -7219,27 +7088,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     top: 68%;
   }
 
-  .pagination-page-size {
-    font-size: 1.3rem;
-  }
-
-  .pagination {
-    gap: 7px;
-  }
-
-  .pagination span {
-    font-size: 13px;
-  }
-
-  .pagination-btn {
-    padding: 7px 12px;
-    font-size: 12px;
-  }
-  
-  .pagination-total-info {
-    font-size: 13px;
-  }
-
   .filter-wrapper {
     width: 60%;
   }
@@ -7382,34 +7230,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   .reservation-box {
     flex: none;
     min-width: auto;
-  }
-
-  .pagination-container {
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
-    gap: 22px;
-  }
-
-  .pagination-page-size {
-    font-size: 1.4rem;
-  }
-
-  .pagination {
-    gap: 9px;
-  }
-
-  .pagination span {
-    font-size: 14px;
-  }
-
-  .pagination-btn {
-    padding: 8px 13px;
-    font-size: 13px;
-  }
-  
-  .pagination-total-info {
-    font-size: 14px;
   }
 
   .schedule-grid {
@@ -8396,13 +8216,8 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     padding: 0.5em 1.8em !important;
   }
 
-  .input-wrapper input,
-  .dropdown-toggle {
+  .input-wrapper input {
     letter-spacing: .04rem;
-  }
-
-  .dropdown-option {
-    font-size: 1.4rem;
   }
 
   .input-wrapper label {
@@ -8433,31 +8248,6 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
     width: 45px;
     height: 45px;
     font-size: 14px;
-  }
-
-  .pagination-container {
-    gap: 17px;
-  }
-
-  .pagination-page-size {
-    font-size: 1.3rem;
-  }
-
-  .pagination {
-    gap: 3px;
-  }
-
-  .pagination span {
-    font-size: 13px;
-  }
-
-  .pagination-btn {
-    padding: 7px 12px;
-    font-size: 12px;
-  }
-  
-  .pagination-total-info {
-    font-size: 13px;
   }
 
   .schedule-header .swap-info-box {

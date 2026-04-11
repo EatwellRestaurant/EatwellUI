@@ -13,58 +13,152 @@ header::before{
 }
 
 .menus{
-    margin-top: 50px;
+    margin-top: 35px;
+    display: flex;
+    flex-direction: column;
+    row-gap: 25px;
 }
 
-.row{
+.row {
     display: grid;
-    justify-content: space-around;
-    grid-template-columns: auto auto auto;
-    gap: 50px 20px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 50px;
+    margin: 0 auto;
 }
 
-.menu-image{
+.menu-card {
     position: relative;
-    border-radius: 25px;
-    box-shadow: 0 0 13px #000;
+    border-radius: 16px;
+    overflow: hidden;
+    aspect-ratio: 4/3;
+    background: #111;
+    transition: all .3s ease-in-out;
 }
 
-.menu-image img{
-    height: 250px;
-    max-width: 250px; 
-    border-radius: 25px;
-    position: relative;
-    display: block;
+.menu-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.18);
 }
 
-.menu-image .img-overlay{
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border-radius: 25px;
-    background-color: #000;
-    opacity: 0;
-    color: transparent;
-    justify-content: center;
+.menu-card a { 
+    display: block; 
+    width: 100%; 
+    height: 100%; 
+    text-decoration: none; 
+}
+
+.menu-card img {
+    width: 100%; height: 100%; 
+    object-fit: cover;
+    filter: brightness(0.75);
+    transition: all .3s ease-in-out;
+}
+
+.menu-card:hover img { 
+    transform: scale(1.06); 
+    filter: brightness(0.65); 
+}
+
+.menu-body {
+    position: absolute; 
+    bottom: 0; 
+    left: 0; 
+    right: 0;
+    padding: 18px 26px;
+    background: linear-gradient(to top, rgba(0, 0, 0, .87) 0%, transparent 100%);
+    display: flex; 
+    justify-content: space-between; 
     align-items: center;
-    transition: all 0.3s;
 }
 
-.menu-image:hover .img-overlay{
-    opacity: 0.8;
-}
-
-.menu-image:hover .img-overlay .name{
-    opacity: 1 ;
-    font-size: 2.3rem;
-    font-weight: 700;
+.menu-name { 
+    font-size: 20px; 
+    font-weight: 500;
+    font-family: 'Poppins', sans-serif; 
     color: #fff;
+    letter-spacing: .2px; 
+}
+
+.menu-arrow {
+    color: #fff; 
+    font-size: 17px;
+    opacity: 0; 
+    background-color: #646060;
+    padding: 10px 15px;
+    border-radius: 50%;
+    transition: all .3s ease-in-out;
+}
+
+.menu-card:hover .menu-arrow { 
+    opacity: 1; 
 }
 
 
- 
+@media screen and (max-width: 1200px) {
+    .row {
+        gap: 38px;
+    }
+}
+
+
+@media screen and (max-width: 992px) {
+    .row {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 50px;
+    }
+
+    .menu-card {
+        aspect-ratio: 6 / 4;
+    }
+}
+
+
+@media screen and (max-width: 768px) {
+    .row {
+        gap: 32px;
+    }
+}
+
+
+@media screen and (max-width: 600px) {
+    .row {
+        grid-template-columns: repeat(1, 1fr);
+        gap: 32px;
+    }
+
+    .menu-card {
+        aspect-ratio: 8 / 5;
+        width: 85%;
+        margin: auto;
+    }
+
+    .menu-name {
+        font-size: 18px;
+    }
+
+    .menu-arrow {
+        font-size: 15px;
+        padding: 9px 13px;
+    }
+}
+
+
+@media screen and (max-width: 480px) {
+    .menu-card {
+        width: 90%;
+    }
+
+    .menu-name {
+        font-size: 17px;
+    }
+}
+
+
+@media screen and (max-width: 400px) {
+    .menu-card {
+        width: 96%;
+    }
+}
 
 
 

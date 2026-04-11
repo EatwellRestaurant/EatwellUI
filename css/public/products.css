@@ -38,39 +38,118 @@ header#icecekler{
     background-image: url(../images/icecekler-background3.jpeg);
 }
 
-#foods .products{
-    color: #000;
-    margin-top: 50px;
-    justify-content: space-around;
-    grid-template-rows: 310px;
-    grid-template-columns: 250px 250px 250px;
-    row-gap: 50px;
+:root {
+    --gold:        #C8921A;
+    --gold-light:  #E8B84B;
+    --gold-pale:   #FDF3E0;
+    --green:       #2d7a45;
+    --bg:          #FFFFFF;
+    --surface:     #FAFAF8;
+    --border:      rgba(0,0,0,0.08);
+    --text-1:      #1A1A1A;
+    --text-2:      #555550;
+    --text-3:      #9A9A94;
+    --font-serif:  'Playfair Display', Georgia, serif;
+    --font-sans:   'DM Sans', sans-serif;
+    --radius-card: 16px;
+    --radius-btn:  8px;
+    --shadow-card: 0 2px 16px rgba(0,0,0,0.06);
+    --shadow-hover: 0 8px 32px rgba(200,146,26,0.18);
+    --transition:  0.3s cubic-bezier(0.4,0,0.2,1);
 }
 
-#foods .products .col img {
-    min-width: 230px;
-    height: 225px;
-    border-radius: 20px;
-    margin-right: 0px;
-    padding: 2px;
-    border: 3px solid #ffc515;
+.products{
+    margin-top: 35px;
+    display: flex;
+    flex-direction: column;
+    row-gap: 25px;
 }
 
-#foods .products .food-information{
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 24px;
+}
+
+.product-card {
+    background: var(--bg);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+    cursor: pointer;
+    position: relative;
+    transition: box-shadow var(--transition), transform var(--transition), border-color var(--transition);
+}
+
+.product-card:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-4px);
+    border-color: var(--gold-light);
+}
+
+.badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 6px;
+    z-index: 1;
+}
+
+.badge--popular {
+    background: var(--gold);
+    color: #fff;
+}
+
+.card-image {
+    width: 100%;
+    height: 250px;
+    overflow: hidden; 
+    background: var(--surface);
+    display: flex;
     align-items: center;
-    margin-top: 10px;
-    text-align: center;
+    justify-content: center;
+    font-size: 64px;
+    transition: transform var(--transition);
 }
 
-#foods .product{
+.card-image img {
     width: 100%;
     height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
-#foods .product .col{
-    flex-direction: column;
-    align-items: center;
+.product-card:hover .card-image {
+    transform: scale(1.04);
 }
 
+.card-body {
+    padding: 16px 18px 18px;
+}
 
+.card-name {
+    font-family: 'Poppins', sans-serif; 
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--text-1);
+}
 
+.card-divider {
+    height: 0.5px;
+    background: var(--border);
+    margin: 14px 0px;
+}
+
+.card-price {
+    font-size: 20px;
+    font-weight: 500;
+    font-family: 'Poppins', sans-serif; 
+    color: var(--gold);
+    line-height: 1;
+}

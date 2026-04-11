@@ -12,7 +12,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,200..1000;1,200..1000&amp;display=swap&amp;_cacheOverride=1775676676382" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
     <link href="../../css/style.css" rel="stylesheet">
+    <link href="../../css/pagination.css" rel="stylesheet">
     <link href="../../css/public/menu.css" rel="stylesheet">
 
 </head>
@@ -64,6 +67,31 @@
                 <div class="menus">
                     <div class="row">
                        
+                    </div>
+
+                    <div class="pagination-container">
+                        <div class="pagination-page-size">
+                            <span class="page-size-label">Göster: </span>
+                            <div class="dropdown" id="paginationDropdown">
+                                <i class="fa-solid fa-caret-down"></i>
+                                
+                                <div class="dropdown-toggle pagination-toggle" id="selectedValue">10</div>
+                                
+                                <div class="dropdown-menu">
+                                    <div class="dropdown-option pagination-option" data-pagination-id="10">10</div>
+                                    <div class="dropdown-option pagination-option" data-pagination-id="15">15</div>
+                                    <div class="dropdown-option pagination-option" data-pagination-id="20">20</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pagination">
+                            <button id="prevMenuPage" class="pagination-btn" disabled><i class="fas fa-chevron-left"></i></button>
+                            <span id="menuPageInfo">Sayfa 1 / 1</span>
+                            <button id="nextMenuPage" class="pagination-btn" disabled><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                        <div class="pagination-total-info">
+                            <span id="menuTotalItemsInfo">Toplam Kayıt: 0</span>
+                        </div>
                     </div>
                 </div>
             </div>

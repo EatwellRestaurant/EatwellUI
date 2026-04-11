@@ -1,75 +1,96 @@
-const urlParams = new URLSearchParams(window.location.search);
-const idName = urlParams.get('id');
-const idNameSplit = idName.split(" ");
-const id = idNameSplit[0];
-let name = "";
+$(document).ready(function() {
 
-for (let i = 1; i < idNameSplit.length; i++) {
-    name += idNameSplit[i] + " ";
-}
-
-document.title = name;
-document.querySelector("#header-name").innerHTML = name; 
-
-
-function karakterCevir(kelime){
-   let mesaj = kelime;
-   const oldValue =  ["ö", "Ö", "ü", "Ü", "ç", "Ç", "İ", "ı", "Ğ", "ğ", "Ş", "ş", " " ];
-   const newValue =  [ 'o', 'O', 'u', 'U', 'c', 'C', 'I', 'i', 'G', 'g', 'S', 's', "" ];
-
-   for (let i = 0; i < oldValue.length; i++)
-   {
-      mesaj = mesaj.replaceAll(oldValue[i], newValue[i]);
-   }
-   return mesaj;
-}
-
-let newName = karakterCevir(name).toLowerCase();
-
-document.getElementById("menu").id = newName;
-document.querySelector("#product-icon").src = "../icons/" + newName + ".png"; 
-
-
-$.ajax({
-    url: "https://eatwellapi.somee.com/api/products/getproductsbymealcategoryid" + "?id=" + id,
-    dataType: "json",
-    error:  function (jqXHR, textStatus, errorThrown) {
-        console.log(`'Ürünler' alınırken bir hata oluştu: ${textStatus} ${errorThrown}`);
-
-        let result = jqXHR.responseJSON;
-
-        for(let key in result) {
-            console.log(key + ":", result[key]);
-        }
-    }
-    
-});
-
-$.get( "https://eatwellapi.somee.com/api/products/getproductsbymealcategoryid" + "?id=" + id, function( data ) {
-
-    let incomingData = data.data;
-    var box="";
-    for(let i=0; i < incomingData.length; i++){
-        
-        let product_image = incomingData[i].imagePath.replace("wwwroot","https://eatwellapi.somee.com");
-        let product_name = incomingData[i].name;
-        let product_price = incomingData[i].price;
-
-        let element = `
-        <div class="product">
-            <div class="col flex">
-              <img src= ${product_image} alt= ${product_name}>
-              <div class="food-information flex">
-                <span class="food-name">${product_name}</span>
-                <span class="food-price">${product_price}₺</span>
-              </div>
+    // Toast gösterme fonksiyonu
+    function showToast(type, title, message) {
+        const icon = type === 'error' ? 'fa-circle-xmark' : 'fa-circle-check';
+        const toast = $(`
+            <div class="toast ${type}">
+                <i class="fa-solid ${icon}"></i>
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
             </div>
-          </div>`;
-            
-        box+=element;
-        if(document.querySelector(".products") != null){
-            document.querySelector(".products").innerHTML = box;
-        } 
+        `);
+
+        $('.toast-container').append(toast);
+
+        // 5 saniye sonra toast'ı kaldır
+        setTimeout(() => {
+            toast.addClass('hide');
+            setTimeout(() => toast.remove(), 300);
+        }, 5000);
     }
-    console.log( "Ürünler Getirildi" );
+
+
+
+    const menuId = localStorage.getItem("selectedMenuId");
+    let currentPage = 1; // Global tanım
+    let totalPages = 1;  // Toplam sayfa sayısı
+    let totalItems = 0;  // Toplam öge sayısı
+    let pageItems = 10;  // Toplam görüntülenmek istenen öge sayısı
+
+
+
+    function displayProducts(products){
+        $('.product-grid').empty();
+
+        let box = '';
+        
+        products.forEach(product => {
+            box += `
+            <div class="product-card">
+                <span class="badge badge--popular">Popüler</span>
+                
+                <div class="card-image">
+                    <img src= ${product.imagePath} alt= ${product.name}>
+                </div>
+
+                <div class="card-body">
+                    <h3 class="card-name">${product.name}</h3>
+                    <div class="card-divider"></div>
+                    <div class="card-price">${product.price} ₺</div>
+                </div>
+            </div>`;
+        });
+
+        $('.product-grid').html(box);
+    }
+
+
+
+    function updatePagination(response){
+        totalPages = response.totalPages;
+        totalItems = response.totalItems;
+
+        // Sayfa bilgisini güncelle
+        $('#productPageInfo').text(`Sayfa ${currentPage} / ${totalPages}`);
+        $('#productTotalItemsInfo').text(`Toplam Kayıt: ${totalItems}`);
+
+        // Sayfalama butonlarının durumunu güncelle
+        $('#prevProductPage').prop('disabled', !response.hasPrevious); // İlk sayfada geri butonu devre dışı
+        $('#nextProductPage').prop('disabled', !response.hasNext); // Son sayfada ileri butonu devre dışı
+    }
+
+
+
+    function fetchMenu() {
+        $.ajax({
+            url: `https://eatwell-api.azurewebsites.net/api/mealcategories/${menuId}?pageNumber=${currentPage}&pageSize=${pageItems}`,
+            type: 'GET',
+            success: function(response) {
+                displayProducts(response.data.products.data);
+
+                updatePagination(response.data.products);
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.Message;
+
+                showToast('error', 'Hata', errorMessage ? errorMessage : "Menü alınırken hata oluştu!");
+            }
+        });
+    }
+
+    fetchMenu();
+
 });
